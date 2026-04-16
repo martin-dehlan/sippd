@@ -7,6 +7,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/text_input_sheet.dart';
+import '../../../../../common/widgets/year_picker_sheet.dart';
 import '../../../../locations/domain/entities/location.entity.dart';
 import '../../../../locations/presentation/widgets/location_search_sheet.dart';
 import '../../../controller/wine.provider.dart';
@@ -95,15 +96,12 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
   }
 
   Future<void> _editVintage() async {
-    final result = await showTextInputSheet(
+    final result = await showYearPickerSheet(
       context: context,
-      title: 'Year',
-      initial: _vintage?.toString(),
-      hint: 'e.g. 2020',
-      keyboardType: TextInputType.number,
+      initial: _vintage,
     );
     if (result == null) return;
-    setState(() => _vintage = result.isEmpty ? null : int.tryParse(result));
+    setState(() => _vintage = result.year);
   }
 
   Future<void> _editGrape() async {
