@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../features/auth/presentation/modules/login/login.screen.dart';
+import '../../features/groups/presentation/modules/group_list/group_list.screen.dart';
 import '../../features/scanner/presentation/modules/scan/scan.screen.dart';
 import '../../features/scanner/presentation/modules/scan/scan_label.screen.dart';
 import '../../features/scanner/presentation/modules/scan_result/scan_result.screen.dart';
@@ -15,9 +17,16 @@ part 'route_config.g.dart';
 @riverpod
 GoRouter goRouter(GoRouterRef ref) {
   return GoRouter(
-    initialLocation: AppRoutes.wines,
+    initialLocation: AppRoutes.login,
     debugLogDiagnostics: true,
     routes: [
+      // Auth
+      GoRoute(
+        path: AppRoutes.login,
+        builder: (context, state) => const LoginScreen(),
+      ),
+
+      // Main shell
       ShellRoute(
         builder: (context, state, child) => MainShell(child: child),
         routes: [
@@ -27,8 +36,7 @@ GoRouter goRouter(GoRouterRef ref) {
           ),
           GoRoute(
             path: AppRoutes.groups,
-            builder: (context, state) =>
-                const Scaffold(body: Center(child: Text('Groups'))),
+            builder: (context, state) => const GroupListScreen(),
           ),
           GoRoute(
             path: AppRoutes.profile,
@@ -37,6 +45,8 @@ GoRouter goRouter(GoRouterRef ref) {
           ),
         ],
       ),
+
+      // Wine routes (outside shell)
       GoRoute(
         path: AppRoutes.wineAdd,
         builder: (context, state) => const WineAddScreen(),
@@ -48,6 +58,7 @@ GoRouter goRouter(GoRouterRef ref) {
           return WineDetailScreen(wineId: id);
         },
       ),
+
       // Scanner routes
       GoRoute(
         path: AppRoutes.scan,

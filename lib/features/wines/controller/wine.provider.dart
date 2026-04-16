@@ -1,7 +1,9 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../common/database/database.dart';
+import '../../auth/controller/auth.provider.dart';
 import '../domain/entities/wine.entity.dart';
 import '../domain/repositories/wine.repository.dart';
+import '../data/data_sources/wine_supabase.api.dart';
 import '../data/repositories/wine.repository.impl.dart';
 
 part 'wine.provider.g.dart';
@@ -16,9 +18,18 @@ AppDatabase appDatabase(AppDatabaseRef ref) {
 }
 
 @riverpod
+WineSupabaseApi? wineSupabaseApi(WineSupabaseApiRef ref) {
+  final isAuth = ref.watch(isAuthenticatedProvider);
+  if (!isAuth) return null;
+  final client = ref.read(supabaseClientProvider);
+  return WineSupabaseApi(client);
+}
+
+@riverpod
 WineRepository wineRepository(WineRepositoryRef ref) {
   final db = ref.read(appDatabaseProvider);
-  return WineRepositoryImpl(db.winesDao);
+  final api = ref.watch(wineSupabaseApiProvider);
+  return WineRepositoryImpl(db.winesDao, api);
 }
 
 // ========================================

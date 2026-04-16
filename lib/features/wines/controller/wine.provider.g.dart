@@ -23,7 +23,24 @@ final appDatabaseProvider = AutoDisposeProvider<AppDatabase>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef AppDatabaseRef = AutoDisposeProviderRef<AppDatabase>;
-String _$wineRepositoryHash() => r'acb78b84cd7f2ed1e28beae589d22f0f97cc0293';
+String _$wineSupabaseApiHash() => r'c7f531f534bb916800db25129831814544f26c5d';
+
+/// See also [wineSupabaseApi].
+@ProviderFor(wineSupabaseApi)
+final wineSupabaseApiProvider = AutoDisposeProvider<WineSupabaseApi?>.internal(
+  wineSupabaseApi,
+  name: r'wineSupabaseApiProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$wineSupabaseApiHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef WineSupabaseApiRef = AutoDisposeProviderRef<WineSupabaseApi?>;
+String _$wineRepositoryHash() => r'7930a0aab308db7eb920f1ffa561f1ac8bd4075d';
 
 /// See also [wineRepository].
 @ProviderFor(wineRepository)
