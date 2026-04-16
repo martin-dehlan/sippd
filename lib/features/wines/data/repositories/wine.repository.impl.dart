@@ -1,7 +1,7 @@
 import '../../domain/entities/wine.entity.dart';
 import '../../domain/repositories/wine.repository.dart';
 import '../../../../common/database/daos/wines.dao.dart';
-import '../models/wine.model.dart';
+import '../models/wine.mapper.dart';
 
 class WineRepositoryImpl implements WineRepository {
   final WinesDao _dao;

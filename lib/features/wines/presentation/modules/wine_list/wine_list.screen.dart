@@ -52,7 +52,7 @@ class WineListScreen extends ConsumerWidget {
 
                     return ListView.separated(
                       itemCount: sorted.length,
-                      separatorBuilder: (_, __) =>
+                      separatorBuilder: (_, _) =>
                           SizedBox(height: context.s),
                       itemBuilder: (context, index) => WineCardWidget(
                         wine: sorted[index],

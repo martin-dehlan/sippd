@@ -13,7 +13,6 @@ class WineDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final wineAsync = ref.watch(wineDetailProvider(wineId));
-    final cs = Theme.of(context).colorScheme;
 
     return Scaffold(
       appBar: AppBar(

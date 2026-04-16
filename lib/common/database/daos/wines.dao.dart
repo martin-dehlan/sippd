@@ -6,7 +6,7 @@ part 'wines.dao.g.dart';
 
 @DriftAccessor(tables: [WinesTable])
 class WinesDao extends DatabaseAccessor<AppDatabase> with _$WinesDaoMixin {
-  WinesDao(AppDatabase db) : super(db);
+  WinesDao(super.db);
 
   Future<List<WineTableData>> getAllWines() => select(winesTable).get();
 
