@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:latlong2/latlong.dart';
 import '../../../../../common/utils/responsive.dart';
+import '../../../../groups/presentation/widgets/share_wine_sheet.dart';
 import '../../../controller/wine.provider.dart';
 import '../../../domain/entities/wine.entity.dart';
 
@@ -41,7 +42,7 @@ class WineDetailScreen extends ConsumerWidget {
   }
 }
 
-class WineDetailBody extends StatefulWidget {
+class WineDetailBody extends ConsumerStatefulWidget {
   final WineEntity wine;
   final VoidCallback onDelete;
 
@@ -52,10 +53,10 @@ class WineDetailBody extends StatefulWidget {
   });
 
   @override
-  State<WineDetailBody> createState() => _WineDetailBodyState();
+  ConsumerState<WineDetailBody> createState() => _WineDetailBodyState();
 }
 
-class _WineDetailBodyState extends State<WineDetailBody>
+class _WineDetailBodyState extends ConsumerState<WineDetailBody>
     with SingleTickerProviderStateMixin {
   late final AnimationController _animController;
   late final Animation<double> _fadeIn;
@@ -98,7 +99,22 @@ class _WineDetailBodyState extends State<WineDetailBody>
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               SizedBox(height: context.xl * 1.5),
-              _NameTitle(name: widget.wine.name),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(child: _NameTitle(name: widget.wine.name)),
+                  Padding(
+                    padding: EdgeInsets.only(right: context.paddingH * 0.7),
+                    child: _ShareButton(
+                      onTap: () => showShareWineSheet(
+                        context: context,
+                        ref: ref,
+                        wineId: widget.wine.id,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
               SizedBox(height: context.s),
               _TypeSubtitle(type: widget.wine.type),
               SizedBox(height: context.l),
@@ -172,6 +188,31 @@ class _WineDetailBodyState extends State<WineDetailBody>
       ),
     );
     if (confirmed == true) widget.onDelete();
+  }
+}
+
+class _ShareButton extends StatelessWidget {
+  final VoidCallback onTap;
+  const _ShareButton({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: Container(
+        width: context.w * 0.1,
+        height: context.w * 0.1,
+        decoration: BoxDecoration(
+          color: cs.surfaceContainer,
+          shape: BoxShape.circle,
+          border: Border.all(color: cs.outlineVariant, width: 0.5),
+        ),
+        child: Icon(Icons.ios_share,
+            size: context.w * 0.045, color: cs.onSurface),
+      ),
+    );
   }
 }
 
