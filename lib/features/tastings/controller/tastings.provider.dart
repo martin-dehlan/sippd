@@ -100,6 +100,20 @@ class TastingsController extends _$TastingsController {
     return created;
   }
 
+  Future<void> addWines(String tastingId, List<String> wineIds) async {
+    final api = ref.read(tastingsApiProvider);
+    if (api == null || wineIds.isEmpty) return;
+    await api.addWines(tastingId, wineIds);
+    ref.invalidate(tastingWinesProvider(tastingId));
+  }
+
+  Future<void> removeWine(String tastingId, String wineId) async {
+    final api = ref.read(tastingsApiProvider);
+    if (api == null) return;
+    await api.removeWine(tastingId, wineId);
+    ref.invalidate(tastingWinesProvider(tastingId));
+  }
+
   Future<void> setRsvp(String tastingId, RsvpStatus status) async {
     final api = ref.read(tastingsApiProvider);
     if (api == null) return;

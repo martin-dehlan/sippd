@@ -149,6 +149,14 @@ class TastingsApi {
     });
   }
 
+  Future<void> removeWine(String tastingId, String wineId) async {
+    await _client
+        .from('tasting_wines')
+        .delete()
+        .eq('tasting_id', tastingId)
+        .eq('wine_id', wineId);
+  }
+
   Future<void> deleteTasting(String id) async {
     await _client.from('group_tastings').delete().eq('id', id);
   }

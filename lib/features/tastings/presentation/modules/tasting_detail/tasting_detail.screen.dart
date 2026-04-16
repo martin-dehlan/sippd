@@ -14,6 +14,7 @@ import '../../../controller/tastings.provider.dart';
 import '../../../domain/entities/tasting.entity.dart';
 import '../../../domain/entities/tasting_attendee.entity.dart';
 import '../../widgets/calendar_export_sheet.dart';
+import '../../widgets/wine_picker_sheet.dart';
 
 class TastingDetailScreen extends ConsumerWidget {
   final String tastingId;
@@ -194,10 +195,7 @@ class _Body extends ConsumerWidget {
           child: _AttendeesStrip(tastingId: tasting.id),
         ),
         SizedBox(height: context.l),
-        _Section(
-          label: 'Wines',
-          child: _WinesList(tastingId: tasting.id),
-        ),
+        _WinesSection(tasting: tasting, isOwner: isOwner),
         SizedBox(height: context.xl),
         if (isOwner)
           Center(
@@ -545,45 +543,112 @@ class _AttendeesStrip extends ConsumerWidget {
   }
 }
 
-class _WinesList extends ConsumerWidget {
-  final String tastingId;
-  const _WinesList({required this.tastingId});
+class _WinesSection extends ConsumerWidget {
+  final TastingEntity tasting;
+  final bool isOwner;
+  const _WinesSection({required this.tasting, required this.isOwner});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
-    final winesAsync = ref.watch(tastingWinesProvider(tastingId));
-    return winesAsync.when(
-      data: (wines) {
-        if (wines.isEmpty) {
-          return Padding(
-            padding:
-                EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
-            child: Text('No wines lined up yet.',
-                style: TextStyle(
-                    fontSize: context.captionFont,
-                    color: cs.onSurfaceVariant)),
-          );
-        }
-        return ListView.separated(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
+    final winesAsync = ref.watch(tastingWinesProvider(tasting.id));
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
           padding:
               EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
-          itemCount: wines.length,
-          separatorBuilder: (_, __) => SizedBox(height: context.s),
-          itemBuilder: (_, i) => _WineRow(wine: wines[i]),
-        );
-      },
-      loading: () => const SizedBox.shrink(),
-      error: (_, __) => const SizedBox.shrink(),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text('Wines',
+                    style: TextStyle(
+                      fontSize: context.captionFont,
+                      fontWeight: FontWeight.w700,
+                      color: cs.primary,
+                      letterSpacing: 0.3,
+                    )),
+              ),
+              if (isOwner)
+                GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () async {
+                    final existing = winesAsync.valueOrNull ?? const [];
+                    final existingIds = existing.map((w) => w.id).toSet();
+                    final picked = await showWinePickerSheet(
+                      context: context,
+                      alreadyInLineup: existingIds,
+                    );
+                    if (picked != null && picked.isNotEmpty) {
+                      await ref
+                          .read(tastingsControllerProvider.notifier)
+                          .addWines(tasting.id, picked);
+                    }
+                  },
+                  child: Row(
+                    children: [
+                      Icon(Icons.add,
+                          size: context.w * 0.04, color: cs.primary),
+                      SizedBox(width: context.w * 0.01),
+                      Text('Add wines',
+                          style: TextStyle(
+                            fontSize: context.captionFont,
+                            fontWeight: FontWeight.w600,
+                            color: cs.primary,
+                          )),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+        ),
+        SizedBox(height: context.s),
+        winesAsync.when(
+          data: (wines) {
+            if (wines.isEmpty) {
+              return Padding(
+                padding: EdgeInsets.symmetric(
+                    horizontal: context.paddingH * 1.3),
+                child: Text('No wines lined up yet.',
+                    style: TextStyle(
+                        fontSize: context.captionFont,
+                        color: cs.onSurfaceVariant)),
+              );
+            }
+            return ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              padding: EdgeInsets.symmetric(
+                  horizontal: context.paddingH * 1.3),
+              itemCount: wines.length,
+              separatorBuilder: (_, __) => SizedBox(height: context.s),
+              itemBuilder: (_, i) => _WineRow(
+                wine: wines[i],
+                canRemove: isOwner,
+                onRemove: () => ref
+                    .read(tastingsControllerProvider.notifier)
+                    .removeWine(tasting.id, wines[i].id),
+              ),
+            );
+          },
+          loading: () => const SizedBox.shrink(),
+          error: (_, __) => const SizedBox.shrink(),
+        ),
+      ],
     );
   }
 }
 
 class _WineRow extends StatelessWidget {
   final WineEntity wine;
-  const _WineRow({required this.wine});
+  final bool canRemove;
+  final VoidCallback onRemove;
+
+  const _WineRow({
+    required this.wine,
+    required this.canRemove,
+    required this.onRemove,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -619,6 +684,12 @@ class _WineRow extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis),
           ),
+          if (canRemove)
+            IconButton(
+              icon: Icon(Icons.close,
+                  size: context.w * 0.045, color: cs.outline),
+              onPressed: onRemove,
+            ),
         ],
       ),
     );
