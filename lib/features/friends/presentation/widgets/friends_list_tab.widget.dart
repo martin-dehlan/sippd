@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../common/utils/responsive.dart';
+import '../../../../core/routes/app.routes.dart';
 import '../../controller/friends.provider.dart';
 import '../../domain/entities/friend_profile.entity.dart';
 import 'friend_avatar.widget.dart';
@@ -28,6 +30,8 @@ class FriendsListTab extends ConsumerWidget {
           separatorBuilder: (_, __) => SizedBox(height: context.s),
           itemBuilder: (_, i) => _FriendRow(
             friend: friends[i],
+            onTap: () =>
+                context.push(AppRoutes.friendProfilePath(friends[i].id)),
             onRemove: () => _confirmRemove(context, ref, friends[i]),
           ),
         );
@@ -66,13 +70,20 @@ class FriendsListTab extends ConsumerWidget {
 
 class _FriendRow extends StatelessWidget {
   final FriendProfileEntity friend;
+  final VoidCallback onTap;
   final VoidCallback onRemove;
-  const _FriendRow({required this.friend, required this.onRemove});
+  const _FriendRow({
+    required this.friend,
+    required this.onTap,
+    required this.onRemove,
+  });
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    return Container(
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
       padding: EdgeInsets.symmetric(
           horizontal: context.w * 0.04, vertical: context.m),
       decoration: BoxDecoration(
@@ -111,6 +122,7 @@ class _FriendRow extends StatelessWidget {
             onPressed: onRemove,
           ),
         ],
+      ),
       ),
     );
   }

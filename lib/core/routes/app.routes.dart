@@ -26,4 +26,6 @@ class AppRoutes {
 
   // Friends
   static const String friends = '/friends';
+  static const String friendProfile = '/friends/:id';
+  static String friendProfilePath(String id) => '/friends/$id';
 }
