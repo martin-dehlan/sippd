@@ -134,12 +134,6 @@ class ProfileScreen extends ConsumerWidget {
               label: 'Friends',
               onTap: () => context.push(AppRoutes.friends),
             ),
-            _MenuItem(
-              icon: Icons.qr_code_scanner,
-              label: 'Scan Wine',
-              onTap: () => context.push(AppRoutes.scan),
-            ),
-
             SizedBox(height: context.l),
             Divider(color: cs.outlineVariant, height: 1),
             SizedBox(height: context.l),
