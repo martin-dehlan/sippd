@@ -74,6 +74,16 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
     if (mounted) context.pop();
   }
 
+  void _cycleType() {
+    setState(() {
+      _type = switch (_type) {
+        WineType.red => WineType.white,
+        WineType.white => WineType.rose,
+        WineType.rose => WineType.red,
+      };
+    });
+  }
+
   Future<void> _editRating() async {
     final result =
         await showRatingSheet(context: context, initial: _rating);
@@ -148,6 +158,11 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
             children: [
               SizedBox(height: context.xl),
               _NameField(controller: _nameController),
+              SizedBox(height: context.xs),
+              _TypeSubtitle(
+                type: _type,
+                onTap: _cycleType,
+              ),
               SizedBox(height: context.l),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: context.paddingH),
@@ -188,9 +203,14 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
                               onTap: _editPrice,
                             ),
                             SizedBox(height: context.l),
-                            _TypeBadge(
-                              type: _type,
-                              onChanged: (t) => setState(() => _type = t),
+                            _CountryStat(
+                              country: _country,
+                              onTap: () => showWineCountryPicker(
+                                context: context,
+                                selected: _country,
+                                onChanged: (c) =>
+                                    setState(() => _country = c),
+                              ),
                             ),
                           ],
                         ),
@@ -203,15 +223,9 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
               _ChipsRow(
                 grape: _grape,
                 vintage: _vintage,
-                country: _country,
                 notes: _notes,
                 onGrapeTap: _editGrape,
                 onVintageTap: _editVintage,
-                onCountryTap: () => showWineCountryPicker(
-                  context: context,
-                  selected: _country,
-                  onChanged: (c) => setState(() => _country = c),
-                ),
                 onNotesTap: _editNotes,
               ),
               SizedBox(height: context.l),
@@ -292,6 +306,7 @@ class _NameField extends StatelessWidget {
         controller: controller,
         cursorColor: cs.primary,
         cursorWidth: 1.5,
+        textCapitalization: TextCapitalization.characters,
         style: TextStyle(
           fontSize: context.titleFont * 1.1,
           fontWeight: FontWeight.bold,
@@ -424,33 +439,10 @@ class _PriceStat extends StatelessWidget {
   }
 }
 
-class _TypeBadge extends StatelessWidget {
+class _TypeSubtitle extends StatelessWidget {
   final WineType type;
-  final ValueChanged<WineType> onChanged;
-  const _TypeBadge({required this.type, required this.onChanged});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: () => _cycle(),
-      child: _TypeChipDisplay(type: type),
-    );
-  }
-
-  void _cycle() {
-    final next = switch (type) {
-      WineType.red => WineType.white,
-      WineType.white => WineType.rose,
-      WineType.rose => WineType.red,
-    };
-    onChanged(next);
-  }
-}
-
-class _TypeChipDisplay extends StatelessWidget {
-  final WineType type;
-  const _TypeChipDisplay({required this.type});
+  final VoidCallback onTap;
+  const _TypeSubtitle({required this.type, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -465,18 +457,52 @@ class _TypeChipDisplay extends StatelessWidget {
       WineType.rose => const Color(0xFFD6889A),
     };
 
-    return Container(
-      padding: EdgeInsets.symmetric(
-          horizontal: context.w * 0.03, vertical: context.xs),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(context.w * 0.02),
-      ),
-      child: Text(label,
-          style: TextStyle(
-              fontSize: context.captionFont,
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: context.paddingH),
+        child: Text(label,
+            style: TextStyle(
+              fontSize: context.bodyFont,
               fontWeight: FontWeight.w600,
-              color: color)),
+              color: color,
+              letterSpacing: 0.2,
+            )),
+      ),
+    );
+  }
+}
+
+class _CountryStat extends StatelessWidget {
+  final String? country;
+  final VoidCallback onTap;
+  const _CountryStat({required this.country, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          const _StatLabel(text: 'Country'),
+          SizedBox(height: context.xs * 0.3),
+          Text(
+            country ?? '—',
+            textAlign: TextAlign.right,
+            style: TextStyle(
+              fontSize: context.bodyFont * 1.1,
+              fontWeight: FontWeight.bold,
+              color: country != null ? cs.onSurface : cs.outline,
+            ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
     );
   }
 }
@@ -484,21 +510,17 @@ class _TypeChipDisplay extends StatelessWidget {
 class _ChipsRow extends StatelessWidget {
   final String? grape;
   final int? vintage;
-  final String? country;
   final String? notes;
   final VoidCallback onGrapeTap;
   final VoidCallback onVintageTap;
-  final VoidCallback onCountryTap;
   final VoidCallback onNotesTap;
 
   const _ChipsRow({
     required this.grape,
     required this.vintage,
-    required this.country,
     required this.notes,
     required this.onGrapeTap,
     required this.onVintageTap,
-    required this.onCountryTap,
     required this.onNotesTap,
   });
 
@@ -521,12 +543,6 @@ class _ChipsRow extends StatelessWidget {
             label: vintage?.toString() ?? 'Year',
             isEmpty: vintage == null,
             onTap: onVintageTap,
-          ),
-          _FieldChip(
-            icon: Icons.public,
-            label: country ?? 'Country',
-            isEmpty: country == null,
-            onTap: onCountryTap,
           ),
           _FieldChip(
             icon: Icons.notes_outlined,

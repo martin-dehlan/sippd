@@ -98,6 +98,8 @@ class _WineDetailBodyState extends State<WineDetailBody>
             children: [
               SizedBox(height: context.xl),
               _NameTitle(name: widget.wine.name),
+              SizedBox(height: context.xs),
+              _TypeSubtitle(type: widget.wine.type),
               SizedBox(height: context.l),
               Expanded(
                 flex: 5,
@@ -204,7 +206,7 @@ class _NameTitle extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: context.paddingH),
       child: Text(
-        name,
+        name.toUpperCase(),
         textAlign: TextAlign.left,
         style: TextStyle(
           fontSize: context.titleFont * 1.1,
@@ -290,7 +292,8 @@ class _StatsColumn extends StatelessWidget {
             ),
             SizedBox(height: context.l),
           ],
-          _TypeBadge(type: wine.type),
+          if (wine.country != null)
+            _StatItem(label: 'Country', value: wine.country!, isText: true),
         ],
       ),
     );
@@ -301,11 +304,13 @@ class _StatItem extends StatelessWidget {
   final String label;
   final String value;
   final String? unit;
+  final bool isText;
 
   const _StatItem({
     required this.label,
     required this.value,
     this.unit,
+    this.isText = false,
   });
 
   @override
@@ -322,34 +327,44 @@ class _StatItem extends StatelessWidget {
               letterSpacing: 0.3,
             )),
         SizedBox(height: context.xs * 0.3),
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.baseline,
-          textBaseline: TextBaseline.alphabetic,
-          children: [
-            Text(value,
-                style: TextStyle(
-                  fontSize: context.headingFont * 1.4,
-                  fontWeight: FontWeight.bold,
-                )),
-            if (unit != null) ...[
-              SizedBox(width: context.w * 0.01),
-              Text(unit!,
+        if (isText)
+          Text(value,
+              textAlign: TextAlign.right,
+              style: TextStyle(
+                fontSize: context.bodyFont * 1.1,
+                fontWeight: FontWeight.bold,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis)
+        else
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
+            children: [
+              Text(value,
                   style: TextStyle(
-                    fontSize: context.captionFont,
-                    color: cs.onSurfaceVariant,
+                    fontSize: context.headingFont * 1.4,
+                    fontWeight: FontWeight.bold,
                   )),
+              if (unit != null) ...[
+                SizedBox(width: context.w * 0.01),
+                Text(unit!,
+                    style: TextStyle(
+                      fontSize: context.captionFont,
+                      color: cs.onSurfaceVariant,
+                    )),
+              ],
             ],
-          ],
-        ),
+          ),
       ],
     );
   }
 }
 
-class _TypeBadge extends StatelessWidget {
+class _TypeSubtitle extends StatelessWidget {
   final WineType type;
-  const _TypeBadge({required this.type});
+  const _TypeSubtitle({required this.type});
 
   @override
   Widget build(BuildContext context) {
@@ -364,18 +379,15 @@ class _TypeBadge extends StatelessWidget {
       WineType.rose => const Color(0xFFD6889A),
     };
 
-    return Container(
-      padding: EdgeInsets.symmetric(
-          horizontal: context.w * 0.03, vertical: context.xs),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(context.w * 0.02),
-      ),
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: context.paddingH),
       child: Text(label,
           style: TextStyle(
-              fontSize: context.captionFont,
-              fontWeight: FontWeight.w600,
-              color: color)),
+            fontSize: context.bodyFont,
+            fontWeight: FontWeight.w600,
+            color: color,
+            letterSpacing: 0.2,
+          )),
     );
   }
 }
