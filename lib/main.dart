@@ -6,6 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'common/theme/app_theme.dart';
 import 'core/routes/route_config.dart';
+import 'features/push/controller/push.provider.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -31,6 +32,8 @@ class SippdApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(goRouterProvider);
+    // Kick off FCM registration lifecycle.
+    ref.watch(pushRegistrationProvider);
 
     return MaterialApp.router(
       title: 'Sippd',
