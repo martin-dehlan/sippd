@@ -26,6 +26,7 @@ _$WineModelImpl _$$WineModelImplFromJson(Map<String, dynamic> json) =>
       vintage: (json['vintage'] as num?)?.toInt(),
       grape: json['grape'] as String?,
       userId: json['user_id'] as String,
+      visibility: json['visibility'] as String? ?? 'friends',
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: json['updated_at'] == null
           ? null
@@ -52,6 +53,7 @@ Map<String, dynamic> _$$WineModelImplToJson(_$WineModelImpl instance) =>
       'vintage': instance.vintage,
       'grape': instance.grape,
       'user_id': instance.userId,
+      'visibility': instance.visibility,
       'created_at': instance.createdAt.toIso8601String(),
       'updated_at': instance.updatedAt?.toIso8601String(),
     };

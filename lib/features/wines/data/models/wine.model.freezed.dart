@@ -44,6 +44,7 @@ mixin _$WineModel {
   String? get grape => throw _privateConstructorUsedError;
   @JsonKey(name: 'user_id')
   String get userId => throw _privateConstructorUsedError;
+  String get visibility => throw _privateConstructorUsedError;
   @JsonKey(name: 'created_at')
   DateTime get createdAt => throw _privateConstructorUsedError;
   @JsonKey(name: 'updated_at')
@@ -83,6 +84,7 @@ abstract class $WineModelCopyWith<$Res> {
     int? vintage,
     String? grape,
     @JsonKey(name: 'user_id') String userId,
+    String visibility,
     @JsonKey(name: 'created_at') DateTime createdAt,
     @JsonKey(name: 'updated_at') DateTime? updatedAt,
   });
@@ -121,6 +123,7 @@ class _$WineModelCopyWithImpl<$Res, $Val extends WineModel>
     Object? vintage = freezed,
     Object? grape = freezed,
     Object? userId = null,
+    Object? visibility = null,
     Object? createdAt = null,
     Object? updatedAt = freezed,
   }) {
@@ -198,6 +201,10 @@ class _$WineModelCopyWithImpl<$Res, $Val extends WineModel>
                 ? _value.userId
                 : userId // ignore: cast_nullable_to_non_nullable
                       as String,
+            visibility: null == visibility
+                ? _value.visibility
+                : visibility // ignore: cast_nullable_to_non_nullable
+                      as String,
             createdAt: null == createdAt
                 ? _value.createdAt
                 : createdAt // ignore: cast_nullable_to_non_nullable
@@ -240,6 +247,7 @@ abstract class _$$WineModelImplCopyWith<$Res>
     int? vintage,
     String? grape,
     @JsonKey(name: 'user_id') String userId,
+    String visibility,
     @JsonKey(name: 'created_at') DateTime createdAt,
     @JsonKey(name: 'updated_at') DateTime? updatedAt,
   });
@@ -277,6 +285,7 @@ class __$$WineModelImplCopyWithImpl<$Res>
     Object? vintage = freezed,
     Object? grape = freezed,
     Object? userId = null,
+    Object? visibility = null,
     Object? createdAt = null,
     Object? updatedAt = freezed,
   }) {
@@ -354,6 +363,10 @@ class __$$WineModelImplCopyWithImpl<$Res>
             ? _value.userId
             : userId // ignore: cast_nullable_to_non_nullable
                   as String,
+        visibility: null == visibility
+            ? _value.visibility
+            : visibility // ignore: cast_nullable_to_non_nullable
+                  as String,
         createdAt: null == createdAt
             ? _value.createdAt
             : createdAt // ignore: cast_nullable_to_non_nullable
@@ -389,6 +402,7 @@ class _$WineModelImpl implements _WineModel {
     this.vintage,
     this.grape,
     @JsonKey(name: 'user_id') required this.userId,
+    this.visibility = 'friends',
     @JsonKey(name: 'created_at') required this.createdAt,
     @JsonKey(name: 'updated_at') this.updatedAt,
   });
@@ -439,6 +453,9 @@ class _$WineModelImpl implements _WineModel {
   @JsonKey(name: 'user_id')
   final String userId;
   @override
+  @JsonKey()
+  final String visibility;
+  @override
   @JsonKey(name: 'created_at')
   final DateTime createdAt;
   @override
@@ -447,7 +464,7 @@ class _$WineModelImpl implements _WineModel {
 
   @override
   String toString() {
-    return 'WineModel(id: $id, name: $name, rating: $rating, type: $type, price: $price, currency: $currency, country: $country, location: $location, latitude: $latitude, longitude: $longitude, notes: $notes, imageUrl: $imageUrl, localImagePath: $localImagePath, memoryImageUrl: $memoryImageUrl, memoryLocalImagePath: $memoryLocalImagePath, vintage: $vintage, grape: $grape, userId: $userId, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'WineModel(id: $id, name: $name, rating: $rating, type: $type, price: $price, currency: $currency, country: $country, location: $location, latitude: $latitude, longitude: $longitude, notes: $notes, imageUrl: $imageUrl, localImagePath: $localImagePath, memoryImageUrl: $memoryImageUrl, memoryLocalImagePath: $memoryLocalImagePath, vintage: $vintage, grape: $grape, userId: $userId, visibility: $visibility, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -481,6 +498,8 @@ class _$WineModelImpl implements _WineModel {
             (identical(other.vintage, vintage) || other.vintage == vintage) &&
             (identical(other.grape, grape) || other.grape == grape) &&
             (identical(other.userId, userId) || other.userId == userId) &&
+            (identical(other.visibility, visibility) ||
+                other.visibility == visibility) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
@@ -509,6 +528,7 @@ class _$WineModelImpl implements _WineModel {
     vintage,
     grape,
     userId,
+    visibility,
     createdAt,
     updatedAt,
   ]);
@@ -548,6 +568,7 @@ abstract class _WineModel implements WineModel {
     final int? vintage,
     final String? grape,
     @JsonKey(name: 'user_id') required final String userId,
+    final String visibility,
     @JsonKey(name: 'created_at') required final DateTime createdAt,
     @JsonKey(name: 'updated_at') final DateTime? updatedAt,
   }) = _$WineModelImpl;
@@ -596,6 +617,8 @@ abstract class _WineModel implements WineModel {
   @override
   @JsonKey(name: 'user_id')
   String get userId;
+  @override
+  String get visibility;
   @override
   @JsonKey(name: 'created_at')
   DateTime get createdAt;

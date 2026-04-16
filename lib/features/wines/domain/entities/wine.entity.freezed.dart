@@ -35,6 +35,7 @@ mixin _$WineEntity {
   int? get vintage => throw _privateConstructorUsedError;
   String? get grape => throw _privateConstructorUsedError;
   String get userId => throw _privateConstructorUsedError;
+  String get visibility => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   DateTime? get updatedAt => throw _privateConstructorUsedError;
 
@@ -71,6 +72,7 @@ abstract class $WineEntityCopyWith<$Res> {
     int? vintage,
     String? grape,
     String userId,
+    String visibility,
     DateTime createdAt,
     DateTime? updatedAt,
   });
@@ -109,6 +111,7 @@ class _$WineEntityCopyWithImpl<$Res, $Val extends WineEntity>
     Object? vintage = freezed,
     Object? grape = freezed,
     Object? userId = null,
+    Object? visibility = null,
     Object? createdAt = null,
     Object? updatedAt = freezed,
   }) {
@@ -186,6 +189,10 @@ class _$WineEntityCopyWithImpl<$Res, $Val extends WineEntity>
                 ? _value.userId
                 : userId // ignore: cast_nullable_to_non_nullable
                       as String,
+            visibility: null == visibility
+                ? _value.visibility
+                : visibility // ignore: cast_nullable_to_non_nullable
+                      as String,
             createdAt: null == createdAt
                 ? _value.createdAt
                 : createdAt // ignore: cast_nullable_to_non_nullable
@@ -228,6 +235,7 @@ abstract class _$$WineEntityImplCopyWith<$Res>
     int? vintage,
     String? grape,
     String userId,
+    String visibility,
     DateTime createdAt,
     DateTime? updatedAt,
   });
@@ -265,6 +273,7 @@ class __$$WineEntityImplCopyWithImpl<$Res>
     Object? vintage = freezed,
     Object? grape = freezed,
     Object? userId = null,
+    Object? visibility = null,
     Object? createdAt = null,
     Object? updatedAt = freezed,
   }) {
@@ -342,6 +351,10 @@ class __$$WineEntityImplCopyWithImpl<$Res>
             ? _value.userId
             : userId // ignore: cast_nullable_to_non_nullable
                   as String,
+        visibility: null == visibility
+            ? _value.visibility
+            : visibility // ignore: cast_nullable_to_non_nullable
+                  as String,
         createdAt: null == createdAt
             ? _value.createdAt
             : createdAt // ignore: cast_nullable_to_non_nullable
@@ -377,6 +390,7 @@ class _$WineEntityImpl implements _WineEntity {
     this.vintage,
     this.grape,
     required this.userId,
+    this.visibility = 'friends',
     required this.createdAt,
     this.updatedAt,
   });
@@ -419,13 +433,16 @@ class _$WineEntityImpl implements _WineEntity {
   @override
   final String userId;
   @override
+  @JsonKey()
+  final String visibility;
+  @override
   final DateTime createdAt;
   @override
   final DateTime? updatedAt;
 
   @override
   String toString() {
-    return 'WineEntity(id: $id, name: $name, rating: $rating, type: $type, price: $price, currency: $currency, country: $country, location: $location, latitude: $latitude, longitude: $longitude, notes: $notes, imageUrl: $imageUrl, localImagePath: $localImagePath, memoryImageUrl: $memoryImageUrl, memoryLocalImagePath: $memoryLocalImagePath, vintage: $vintage, grape: $grape, userId: $userId, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'WineEntity(id: $id, name: $name, rating: $rating, type: $type, price: $price, currency: $currency, country: $country, location: $location, latitude: $latitude, longitude: $longitude, notes: $notes, imageUrl: $imageUrl, localImagePath: $localImagePath, memoryImageUrl: $memoryImageUrl, memoryLocalImagePath: $memoryLocalImagePath, vintage: $vintage, grape: $grape, userId: $userId, visibility: $visibility, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -459,6 +476,8 @@ class _$WineEntityImpl implements _WineEntity {
             (identical(other.vintage, vintage) || other.vintage == vintage) &&
             (identical(other.grape, grape) || other.grape == grape) &&
             (identical(other.userId, userId) || other.userId == userId) &&
+            (identical(other.visibility, visibility) ||
+                other.visibility == visibility) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
@@ -486,6 +505,7 @@ class _$WineEntityImpl implements _WineEntity {
     vintage,
     grape,
     userId,
+    visibility,
     createdAt,
     updatedAt,
   ]);
@@ -519,6 +539,7 @@ abstract class _WineEntity implements WineEntity {
     final int? vintage,
     final String? grape,
     required final String userId,
+    final String visibility,
     required final DateTime createdAt,
     final DateTime? updatedAt,
   }) = _$WineEntityImpl;
@@ -559,6 +580,8 @@ abstract class _WineEntity implements WineEntity {
   String? get grape;
   @override
   String get userId;
+  @override
+  String get visibility;
   @override
   DateTime get createdAt;
   @override

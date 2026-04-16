@@ -25,6 +25,7 @@ class WineModel with _$WineModel {
     int? vintage,
     String? grape,
     @JsonKey(name: 'user_id') required String userId,
+    @Default('friends') String visibility,
     @JsonKey(name: 'created_at') required DateTime createdAt,
     @JsonKey(name: 'updated_at') DateTime? updatedAt,
   }) = _WineModel;
@@ -56,6 +57,7 @@ extension WineModelToEntity on WineModel {
         vintage: vintage,
         grape: grape,
         userId: userId,
+        visibility: visibility,
         createdAt: createdAt,
         updatedAt: updatedAt,
       );
@@ -81,6 +83,7 @@ extension WineEntityToModel on WineEntity {
         vintage: vintage,
         grape: grape,
         userId: userId,
+        visibility: visibility,
         createdAt: createdAt,
         updatedAt: updatedAt,
       );

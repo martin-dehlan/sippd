@@ -20,6 +20,8 @@ class WinesTable extends Table {
   IntColumn get vintage => integer().nullable()();
   TextColumn get grape => text().nullable()();
   TextColumn get userId => text()();
+  TextColumn get visibility =>
+      text().withDefault(const Constant('friends'))();
   DateTimeColumn get createdAt =>
       dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get updatedAt => dateTime().nullable()();

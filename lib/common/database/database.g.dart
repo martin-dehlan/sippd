@@ -192,6 +192,18 @@ class $WinesTableTable extends WinesTable
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _visibilityMeta = const VerificationMeta(
+    'visibility',
+  );
+  @override
+  late final GeneratedColumn<String> visibility = GeneratedColumn<String>(
+    'visibility',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('friends'),
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -235,6 +247,7 @@ class $WinesTableTable extends WinesTable
     vintage,
     grape,
     userId,
+    visibility,
     createdAt,
     updatedAt,
   ];
@@ -374,6 +387,12 @@ class $WinesTableTable extends WinesTable
     } else if (isInserting) {
       context.missing(_userIdMeta);
     }
+    if (data.containsKey('visibility')) {
+      context.handle(
+        _visibilityMeta,
+        visibility.isAcceptableOrUnknown(data['visibility']!, _visibilityMeta),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -467,6 +486,10 @@ class $WinesTableTable extends WinesTable
         DriftSqlType.string,
         data['${effectivePrefix}user_id'],
       )!,
+      visibility: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}visibility'],
+      )!,
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -503,6 +526,7 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
   final int? vintage;
   final String? grape;
   final String userId;
+  final String visibility;
   final DateTime createdAt;
   final DateTime? updatedAt;
   const WineTableData({
@@ -524,6 +548,7 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
     this.vintage,
     this.grape,
     required this.userId,
+    required this.visibility,
     required this.createdAt,
     this.updatedAt,
   });
@@ -572,6 +597,7 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
       map['grape'] = Variable<String>(grape);
     }
     map['user_id'] = Variable<String>(userId);
+    map['visibility'] = Variable<String>(visibility);
     map['created_at'] = Variable<DateTime>(createdAt);
     if (!nullToAbsent || updatedAt != null) {
       map['updated_at'] = Variable<DateTime>(updatedAt);
@@ -623,6 +649,7 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
           ? const Value.absent()
           : Value(grape),
       userId: Value(userId),
+      visibility: Value(visibility),
       createdAt: Value(createdAt),
       updatedAt: updatedAt == null && nullToAbsent
           ? const Value.absent()
@@ -656,6 +683,7 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
       vintage: serializer.fromJson<int?>(json['vintage']),
       grape: serializer.fromJson<String?>(json['grape']),
       userId: serializer.fromJson<String>(json['userId']),
+      visibility: serializer.fromJson<String>(json['visibility']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime?>(json['updatedAt']),
     );
@@ -682,6 +710,7 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
       'vintage': serializer.toJson<int?>(vintage),
       'grape': serializer.toJson<String?>(grape),
       'userId': serializer.toJson<String>(userId),
+      'visibility': serializer.toJson<String>(visibility),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime?>(updatedAt),
     };
@@ -706,6 +735,7 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
     Value<int?> vintage = const Value.absent(),
     Value<String?> grape = const Value.absent(),
     String? userId,
+    String? visibility,
     DateTime? createdAt,
     Value<DateTime?> updatedAt = const Value.absent(),
   }) => WineTableData(
@@ -733,6 +763,7 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
     vintage: vintage.present ? vintage.value : this.vintage,
     grape: grape.present ? grape.value : this.grape,
     userId: userId ?? this.userId,
+    visibility: visibility ?? this.visibility,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
   );
@@ -762,6 +793,9 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
       vintage: data.vintage.present ? data.vintage.value : this.vintage,
       grape: data.grape.present ? data.grape.value : this.grape,
       userId: data.userId.present ? data.userId.value : this.userId,
+      visibility: data.visibility.present
+          ? data.visibility.value
+          : this.visibility,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
@@ -788,6 +822,7 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
           ..write('vintage: $vintage, ')
           ..write('grape: $grape, ')
           ..write('userId: $userId, ')
+          ..write('visibility: $visibility, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -795,7 +830,7 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
   }
 
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     id,
     name,
     rating,
@@ -814,9 +849,10 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
     vintage,
     grape,
     userId,
+    visibility,
     createdAt,
     updatedAt,
-  );
+  ]);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -839,6 +875,7 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
           other.vintage == this.vintage &&
           other.grape == this.grape &&
           other.userId == this.userId &&
+          other.visibility == this.visibility &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
 }
@@ -862,6 +899,7 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
   final Value<int?> vintage;
   final Value<String?> grape;
   final Value<String> userId;
+  final Value<String> visibility;
   final Value<DateTime> createdAt;
   final Value<DateTime?> updatedAt;
   final Value<int> rowid;
@@ -884,6 +922,7 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
     this.vintage = const Value.absent(),
     this.grape = const Value.absent(),
     this.userId = const Value.absent(),
+    this.visibility = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -907,6 +946,7 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
     this.vintage = const Value.absent(),
     this.grape = const Value.absent(),
     required String userId,
+    this.visibility = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -934,6 +974,7 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
     Expression<int>? vintage,
     Expression<String>? grape,
     Expression<String>? userId,
+    Expression<String>? visibility,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
@@ -958,6 +999,7 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
       if (vintage != null) 'vintage': vintage,
       if (grape != null) 'grape': grape,
       if (userId != null) 'user_id': userId,
+      if (visibility != null) 'visibility': visibility,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
@@ -983,6 +1025,7 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
     Value<int?>? vintage,
     Value<String?>? grape,
     Value<String>? userId,
+    Value<String>? visibility,
     Value<DateTime>? createdAt,
     Value<DateTime?>? updatedAt,
     Value<int>? rowid,
@@ -1006,6 +1049,7 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
       vintage: vintage ?? this.vintage,
       grape: grape ?? this.grape,
       userId: userId ?? this.userId,
+      visibility: visibility ?? this.visibility,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
@@ -1071,6 +1115,9 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
     if (userId.present) {
       map['user_id'] = Variable<String>(userId.value);
     }
+    if (visibility.present) {
+      map['visibility'] = Variable<String>(visibility.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -1104,6 +1151,7 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
           ..write('vintage: $vintage, ')
           ..write('grape: $grape, ')
           ..write('userId: $userId, ')
+          ..write('visibility: $visibility, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
@@ -1144,6 +1192,7 @@ typedef $$WinesTableTableCreateCompanionBuilder =
       Value<int?> vintage,
       Value<String?> grape,
       required String userId,
+      Value<String> visibility,
       Value<DateTime> createdAt,
       Value<DateTime?> updatedAt,
       Value<int> rowid,
@@ -1168,6 +1217,7 @@ typedef $$WinesTableTableUpdateCompanionBuilder =
       Value<int?> vintage,
       Value<String?> grape,
       Value<String> userId,
+      Value<String> visibility,
       Value<DateTime> createdAt,
       Value<DateTime?> updatedAt,
       Value<int> rowid,
@@ -1269,6 +1319,11 @@ class $$WinesTableTableFilterComposer
 
   ColumnFilters<String> get userId => $composableBuilder(
     column: $table.userId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get visibility => $composableBuilder(
+    column: $table.visibility,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -1382,6 +1437,11 @@ class $$WinesTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get visibility => $composableBuilder(
+    column: $table.visibility,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -1462,6 +1522,11 @@ class $$WinesTableTableAnnotationComposer
   GeneratedColumn<String> get userId =>
       $composableBuilder(column: $table.userId, builder: (column) => column);
 
+  GeneratedColumn<String> get visibility => $composableBuilder(
+    column: $table.visibility,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
 
@@ -1518,6 +1583,7 @@ class $$WinesTableTableTableManager
                 Value<int?> vintage = const Value.absent(),
                 Value<String?> grape = const Value.absent(),
                 Value<String> userId = const Value.absent(),
+                Value<String> visibility = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime?> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -1540,6 +1606,7 @@ class $$WinesTableTableTableManager
                 vintage: vintage,
                 grape: grape,
                 userId: userId,
+                visibility: visibility,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -1564,6 +1631,7 @@ class $$WinesTableTableTableManager
                 Value<int?> vintage = const Value.absent(),
                 Value<String?> grape = const Value.absent(),
                 required String userId,
+                Value<String> visibility = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime?> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -1586,6 +1654,7 @@ class $$WinesTableTableTableManager
                 vintage: vintage,
                 grape: grape,
                 userId: userId,
+                visibility: visibility,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,

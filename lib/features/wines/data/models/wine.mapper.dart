@@ -24,6 +24,7 @@ extension WineTableDataToEntity on WineTableData {
         vintage: vintage,
         grape: grape,
         userId: userId,
+        visibility: visibility,
         createdAt: createdAt,
         updatedAt: updatedAt,
       );
@@ -49,6 +50,7 @@ extension WineEntityToTableData on WineEntity {
         vintage: vintage,
         grape: grape,
         userId: userId,
+        visibility: visibility,
         createdAt: createdAt,
         updatedAt: updatedAt,
       );

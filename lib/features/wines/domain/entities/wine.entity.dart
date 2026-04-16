@@ -25,6 +25,7 @@ class WineEntity with _$WineEntity {
     int? vintage,
     String? grape,
     required String userId,
+    @Default('friends') String visibility,
     required DateTime createdAt,
     DateTime? updatedAt,
   }) = _WineEntity;
