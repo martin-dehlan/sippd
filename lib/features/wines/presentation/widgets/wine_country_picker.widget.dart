@@ -1,25 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../common/utils/responsive.dart';
 
-class WineCountryPicker extends StatefulWidget {
-  final String? selectedCountry;
-  final ValueChanged<String?> onChanged;
-
-  const WineCountryPicker({
-    super.key,
-    this.selectedCountry,
-    required this.onChanged,
-  });
-
-  @override
-  State<WineCountryPicker> createState() => _WineCountryPickerState();
-}
-
-class _WineCountryPickerState extends State<WineCountryPicker> {
-  final _searchController = TextEditingController();
-  String _filter = '';
-
-  static const _topWineCountries = [
+const _topWineCountries = [
     'France',
     'Italy',
     'Spain',
@@ -37,7 +19,7 @@ class _WineCountryPickerState extends State<WineCountryPicker> {
     'Hungary',
   ];
 
-  static const _otherCountries = [
+const _otherCountries = [
     'Albania',
     'Algeria',
     'Armenia',
@@ -85,51 +67,18 @@ class _WineCountryPickerState extends State<WineCountryPicker> {
     'Ukraine',
     'United Kingdom',
     'Uruguay',
-  ];
+];
 
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
+void showWineCountryPicker({
+  required BuildContext context,
+  required String? selected,
+  required ValueChanged<String?> onChanged,
+}) {
+  final cs = Theme.of(context).colorScheme;
+  final searchController = TextEditingController();
+  var filter = '';
 
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-
-    return GestureDetector(
-      onTap: () => _showPicker(context),
-      child: InputDecorator(
-        decoration: InputDecoration(
-          labelText: 'Country',
-          prefixIcon: Icon(Icons.flag_outlined,
-              color: cs.primary, size: context.w * 0.05),
-          suffixIcon: widget.selectedCountry != null
-              ? IconButton(
-                  icon: Icon(Icons.clear,
-                      size: context.w * 0.045, color: cs.onSurfaceVariant),
-                  onPressed: () => widget.onChanged(null),
-                )
-              : Icon(Icons.arrow_drop_down,
-                  color: cs.onSurfaceVariant, size: context.w * 0.06),
-        ),
-        child: Text(
-          widget.selectedCountry ?? 'Select country',
-          style: TextStyle(
-            fontSize: context.bodyFont,
-            color: widget.selectedCountry != null
-                ? cs.onSurface
-                : cs.onSurfaceVariant,
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _showPicker(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-
-    showModalBottomSheet(
+  showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: cs.surface,
@@ -140,10 +89,10 @@ class _WineCountryPickerState extends State<WineCountryPicker> {
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setModalState) {
           final filteredTop = _topWineCountries
-              .where((c) => c.toLowerCase().contains(_filter.toLowerCase()))
+              .where((c) => c.toLowerCase().contains(filter.toLowerCase()))
               .toList();
           final filteredOther = _otherCountries
-              .where((c) => c.toLowerCase().contains(_filter.toLowerCase()))
+              .where((c) => c.toLowerCase().contains(filter.toLowerCase()))
               .toList();
 
           return DraggableScrollableSheet(
@@ -165,7 +114,7 @@ class _WineCountryPickerState extends State<WineCountryPicker> {
                 Padding(
                   padding: EdgeInsets.all(context.paddingH),
                   child: TextField(
-                    controller: _searchController,
+                    controller: searchController,
                     autofocus: true,
                     style: TextStyle(fontSize: context.bodyFont),
                     decoration: InputDecoration(
@@ -173,7 +122,7 @@ class _WineCountryPickerState extends State<WineCountryPicker> {
                       prefixIcon: Icon(Icons.search, color: cs.primary),
                       isDense: true,
                     ),
-                    onChanged: (v) => setModalState(() => _filter = v),
+                    onChanged: (v) => setModalState(() => filter = v),
                   ),
                 ),
                 Expanded(
@@ -193,11 +142,9 @@ class _WineCountryPickerState extends State<WineCountryPicker> {
                         ),
                         ...filteredTop.map((c) => _CountryTile(
                               country: c,
-                              isSelected: c == widget.selectedCountry,
+                              isSelected: c == selected,
                               onTap: () {
-                                widget.onChanged(c);
-                                _searchController.clear();
-                                _filter = '';
+                                onChanged(c);
                                 Navigator.pop(ctx);
                               },
                             )),
@@ -215,11 +162,9 @@ class _WineCountryPickerState extends State<WineCountryPicker> {
                         ),
                         ...filteredOther.map((c) => _CountryTile(
                               country: c,
-                              isSelected: c == widget.selectedCountry,
+                              isSelected: c == selected,
                               onTap: () {
-                                widget.onChanged(c);
-                                _searchController.clear();
-                                _filter = '';
+                                onChanged(c);
                                 Navigator.pop(ctx);
                               },
                             )),
@@ -232,8 +177,7 @@ class _WineCountryPickerState extends State<WineCountryPicker> {
           );
         },
       ),
-    );
-  }
+  );
 }
 
 class _CountryTile extends StatelessWidget {
