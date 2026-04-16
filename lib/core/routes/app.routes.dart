@@ -23,4 +23,7 @@ class AppRoutes {
   // Groups
   static const String groupDetail = '/groups/:id';
   static String groupDetailPath(String id) => '/groups/$id';
+
+  // Friends
+  static const String friends = '/friends';
 }
