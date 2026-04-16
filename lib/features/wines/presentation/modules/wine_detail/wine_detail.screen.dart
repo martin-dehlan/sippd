@@ -14,6 +14,7 @@ class WineDetailScreen extends ConsumerWidget {
     final wineAsync = ref.watch(wineDetailProvider(wineId));
 
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: wineAsync.when(
         data: (wine) {
           if (wine == null) {
@@ -50,150 +51,339 @@ class WineDetailBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
 
-    return CustomScrollView(
-      slivers: [
-        // Hero image area
-        SliverAppBar(
-          expandedHeight: context.h * 0.35,
-          pinned: true,
-          backgroundColor: cs.surface,
-          foregroundColor: cs.onSurface,
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.delete_outline),
-              onPressed: onDelete,
-            ),
-          ],
-          flexibleSpace: FlexibleSpaceBar(
-            background: WineHeroSection(wine: wine),
-          ),
-        ),
-
-        // Content
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: context.paddingH),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    return SafeArea(
+      child: Column(
+        children: [
+          // Top bar
+          Padding(
+            padding: EdgeInsets.symmetric(
+                horizontal: context.w * 0.02, vertical: context.xs),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                SizedBox(height: context.m),
-
-                // Name + type badge
-                Text(
-                  wine.name,
-                  style: TextStyle(
-                    fontSize: context.titleFont,
-                    fontWeight: FontWeight.bold,
-                    height: 1.2,
-                  ),
-                ),
-                SizedBox(height: context.s),
-                WineDetailTypeBadge(type: wine.type),
-                SizedBox(height: context.l),
-
-                // Stats row
-                WineStatsRow(wine: wine),
-                SizedBox(height: context.l),
-
-                // Details
-                if (wine.grape != null || wine.vintage != null)
-                  WineInfoSection(
-                    title: 'Details',
-                    children: [
-                      if (wine.grape != null)
-                        WineInfoTile(
-                            icon: Icons.grass,
-                            label: 'Grape',
-                            value: wine.grape!),
-                      if (wine.vintage != null)
-                        WineInfoTile(
-                            icon: Icons.calendar_today,
-                            label: 'Vintage',
-                            value: wine.vintage.toString()),
-                    ],
-                  ),
-
-                if (wine.country != null || wine.location != null)
-                  WineInfoSection(
-                    title: 'Origin',
-                    children: [
-                      if (wine.country != null)
-                        WineInfoTile(
-                            icon: Icons.flag_outlined,
-                            label: 'Country',
-                            value: wine.country!),
-                      if (wine.location != null)
-                        WineInfoTile(
-                            icon: Icons.location_on_outlined,
-                            label: 'Tasted at',
-                            value: wine.location!),
-                    ],
-                  ),
-
-                // Tasting notes
-                if (wine.notes != null) ...[
-                  Text('Tasting Notes',
-                      style: TextStyle(
-                          fontSize: context.bodyFont,
-                          fontWeight: FontWeight.w700)),
-                  SizedBox(height: context.s),
-                  Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.all(context.w * 0.04),
-                    decoration: BoxDecoration(
-                      color: cs.surfaceContainer,
+                IconButton(
+                  onPressed: () => Navigator.pop(context),
+                  icon: const Icon(Icons.arrow_back_ios_new),
+                  style: IconButton.styleFrom(
+                    backgroundColor: cs.surfaceContainer,
+                    shape: RoundedRectangleBorder(
                       borderRadius:
                           BorderRadius.circular(context.w * 0.03),
                     ),
-                    child: Text(
-                      wine.notes!,
-                      style: TextStyle(
-                        fontSize: context.bodyFont,
-                        color: cs.onSurfaceVariant,
-                        height: 1.5,
-                      ),
+                  ),
+                ),
+                IconButton(
+                  onPressed: onDelete,
+                  icon: Icon(Icons.delete_outline, color: cs.error),
+                  style: IconButton.styleFrom(
+                    backgroundColor: cs.surfaceContainer,
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.circular(context.w * 0.03),
                     ),
                   ),
-                  SizedBox(height: context.l),
-                ],
-
-                SizedBox(height: context.xl),
+                ),
               ],
             ),
           ),
-        ),
-      ],
+
+          // Hero: Image left, Stats right
+          Expanded(
+            flex: 5,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: context.paddingH),
+              child: Row(
+                children: [
+                  // Left: Wine image
+                  Expanded(
+                    flex: 5,
+                    child: WineImageArea(wine: wine),
+                  ),
+                  // Right: Stats
+                  Expanded(
+                    flex: 4,
+                    child: WineStatsColumn(wine: wine),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // Bottom: Additional info
+          Expanded(
+            flex: 4,
+            child: WineBottomInfo(wine: wine),
+          ),
+        ],
+      ),
     );
   }
 }
 
-class WineHeroSection extends StatelessWidget {
+class WineImageArea extends StatelessWidget {
   final WineEntity wine;
-  const WineHeroSection({super.key, required this.wine});
+  const WineImageArea({super.key, required this.wine});
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
 
     return Container(
-      color: cs.surfaceContainer,
+      margin: EdgeInsets.only(right: context.w * 0.02),
       child: wine.imageUrl != null
-          ? Image.network(wine.imageUrl!, fit: BoxFit.cover)
+          ? ClipRRect(
+              borderRadius: BorderRadius.circular(context.w * 0.04),
+              child: Image.network(wine.imageUrl!, fit: BoxFit.contain),
+            )
           : Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.wine_bar,
-                      size: context.w * 0.2,
-                      color: cs.outline.withValues(alpha: 0.3)),
-                  SizedBox(height: context.s),
-                  Text('No photo',
-                      style: TextStyle(
-                          fontSize: context.captionFont,
-                          color: cs.outline)),
-                ],
+              child: Icon(
+                Icons.wine_bar,
+                size: context.w * 0.3,
+                color: cs.outline.withValues(alpha: 0.15),
               ),
             ),
+    );
+  }
+}
+
+class WineStatsColumn extends StatelessWidget {
+  final WineEntity wine;
+  const WineStatsColumn({super.key, required this.wine});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(left: context.w * 0.02),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          // Wine name + type
+          Text(
+            wine.name,
+            style: TextStyle(
+              fontSize: context.bodyFont * 1.1,
+              fontWeight: FontWeight.bold,
+              height: 1.2,
+            ),
+            textAlign: TextAlign.right,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+          SizedBox(height: context.s),
+          WineDetailTypeBadge(type: wine.type),
+          SizedBox(height: context.xl),
+
+          // Stat: Rating
+          StatItem(
+            label: 'Rating',
+            value: wine.rating.toStringAsFixed(1),
+            unit: '/ 10',
+          ),
+          SizedBox(height: context.l),
+
+          // Stat: Price
+          if (wine.price != null) ...[
+            StatItem(
+              label: 'Price',
+              value: wine.price!.toStringAsFixed(2),
+              unit: wine.currency,
+            ),
+            SizedBox(height: context.l),
+          ],
+
+          // Stat: Place
+          if (wine.location != null)
+            StatItem(
+              label: 'Place',
+              value: wine.location!,
+              isText: true,
+            )
+          else if (wine.country != null)
+            StatItem(
+              label: 'Country',
+              value: wine.country!,
+              isText: true,
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class StatItem extends StatelessWidget {
+  final String label;
+  final String value;
+  final String? unit;
+  final bool isText;
+
+  const StatItem({
+    super.key,
+    required this.label,
+    required this.value,
+    this.unit,
+    this.isText = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: context.captionFont,
+            fontWeight: FontWeight.w500,
+            color: cs.primary,
+          ),
+        ),
+        SizedBox(height: context.xs * 0.5),
+        if (isText)
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: context.bodyFont,
+              fontWeight: FontWeight.w600,
+            ),
+            textAlign: TextAlign.right,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          )
+        else
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
+            children: [
+              Text(
+                value,
+                style: TextStyle(
+                  fontSize: context.headingFont * 1.3,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              if (unit != null) ...[
+                SizedBox(width: context.w * 0.01),
+                Text(
+                  unit!,
+                  style: TextStyle(
+                    fontSize: context.captionFont,
+                    color: cs.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ],
+          ),
+      ],
+    );
+  }
+}
+
+class WineBottomInfo extends StatelessWidget {
+  final WineEntity wine;
+  const WineBottomInfo({super.key, required this.wine});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+
+    final hasDetails = wine.grape != null ||
+        wine.vintage != null ||
+        wine.country != null ||
+        wine.notes != null;
+
+    if (!hasDetails) return const SizedBox.shrink();
+
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: cs.surfaceContainer,
+        borderRadius: BorderRadius.vertical(
+            top: Radius.circular(context.w * 0.06)),
+      ),
+      child: ListView(
+        padding: EdgeInsets.symmetric(
+          horizontal: context.paddingH,
+          vertical: context.l,
+        ),
+        children: [
+          // Detail chips row
+          Wrap(
+            spacing: context.w * 0.02,
+            runSpacing: context.s,
+            children: [
+              if (wine.grape != null)
+                DetailChip(icon: Icons.grass, label: wine.grape!),
+              if (wine.vintage != null)
+                DetailChip(
+                    icon: Icons.calendar_today,
+                    label: wine.vintage.toString()),
+              if (wine.country != null)
+                DetailChip(icon: Icons.flag_outlined, label: wine.country!),
+              if (wine.location != null && wine.country != null)
+                DetailChip(
+                    icon: Icons.location_on_outlined, label: wine.location!),
+            ],
+          ),
+
+          // Tasting notes
+          if (wine.notes != null) ...[
+            SizedBox(height: context.m),
+            Text('Tasting Notes',
+                style: TextStyle(
+                    fontSize: context.captionFont,
+                    fontWeight: FontWeight.w700,
+                    color: cs.onSurfaceVariant)),
+            SizedBox(height: context.s),
+            Text(
+              wine.notes!,
+              style: TextStyle(
+                fontSize: context.bodyFont,
+                color: cs.onSurface,
+                height: 1.5,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class DetailChip extends StatelessWidget {
+  final IconData icon;
+  final String label;
+
+  const DetailChip({super.key, required this.icon, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: context.w * 0.03,
+        vertical: context.xs,
+      ),
+      decoration: BoxDecoration(
+        color: cs.surface,
+        borderRadius: BorderRadius.circular(context.w * 0.02),
+        border: Border.all(color: cs.outlineVariant, width: 0.5),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: context.w * 0.04, color: cs.primary),
+          SizedBox(width: context.w * 0.015),
+          Text(label,
+              style: TextStyle(
+                  fontSize: context.captionFont,
+                  fontWeight: FontWeight.w500)),
+        ],
+      ),
     );
   }
 }
@@ -212,172 +402,22 @@ class WineDetailTypeBadge extends StatelessWidget {
     };
     final color = switch (type) {
       WineType.red => cs.error,
-      WineType.white => cs.tertiary,
+      WineType.white => const Color(0xFFD4A017),
       WineType.rose => cs.primary,
     };
 
     return Container(
       padding: EdgeInsets.symmetric(
-          horizontal: context.w * 0.03, vertical: context.xs),
+          horizontal: context.w * 0.025, vertical: context.xs),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(context.w * 0.015),
       ),
       child: Text(label,
           style: TextStyle(
-              fontSize: context.captionFont,
+              fontSize: context.captionFont * 0.9,
               fontWeight: FontWeight.w600,
               color: color)),
-    );
-  }
-}
-
-class WineStatsRow extends StatelessWidget {
-  final WineEntity wine;
-  const WineStatsRow({super.key, required this.wine});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: WineStatCard(
-            label: 'Rating',
-            value: wine.rating.toStringAsFixed(1),
-            unit: '/ 10',
-            isPrimary: true,
-          ),
-        ),
-        SizedBox(width: context.w * 0.03),
-        if (wine.price != null)
-          Expanded(
-            child: WineStatCard(
-              label: 'Price',
-              value: wine.price!.toStringAsFixed(2),
-              unit: wine.currency,
-            ),
-          ),
-      ],
-    );
-  }
-}
-
-class WineStatCard extends StatelessWidget {
-  final String label;
-  final String value;
-  final String unit;
-  final bool isPrimary;
-
-  const WineStatCard({
-    super.key,
-    required this.label,
-    required this.value,
-    required this.unit,
-    this.isPrimary = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-
-    return Container(
-      padding: EdgeInsets.all(context.w * 0.04),
-      decoration: BoxDecoration(
-        color: isPrimary ? cs.primaryContainer : cs.surfaceContainer,
-        borderRadius: BorderRadius.circular(context.w * 0.03),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label,
-              style: TextStyle(
-                fontSize: context.captionFont,
-                fontWeight: FontWeight.w500,
-                color: isPrimary ? cs.onPrimaryContainer : cs.onSurfaceVariant,
-              )),
-          SizedBox(height: context.xs),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
-            children: [
-              Text(value,
-                  style: TextStyle(
-                    fontSize: context.headingFont * 1.2,
-                    fontWeight: FontWeight.bold,
-                    color: isPrimary ? cs.onPrimaryContainer : cs.onSurface,
-                  )),
-              SizedBox(width: context.w * 0.01),
-              Text(unit,
-                  style: TextStyle(
-                    fontSize: context.captionFont,
-                    color:
-                        isPrimary ? cs.onPrimaryContainer : cs.onSurfaceVariant,
-                  )),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class WineInfoSection extends StatelessWidget {
-  final String title;
-  final List<Widget> children;
-
-  const WineInfoSection({
-    super.key,
-    required this.title,
-    required this.children,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(title,
-            style: TextStyle(
-                fontSize: context.bodyFont, fontWeight: FontWeight.w700)),
-        SizedBox(height: context.s),
-        ...children,
-        SizedBox(height: context.l),
-      ],
-    );
-  }
-}
-
-class WineInfoTile extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-
-  const WineInfoTile({
-    super.key,
-    required this.icon,
-    required this.label,
-    required this.value,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-
-    return Padding(
-      padding: EdgeInsets.only(bottom: context.s),
-      child: Row(
-        children: [
-          Icon(icon, size: context.w * 0.05, color: cs.primary),
-          SizedBox(width: context.w * 0.03),
-          Text(label,
-              style: TextStyle(
-                  fontSize: context.bodyFont, color: cs.onSurfaceVariant)),
-          const Spacer(),
-          Text(value,
-              style: TextStyle(
-                  fontSize: context.bodyFont, fontWeight: FontWeight.w500)),
-        ],
-      ),
     );
   }
 }
