@@ -21,9 +21,9 @@ class SippdApp extends ConsumerWidget {
 
     return MaterialApp.router(
       title: 'Sippd',
-      theme: AppTheme.light,
+      theme: AppTheme.dark,
       darkTheme: AppTheme.dark,
-      themeMode: ThemeMode.system,
+      themeMode: ThemeMode.dark,
       routerConfig: router,
       debugShowCheckedModeBanner: false,
     );

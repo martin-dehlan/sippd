@@ -16,32 +16,35 @@ class WineTypeFilterBar extends ConsumerWidget {
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: [
-          WineFilterChip(
+          _FilterChip(
             label: 'All',
             isSelected: selected == null,
             onTap: () =>
                 ref.read(wineTypeFilterProvider.notifier).setFilter(null),
           ),
           SizedBox(width: context.w * 0.02),
-          WineFilterChip(
+          _FilterChip(
             label: 'Red',
             isSelected: selected == WineType.red,
+            dotColor: const Color(0xFFCC3333),
             onTap: () => ref
                 .read(wineTypeFilterProvider.notifier)
                 .setFilter(WineType.red),
           ),
           SizedBox(width: context.w * 0.02),
-          WineFilterChip(
+          _FilterChip(
             label: 'White',
             isSelected: selected == WineType.white,
+            dotColor: const Color(0xFFD4A017),
             onTap: () => ref
                 .read(wineTypeFilterProvider.notifier)
                 .setFilter(WineType.white),
           ),
           SizedBox(width: context.w * 0.02),
-          WineFilterChip(
+          _FilterChip(
             label: 'Rosé',
             isSelected: selected == WineType.rose,
+            dotColor: const Color(0xFFE8829A),
             onTap: () => ref
                 .read(wineTypeFilterProvider.notifier)
                 .setFilter(WineType.rose),
@@ -52,15 +55,16 @@ class WineTypeFilterBar extends ConsumerWidget {
   }
 }
 
-class WineFilterChip extends StatelessWidget {
+class _FilterChip extends StatelessWidget {
   final String label;
   final bool isSelected;
+  final Color? dotColor;
   final VoidCallback onTap;
 
-  const WineFilterChip({
-    super.key,
+  const _FilterChip({
     required this.label,
     required this.isSelected,
+    this.dotColor,
     required this.onTap,
   });
 
@@ -70,26 +74,45 @@ class WineFilterChip extends StatelessWidget {
 
     return GestureDetector(
       onTap: onTap,
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOut,
         padding: EdgeInsets.symmetric(
           horizontal: context.w * 0.04,
           vertical: context.xs,
         ),
         decoration: BoxDecoration(
-          color: isSelected ? cs.primary : cs.surface,
+          color: isSelected
+              ? cs.primary.withValues(alpha: 0.15)
+              : cs.surfaceContainer,
           border: Border.all(
             color: isSelected ? cs.primary : cs.outlineVariant,
+            width: isSelected ? 1.0 : 0.5,
           ),
           borderRadius: BorderRadius.circular(context.w * 0.05),
         ),
         alignment: Alignment.center,
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: context.captionFont,
-            fontWeight: FontWeight.w500,
-            color: isSelected ? cs.onPrimary : cs.onSurfaceVariant,
-          ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (dotColor != null) ...[
+              Container(
+                width: context.w * 0.018,
+                height: context.w * 0.018,
+                decoration:
+                    BoxDecoration(color: dotColor, shape: BoxShape.circle),
+              ),
+              SizedBox(width: context.w * 0.015),
+            ],
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: context.captionFont,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                color: isSelected ? cs.primary : cs.onSurfaceVariant,
+              ),
+            ),
+          ],
         ),
       ),
     );
