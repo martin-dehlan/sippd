@@ -10,6 +10,7 @@ import '../../../../locations/domain/entities/location.entity.dart';
 import '../../../../locations/presentation/widgets/location_search_sheet.dart';
 import '../../../controller/wine.provider.dart';
 import '../../../domain/entities/wine.entity.dart';
+import '../../widgets/rating_sheet.dart';
 import '../../widgets/wine_country_picker.widget.dart';
 import '../../widgets/wine_photo_picker.widget.dart';
 
@@ -71,6 +72,13 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
 
     await ref.read(wineControllerProvider.notifier).addWine(wine);
     if (mounted) context.pop();
+  }
+
+  Future<void> _editRating() async {
+    final result =
+        await showRatingSheet(context: context, initial: _rating);
+    if (result == null) return;
+    setState(() => _rating = result);
   }
 
   Future<void> _editPrice() async {
@@ -172,7 +180,7 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
                           children: [
                             _RatingStat(
                               rating: _rating,
-                              onChanged: (v) => setState(() => _rating = v),
+                              onTap: _editRating,
                             ),
                             SizedBox(height: context.l),
                             _PriceStat(
@@ -336,55 +344,38 @@ class _StatLabel extends StatelessWidget {
 
 class _RatingStat extends StatelessWidget {
   final double rating;
-  final ValueChanged<double> onChanged;
-  const _RatingStat({required this.rating, required this.onChanged});
+  final VoidCallback onTap;
+  const _RatingStat({required this.rating, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        const _StatLabel(text: 'Rating'),
-        SizedBox(height: context.xs * 0.3),
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.baseline,
-          textBaseline: TextBaseline.alphabetic,
-          children: [
-            Text(rating.toStringAsFixed(1),
-                style: TextStyle(
-                    fontSize: context.headingFont * 1.4,
-                    fontWeight: FontWeight.bold)),
-            SizedBox(width: context.w * 0.01),
-            Text('/ 10',
-                style: TextStyle(
-                    fontSize: context.captionFont,
-                    color: cs.onSurfaceVariant)),
-          ],
-        ),
-        SizedBox(
-          width: context.w * 0.35,
-          child: SliderTheme(
-            data: SliderThemeData(
-              activeTrackColor: cs.primary,
-              inactiveTrackColor: cs.outlineVariant,
-              thumbColor: cs.primary,
-              overlayColor: cs.primary.withValues(alpha: 0.12),
-              trackHeight: 2,
-              thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
-              overlayShape: const RoundSliderOverlayShape(overlayRadius: 14),
-            ),
-            child: Slider(
-              value: rating,
-              min: 0,
-              max: 10,
-              divisions: 20,
-              onChanged: onChanged,
-            ),
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          const _StatLabel(text: 'Rating'),
+          SizedBox(height: context.xs * 0.3),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
+            children: [
+              Text(rating.toStringAsFixed(1),
+                  style: TextStyle(
+                      fontSize: context.headingFont * 1.4,
+                      fontWeight: FontWeight.bold)),
+              SizedBox(width: context.w * 0.01),
+              Text('/ 10',
+                  style: TextStyle(
+                      fontSize: context.captionFont,
+                      color: cs.onSurfaceVariant)),
+            ],
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
