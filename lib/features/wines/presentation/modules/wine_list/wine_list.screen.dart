@@ -26,33 +26,52 @@ class WineListScreen extends ConsumerWidget {
               child: Padding(
                 padding: EdgeInsets.symmetric(
                     horizontal: context.paddingH, vertical: context.m),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Row(
-                      children: [
-                        Text(
-                          'Sippd',
-                          style: TextStyle(
-                            fontSize: context.titleFont,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: -0.5,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                'Sippd',
+                                style: TextStyle(
+                                  fontSize: context.titleFont,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: -0.5,
+                                ),
+                              ),
+                              SizedBox(width: context.w * 0.02),
+                              Text(
+                                '🍷',
+                                style:
+                                    TextStyle(fontSize: context.titleFont * 0.8),
+                              ),
+                            ],
                           ),
-                        ),
-                        SizedBox(width: context.w * 0.02),
-                        Text(
-                          '🍷',
-                          style: TextStyle(fontSize: context.titleFont * 0.8),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: context.xs),
-                    Text(
-                      'Your wine rankings',
-                      style: TextStyle(
-                        fontSize: context.captionFont,
-                        color: cs.onSurfaceVariant,
+                          SizedBox(height: context.xs),
+                          Text(
+                            'Your wine rankings',
+                            style: TextStyle(
+                              fontSize: context.captionFont,
+                              color: cs.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
                       ),
+                    ),
+                    _HeaderIconButton(
+                      icon: Icons.qr_code_scanner,
+                      onTap: () => context.push(AppRoutes.scan),
+                      tooltip: 'Scan wine',
+                    ),
+                    SizedBox(width: context.w * 0.02),
+                    _HeaderIconButton(
+                      icon: Icons.add,
+                      onTap: () => context.push(AppRoutes.wineAdd),
+                      tooltip: 'Add wine',
                     ),
                   ],
                 ),
@@ -118,10 +137,38 @@ class WineListScreen extends ConsumerWidget {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.push(AppRoutes.wineAdd),
-        icon: const Icon(Icons.add),
-        label: const Text('Add Wine'),
+    );
+  }
+}
+
+class _HeaderIconButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+  final String tooltip;
+  const _HeaderIconButton({
+    required this.icon,
+    required this.onTap,
+    required this.tooltip,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final size = context.w * 0.1;
+    return Tooltip(
+      message: tooltip,
+      child: Material(
+        color: cs.surfaceContainer,
+        shape: const CircleBorder(),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: SizedBox(
+            width: size,
+            height: size,
+            child: Icon(icon, color: cs.onSurface, size: context.w * 0.055),
+          ),
+        ),
       ),
     );
   }
@@ -226,7 +273,7 @@ class WineEmptyState extends StatelessWidget {
           Text(
             hasFilter
                 ? 'Try a different filter'
-                : 'Tap below to add your first wine',
+                : 'Tap + to add your first wine',
             style: TextStyle(
               fontSize: context.captionFont,
               color: cs.onSurfaceVariant,

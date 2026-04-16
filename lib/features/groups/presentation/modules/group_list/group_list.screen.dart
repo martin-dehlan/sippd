@@ -25,24 +25,36 @@ class GroupListScreen extends ConsumerWidget {
             Padding(
               padding:
                   EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
-              child: Text(
-                'GROUPS',
-                style: GoogleFonts.playfairDisplay(
-                  fontSize: context.titleFont * 1.3,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: -0.5,
-                  height: 1.05,
-                ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'GROUPS',
+                          style: GoogleFonts.playfairDisplay(
+                            fontSize: context.titleFont * 1.3,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: -0.5,
+                            height: 1.05,
+                          ),
+                        ),
+                        SizedBox(height: context.xs),
+                        Text('Taste together',
+                            style: TextStyle(
+                                fontSize: context.captionFont,
+                                color: cs.onSurfaceVariant)),
+                      ],
+                    ),
+                  ),
+                  _HeaderAddButton(
+                    onTap: () => _showCreateSheet(context, ref),
+                    tooltip: 'Create group',
+                  ),
+                ],
               ),
-            ),
-            SizedBox(height: context.xs),
-            Padding(
-              padding:
-                  EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
-              child: Text('Taste together',
-                  style: TextStyle(
-                      fontSize: context.captionFont,
-                      color: cs.onSurfaceVariant)),
             ),
             SizedBox(height: context.l),
             Padding(
@@ -64,14 +76,14 @@ class GroupListScreen extends ConsumerWidget {
                     padding: EdgeInsets.symmetric(
                         horizontal: context.paddingH * 1.3),
                     itemCount: groups.length,
-                    separatorBuilder: (_, __) =>
+                    separatorBuilder: (_, _) =>
                         SizedBox(height: context.s),
                     itemBuilder: (_, index) => _GroupCard(group: groups[index]),
                   );
                 },
                 loading: () =>
                     const Center(child: CircularProgressIndicator()),
-                error: (_, __) => Center(
+                error: (_, _) => Center(
                   child: Text('Sign in to see groups',
                       style: TextStyle(
                           color: cs.onSurfaceVariant,
@@ -81,11 +93,6 @@ class GroupListScreen extends ConsumerWidget {
             ),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showCreateSheet(context, ref),
-        icon: const Icon(Icons.add),
-        label: const Text('Create Group'),
       ),
     );
   }
@@ -147,6 +154,35 @@ class GroupListScreen extends ConsumerWidget {
             }
           }
         },
+      ),
+    );
+  }
+}
+
+class _HeaderAddButton extends StatelessWidget {
+  final VoidCallback onTap;
+  final String tooltip;
+  const _HeaderAddButton({required this.onTap, required this.tooltip});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final size = context.w * 0.1;
+    return Tooltip(
+      message: tooltip,
+      child: Material(
+        color: cs.surfaceContainer,
+        shape: const CircleBorder(),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: SizedBox(
+            width: size,
+            height: size,
+            child: Icon(Icons.add,
+                color: cs.onSurface, size: context.w * 0.055),
+          ),
+        ),
       ),
     );
   }
