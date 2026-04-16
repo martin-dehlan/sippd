@@ -108,12 +108,33 @@ class _SearchResultRow extends ConsumerStatefulWidget {
 
 class _SearchResultRowState extends ConsumerState<_SearchResultRow> {
   bool _sent = false;
+  bool _sending = false;
 
   Future<void> _send() async {
-    await ref
-        .read(friendsControllerProvider.notifier)
-        .sendRequest(widget.profile.id);
-    if (mounted) setState(() => _sent = true);
+    if (_sending || _sent) return;
+    setState(() => _sending = true);
+    try {
+      await ref
+          .read(friendsControllerProvider.notifier)
+          .sendRequest(widget.profile.id);
+      if (!mounted) return;
+      setState(() {
+        _sent = true;
+        _sending = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Friend request sent')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _sending = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Could not send request: $e'),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
+    }
   }
 
   @override
@@ -153,6 +174,13 @@ class _SearchResultRowState extends ConsumerState<_SearchResultRow> {
           ),
           if (_sent)
             Icon(Icons.check, color: cs.primary, size: context.w * 0.06)
+          else if (_sending)
+            SizedBox(
+              width: context.w * 0.05,
+              height: context.w * 0.05,
+              child: CircularProgressIndicator(
+                  strokeWidth: 2, color: cs.primary),
+            )
           else
             TextButton(
               onPressed: _send,

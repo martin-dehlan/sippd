@@ -112,29 +112,25 @@ class FriendsController extends _$FriendsController {
 
   Future<void> sendRequest(String receiverId) async {
     final repo = ref.read(friendsRepositoryProvider);
-    if (repo == null) return;
-    state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() => repo.sendRequest(receiverId));
+    if (repo == null) throw StateError('Sign in required');
+    await repo.sendRequest(receiverId);
   }
 
   Future<void> acceptRequest(String requestId) async {
     final repo = ref.read(friendsRepositoryProvider);
-    if (repo == null) return;
-    state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() => repo.acceptRequest(requestId));
+    if (repo == null) throw StateError('Sign in required');
+    await repo.acceptRequest(requestId);
   }
 
   Future<void> declineRequest(String requestId) async {
     final repo = ref.read(friendsRepositoryProvider);
-    if (repo == null) return;
-    state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() => repo.declineRequest(requestId));
+    if (repo == null) throw StateError('Sign in required');
+    await repo.declineRequest(requestId);
   }
 
   Future<void> removeFriend(String friendId) async {
     final repo = ref.read(friendsRepositoryProvider);
-    if (repo == null) return;
-    state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() => repo.removeFriend(friendId));
+    if (repo == null) throw StateError('Sign in required');
+    await repo.removeFriend(friendId);
   }
 }
