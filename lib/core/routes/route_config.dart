@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../features/auth/presentation/modules/login/login.screen.dart';
+import '../../features/auth/presentation/modules/profile/profile.screen.dart';
 import '../../features/groups/presentation/modules/group_list/group_list.screen.dart';
 import '../../features/scanner/presentation/modules/scan/scan.screen.dart';
 import '../../features/scanner/presentation/modules/scan/scan_label.screen.dart';
@@ -40,8 +41,7 @@ GoRouter goRouter(GoRouterRef ref) {
           ),
           GoRoute(
             path: AppRoutes.profile,
-            builder: (context, state) =>
-                const Scaffold(body: Center(child: Text('Profile'))),
+            builder: (context, state) => const ProfileScreen(),
           ),
         ],
       ),

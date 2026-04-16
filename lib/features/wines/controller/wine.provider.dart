@@ -3,6 +3,7 @@ import '../../../common/database/database.dart';
 import '../../auth/controller/auth.provider.dart';
 import '../domain/entities/wine.entity.dart';
 import '../domain/repositories/wine.repository.dart';
+import '../data/data_sources/wine_image.service.dart';
 import '../data/data_sources/wine_supabase.api.dart';
 import '../data/repositories/wine.repository.impl.dart';
 
@@ -30,6 +31,14 @@ WineRepository wineRepository(WineRepositoryRef ref) {
   final db = ref.read(appDatabaseProvider);
   final api = ref.watch(wineSupabaseApiProvider);
   return WineRepositoryImpl(db.winesDao, api);
+}
+
+@riverpod
+WineImageService? wineImageService(WineImageServiceRef ref) {
+  final isAuth = ref.watch(isAuthenticatedProvider);
+  if (!isAuth) return null;
+  final client = ref.read(supabaseClientProvider);
+  return WineImageService(client);
 }
 
 // ========================================

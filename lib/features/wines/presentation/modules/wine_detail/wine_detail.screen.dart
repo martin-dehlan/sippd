@@ -479,9 +479,9 @@ class WineDetailTypeBadge extends StatelessWidget {
       WineType.rose => 'Rosé',
     };
     final color = switch (type) {
-      WineType.red => const Color(0xFFCC3333),
-      WineType.white => const Color(0xFFD4A017),
-      WineType.rose => const Color(0xFFE8829A),
+      WineType.red => const Color(0xFFA84343),
+      WineType.white => const Color(0xFFD4C49A),
+      WineType.rose => const Color(0xFFD6889A),
     };
 
     return Container(

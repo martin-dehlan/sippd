@@ -26,7 +26,7 @@ class WineTypeFilterBar extends ConsumerWidget {
           _FilterChip(
             label: 'Red',
             isSelected: selected == WineType.red,
-            dotColor: const Color(0xFFCC3333),
+            dotColor: const Color(0xFFA84343),
             onTap: () => ref
                 .read(wineTypeFilterProvider.notifier)
                 .setFilter(WineType.red),
@@ -35,7 +35,7 @@ class WineTypeFilterBar extends ConsumerWidget {
           _FilterChip(
             label: 'White',
             isSelected: selected == WineType.white,
-            dotColor: const Color(0xFFD4A017),
+            dotColor: const Color(0xFFD4C49A),
             onTap: () => ref
                 .read(wineTypeFilterProvider.notifier)
                 .setFilter(WineType.white),
@@ -44,7 +44,7 @@ class WineTypeFilterBar extends ConsumerWidget {
           _FilterChip(
             label: 'Rosé',
             isSelected: selected == WineType.rose,
-            dotColor: const Color(0xFFE8829A),
+            dotColor: const Color(0xFFD6889A),
             onTap: () => ref
                 .read(wineTypeFilterProvider.notifier)
                 .setFilter(WineType.rose),

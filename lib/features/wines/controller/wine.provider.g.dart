@@ -57,6 +57,24 @@ final wineRepositoryProvider = AutoDisposeProvider<WineRepository>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef WineRepositoryRef = AutoDisposeProviderRef<WineRepository>;
+String _$wineImageServiceHash() => r'263d5737d1742b3a280a87c42a0accafb3d1ec06';
+
+/// See also [wineImageService].
+@ProviderFor(wineImageService)
+final wineImageServiceProvider =
+    AutoDisposeProvider<WineImageService?>.internal(
+      wineImageService,
+      name: r'wineImageServiceProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$wineImageServiceHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef WineImageServiceRef = AutoDisposeProviderRef<WineImageService?>;
 String _$wineDetailHash() => r'e16e2db7c1f552d816b73dc417075b660dab01b5';
 
 /// Copied from Dart SDK
