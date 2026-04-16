@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../controller/auth.provider.dart';
+import '../../widgets/google_sign_in_button.widget.dart';
+import '../../widgets/or_divider.widget.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -167,6 +169,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             ),
                     ),
                   ),
+                  SizedBox(height: context.m),
+
+                  const OrDivider(),
+                  SizedBox(height: context.m),
+                  const GoogleSignInButton(),
                   SizedBox(height: context.m),
 
                   // Toggle

@@ -55,6 +55,15 @@ class AuthController extends _$AuthController {
     });
   }
 
+  Future<void> signInWithGoogle() async {
+    final client = ref.read(supabaseClientProvider);
+    await client.auth.signInWithOAuth(
+      OAuthProvider.google,
+      redirectTo: 'io.sippd://login-callback/',
+      authScreenLaunchMode: LaunchMode.inAppBrowserView,
+    );
+  }
+
   Future<void> signOut() async {
     final client = ref.read(supabaseClientProvider);
     await client.auth.signOut();
