@@ -88,6 +88,28 @@ class $WinesTableTable extends WinesTable
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _latitudeMeta = const VerificationMeta(
+    'latitude',
+  );
+  @override
+  late final GeneratedColumn<double> latitude = GeneratedColumn<double>(
+    'latitude',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _longitudeMeta = const VerificationMeta(
+    'longitude',
+  );
+  @override
+  late final GeneratedColumn<double> longitude = GeneratedColumn<double>(
+    'longitude',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _notesMeta = const VerificationMeta('notes');
   @override
   late final GeneratedColumn<String> notes = GeneratedColumn<String>(
@@ -203,6 +225,8 @@ class $WinesTableTable extends WinesTable
     currency,
     country,
     location,
+    latitude,
+    longitude,
     notes,
     imageUrl,
     localImagePath,
@@ -277,6 +301,18 @@ class $WinesTableTable extends WinesTable
       context.handle(
         _locationMeta,
         location.isAcceptableOrUnknown(data['location']!, _locationMeta),
+      );
+    }
+    if (data.containsKey('latitude')) {
+      context.handle(
+        _latitudeMeta,
+        latitude.isAcceptableOrUnknown(data['latitude']!, _latitudeMeta),
+      );
+    }
+    if (data.containsKey('longitude')) {
+      context.handle(
+        _longitudeMeta,
+        longitude.isAcceptableOrUnknown(data['longitude']!, _longitudeMeta),
       );
     }
     if (data.containsKey('notes')) {
@@ -391,6 +427,14 @@ class $WinesTableTable extends WinesTable
         DriftSqlType.string,
         data['${effectivePrefix}location'],
       ),
+      latitude: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}latitude'],
+      ),
+      longitude: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}longitude'],
+      ),
       notes: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}notes'],
@@ -449,6 +493,8 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
   final String currency;
   final String? country;
   final String? location;
+  final double? latitude;
+  final double? longitude;
   final String? notes;
   final String? imageUrl;
   final String? localImagePath;
@@ -468,6 +514,8 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
     required this.currency,
     this.country,
     this.location,
+    this.latitude,
+    this.longitude,
     this.notes,
     this.imageUrl,
     this.localImagePath,
@@ -495,6 +543,12 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
     }
     if (!nullToAbsent || location != null) {
       map['location'] = Variable<String>(location);
+    }
+    if (!nullToAbsent || latitude != null) {
+      map['latitude'] = Variable<double>(latitude);
+    }
+    if (!nullToAbsent || longitude != null) {
+      map['longitude'] = Variable<double>(longitude);
     }
     if (!nullToAbsent || notes != null) {
       map['notes'] = Variable<String>(notes);
@@ -541,6 +595,12 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
       location: location == null && nullToAbsent
           ? const Value.absent()
           : Value(location),
+      latitude: latitude == null && nullToAbsent
+          ? const Value.absent()
+          : Value(latitude),
+      longitude: longitude == null && nullToAbsent
+          ? const Value.absent()
+          : Value(longitude),
       notes: notes == null && nullToAbsent
           ? const Value.absent()
           : Value(notes),
@@ -584,6 +644,8 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
       currency: serializer.fromJson<String>(json['currency']),
       country: serializer.fromJson<String?>(json['country']),
       location: serializer.fromJson<String?>(json['location']),
+      latitude: serializer.fromJson<double?>(json['latitude']),
+      longitude: serializer.fromJson<double?>(json['longitude']),
       notes: serializer.fromJson<String?>(json['notes']),
       imageUrl: serializer.fromJson<String?>(json['imageUrl']),
       localImagePath: serializer.fromJson<String?>(json['localImagePath']),
@@ -610,6 +672,8 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
       'currency': serializer.toJson<String>(currency),
       'country': serializer.toJson<String?>(country),
       'location': serializer.toJson<String?>(location),
+      'latitude': serializer.toJson<double?>(latitude),
+      'longitude': serializer.toJson<double?>(longitude),
       'notes': serializer.toJson<String?>(notes),
       'imageUrl': serializer.toJson<String?>(imageUrl),
       'localImagePath': serializer.toJson<String?>(localImagePath),
@@ -632,6 +696,8 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
     String? currency,
     Value<String?> country = const Value.absent(),
     Value<String?> location = const Value.absent(),
+    Value<double?> latitude = const Value.absent(),
+    Value<double?> longitude = const Value.absent(),
     Value<String?> notes = const Value.absent(),
     Value<String?> imageUrl = const Value.absent(),
     Value<String?> localImagePath = const Value.absent(),
@@ -651,6 +717,8 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
     currency: currency ?? this.currency,
     country: country.present ? country.value : this.country,
     location: location.present ? location.value : this.location,
+    latitude: latitude.present ? latitude.value : this.latitude,
+    longitude: longitude.present ? longitude.value : this.longitude,
     notes: notes.present ? notes.value : this.notes,
     imageUrl: imageUrl.present ? imageUrl.value : this.imageUrl,
     localImagePath: localImagePath.present
@@ -678,6 +746,8 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
       currency: data.currency.present ? data.currency.value : this.currency,
       country: data.country.present ? data.country.value : this.country,
       location: data.location.present ? data.location.value : this.location,
+      latitude: data.latitude.present ? data.latitude.value : this.latitude,
+      longitude: data.longitude.present ? data.longitude.value : this.longitude,
       notes: data.notes.present ? data.notes.value : this.notes,
       imageUrl: data.imageUrl.present ? data.imageUrl.value : this.imageUrl,
       localImagePath: data.localImagePath.present
@@ -708,6 +778,8 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
           ..write('currency: $currency, ')
           ..write('country: $country, ')
           ..write('location: $location, ')
+          ..write('latitude: $latitude, ')
+          ..write('longitude: $longitude, ')
           ..write('notes: $notes, ')
           ..write('imageUrl: $imageUrl, ')
           ..write('localImagePath: $localImagePath, ')
@@ -732,6 +804,8 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
     currency,
     country,
     location,
+    latitude,
+    longitude,
     notes,
     imageUrl,
     localImagePath,
@@ -755,6 +829,8 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
           other.currency == this.currency &&
           other.country == this.country &&
           other.location == this.location &&
+          other.latitude == this.latitude &&
+          other.longitude == this.longitude &&
           other.notes == this.notes &&
           other.imageUrl == this.imageUrl &&
           other.localImagePath == this.localImagePath &&
@@ -776,6 +852,8 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
   final Value<String> currency;
   final Value<String?> country;
   final Value<String?> location;
+  final Value<double?> latitude;
+  final Value<double?> longitude;
   final Value<String?> notes;
   final Value<String?> imageUrl;
   final Value<String?> localImagePath;
@@ -796,6 +874,8 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
     this.currency = const Value.absent(),
     this.country = const Value.absent(),
     this.location = const Value.absent(),
+    this.latitude = const Value.absent(),
+    this.longitude = const Value.absent(),
     this.notes = const Value.absent(),
     this.imageUrl = const Value.absent(),
     this.localImagePath = const Value.absent(),
@@ -817,6 +897,8 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
     this.currency = const Value.absent(),
     this.country = const Value.absent(),
     this.location = const Value.absent(),
+    this.latitude = const Value.absent(),
+    this.longitude = const Value.absent(),
     this.notes = const Value.absent(),
     this.imageUrl = const Value.absent(),
     this.localImagePath = const Value.absent(),
@@ -842,6 +924,8 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
     Expression<String>? currency,
     Expression<String>? country,
     Expression<String>? location,
+    Expression<double>? latitude,
+    Expression<double>? longitude,
     Expression<String>? notes,
     Expression<String>? imageUrl,
     Expression<String>? localImagePath,
@@ -863,6 +947,8 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
       if (currency != null) 'currency': currency,
       if (country != null) 'country': country,
       if (location != null) 'location': location,
+      if (latitude != null) 'latitude': latitude,
+      if (longitude != null) 'longitude': longitude,
       if (notes != null) 'notes': notes,
       if (imageUrl != null) 'image_url': imageUrl,
       if (localImagePath != null) 'local_image_path': localImagePath,
@@ -887,6 +973,8 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
     Value<String>? currency,
     Value<String?>? country,
     Value<String?>? location,
+    Value<double?>? latitude,
+    Value<double?>? longitude,
     Value<String?>? notes,
     Value<String?>? imageUrl,
     Value<String?>? localImagePath,
@@ -908,6 +996,8 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
       currency: currency ?? this.currency,
       country: country ?? this.country,
       location: location ?? this.location,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
       notes: notes ?? this.notes,
       imageUrl: imageUrl ?? this.imageUrl,
       localImagePath: localImagePath ?? this.localImagePath,
@@ -948,6 +1038,12 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
     }
     if (location.present) {
       map['location'] = Variable<String>(location.value);
+    }
+    if (latitude.present) {
+      map['latitude'] = Variable<double>(latitude.value);
+    }
+    if (longitude.present) {
+      map['longitude'] = Variable<double>(longitude.value);
     }
     if (notes.present) {
       map['notes'] = Variable<String>(notes.value);
@@ -998,6 +1094,8 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
           ..write('currency: $currency, ')
           ..write('country: $country, ')
           ..write('location: $location, ')
+          ..write('latitude: $latitude, ')
+          ..write('longitude: $longitude, ')
           ..write('notes: $notes, ')
           ..write('imageUrl: $imageUrl, ')
           ..write('localImagePath: $localImagePath, ')
@@ -1036,6 +1134,8 @@ typedef $$WinesTableTableCreateCompanionBuilder =
       Value<String> currency,
       Value<String?> country,
       Value<String?> location,
+      Value<double?> latitude,
+      Value<double?> longitude,
       Value<String?> notes,
       Value<String?> imageUrl,
       Value<String?> localImagePath,
@@ -1058,6 +1158,8 @@ typedef $$WinesTableTableUpdateCompanionBuilder =
       Value<String> currency,
       Value<String?> country,
       Value<String?> location,
+      Value<double?> latitude,
+      Value<double?> longitude,
       Value<String?> notes,
       Value<String?> imageUrl,
       Value<String?> localImagePath,
@@ -1117,6 +1219,16 @@ class $$WinesTableTableFilterComposer
 
   ColumnFilters<String> get location => $composableBuilder(
     column: $table.location,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get latitude => $composableBuilder(
+    column: $table.latitude,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get longitude => $composableBuilder(
+    column: $table.longitude,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -1220,6 +1332,16 @@ class $$WinesTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<double> get latitude => $composableBuilder(
+    column: $table.latitude,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get longitude => $composableBuilder(
+    column: $table.longitude,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get notes => $composableBuilder(
     column: $table.notes,
     builder: (column) => ColumnOrderings(column),
@@ -1304,6 +1426,12 @@ class $$WinesTableTableAnnotationComposer
   GeneratedColumn<String> get location =>
       $composableBuilder(column: $table.location, builder: (column) => column);
 
+  GeneratedColumn<double> get latitude =>
+      $composableBuilder(column: $table.latitude, builder: (column) => column);
+
+  GeneratedColumn<double> get longitude =>
+      $composableBuilder(column: $table.longitude, builder: (column) => column);
+
   GeneratedColumn<String> get notes =>
       $composableBuilder(column: $table.notes, builder: (column) => column);
 
@@ -1380,6 +1508,8 @@ class $$WinesTableTableTableManager
                 Value<String> currency = const Value.absent(),
                 Value<String?> country = const Value.absent(),
                 Value<String?> location = const Value.absent(),
+                Value<double?> latitude = const Value.absent(),
+                Value<double?> longitude = const Value.absent(),
                 Value<String?> notes = const Value.absent(),
                 Value<String?> imageUrl = const Value.absent(),
                 Value<String?> localImagePath = const Value.absent(),
@@ -1400,6 +1530,8 @@ class $$WinesTableTableTableManager
                 currency: currency,
                 country: country,
                 location: location,
+                latitude: latitude,
+                longitude: longitude,
                 notes: notes,
                 imageUrl: imageUrl,
                 localImagePath: localImagePath,
@@ -1422,6 +1554,8 @@ class $$WinesTableTableTableManager
                 Value<String> currency = const Value.absent(),
                 Value<String?> country = const Value.absent(),
                 Value<String?> location = const Value.absent(),
+                Value<double?> latitude = const Value.absent(),
+                Value<double?> longitude = const Value.absent(),
                 Value<String?> notes = const Value.absent(),
                 Value<String?> imageUrl = const Value.absent(),
                 Value<String?> localImagePath = const Value.absent(),
@@ -1442,6 +1576,8 @@ class $$WinesTableTableTableManager
                 currency: currency,
                 country: country,
                 location: location,
+                latitude: latitude,
+                longitude: longitude,
                 notes: notes,
                 imageUrl: imageUrl,
                 localImagePath: localImagePath,

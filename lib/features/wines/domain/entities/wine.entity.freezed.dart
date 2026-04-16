@@ -25,6 +25,8 @@ mixin _$WineEntity {
   String get currency => throw _privateConstructorUsedError;
   String? get country => throw _privateConstructorUsedError;
   String? get location => throw _privateConstructorUsedError;
+  double? get latitude => throw _privateConstructorUsedError;
+  double? get longitude => throw _privateConstructorUsedError;
   String? get notes => throw _privateConstructorUsedError;
   String? get imageUrl => throw _privateConstructorUsedError;
   String? get localImagePath => throw _privateConstructorUsedError;
@@ -59,6 +61,8 @@ abstract class $WineEntityCopyWith<$Res> {
     String currency,
     String? country,
     String? location,
+    double? latitude,
+    double? longitude,
     String? notes,
     String? imageUrl,
     String? localImagePath,
@@ -95,6 +99,8 @@ class _$WineEntityCopyWithImpl<$Res, $Val extends WineEntity>
     Object? currency = null,
     Object? country = freezed,
     Object? location = freezed,
+    Object? latitude = freezed,
+    Object? longitude = freezed,
     Object? notes = freezed,
     Object? imageUrl = freezed,
     Object? localImagePath = freezed,
@@ -140,6 +146,14 @@ class _$WineEntityCopyWithImpl<$Res, $Val extends WineEntity>
                 ? _value.location
                 : location // ignore: cast_nullable_to_non_nullable
                       as String?,
+            latitude: freezed == latitude
+                ? _value.latitude
+                : latitude // ignore: cast_nullable_to_non_nullable
+                      as double?,
+            longitude: freezed == longitude
+                ? _value.longitude
+                : longitude // ignore: cast_nullable_to_non_nullable
+                      as double?,
             notes: freezed == notes
                 ? _value.notes
                 : notes // ignore: cast_nullable_to_non_nullable
@@ -204,6 +218,8 @@ abstract class _$$WineEntityImplCopyWith<$Res>
     String currency,
     String? country,
     String? location,
+    double? latitude,
+    double? longitude,
     String? notes,
     String? imageUrl,
     String? localImagePath,
@@ -239,6 +255,8 @@ class __$$WineEntityImplCopyWithImpl<$Res>
     Object? currency = null,
     Object? country = freezed,
     Object? location = freezed,
+    Object? latitude = freezed,
+    Object? longitude = freezed,
     Object? notes = freezed,
     Object? imageUrl = freezed,
     Object? localImagePath = freezed,
@@ -284,6 +302,14 @@ class __$$WineEntityImplCopyWithImpl<$Res>
             ? _value.location
             : location // ignore: cast_nullable_to_non_nullable
                   as String?,
+        latitude: freezed == latitude
+            ? _value.latitude
+            : latitude // ignore: cast_nullable_to_non_nullable
+                  as double?,
+        longitude: freezed == longitude
+            ? _value.longitude
+            : longitude // ignore: cast_nullable_to_non_nullable
+                  as double?,
         notes: freezed == notes
             ? _value.notes
             : notes // ignore: cast_nullable_to_non_nullable
@@ -341,6 +367,8 @@ class _$WineEntityImpl implements _WineEntity {
     this.currency = 'EUR',
     this.country,
     this.location,
+    this.latitude,
+    this.longitude,
     this.notes,
     this.imageUrl,
     this.localImagePath,
@@ -371,6 +399,10 @@ class _$WineEntityImpl implements _WineEntity {
   @override
   final String? location;
   @override
+  final double? latitude;
+  @override
+  final double? longitude;
+  @override
   final String? notes;
   @override
   final String? imageUrl;
@@ -393,7 +425,7 @@ class _$WineEntityImpl implements _WineEntity {
 
   @override
   String toString() {
-    return 'WineEntity(id: $id, name: $name, rating: $rating, type: $type, price: $price, currency: $currency, country: $country, location: $location, notes: $notes, imageUrl: $imageUrl, localImagePath: $localImagePath, memoryImageUrl: $memoryImageUrl, memoryLocalImagePath: $memoryLocalImagePath, vintage: $vintage, grape: $grape, userId: $userId, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'WineEntity(id: $id, name: $name, rating: $rating, type: $type, price: $price, currency: $currency, country: $country, location: $location, latitude: $latitude, longitude: $longitude, notes: $notes, imageUrl: $imageUrl, localImagePath: $localImagePath, memoryImageUrl: $memoryImageUrl, memoryLocalImagePath: $memoryLocalImagePath, vintage: $vintage, grape: $grape, userId: $userId, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -411,6 +443,10 @@ class _$WineEntityImpl implements _WineEntity {
             (identical(other.country, country) || other.country == country) &&
             (identical(other.location, location) ||
                 other.location == location) &&
+            (identical(other.latitude, latitude) ||
+                other.latitude == latitude) &&
+            (identical(other.longitude, longitude) ||
+                other.longitude == longitude) &&
             (identical(other.notes, notes) || other.notes == notes) &&
             (identical(other.imageUrl, imageUrl) ||
                 other.imageUrl == imageUrl) &&
@@ -430,7 +466,7 @@ class _$WineEntityImpl implements _WineEntity {
   }
 
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     runtimeType,
     id,
     name,
@@ -440,6 +476,8 @@ class _$WineEntityImpl implements _WineEntity {
     currency,
     country,
     location,
+    latitude,
+    longitude,
     notes,
     imageUrl,
     localImagePath,
@@ -450,7 +488,7 @@ class _$WineEntityImpl implements _WineEntity {
     userId,
     createdAt,
     updatedAt,
-  );
+  ]);
 
   /// Create a copy of WineEntity
   /// with the given fields replaced by the non-null parameter values.
@@ -471,6 +509,8 @@ abstract class _WineEntity implements WineEntity {
     final String currency,
     final String? country,
     final String? location,
+    final double? latitude,
+    final double? longitude,
     final String? notes,
     final String? imageUrl,
     final String? localImagePath,
@@ -499,6 +539,10 @@ abstract class _WineEntity implements WineEntity {
   String? get country;
   @override
   String? get location;
+  @override
+  double? get latitude;
+  @override
+  double? get longitude;
   @override
   String? get notes;
   @override

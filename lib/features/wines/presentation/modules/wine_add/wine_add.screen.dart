@@ -54,6 +54,8 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
       price: _price,
       country: _country,
       location: _location?.shortDisplay,
+      latitude: _location?.lat,
+      longitude: _location?.lng,
       notes: _notes,
       grape: _grape,
       vintage: _vintage,

@@ -29,6 +29,8 @@ mixin _$WineModel {
   String get currency => throw _privateConstructorUsedError;
   String? get country => throw _privateConstructorUsedError;
   String? get location => throw _privateConstructorUsedError;
+  double? get latitude => throw _privateConstructorUsedError;
+  double? get longitude => throw _privateConstructorUsedError;
   String? get notes => throw _privateConstructorUsedError;
   @JsonKey(name: 'image_url')
   String? get imageUrl => throw _privateConstructorUsedError;
@@ -71,6 +73,8 @@ abstract class $WineModelCopyWith<$Res> {
     String currency,
     String? country,
     String? location,
+    double? latitude,
+    double? longitude,
     String? notes,
     @JsonKey(name: 'image_url') String? imageUrl,
     @JsonKey(name: 'local_image_path') String? localImagePath,
@@ -107,6 +111,8 @@ class _$WineModelCopyWithImpl<$Res, $Val extends WineModel>
     Object? currency = null,
     Object? country = freezed,
     Object? location = freezed,
+    Object? latitude = freezed,
+    Object? longitude = freezed,
     Object? notes = freezed,
     Object? imageUrl = freezed,
     Object? localImagePath = freezed,
@@ -152,6 +158,14 @@ class _$WineModelCopyWithImpl<$Res, $Val extends WineModel>
                 ? _value.location
                 : location // ignore: cast_nullable_to_non_nullable
                       as String?,
+            latitude: freezed == latitude
+                ? _value.latitude
+                : latitude // ignore: cast_nullable_to_non_nullable
+                      as double?,
+            longitude: freezed == longitude
+                ? _value.longitude
+                : longitude // ignore: cast_nullable_to_non_nullable
+                      as double?,
             notes: freezed == notes
                 ? _value.notes
                 : notes // ignore: cast_nullable_to_non_nullable
@@ -216,6 +230,8 @@ abstract class _$$WineModelImplCopyWith<$Res>
     String currency,
     String? country,
     String? location,
+    double? latitude,
+    double? longitude,
     String? notes,
     @JsonKey(name: 'image_url') String? imageUrl,
     @JsonKey(name: 'local_image_path') String? localImagePath,
@@ -251,6 +267,8 @@ class __$$WineModelImplCopyWithImpl<$Res>
     Object? currency = null,
     Object? country = freezed,
     Object? location = freezed,
+    Object? latitude = freezed,
+    Object? longitude = freezed,
     Object? notes = freezed,
     Object? imageUrl = freezed,
     Object? localImagePath = freezed,
@@ -296,6 +314,14 @@ class __$$WineModelImplCopyWithImpl<$Res>
             ? _value.location
             : location // ignore: cast_nullable_to_non_nullable
                   as String?,
+        latitude: freezed == latitude
+            ? _value.latitude
+            : latitude // ignore: cast_nullable_to_non_nullable
+                  as double?,
+        longitude: freezed == longitude
+            ? _value.longitude
+            : longitude // ignore: cast_nullable_to_non_nullable
+                  as double?,
         notes: freezed == notes
             ? _value.notes
             : notes // ignore: cast_nullable_to_non_nullable
@@ -353,6 +379,8 @@ class _$WineModelImpl implements _WineModel {
     this.currency = 'EUR',
     this.country,
     this.location,
+    this.latitude,
+    this.longitude,
     this.notes,
     @JsonKey(name: 'image_url') this.imageUrl,
     @JsonKey(name: 'local_image_path') this.localImagePath,
@@ -386,6 +414,10 @@ class _$WineModelImpl implements _WineModel {
   @override
   final String? location;
   @override
+  final double? latitude;
+  @override
+  final double? longitude;
+  @override
   final String? notes;
   @override
   @JsonKey(name: 'image_url')
@@ -415,7 +447,7 @@ class _$WineModelImpl implements _WineModel {
 
   @override
   String toString() {
-    return 'WineModel(id: $id, name: $name, rating: $rating, type: $type, price: $price, currency: $currency, country: $country, location: $location, notes: $notes, imageUrl: $imageUrl, localImagePath: $localImagePath, memoryImageUrl: $memoryImageUrl, memoryLocalImagePath: $memoryLocalImagePath, vintage: $vintage, grape: $grape, userId: $userId, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'WineModel(id: $id, name: $name, rating: $rating, type: $type, price: $price, currency: $currency, country: $country, location: $location, latitude: $latitude, longitude: $longitude, notes: $notes, imageUrl: $imageUrl, localImagePath: $localImagePath, memoryImageUrl: $memoryImageUrl, memoryLocalImagePath: $memoryLocalImagePath, vintage: $vintage, grape: $grape, userId: $userId, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -433,6 +465,10 @@ class _$WineModelImpl implements _WineModel {
             (identical(other.country, country) || other.country == country) &&
             (identical(other.location, location) ||
                 other.location == location) &&
+            (identical(other.latitude, latitude) ||
+                other.latitude == latitude) &&
+            (identical(other.longitude, longitude) ||
+                other.longitude == longitude) &&
             (identical(other.notes, notes) || other.notes == notes) &&
             (identical(other.imageUrl, imageUrl) ||
                 other.imageUrl == imageUrl) &&
@@ -453,7 +489,7 @@ class _$WineModelImpl implements _WineModel {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     runtimeType,
     id,
     name,
@@ -463,6 +499,8 @@ class _$WineModelImpl implements _WineModel {
     currency,
     country,
     location,
+    latitude,
+    longitude,
     notes,
     imageUrl,
     localImagePath,
@@ -473,7 +511,7 @@ class _$WineModelImpl implements _WineModel {
     userId,
     createdAt,
     updatedAt,
-  );
+  ]);
 
   /// Create a copy of WineModel
   /// with the given fields replaced by the non-null parameter values.
@@ -499,6 +537,8 @@ abstract class _WineModel implements WineModel {
     final String currency,
     final String? country,
     final String? location,
+    final double? latitude,
+    final double? longitude,
     final String? notes,
     @JsonKey(name: 'image_url') final String? imageUrl,
     @JsonKey(name: 'local_image_path') final String? localImagePath,
@@ -531,6 +571,10 @@ abstract class _WineModel implements WineModel {
   String? get country;
   @override
   String? get location;
+  @override
+  double? get latitude;
+  @override
+  double? get longitude;
   @override
   String? get notes;
   @override
