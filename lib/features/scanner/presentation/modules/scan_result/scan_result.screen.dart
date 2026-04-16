@@ -48,19 +48,12 @@ class _ScanResultScreenState extends ConsumerState<ScanResultScreen>
       body: SafeArea(
         child: scanState.when(
           data: (data) {
-            if (data == null) {
-              return const Center(child: Text('No scan data'));
-            }
-
-            if (!data.found) {
-              return _NotFoundView(
-                barcode: data.barcode ?? '',
-                onAddManually: () => context.pushReplacement(AppRoutes.wineAdd),
-                onScanAgain: () {
-                  ref.read(scannerControllerProvider.notifier).reset();
-                  context.pop();
-                },
-              );
+            if (data == null || !data.found) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (!context.mounted) return;
+                context.pop();
+              });
+              return const SizedBox.shrink();
             }
 
             return FadeTransition(
@@ -305,80 +298,6 @@ class _FoundView extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-class _NotFoundView extends StatelessWidget {
-  final String barcode;
-  final VoidCallback onAddManually;
-  final VoidCallback onScanAgain;
-
-  const _NotFoundView({
-    required this.barcode,
-    required this.onAddManually,
-    required this.onScanAgain,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-
-    return Center(
-      child: Padding(
-        padding: EdgeInsets.all(context.paddingH),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: context.w * 0.2,
-              height: context.w * 0.2,
-              decoration: BoxDecoration(
-                color: cs.surfaceContainer,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(Icons.search_off,
-                  size: context.w * 0.1, color: cs.onSurfaceVariant),
-            ),
-            SizedBox(height: context.m),
-            Text('Wine Not Found',
-                style: TextStyle(
-                    fontSize: context.headingFont, fontWeight: FontWeight.bold)),
-            SizedBox(height: context.xs),
-            Text('Barcode: $barcode',
-                style: TextStyle(
-                    fontSize: context.captionFont, color: cs.onSurfaceVariant)),
-            SizedBox(height: context.s),
-            Text(
-              'This wine isn\'t in Open Food Facts yet.\nBe the first to add it!',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  fontSize: context.captionFont,
-                  color: cs.onSurfaceVariant,
-                  height: 1.5),
-            ),
-            SizedBox(height: context.xl),
-            SizedBox(
-              width: double.infinity,
-              height: context.h * 0.06,
-              child: ElevatedButton.icon(
-                onPressed: onAddManually,
-                icon: const Icon(Icons.add),
-                label: Text('Add Wine Manually',
-                    style: TextStyle(
-                        fontSize: context.bodyFont,
-                        fontWeight: FontWeight.w600)),
-              ),
-            ),
-            SizedBox(height: context.s),
-            TextButton(
-              onPressed: onScanAgain,
-              child: Text('Scan Again',
-                  style: TextStyle(fontSize: context.captionFont)),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

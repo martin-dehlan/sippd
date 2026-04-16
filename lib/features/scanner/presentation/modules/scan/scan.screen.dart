@@ -26,19 +26,37 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
     super.dispose();
   }
 
-  void _onBarcodeDetected(BarcodeCapture capture) {
+  Future<void> _onBarcodeDetected(BarcodeCapture capture) async {
     if (_isProcessing) return;
     final barcode = capture.barcodes.firstOrNull?.rawValue;
     if (barcode == null || barcode.isEmpty) return;
 
     setState(() => _isProcessing = true);
-    _mobileScannerController.stop();
+    await _mobileScannerController.stop();
 
-    ref.read(scannerControllerProvider.notifier).lookupBarcode(barcode).then((_) {
-      if (mounted) {
-        context.push(AppRoutes.scanResult);
-      }
-    });
+    await ref
+        .read(scannerControllerProvider.notifier)
+        .lookupBarcode(barcode);
+    if (!mounted) return;
+
+    final data = ref.read(scannerControllerProvider).valueOrNull;
+    if (data != null && data.found) {
+      context.push(AppRoutes.scanResult);
+      return;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text("Couldn't find this wine. Add it manually?"),
+        action: SnackBarAction(
+          label: 'Add',
+          onPressed: () => context.push(AppRoutes.wineAdd),
+        ),
+      ),
+    );
+    ref.read(scannerControllerProvider.notifier).reset();
+    setState(() => _isProcessing = false);
+    await _mobileScannerController.start();
   }
 
   @override
