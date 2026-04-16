@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../auth/controller/auth.provider.dart';
 import '../data/fcm.service.dart';
+import '../data/push_handler.service.dart';
 
 part 'push.provider.g.dart';
 
@@ -23,4 +25,17 @@ Future<void> pushRegistration(PushRegistrationRef ref) async {
 
   final sub = fcm.onTokenRefresh().listen((_) => fcm.register());
   ref.onDispose(sub.cancel);
+}
+
+@Riverpod(keepAlive: true)
+PushHandlerService pushHandler(PushHandlerRef ref) {
+  final handler = PushHandlerService();
+  ref.onDispose(handler.dispose);
+  return handler;
+}
+
+@Riverpod(keepAlive: true)
+Stream<RemoteMessage> pushTaps(PushTapsRef ref) {
+  final handler = ref.watch(pushHandlerProvider);
+  return handler.onTap;
 }
