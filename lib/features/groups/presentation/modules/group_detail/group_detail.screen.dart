@@ -3,6 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:share_plus/share_plus.dart';
+
+import '../../../../../common/services/deep_link/deep_link.service.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../core/routes/app.routes.dart';
 import 'package:intl/intl.dart';
@@ -113,7 +116,8 @@ class _Body extends ConsumerWidget {
         Padding(
           padding:
               EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
-          child: _InviteCodeCard(code: group.inviteCode),
+          child: _InviteCodeCard(
+              code: group.inviteCode, groupName: group.name),
         ),
         SizedBox(height: context.l),
         _SectionHeader(label: 'Members'),
@@ -186,53 +190,66 @@ class _Body extends ConsumerWidget {
 
 class _InviteCodeCard extends StatelessWidget {
   final String code;
-  const _InviteCodeCard({required this.code});
+  final String groupName;
+  const _InviteCodeCard({required this.code, required this.groupName});
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    return GestureDetector(
-      onTap: () async {
-        await Clipboard.setData(ClipboardData(text: code));
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Invite code copied')),
-          );
-        }
-      },
-      child: Container(
-        padding: EdgeInsets.symmetric(
-            horizontal: context.w * 0.04, vertical: context.m),
-        decoration: BoxDecoration(
-          color: cs.surfaceContainer,
-          borderRadius: BorderRadius.circular(context.w * 0.03),
-        ),
-        child: Row(
-          children: [
-            Icon(Icons.link, color: cs.primary, size: context.w * 0.05),
-            SizedBox(width: context.w * 0.03),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Invite code',
-                      style: TextStyle(
-                          fontSize: context.captionFont,
-                          color: cs.primary,
-                          fontWeight: FontWeight.w500,
-                          letterSpacing: 0.3)),
-                  SizedBox(height: context.xs * 0.3),
-                  Text(code,
-                      style: TextStyle(
-                          fontSize: context.bodyFont * 1.1,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.5)),
-                ],
-              ),
+    return Container(
+      padding: EdgeInsets.symmetric(
+          horizontal: context.w * 0.04, vertical: context.m),
+      decoration: BoxDecoration(
+        color: cs.surfaceContainer,
+        borderRadius: BorderRadius.circular(context.w * 0.03),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.link, color: cs.primary, size: context.w * 0.05),
+          SizedBox(width: context.w * 0.03),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Invite code',
+                    style: TextStyle(
+                        fontSize: context.captionFont,
+                        color: cs.primary,
+                        fontWeight: FontWeight.w500,
+                        letterSpacing: 0.3)),
+                SizedBox(height: context.xs * 0.3),
+                Text(code,
+                    style: TextStyle(
+                        fontSize: context.bodyFont * 1.1,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.5)),
+              ],
             ),
-            Icon(Icons.copy, color: cs.outline, size: context.w * 0.05),
-          ],
-        ),
+          ),
+          IconButton(
+            icon: Icon(Icons.copy,
+                color: cs.outline, size: context.w * 0.05),
+            tooltip: 'Copy code',
+            onPressed: () async {
+              await Clipboard.setData(ClipboardData(text: code));
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Invite code copied')),
+                );
+              }
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.ios_share,
+                color: cs.primary, size: context.w * 0.05),
+            tooltip: 'Share invite',
+            onPressed: () => Share.share(
+              'Join "$groupName" on Sippd: '
+              '${DeepLinkService.groupInviteUri(code)}',
+              subject: 'Join $groupName on Sippd',
+            ),
+          ),
+        ],
       ),
     );
   }

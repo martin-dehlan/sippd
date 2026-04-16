@@ -13,6 +13,8 @@ import '../../../../wines/domain/entities/wine.entity.dart';
 import '../../../controller/tastings.provider.dart';
 import '../../../domain/entities/tasting.entity.dart';
 import '../../../domain/entities/tasting_attendee.entity.dart';
+import 'package:share_plus/share_plus.dart';
+import '../../../../../common/services/deep_link/deep_link.service.dart';
 import '../../widgets/calendar_export_sheet.dart';
 import '../../widgets/wine_picker_sheet.dart';
 
@@ -47,6 +49,29 @@ class _CalendarIconButton extends StatelessWidget {
   const _CalendarIconButton({required this.onTap});
 
   @override
+  Widget build(BuildContext context) => _CircleIcon(
+        icon: Icons.event_outlined,
+        onTap: onTap,
+      );
+}
+
+class _ShareIconButton extends StatelessWidget {
+  final VoidCallback onTap;
+  const _ShareIconButton({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) => _CircleIcon(
+        icon: Icons.ios_share,
+        onTap: onTap,
+      );
+}
+
+class _CircleIcon extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+  const _CircleIcon({required this.icon, required this.onTap});
+
+  @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     return GestureDetector(
@@ -60,8 +85,7 @@ class _CalendarIconButton extends StatelessWidget {
           shape: BoxShape.circle,
           border: Border.all(color: cs.outlineVariant, width: 0.5),
         ),
-        child: Icon(Icons.event_outlined,
-            size: context.w * 0.045, color: cs.onSurface),
+        child: Icon(icon, size: context.w * 0.045, color: cs.onSurface),
       ),
     );
   }
@@ -128,6 +152,13 @@ class _Body extends ConsumerWidget {
               _CalendarIconButton(
                 onTap: () => showCalendarExportSheet(
                     context: context, tasting: tasting),
+              ),
+              SizedBox(width: context.w * 0.02),
+              _ShareIconButton(
+                onTap: () => Share.share(
+                  '${tasting.title} · ${DeepLinkService.tastingUri(tasting.id)}',
+                  subject: tasting.title,
+                ),
               ),
             ],
           ),

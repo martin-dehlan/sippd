@@ -3,11 +3,15 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'common/services/deep_link/deep_link.provider.dart';
+import 'common/services/deep_link/deep_link.service.dart';
 import 'common/theme/app_theme.dart';
 import 'core/routes/app.routes.dart';
 import 'core/routes/route_config.dart';
+import 'features/groups/controller/group.provider.dart';
 import 'features/push/controller/push.provider.dart';
 import 'features/push/data/push_handler.service.dart';
 import 'firebase_options.dart';
@@ -43,6 +47,7 @@ class _SippdAppState extends ConsumerState<SippdApp> {
     super.initState();
     // Initialise the local-notification plugin + FCM listeners once.
     ref.read(pushHandlerProvider).init();
+    ref.read(deepLinkProvider).init();
   }
 
   @override
@@ -62,6 +67,16 @@ class _SippdAppState extends ConsumerState<SippdApp> {
       },
     );
 
+    // Incoming deep link (io.sippd://…).
+    ref.listen<AsyncValue<DeepLinkTarget>>(
+      deepLinkStreamProvider,
+      (_, next) {
+        final target = next.valueOrNull;
+        if (target == null) return;
+        _handleDeepLink(ref, router, target);
+      },
+    );
+
     return MaterialApp.router(
       title: 'Sippd',
       theme: AppTheme.dark,
@@ -70,6 +85,32 @@ class _SippdAppState extends ConsumerState<SippdApp> {
       routerConfig: router,
       debugShowCheckedModeBanner: false,
     );
+  }
+}
+
+Future<void> _handleDeepLink(
+    WidgetRef ref, GoRouter router, DeepLinkTarget target) async {
+  switch (target) {
+    case DeepLinkGroupInvite(:final inviteCode):
+      try {
+        await ref
+            .read(groupControllerProvider.notifier)
+            .joinGroup(inviteCode);
+      } catch (_) {
+        // Already a member or invalid code — try to resolve existing group.
+      }
+      ref.invalidate(groupControllerProvider);
+      final groups = await ref.read(groupControllerProvider.future);
+      for (final g in groups) {
+        if (g.inviteCode == inviteCode) {
+          router.push(AppRoutes.groupDetailPath(g.id));
+          break;
+        }
+      }
+    case DeepLinkTasting(:final tastingId):
+      router.push(AppRoutes.tastingDetailPath(tastingId));
+    case DeepLinkFriend(:final friendId):
+      router.push(AppRoutes.friendProfilePath(friendId));
   }
 }
 
