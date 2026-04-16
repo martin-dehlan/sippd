@@ -9,6 +9,7 @@ import '../../features/friends/presentation/modules/friends/friends.screen.dart'
 import '../../features/groups/presentation/modules/group_detail/group_detail.screen.dart';
 import '../../features/groups/presentation/modules/group_list/group_list.screen.dart';
 import '../../features/tastings/presentation/modules/tasting_create/tasting_create.screen.dart';
+import '../../features/tastings/presentation/modules/tasting_detail/tasting_detail.screen.dart';
 import '../../features/scanner/presentation/modules/scan/scan.screen.dart';
 import '../../features/scanner/presentation/modules/scan/scan_label.screen.dart';
 import '../../features/scanner/presentation/modules/scan_result/scan_result.screen.dart';
@@ -75,6 +76,13 @@ GoRouter goRouter(GoRouterRef ref) {
         path: AppRoutes.tastingCreate,
         builder: (context, state) => TastingCreateScreen(
             groupId: state.pathParameters['groupId']!),
+      ),
+
+      // Tasting detail
+      GoRoute(
+        path: AppRoutes.tastingDetail,
+        builder: (context, state) =>
+            TastingDetailScreen(tastingId: state.pathParameters['id']!),
       ),
 
       // Friends
