@@ -54,21 +54,52 @@ Future<String?> showTextInputSheet({
                   autofocus: true,
                   keyboardType: keyboardType,
                   maxLines: maxLines,
-                  style: TextStyle(fontSize: ctx.headingFont),
+                  cursorColor: cs.primary,
+                  cursorWidth: 1.5,
+                  style: TextStyle(
+                    fontSize:
+                        maxLines > 1 ? ctx.bodyFont : ctx.titleFont * 1.1,
+                    fontWeight:
+                        maxLines > 1 ? FontWeight.w500 : FontWeight.bold,
+                    height: maxLines > 1 ? 1.5 : 1.1,
+                    color: cs.onSurface,
+                    letterSpacing: maxLines > 1 ? 0 : -0.5,
+                  ),
                   decoration: InputDecoration(
                     hintText: hint,
-                    hintStyle: TextStyle(color: cs.outline),
+                    hintStyle: TextStyle(
+                      color: cs.outline,
+                      fontSize: maxLines > 1
+                          ? ctx.bodyFont
+                          : ctx.titleFont * 1.1,
+                      fontWeight: maxLines > 1
+                          ? FontWeight.w400
+                          : FontWeight.bold,
+                      letterSpacing: maxLines > 1 ? 0 : -0.5,
+                    ),
                     prefixText: prefix,
                     prefixStyle: TextStyle(
-                        fontSize: ctx.headingFont,
-                        color: cs.onSurfaceVariant),
+                      fontSize: ctx.titleFont * 1.1,
+                      fontWeight: FontWeight.bold,
+                      color: cs.onSurfaceVariant,
+                      letterSpacing: -0.5,
+                    ),
+                    filled: false,
+                    fillColor: Colors.transparent,
                     border: InputBorder.none,
                     enabledBorder: InputBorder.none,
                     focusedBorder: InputBorder.none,
+                    errorBorder: InputBorder.none,
+                    disabledBorder: InputBorder.none,
                     isDense: true,
                     contentPadding: EdgeInsets.zero,
                   ),
                   onSubmitted: (v) => Navigator.pop(ctx, v.trim()),
+                ),
+                SizedBox(height: ctx.s),
+                Container(
+                  height: 1,
+                  color: cs.outlineVariant,
                 ),
                 SizedBox(height: ctx.l),
                 SizedBox(
