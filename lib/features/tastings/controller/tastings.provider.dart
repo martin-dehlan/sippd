@@ -1,10 +1,10 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../auth/controller/auth.provider.dart';
-import '../../friends/domain/entities/friend_profile.entity.dart';
 import '../../friends/data/models/friend_profile.model.dart';
 import '../../wines/data/models/wine.model.dart';
 import '../../wines/domain/entities/wine.entity.dart';
 import '../data/data_sources/tastings.api.dart';
+import '../data/models/tasting.model.dart';
 import '../domain/entities/tasting.entity.dart';
 import '../domain/entities/tasting_attendee.entity.dart';
 
