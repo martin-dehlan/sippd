@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../features/scanner/presentation/modules/scan/scan.screen.dart';
+import '../../features/scanner/presentation/modules/scan/scan_label.screen.dart';
+import '../../features/scanner/presentation/modules/scan_result/scan_result.screen.dart';
 import '../../features/wines/presentation/modules/wine_list/wine_list.screen.dart';
 import '../../features/wines/presentation/modules/wine_add/wine_add.screen.dart';
 import '../../features/wines/presentation/modules/wine_detail/wine_detail.screen.dart';
@@ -45,6 +48,19 @@ GoRouter goRouter(GoRouterRef ref) {
           return WineDetailScreen(wineId: id);
         },
       ),
+      // Scanner routes
+      GoRoute(
+        path: AppRoutes.scan,
+        builder: (context, state) => const ScanScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.scanResult,
+        builder: (context, state) => const ScanResultScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.scanLabel,
+        builder: (context, state) => const ScanLabelScreen(),
+      ),
     ],
     errorBuilder: (context, state) => Scaffold(
       body: Center(child: Text('Page not found: ${state.uri}')),
@@ -65,6 +81,8 @@ class MainShell extends StatelessWidget {
         onDestinationSelected: (index) => _onTap(index, context),
         destinations: const [
           NavigationDestination(icon: Icon(Icons.wine_bar), label: 'Wines'),
+          NavigationDestination(
+              icon: Icon(Icons.qr_code_scanner), label: 'Scan'),
           NavigationDestination(icon: Icon(Icons.group), label: 'Groups'),
           NavigationDestination(icon: Icon(Icons.person), label: 'Profile'),
         ],
@@ -74,8 +92,9 @@ class MainShell extends StatelessWidget {
 
   int _calculateIndex(BuildContext context) {
     final location = GoRouterState.of(context).uri.toString();
-    if (location.startsWith('/groups')) return 1;
-    if (location.startsWith('/profile')) return 2;
+    if (location.startsWith('/scan')) return 1;
+    if (location.startsWith('/groups')) return 2;
+    if (location.startsWith('/profile')) return 3;
     return 0;
   }
 
@@ -84,8 +103,10 @@ class MainShell extends StatelessWidget {
       case 0:
         context.go(AppRoutes.wines);
       case 1:
-        context.go(AppRoutes.groups);
+        context.push(AppRoutes.scan);
       case 2:
+        context.go(AppRoutes.groups);
+      case 3:
         context.go(AppRoutes.profile);
     }
   }

@@ -47,6 +47,10 @@
 			</array>
 		</dict>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>Sippd needs camera access to scan wine barcodes and labels</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Sippd needs photo library access to add wine label photos</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
