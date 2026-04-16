@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../features/auth/controller/auth.provider.dart';
 import '../../features/auth/presentation/modules/login/login.screen.dart';
 import '../../features/auth/presentation/modules/profile/profile.screen.dart';
+import '../../features/profile/controller/profile.provider.dart';
+import '../../features/profile/presentation/modules/choose_username/choose_username.screen.dart';
 import '../../features/friends/presentation/modules/friend_profile/friend_profile.screen.dart';
 import '../../features/friends/presentation/modules/friends/friends.screen.dart';
 import '../../features/groups/presentation/modules/group_detail/group_detail.screen.dart';
@@ -22,14 +25,38 @@ part 'route_config.g.dart';
 
 @riverpod
 GoRouter goRouter(GoRouterRef ref) {
-  return GoRouter(
+  final router = GoRouter(
     initialLocation: AppRoutes.login,
     debugLogDiagnostics: true,
+    redirect: (context, state) {
+      final authed = ref.read(isAuthenticatedProvider);
+      if (!authed) return null;
+
+      final profile = ref.read(currentProfileProvider).valueOrNull;
+      if (profile == null) return null;
+
+      final needsUsername =
+          profile.username == null || profile.username!.isEmpty;
+      final loc = state.matchedLocation;
+
+      if (needsUsername && loc != AppRoutes.chooseUsername) {
+        return AppRoutes.chooseUsername;
+      }
+      if (!needsUsername &&
+          (loc == AppRoutes.chooseUsername || loc == AppRoutes.login)) {
+        return AppRoutes.wines;
+      }
+      return null;
+    },
     routes: [
       // Auth
       GoRoute(
         path: AppRoutes.login,
         builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.chooseUsername,
+        builder: (context, state) => const ChooseUsernameScreen(),
       ),
 
       // Main shell
@@ -114,6 +141,11 @@ GoRouter goRouter(GoRouterRef ref) {
       body: Center(child: Text('Page not found: ${state.uri}')),
     ),
   );
+
+  ref.listen(authControllerProvider, (_, _) => router.refresh());
+  ref.listen(currentProfileProvider, (_, _) => router.refresh());
+
+  return router;
 }
 
 class MainShell extends StatelessWidget {
@@ -129,8 +161,6 @@ class MainShell extends StatelessWidget {
         onDestinationSelected: (index) => _onTap(index, context),
         destinations: const [
           NavigationDestination(icon: Icon(Icons.wine_bar), label: 'Wines'),
-          NavigationDestination(
-              icon: Icon(Icons.qr_code_scanner), label: 'Scan'),
           NavigationDestination(icon: Icon(Icons.group), label: 'Groups'),
           NavigationDestination(icon: Icon(Icons.person), label: 'Profile'),
         ],
@@ -140,9 +170,8 @@ class MainShell extends StatelessWidget {
 
   int _calculateIndex(BuildContext context) {
     final location = GoRouterState.of(context).uri.toString();
-    if (location.startsWith('/scan')) return 1;
-    if (location.startsWith('/groups')) return 2;
-    if (location.startsWith('/profile')) return 3;
+    if (location.startsWith('/groups')) return 1;
+    if (location.startsWith('/profile')) return 2;
     return 0;
   }
 
@@ -151,10 +180,8 @@ class MainShell extends StatelessWidget {
       case 0:
         context.go(AppRoutes.wines);
       case 1:
-        context.push(AppRoutes.scan);
-      case 2:
         context.go(AppRoutes.groups);
-      case 3:
+      case 2:
         context.go(AppRoutes.profile);
     }
   }

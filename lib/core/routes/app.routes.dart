@@ -4,6 +4,7 @@ class AppRoutes {
 
   // Auth
   static const String login = '/login';
+  static const String chooseUsername = '/onboarding/username';
 
   // Main tabs
   static const String wines = '/wines';

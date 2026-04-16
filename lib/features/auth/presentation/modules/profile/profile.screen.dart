@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../core/routes/app.routes.dart';
+import '../../../../profile/controller/profile.provider.dart';
 import '../../../../wines/controller/wine.provider.dart';
 import '../../../controller/auth.provider.dart';
 
@@ -14,7 +15,14 @@ class ProfileScreen extends ConsumerWidget {
     final authState = ref.watch(authControllerProvider);
     final cs = Theme.of(context).colorScheme;
     final user = authState.valueOrNull;
+    final profile = ref.watch(currentProfileProvider).valueOrNull;
     final winesAsync = ref.watch(wineControllerProvider);
+
+    final headlineName = profile?.username ??
+        profile?.displayName ??
+        user?.userMetadata?['display_name'] as String? ??
+        user?.email?.split('@').first ??
+        'Guest';
 
     return Scaffold(
       body: SafeArea(
@@ -43,7 +51,7 @@ class ProfileScreen extends ConsumerWidget {
                     child: user != null
                         ? Center(
                             child: Text(
-                              _initials(user.email ?? '?'),
+                              _initials(headlineName),
                               style: TextStyle(
                                 fontSize: context.headingFont,
                                 fontWeight: FontWeight.bold,
@@ -56,9 +64,9 @@ class ProfileScreen extends ConsumerWidget {
                   ),
                   SizedBox(height: context.m),
                   Text(
-                    user?.userMetadata?['display_name'] as String? ??
-                        user?.email?.split('@').first ??
-                        'Guest',
+                    profile?.username != null
+                        ? '@$headlineName'
+                        : headlineName,
                     style: TextStyle(
                         fontSize: context.headingFont,
                         fontWeight: FontWeight.bold),
@@ -172,10 +180,10 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  String _initials(String email) {
-    final name = email.split('@').first;
-    if (name.length < 2) return name.toUpperCase();
-    return name.substring(0, 2).toUpperCase();
+  String _initials(String name) {
+    final clean = name.replaceAll(RegExp(r'[^A-Za-z0-9]'), '');
+    if (clean.length < 2) return clean.toUpperCase();
+    return clean.substring(0, 2).toUpperCase();
   }
 }
 
