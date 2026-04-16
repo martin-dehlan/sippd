@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:latlong2/latlong.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../controller/wine.provider.dart';
@@ -96,9 +97,9 @@ class _WineDetailBodyState extends State<WineDetailBody>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              SizedBox(height: context.xl),
+              SizedBox(height: context.xl * 1.5),
               _NameTitle(name: widget.wine.name),
-              SizedBox(height: context.xs),
+              SizedBox(height: context.s),
               _TypeSubtitle(type: widget.wine.type),
               SizedBox(height: context.l),
               Expanded(
@@ -204,15 +205,18 @@ class _NameTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: context.paddingH),
+      padding: EdgeInsets.only(
+        left: context.paddingH * 1.3,
+        right: context.paddingH * 1.3,
+      ),
       child: Text(
         name.toUpperCase(),
         textAlign: TextAlign.left,
-        style: TextStyle(
-          fontSize: context.titleFont * 1.1,
-          fontWeight: FontWeight.bold,
-          letterSpacing: -1,
-          height: 1.1,
+        style: GoogleFonts.playfairDisplay(
+          fontSize: context.titleFont * 1.3,
+          fontWeight: FontWeight.w800,
+          letterSpacing: -0.5,
+          height: 1.05,
         ),
         maxLines: 2,
         overflow: TextOverflow.ellipsis,
@@ -368,6 +372,22 @@ class _TypeSubtitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(left: context.paddingH * 1.3),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: _WineTypeChip(type: type),
+      ),
+    );
+  }
+}
+
+class _WineTypeChip extends StatelessWidget {
+  final WineType type;
+  const _WineTypeChip({required this.type});
+
+  @override
+  Widget build(BuildContext context) {
     final label = switch (type) {
       WineType.red => 'Red Wine',
       WineType.white => 'White Wine',
@@ -378,12 +398,18 @@ class _TypeSubtitle extends StatelessWidget {
       WineType.white => const Color(0xFFD4C49A),
       WineType.rose => const Color(0xFFD6889A),
     };
-
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: context.paddingH),
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: context.w * 0.03,
+        vertical: context.xs + 1,
+      ),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(context.w * 0.05),
+      ),
       child: Text(label,
           style: TextStyle(
-            fontSize: context.bodyFont,
+            fontSize: context.captionFont,
             fontWeight: FontWeight.w600,
             color: color,
             letterSpacing: 0.2,

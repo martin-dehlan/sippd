@@ -32,7 +32,7 @@ class AppTheme {
       tertiary: _nude,
     );
 
-    final textTheme = GoogleFonts.dmSansTextTheme(ThemeData.dark().textTheme);
+    final textTheme = GoogleFonts.interTextTheme(ThemeData.dark().textTheme);
 
     return ThemeData(
       useMaterial3: true,

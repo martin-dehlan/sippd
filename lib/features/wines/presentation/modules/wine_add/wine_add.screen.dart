@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../../common/utils/responsive.dart';
@@ -156,9 +157,9 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
           child: ListView(
             padding: EdgeInsets.zero,
             children: [
-              SizedBox(height: context.xl),
+              SizedBox(height: context.xl * 1.5),
               _NameField(controller: _nameController),
-              SizedBox(height: context.xs),
+              SizedBox(height: context.s),
               _TypeSubtitle(
                 type: _type,
                 onTap: _cycleType,
@@ -300,29 +301,27 @@ class _NameField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final titleStyle = GoogleFonts.playfairDisplay(
+      fontSize: context.titleFont * 1.3,
+      fontWeight: FontWeight.w800,
+      letterSpacing: -0.5,
+      height: 1.05,
+      color: cs.onSurface,
+    );
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: context.paddingH),
+      padding: EdgeInsets.only(
+        left: context.paddingH * 1.3,
+        right: context.paddingH * 1.3,
+      ),
       child: TextFormField(
         controller: controller,
         cursorColor: cs.primary,
         cursorWidth: 1.5,
         textCapitalization: TextCapitalization.characters,
-        style: TextStyle(
-          fontSize: context.titleFont * 1.1,
-          fontWeight: FontWeight.bold,
-          letterSpacing: -1,
-          height: 1.1,
-          color: cs.onSurface,
-        ),
+        style: titleStyle,
         decoration: InputDecoration(
-          hintText: 'Wine name',
-          hintStyle: TextStyle(
-            color: cs.outline,
-            fontSize: context.titleFont * 1.1,
-            fontWeight: FontWeight.bold,
-            letterSpacing: -1,
-            height: 1.1,
-          ),
+          hintText: 'WINE NAME',
+          hintStyle: titleStyle.copyWith(color: cs.outline),
           filled: false,
           fillColor: Colors.transparent,
           border: InputBorder.none,
@@ -457,18 +456,31 @@ class _TypeSubtitle extends StatelessWidget {
       WineType.rose => const Color(0xFFD6889A),
     };
 
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: onTap,
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: context.paddingH),
-        child: Text(label,
-            style: TextStyle(
-              fontSize: context.bodyFont,
-              fontWeight: FontWeight.w600,
-              color: color,
-              letterSpacing: 0.2,
-            )),
+    return Padding(
+      padding: EdgeInsets.only(left: context.paddingH * 1.3),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: onTap,
+          child: Container(
+            padding: EdgeInsets.symmetric(
+              horizontal: context.w * 0.03,
+              vertical: context.xs + 1,
+            ),
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(context.w * 0.05),
+            ),
+            child: Text(label,
+                style: TextStyle(
+                  fontSize: context.captionFont,
+                  fontWeight: FontWeight.w600,
+                  color: color,
+                  letterSpacing: 0.2,
+                )),
+          ),
+        ),
       ),
     );
   }
