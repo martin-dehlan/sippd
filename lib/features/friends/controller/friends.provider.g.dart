@@ -220,6 +220,42 @@ class _FriendWinesProviderElement
   String get friendId => (origin as FriendWinesProvider).friendId;
 }
 
+String _$activityApiHash() => r'91514b9a29f8f9ece6042f8000caa83362750405';
+
+/// See also [activityApi].
+@ProviderFor(activityApi)
+final activityApiProvider = AutoDisposeProvider<ActivityApi?>.internal(
+  activityApi,
+  name: r'activityApiProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$activityApiHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef ActivityApiRef = AutoDisposeProviderRef<ActivityApi?>;
+String _$activityFeedHash() => r'b1fd9a397d8c60838b7cf8489ce11ab1004a3f4e';
+
+/// See also [activityFeed].
+@ProviderFor(activityFeed)
+final activityFeedProvider =
+    AutoDisposeFutureProvider<List<ActivityItemEntity>>.internal(
+      activityFeed,
+      name: r'activityFeedProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$activityFeedHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef ActivityFeedRef =
+    AutoDisposeFutureProviderRef<List<ActivityItemEntity>>;
 String _$friendProfileHash() => r'66e1cf653e9a63301eeed9b3cd317b0416d514e0';
 
 /// See also [friendProfile].

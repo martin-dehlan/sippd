@@ -1,9 +1,12 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../auth/controller/auth.provider.dart';
 import '../../wines/domain/entities/wine.entity.dart';
+import '../data/data_sources/activity.api.dart';
 import '../data/data_sources/friend_wines.api.dart';
 import '../data/data_sources/friends.api.dart';
+import '../data/models/friend_profile.model.dart';
 import '../data/repositories/friends.repository.impl.dart';
+import '../domain/entities/activity_item.entity.dart';
 import '../domain/entities/friend_profile.entity.dart';
 import '../domain/entities/friend_request.entity.dart';
 import '../domain/repositories/friends.repository.dart';
@@ -49,6 +52,27 @@ Future<List<WineEntity>> friendWines(
   if (api == null) return const [];
   final models = await api.fetchFriendWines(friendId);
   return models.map((m) => m.toEntity()).toList();
+}
+
+@riverpod
+ActivityApi? activityApi(ActivityApiRef ref) {
+  final isAuth = ref.watch(isAuthenticatedProvider);
+  if (!isAuth) return null;
+  final client = ref.read(supabaseClientProvider);
+  return ActivityApi(client);
+}
+
+@riverpod
+Future<List<ActivityItemEntity>> activityFeed(ActivityFeedRef ref) async {
+  final api = ref.watch(activityApiProvider);
+  if (api == null) return const [];
+  final raw = await api.fetchRecent();
+  return raw
+      .map((r) => ActivityItemEntity(
+            wine: r.wine.toEntity(),
+            friend: r.friend.toEntity(),
+          ))
+      .toList();
 }
 
 @riverpod

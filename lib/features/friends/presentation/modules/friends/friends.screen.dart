@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../controller/friends.provider.dart';
+import '../../widgets/activity_feed_tab.widget.dart';
 import '../../widgets/friend_requests_tab.widget.dart';
 import '../../widgets/friend_search_tab.widget.dart';
 import '../../widgets/friends_list_tab.widget.dart';
@@ -17,7 +18,7 @@ class FriendsScreen extends ConsumerWidget {
     final pendingCount = requestsAsync.valueOrNull?.length ?? 0;
 
     return DefaultTabController(
-      length: 3,
+      length: 4,
       child: Scaffold(
         body: SafeArea(
           child: Column(
@@ -47,6 +48,7 @@ class FriendsScreen extends ConsumerWidget {
                     fontSize: context.captionFont,
                     fontWeight: FontWeight.w600),
                 tabs: [
+                  const Tab(text: 'Feed'),
                   const Tab(text: 'Friends'),
                   Tab(
                     child: Row(
@@ -80,6 +82,7 @@ class FriendsScreen extends ConsumerWidget {
               const Expanded(
                 child: TabBarView(
                   children: [
+                    ActivityFeedTab(),
                     FriendsListTab(),
                     FriendRequestsTab(),
                     FriendSearchTab(),
