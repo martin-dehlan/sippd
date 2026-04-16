@@ -119,6 +119,28 @@ class $WinesTableTable extends WinesTable
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _memoryImageUrlMeta = const VerificationMeta(
+    'memoryImageUrl',
+  );
+  @override
+  late final GeneratedColumn<String> memoryImageUrl = GeneratedColumn<String>(
+    'memory_image_url',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _memoryLocalImagePathMeta =
+      const VerificationMeta('memoryLocalImagePath');
+  @override
+  late final GeneratedColumn<String> memoryLocalImagePath =
+      GeneratedColumn<String>(
+        'memory_local_image_path',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
   static const VerificationMeta _vintageMeta = const VerificationMeta(
     'vintage',
   );
@@ -184,6 +206,8 @@ class $WinesTableTable extends WinesTable
     notes,
     imageUrl,
     localImagePath,
+    memoryImageUrl,
+    memoryLocalImagePath,
     vintage,
     grape,
     userId,
@@ -276,6 +300,24 @@ class $WinesTableTable extends WinesTable
         ),
       );
     }
+    if (data.containsKey('memory_image_url')) {
+      context.handle(
+        _memoryImageUrlMeta,
+        memoryImageUrl.isAcceptableOrUnknown(
+          data['memory_image_url']!,
+          _memoryImageUrlMeta,
+        ),
+      );
+    }
+    if (data.containsKey('memory_local_image_path')) {
+      context.handle(
+        _memoryLocalImagePathMeta,
+        memoryLocalImagePath.isAcceptableOrUnknown(
+          data['memory_local_image_path']!,
+          _memoryLocalImagePathMeta,
+        ),
+      );
+    }
     if (data.containsKey('vintage')) {
       context.handle(
         _vintageMeta,
@@ -361,6 +403,14 @@ class $WinesTableTable extends WinesTable
         DriftSqlType.string,
         data['${effectivePrefix}local_image_path'],
       ),
+      memoryImageUrl: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}memory_image_url'],
+      ),
+      memoryLocalImagePath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}memory_local_image_path'],
+      ),
       vintage: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}vintage'],
@@ -402,6 +452,8 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
   final String? notes;
   final String? imageUrl;
   final String? localImagePath;
+  final String? memoryImageUrl;
+  final String? memoryLocalImagePath;
   final int? vintage;
   final String? grape;
   final String userId;
@@ -419,6 +471,8 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
     this.notes,
     this.imageUrl,
     this.localImagePath,
+    this.memoryImageUrl,
+    this.memoryLocalImagePath,
     this.vintage,
     this.grape,
     required this.userId,
@@ -450,6 +504,12 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
     }
     if (!nullToAbsent || localImagePath != null) {
       map['local_image_path'] = Variable<String>(localImagePath);
+    }
+    if (!nullToAbsent || memoryImageUrl != null) {
+      map['memory_image_url'] = Variable<String>(memoryImageUrl);
+    }
+    if (!nullToAbsent || memoryLocalImagePath != null) {
+      map['memory_local_image_path'] = Variable<String>(memoryLocalImagePath);
     }
     if (!nullToAbsent || vintage != null) {
       map['vintage'] = Variable<int>(vintage);
@@ -490,6 +550,12 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
       localImagePath: localImagePath == null && nullToAbsent
           ? const Value.absent()
           : Value(localImagePath),
+      memoryImageUrl: memoryImageUrl == null && nullToAbsent
+          ? const Value.absent()
+          : Value(memoryImageUrl),
+      memoryLocalImagePath: memoryLocalImagePath == null && nullToAbsent
+          ? const Value.absent()
+          : Value(memoryLocalImagePath),
       vintage: vintage == null && nullToAbsent
           ? const Value.absent()
           : Value(vintage),
@@ -521,6 +587,10 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
       notes: serializer.fromJson<String?>(json['notes']),
       imageUrl: serializer.fromJson<String?>(json['imageUrl']),
       localImagePath: serializer.fromJson<String?>(json['localImagePath']),
+      memoryImageUrl: serializer.fromJson<String?>(json['memoryImageUrl']),
+      memoryLocalImagePath: serializer.fromJson<String?>(
+        json['memoryLocalImagePath'],
+      ),
       vintage: serializer.fromJson<int?>(json['vintage']),
       grape: serializer.fromJson<String?>(json['grape']),
       userId: serializer.fromJson<String>(json['userId']),
@@ -543,6 +613,8 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
       'notes': serializer.toJson<String?>(notes),
       'imageUrl': serializer.toJson<String?>(imageUrl),
       'localImagePath': serializer.toJson<String?>(localImagePath),
+      'memoryImageUrl': serializer.toJson<String?>(memoryImageUrl),
+      'memoryLocalImagePath': serializer.toJson<String?>(memoryLocalImagePath),
       'vintage': serializer.toJson<int?>(vintage),
       'grape': serializer.toJson<String?>(grape),
       'userId': serializer.toJson<String>(userId),
@@ -563,6 +635,8 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
     Value<String?> notes = const Value.absent(),
     Value<String?> imageUrl = const Value.absent(),
     Value<String?> localImagePath = const Value.absent(),
+    Value<String?> memoryImageUrl = const Value.absent(),
+    Value<String?> memoryLocalImagePath = const Value.absent(),
     Value<int?> vintage = const Value.absent(),
     Value<String?> grape = const Value.absent(),
     String? userId,
@@ -582,6 +656,12 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
     localImagePath: localImagePath.present
         ? localImagePath.value
         : this.localImagePath,
+    memoryImageUrl: memoryImageUrl.present
+        ? memoryImageUrl.value
+        : this.memoryImageUrl,
+    memoryLocalImagePath: memoryLocalImagePath.present
+        ? memoryLocalImagePath.value
+        : this.memoryLocalImagePath,
     vintage: vintage.present ? vintage.value : this.vintage,
     grape: grape.present ? grape.value : this.grape,
     userId: userId ?? this.userId,
@@ -603,6 +683,12 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
       localImagePath: data.localImagePath.present
           ? data.localImagePath.value
           : this.localImagePath,
+      memoryImageUrl: data.memoryImageUrl.present
+          ? data.memoryImageUrl.value
+          : this.memoryImageUrl,
+      memoryLocalImagePath: data.memoryLocalImagePath.present
+          ? data.memoryLocalImagePath.value
+          : this.memoryLocalImagePath,
       vintage: data.vintage.present ? data.vintage.value : this.vintage,
       grape: data.grape.present ? data.grape.value : this.grape,
       userId: data.userId.present ? data.userId.value : this.userId,
@@ -625,6 +711,8 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
           ..write('notes: $notes, ')
           ..write('imageUrl: $imageUrl, ')
           ..write('localImagePath: $localImagePath, ')
+          ..write('memoryImageUrl: $memoryImageUrl, ')
+          ..write('memoryLocalImagePath: $memoryLocalImagePath, ')
           ..write('vintage: $vintage, ')
           ..write('grape: $grape, ')
           ..write('userId: $userId, ')
@@ -647,6 +735,8 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
     notes,
     imageUrl,
     localImagePath,
+    memoryImageUrl,
+    memoryLocalImagePath,
     vintage,
     grape,
     userId,
@@ -668,6 +758,8 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
           other.notes == this.notes &&
           other.imageUrl == this.imageUrl &&
           other.localImagePath == this.localImagePath &&
+          other.memoryImageUrl == this.memoryImageUrl &&
+          other.memoryLocalImagePath == this.memoryLocalImagePath &&
           other.vintage == this.vintage &&
           other.grape == this.grape &&
           other.userId == this.userId &&
@@ -687,6 +779,8 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
   final Value<String?> notes;
   final Value<String?> imageUrl;
   final Value<String?> localImagePath;
+  final Value<String?> memoryImageUrl;
+  final Value<String?> memoryLocalImagePath;
   final Value<int?> vintage;
   final Value<String?> grape;
   final Value<String> userId;
@@ -705,6 +799,8 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
     this.notes = const Value.absent(),
     this.imageUrl = const Value.absent(),
     this.localImagePath = const Value.absent(),
+    this.memoryImageUrl = const Value.absent(),
+    this.memoryLocalImagePath = const Value.absent(),
     this.vintage = const Value.absent(),
     this.grape = const Value.absent(),
     this.userId = const Value.absent(),
@@ -724,6 +820,8 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
     this.notes = const Value.absent(),
     this.imageUrl = const Value.absent(),
     this.localImagePath = const Value.absent(),
+    this.memoryImageUrl = const Value.absent(),
+    this.memoryLocalImagePath = const Value.absent(),
     this.vintage = const Value.absent(),
     this.grape = const Value.absent(),
     required String userId,
@@ -747,6 +845,8 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
     Expression<String>? notes,
     Expression<String>? imageUrl,
     Expression<String>? localImagePath,
+    Expression<String>? memoryImageUrl,
+    Expression<String>? memoryLocalImagePath,
     Expression<int>? vintage,
     Expression<String>? grape,
     Expression<String>? userId,
@@ -766,6 +866,9 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
       if (notes != null) 'notes': notes,
       if (imageUrl != null) 'image_url': imageUrl,
       if (localImagePath != null) 'local_image_path': localImagePath,
+      if (memoryImageUrl != null) 'memory_image_url': memoryImageUrl,
+      if (memoryLocalImagePath != null)
+        'memory_local_image_path': memoryLocalImagePath,
       if (vintage != null) 'vintage': vintage,
       if (grape != null) 'grape': grape,
       if (userId != null) 'user_id': userId,
@@ -787,6 +890,8 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
     Value<String?>? notes,
     Value<String?>? imageUrl,
     Value<String?>? localImagePath,
+    Value<String?>? memoryImageUrl,
+    Value<String?>? memoryLocalImagePath,
     Value<int?>? vintage,
     Value<String?>? grape,
     Value<String>? userId,
@@ -806,6 +911,8 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
       notes: notes ?? this.notes,
       imageUrl: imageUrl ?? this.imageUrl,
       localImagePath: localImagePath ?? this.localImagePath,
+      memoryImageUrl: memoryImageUrl ?? this.memoryImageUrl,
+      memoryLocalImagePath: memoryLocalImagePath ?? this.memoryLocalImagePath,
       vintage: vintage ?? this.vintage,
       grape: grape ?? this.grape,
       userId: userId ?? this.userId,
@@ -851,6 +958,14 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
     if (localImagePath.present) {
       map['local_image_path'] = Variable<String>(localImagePath.value);
     }
+    if (memoryImageUrl.present) {
+      map['memory_image_url'] = Variable<String>(memoryImageUrl.value);
+    }
+    if (memoryLocalImagePath.present) {
+      map['memory_local_image_path'] = Variable<String>(
+        memoryLocalImagePath.value,
+      );
+    }
     if (vintage.present) {
       map['vintage'] = Variable<int>(vintage.value);
     }
@@ -886,6 +1001,8 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
           ..write('notes: $notes, ')
           ..write('imageUrl: $imageUrl, ')
           ..write('localImagePath: $localImagePath, ')
+          ..write('memoryImageUrl: $memoryImageUrl, ')
+          ..write('memoryLocalImagePath: $memoryLocalImagePath, ')
           ..write('vintage: $vintage, ')
           ..write('grape: $grape, ')
           ..write('userId: $userId, ')
@@ -922,6 +1039,8 @@ typedef $$WinesTableTableCreateCompanionBuilder =
       Value<String?> notes,
       Value<String?> imageUrl,
       Value<String?> localImagePath,
+      Value<String?> memoryImageUrl,
+      Value<String?> memoryLocalImagePath,
       Value<int?> vintage,
       Value<String?> grape,
       required String userId,
@@ -942,6 +1061,8 @@ typedef $$WinesTableTableUpdateCompanionBuilder =
       Value<String?> notes,
       Value<String?> imageUrl,
       Value<String?> localImagePath,
+      Value<String?> memoryImageUrl,
+      Value<String?> memoryLocalImagePath,
       Value<int?> vintage,
       Value<String?> grape,
       Value<String> userId,
@@ -1011,6 +1132,16 @@ class $$WinesTableTableFilterComposer
 
   ColumnFilters<String> get localImagePath => $composableBuilder(
     column: $table.localImagePath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get memoryImageUrl => $composableBuilder(
+    column: $table.memoryImageUrl,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get memoryLocalImagePath => $composableBuilder(
+    column: $table.memoryLocalImagePath,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -1104,6 +1235,16 @@ class $$WinesTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get memoryImageUrl => $composableBuilder(
+    column: $table.memoryImageUrl,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get memoryLocalImagePath => $composableBuilder(
+    column: $table.memoryLocalImagePath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get vintage => $composableBuilder(
     column: $table.vintage,
     builder: (column) => ColumnOrderings(column),
@@ -1174,6 +1315,16 @@ class $$WinesTableTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<String> get memoryImageUrl => $composableBuilder(
+    column: $table.memoryImageUrl,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get memoryLocalImagePath => $composableBuilder(
+    column: $table.memoryLocalImagePath,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<int> get vintage =>
       $composableBuilder(column: $table.vintage, builder: (column) => column);
 
@@ -1232,6 +1383,8 @@ class $$WinesTableTableTableManager
                 Value<String?> notes = const Value.absent(),
                 Value<String?> imageUrl = const Value.absent(),
                 Value<String?> localImagePath = const Value.absent(),
+                Value<String?> memoryImageUrl = const Value.absent(),
+                Value<String?> memoryLocalImagePath = const Value.absent(),
                 Value<int?> vintage = const Value.absent(),
                 Value<String?> grape = const Value.absent(),
                 Value<String> userId = const Value.absent(),
@@ -1250,6 +1403,8 @@ class $$WinesTableTableTableManager
                 notes: notes,
                 imageUrl: imageUrl,
                 localImagePath: localImagePath,
+                memoryImageUrl: memoryImageUrl,
+                memoryLocalImagePath: memoryLocalImagePath,
                 vintage: vintage,
                 grape: grape,
                 userId: userId,
@@ -1270,6 +1425,8 @@ class $$WinesTableTableTableManager
                 Value<String?> notes = const Value.absent(),
                 Value<String?> imageUrl = const Value.absent(),
                 Value<String?> localImagePath = const Value.absent(),
+                Value<String?> memoryImageUrl = const Value.absent(),
+                Value<String?> memoryLocalImagePath = const Value.absent(),
                 Value<int?> vintage = const Value.absent(),
                 Value<String?> grape = const Value.absent(),
                 required String userId,
@@ -1288,6 +1445,8 @@ class $$WinesTableTableTableManager
                 notes: notes,
                 imageUrl: imageUrl,
                 localImagePath: localImagePath,
+                memoryImageUrl: memoryImageUrl,
+                memoryLocalImagePath: memoryLocalImagePath,
                 vintage: vintage,
                 grape: grape,
                 userId: userId,

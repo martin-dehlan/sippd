@@ -13,6 +13,8 @@ class WinesTable extends Table {
   TextColumn get notes => text().nullable()();
   TextColumn get imageUrl => text().nullable()();
   TextColumn get localImagePath => text().nullable()();
+  TextColumn get memoryImageUrl => text().nullable()();
+  TextColumn get memoryLocalImagePath => text().nullable()();
   IntColumn get vintage => integer().nullable()();
   TextColumn get grape => text().nullable()();
   TextColumn get userId => text()();

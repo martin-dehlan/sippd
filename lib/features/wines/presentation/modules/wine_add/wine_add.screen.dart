@@ -8,6 +8,7 @@ import '../../../../locations/presentation/widgets/location_search.widget.dart';
 import '../../../controller/wine.provider.dart';
 import '../../../domain/entities/wine.entity.dart';
 import '../../widgets/wine_country_picker.widget.dart';
+import '../../widgets/wine_photo_picker.widget.dart';
 import '../../widgets/wine_rating_input.widget.dart';
 
 class WineAddScreen extends ConsumerStatefulWidget {
@@ -29,6 +30,10 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
   WineType _type = WineType.red;
   String? _country;
   LocationEntity? _location;
+  String? _imageUrl;
+  String? _localImagePath;
+  String? _memoryImageUrl;
+  String? _memoryLocalImagePath;
 
   @override
   void dispose() {
@@ -60,6 +65,10 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
       vintage: _vintageController.text.isNotEmpty
           ? int.tryParse(_vintageController.text)
           : null,
+      imageUrl: _imageUrl,
+      localImagePath: _localImagePath,
+      memoryImageUrl: _memoryImageUrl,
+      memoryLocalImagePath: _memoryLocalImagePath,
       userId: 'local_user',
       createdAt: DateTime.now(),
     );
@@ -73,250 +82,341 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
     final cs = Theme.of(context).colorScheme;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Add Wine',
-            style: TextStyle(
-                fontSize: context.headingFont, fontWeight: FontWeight.bold)),
-        actions: [
-          TextButton(
-            onPressed: _submit,
-            child: Text('Save',
-                style: TextStyle(
-                    fontSize: context.bodyFont,
-                    fontWeight: FontWeight.w700,
-                    color: cs.primary)),
-          ),
-        ],
-      ),
-      body: Form(
-        key: _formKey,
-        child: ListView(
-          padding: EdgeInsets.symmetric(horizontal: context.paddingH),
-          children: [
-            SizedBox(height: context.m),
+      body: SafeArea(
+        child: Form(
+          key: _formKey,
+          child: ListView(
+            padding: EdgeInsets.symmetric(horizontal: context.paddingH),
+            children: [
+              SizedBox(height: context.s),
 
-            // Photo placeholder
-            WinePhotoPlaceholder(onTap: () {
-              // TODO: image_picker
-            }),
-            SizedBox(height: context.l),
-
-            // Name
-            TextFormField(
-              controller: _nameController,
-              style: TextStyle(
-                  fontSize: context.bodyFont, fontWeight: FontWeight.w600),
-              decoration: InputDecoration(
-                labelText: 'Wine Name',
-                prefixIcon: Icon(Icons.wine_bar,
-                    color: cs.primary, size: context.w * 0.05),
+              // Top bar
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _CircleIconButton(
+                    icon: Icons.arrow_back_ios_new,
+                    onTap: () => context.pop(),
+                  ),
+                  TextButton(
+                    onPressed: _submit,
+                    child: Text('Save',
+                        style: TextStyle(
+                          fontSize: context.bodyFont,
+                          fontWeight: FontWeight.w700,
+                          color: cs.primary,
+                        )),
+                  ),
+                ],
               ),
-              validator: (v) =>
-                  v == null || v.trim().isEmpty ? 'Name required' : null,
-            ),
-            SizedBox(height: context.m),
+              SizedBox(height: context.m),
 
-            // Type
-            WineTypeSelector(
-              selected: _type,
-              onChanged: (t) => setState(() => _type = t),
-            ),
-            SizedBox(height: context.l),
+              // Hero: photo left + name/type right
+              SizedBox(
+                height: context.h * 0.22,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      flex: 5,
+                      child: WinePhotoPicker(
+                        label: 'Photo',
+                        placeholderIcon: Icons.wine_bar_outlined,
+                        imageUrl: _imageUrl,
+                        localPath: _localImagePath,
+                        onChanged: (v) => setState(() {
+                          _imageUrl = v.imageUrl;
+                          _localImagePath = v.localPath;
+                        }),
+                      ),
+                    ),
+                    SizedBox(width: context.w * 0.04),
+                    Expanded(
+                      flex: 6,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          TextFormField(
+                            controller: _nameController,
+                            style: TextStyle(
+                              fontSize: context.bodyFont * 1.1,
+                              fontWeight: FontWeight.bold,
+                              height: 1.2,
+                            ),
+                            decoration: InputDecoration(
+                              hintText: 'Wine name',
+                              hintStyle: TextStyle(
+                                color: cs.outline,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              border: InputBorder.none,
+                              enabledBorder: InputBorder.none,
+                              focusedBorder: InputBorder.none,
+                              isDense: true,
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                            validator: (v) => v == null || v.trim().isEmpty
+                                ? 'Required'
+                                : null,
+                          ),
+                          SizedBox(height: context.s),
+                          _TypeSelector(
+                            selected: _type,
+                            onChanged: (t) => setState(() => _type = t),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: context.l),
 
-            // Rating
-            WineRatingInput(
-              rating: _rating,
-              onChanged: (v) => setState(() => _rating = v),
-            ),
-            SizedBox(height: context.l),
+              WineRatingInput(
+                rating: _rating,
+                onChanged: (v) => setState(() => _rating = v),
+              ),
+              SizedBox(height: context.l),
 
-            // Section: Details
-            SectionLabel(label: 'Details'),
-            SizedBox(height: context.m),
-
-            Row(
-              children: [
-                Expanded(
-                  flex: 2,
-                  child: TextFormField(
-                    controller: _priceController,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      labelText: 'Price',
-                      prefixIcon: Icon(Icons.euro,
-                          color: cs.primary, size: context.w * 0.05),
+              // Price + Year
+              Row(
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: _CompactField(
+                      controller: _priceController,
+                      label: 'Price',
+                      icon: Icons.euro,
+                      keyboardType: TextInputType.number,
                     ),
                   ),
-                ),
-                SizedBox(width: context.w * 0.03),
-                Expanded(
-                  child: TextFormField(
-                    controller: _vintageController,
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(labelText: 'Year'),
+                  SizedBox(width: context.w * 0.03),
+                  Expanded(
+                    child: _CompactField(
+                      controller: _vintageController,
+                      label: 'Year',
+                      icon: Icons.calendar_today,
+                      keyboardType: TextInputType.number,
+                    ),
                   ),
+                ],
+              ),
+              SizedBox(height: context.m),
+
+              _CompactField(
+                controller: _grapeController,
+                label: 'Grape',
+                icon: Icons.grass,
+              ),
+              SizedBox(height: context.m),
+
+              WineCountryPicker(
+                selectedCountry: _country,
+                onChanged: (c) => setState(() => _country = c),
+              ),
+              SizedBox(height: context.m),
+
+              LocationSearchWidget(
+                onLocationSelected: (loc) => setState(() => _location = loc),
+                initialValue: _location?.shortDisplay,
+              ),
+              if (_location != null) ...[
+                SizedBox(height: context.s),
+                _SelectedLocationChip(
+                  location: _location!,
+                  onClear: () => setState(() => _location = null),
                 ),
               ],
-            ),
-            SizedBox(height: context.m),
+              SizedBox(height: context.l),
 
-            TextFormField(
-              controller: _grapeController,
-              decoration: InputDecoration(
-                labelText: 'Grape variety',
-                prefixIcon: Icon(Icons.grass,
-                    color: cs.primary, size: context.w * 0.05),
+              // Memory photo
+              WinePhotoPicker(
+                label: 'Memory Photo',
+                placeholderIcon: Icons.photo_camera_front_outlined,
+                imageUrl: _memoryImageUrl,
+                localPath: _memoryLocalImagePath,
+                onChanged: (v) => setState(() {
+                  _memoryImageUrl = v.imageUrl;
+                  _memoryLocalImagePath = v.localPath;
+                }),
               ),
-            ),
-            SizedBox(height: context.l),
+              SizedBox(height: context.l),
 
-            // Section: Origin
-            SectionLabel(label: 'Origin'),
-            SizedBox(height: context.m),
-
-            WineCountryPicker(
-              selectedCountry: _country,
-              onChanged: (c) => setState(() => _country = c),
-            ),
-            SizedBox(height: context.m),
-
-            LocationSearchWidget(
-              onLocationSelected: (loc) => setState(() => _location = loc),
-              initialValue: _location?.shortDisplay,
-            ),
-            if (_location != null) ...[
-              SizedBox(height: context.s),
-              SelectedLocationChip(
-                location: _location!,
-                onClear: () => setState(() => _location = null),
-              ),
-            ],
-            SizedBox(height: context.l),
-
-            // Section: Notes
-            SectionLabel(label: 'Tasting Notes'),
-            SizedBox(height: context.m),
-
-            TextFormField(
-              controller: _notesController,
-              maxLines: 4,
-              decoration: InputDecoration(
-                hintText: 'How did it taste? Aromas, body, finish...',
-                hintStyle: TextStyle(color: cs.outline),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(context.w * 0.03),
+              TextFormField(
+                controller: _notesController,
+                maxLines: 4,
+                style: TextStyle(fontSize: context.bodyFont, height: 1.5),
+                decoration: InputDecoration(
+                  hintText: 'Tasting notes — aromas, body, finish…',
+                  hintStyle: TextStyle(color: cs.outline),
+                  filled: true,
+                  fillColor: cs.surfaceContainer,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(context.w * 0.03),
+                    borderSide: BorderSide.none,
+                  ),
                 ),
               ),
-            ),
-            SizedBox(height: context.xl),
+              SizedBox(height: context.xl),
 
-            // Submit button
-            SizedBox(
-              width: double.infinity,
-              height: context.h * 0.06,
-              child: ElevatedButton(
-                onPressed: _submit,
-                child: Text('Add Wine',
-                    style: TextStyle(
-                        fontSize: context.bodyFont,
-                        fontWeight: FontWeight.w600)),
+              SizedBox(
+                width: double.infinity,
+                height: context.h * 0.06,
+                child: ElevatedButton(
+                  onPressed: _submit,
+                  child: Text('Add Wine',
+                      style: TextStyle(
+                          fontSize: context.bodyFont,
+                          fontWeight: FontWeight.w600)),
+                ),
               ),
-            ),
-            SizedBox(height: context.xl),
-          ],
+              SizedBox(height: context.xl),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-// ─────────────────────────────────────────────────────────────────
-// Sub-widgets
-// ─────────────────────────────────────────────────────────────────
-
-class SectionLabel extends StatelessWidget {
-  final String label;
-  const SectionLabel({super.key, required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return Text(label,
-        style: TextStyle(
-          fontSize: context.captionFont,
-          fontWeight: FontWeight.w700,
-          letterSpacing: 0.5,
-          color: cs.onSurfaceVariant,
-        ));
-  }
-}
-
-class WinePhotoPlaceholder extends StatelessWidget {
+class _CircleIconButton extends StatelessWidget {
+  final IconData icon;
   final VoidCallback onTap;
-  const WinePhotoPlaceholder({super.key, required this.onTap});
+  const _CircleIconButton({required this.icon, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: context.h * 0.2,
+        width: context.w * 0.1,
+        height: context.w * 0.1,
         decoration: BoxDecoration(
           color: cs.surfaceContainer,
-          borderRadius: BorderRadius.circular(context.w * 0.04),
-          border: Border.all(
-              color: cs.outlineVariant, style: BorderStyle.solid, width: 1.5),
+          shape: BoxShape.circle,
+          border: Border.all(color: cs.outlineVariant, width: 0.5),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.camera_alt_outlined,
-                size: context.w * 0.1, color: cs.outline),
-            SizedBox(height: context.s),
-            Text('Add Photo',
-                style: TextStyle(
-                    fontSize: context.captionFont,
-                    color: cs.outline,
-                    fontWeight: FontWeight.w500)),
-          ],
-        ),
+        child: Icon(icon, size: context.w * 0.045, color: cs.onSurface),
       ),
     );
   }
 }
 
-class WineTypeSelector extends StatelessWidget {
+class _TypeSelector extends StatelessWidget {
   final WineType selected;
   final ValueChanged<WineType> onChanged;
 
-  const WineTypeSelector({
-    super.key,
-    required this.selected,
-    required this.onChanged,
+  const _TypeSelector({required this.selected, required this.onChanged});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        _TypeChip(
+          label: 'Red',
+          isSelected: selected == WineType.red,
+          onTap: () => onChanged(WineType.red),
+        ),
+        SizedBox(width: context.w * 0.015),
+        _TypeChip(
+          label: 'White',
+          isSelected: selected == WineType.white,
+          onTap: () => onChanged(WineType.white),
+        ),
+        SizedBox(width: context.w * 0.015),
+        _TypeChip(
+          label: 'Rosé',
+          isSelected: selected == WineType.rose,
+          onTap: () => onChanged(WineType.rose),
+        ),
+      ],
+    );
+  }
+}
+
+class _TypeChip extends StatelessWidget {
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _TypeChip({
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return SegmentedButton<WineType>(
-      segments: const [
-        ButtonSegment(value: WineType.red, label: Text('Red')),
-        ButtonSegment(value: WineType.white, label: Text('White')),
-        ButtonSegment(value: WineType.rose, label: Text('Rosé')),
-      ],
-      selected: {selected},
-      onSelectionChanged: (v) => onChanged(v.first),
+    final cs = Theme.of(context).colorScheme;
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: context.w * 0.025,
+          vertical: context.xs,
+        ),
+        decoration: BoxDecoration(
+          color: isSelected ? cs.primary : cs.surfaceContainer,
+          borderRadius: BorderRadius.circular(context.w * 0.015),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: context.captionFont * 0.9,
+            fontWeight: FontWeight.w600,
+            color: isSelected ? cs.onPrimary : cs.onSurfaceVariant,
+          ),
+        ),
+      ),
     );
   }
 }
 
-class SelectedLocationChip extends StatelessWidget {
+class _CompactField extends StatelessWidget {
+  final TextEditingController controller;
+  final String label;
+  final IconData icon;
+  final TextInputType? keyboardType;
+
+  const _CompactField({
+    required this.controller,
+    required this.label,
+    required this.icon,
+    this.keyboardType,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return TextFormField(
+      controller: controller,
+      keyboardType: keyboardType,
+      style: TextStyle(fontSize: context.bodyFont),
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon, color: cs.primary, size: context.w * 0.05),
+        filled: true,
+        fillColor: cs.surfaceContainer,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(context.w * 0.03),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(context.w * 0.03),
+          borderSide: BorderSide.none,
+        ),
+      ),
+    );
+  }
+}
+
+class _SelectedLocationChip extends StatelessWidget {
   final LocationEntity location;
   final VoidCallback onClear;
 
-  const SelectedLocationChip({
-    super.key,
+  const _SelectedLocationChip({
     required this.location,
     required this.onClear,
   });
@@ -324,7 +424,6 @@ class SelectedLocationChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-
     return Container(
       padding: EdgeInsets.symmetric(
           horizontal: context.w * 0.03, vertical: context.xs),
@@ -335,7 +434,8 @@ class SelectedLocationChip extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.place, size: context.w * 0.04, color: cs.onPrimaryContainer),
+          Icon(Icons.place,
+              size: context.w * 0.04, color: cs.onPrimaryContainer),
           SizedBox(width: context.w * 0.01),
           Flexible(
             child: Text(

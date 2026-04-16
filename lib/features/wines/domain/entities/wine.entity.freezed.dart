@@ -28,6 +28,8 @@ mixin _$WineEntity {
   String? get notes => throw _privateConstructorUsedError;
   String? get imageUrl => throw _privateConstructorUsedError;
   String? get localImagePath => throw _privateConstructorUsedError;
+  String? get memoryImageUrl => throw _privateConstructorUsedError;
+  String? get memoryLocalImagePath => throw _privateConstructorUsedError;
   int? get vintage => throw _privateConstructorUsedError;
   String? get grape => throw _privateConstructorUsedError;
   String get userId => throw _privateConstructorUsedError;
@@ -60,6 +62,8 @@ abstract class $WineEntityCopyWith<$Res> {
     String? notes,
     String? imageUrl,
     String? localImagePath,
+    String? memoryImageUrl,
+    String? memoryLocalImagePath,
     int? vintage,
     String? grape,
     String userId,
@@ -94,6 +98,8 @@ class _$WineEntityCopyWithImpl<$Res, $Val extends WineEntity>
     Object? notes = freezed,
     Object? imageUrl = freezed,
     Object? localImagePath = freezed,
+    Object? memoryImageUrl = freezed,
+    Object? memoryLocalImagePath = freezed,
     Object? vintage = freezed,
     Object? grape = freezed,
     Object? userId = null,
@@ -146,6 +152,14 @@ class _$WineEntityCopyWithImpl<$Res, $Val extends WineEntity>
                 ? _value.localImagePath
                 : localImagePath // ignore: cast_nullable_to_non_nullable
                       as String?,
+            memoryImageUrl: freezed == memoryImageUrl
+                ? _value.memoryImageUrl
+                : memoryImageUrl // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            memoryLocalImagePath: freezed == memoryLocalImagePath
+                ? _value.memoryLocalImagePath
+                : memoryLocalImagePath // ignore: cast_nullable_to_non_nullable
+                      as String?,
             vintage: freezed == vintage
                 ? _value.vintage
                 : vintage // ignore: cast_nullable_to_non_nullable
@@ -193,6 +207,8 @@ abstract class _$$WineEntityImplCopyWith<$Res>
     String? notes,
     String? imageUrl,
     String? localImagePath,
+    String? memoryImageUrl,
+    String? memoryLocalImagePath,
     int? vintage,
     String? grape,
     String userId,
@@ -226,6 +242,8 @@ class __$$WineEntityImplCopyWithImpl<$Res>
     Object? notes = freezed,
     Object? imageUrl = freezed,
     Object? localImagePath = freezed,
+    Object? memoryImageUrl = freezed,
+    Object? memoryLocalImagePath = freezed,
     Object? vintage = freezed,
     Object? grape = freezed,
     Object? userId = null,
@@ -278,6 +296,14 @@ class __$$WineEntityImplCopyWithImpl<$Res>
             ? _value.localImagePath
             : localImagePath // ignore: cast_nullable_to_non_nullable
                   as String?,
+        memoryImageUrl: freezed == memoryImageUrl
+            ? _value.memoryImageUrl
+            : memoryImageUrl // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        memoryLocalImagePath: freezed == memoryLocalImagePath
+            ? _value.memoryLocalImagePath
+            : memoryLocalImagePath // ignore: cast_nullable_to_non_nullable
+                  as String?,
         vintage: freezed == vintage
             ? _value.vintage
             : vintage // ignore: cast_nullable_to_non_nullable
@@ -318,6 +344,8 @@ class _$WineEntityImpl implements _WineEntity {
     this.notes,
     this.imageUrl,
     this.localImagePath,
+    this.memoryImageUrl,
+    this.memoryLocalImagePath,
     this.vintage,
     this.grape,
     required this.userId,
@@ -349,6 +377,10 @@ class _$WineEntityImpl implements _WineEntity {
   @override
   final String? localImagePath;
   @override
+  final String? memoryImageUrl;
+  @override
+  final String? memoryLocalImagePath;
+  @override
   final int? vintage;
   @override
   final String? grape;
@@ -361,7 +393,7 @@ class _$WineEntityImpl implements _WineEntity {
 
   @override
   String toString() {
-    return 'WineEntity(id: $id, name: $name, rating: $rating, type: $type, price: $price, currency: $currency, country: $country, location: $location, notes: $notes, imageUrl: $imageUrl, localImagePath: $localImagePath, vintage: $vintage, grape: $grape, userId: $userId, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'WineEntity(id: $id, name: $name, rating: $rating, type: $type, price: $price, currency: $currency, country: $country, location: $location, notes: $notes, imageUrl: $imageUrl, localImagePath: $localImagePath, memoryImageUrl: $memoryImageUrl, memoryLocalImagePath: $memoryLocalImagePath, vintage: $vintage, grape: $grape, userId: $userId, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -384,6 +416,10 @@ class _$WineEntityImpl implements _WineEntity {
                 other.imageUrl == imageUrl) &&
             (identical(other.localImagePath, localImagePath) ||
                 other.localImagePath == localImagePath) &&
+            (identical(other.memoryImageUrl, memoryImageUrl) ||
+                other.memoryImageUrl == memoryImageUrl) &&
+            (identical(other.memoryLocalImagePath, memoryLocalImagePath) ||
+                other.memoryLocalImagePath == memoryLocalImagePath) &&
             (identical(other.vintage, vintage) || other.vintage == vintage) &&
             (identical(other.grape, grape) || other.grape == grape) &&
             (identical(other.userId, userId) || other.userId == userId) &&
@@ -407,6 +443,8 @@ class _$WineEntityImpl implements _WineEntity {
     notes,
     imageUrl,
     localImagePath,
+    memoryImageUrl,
+    memoryLocalImagePath,
     vintage,
     grape,
     userId,
@@ -436,6 +474,8 @@ abstract class _WineEntity implements WineEntity {
     final String? notes,
     final String? imageUrl,
     final String? localImagePath,
+    final String? memoryImageUrl,
+    final String? memoryLocalImagePath,
     final int? vintage,
     final String? grape,
     required final String userId,
@@ -465,6 +505,10 @@ abstract class _WineEntity implements WineEntity {
   String? get imageUrl;
   @override
   String? get localImagePath;
+  @override
+  String? get memoryImageUrl;
+  @override
+  String? get memoryLocalImagePath;
   @override
   int? get vintage;
   @override

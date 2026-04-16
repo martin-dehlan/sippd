@@ -18,6 +18,8 @@ class WineEntity with _$WineEntity {
     String? notes,
     String? imageUrl,
     String? localImagePath,
+    String? memoryImageUrl,
+    String? memoryLocalImagePath,
     int? vintage,
     String? grape,
     required String userId,
