@@ -75,16 +75,6 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
     if (mounted) context.pop();
   }
 
-  void _cycleType() {
-    setState(() {
-      _type = switch (_type) {
-        WineType.red => WineType.white,
-        WineType.white => WineType.rose,
-        WineType.rose => WineType.red,
-      };
-    });
-  }
-
   Future<void> _editRating() async {
     final result =
         await showRatingSheet(context: context, initial: _rating);
@@ -160,9 +150,9 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
               SizedBox(height: context.xl * 1.5),
               _NameField(controller: _nameController),
               SizedBox(height: context.s),
-              _TypeSubtitle(
-                type: _type,
-                onTap: _cycleType,
+              _TypeChipRow(
+                selected: _type,
+                onChanged: (t) => setState(() => _type = t),
               ),
               SizedBox(height: context.l),
               Padding(
@@ -438,47 +428,89 @@ class _PriceStat extends StatelessWidget {
   }
 }
 
-class _TypeSubtitle extends StatelessWidget {
-  final WineType type;
-  final VoidCallback onTap;
-  const _TypeSubtitle({required this.type, required this.onTap});
+class _TypeChipRow extends StatelessWidget {
+  final WineType selected;
+  final ValueChanged<WineType> onChanged;
+  const _TypeChipRow({required this.selected, required this.onChanged});
 
   @override
   Widget build(BuildContext context) {
-    final label = switch (type) {
-      WineType.red => 'Red Wine',
-      WineType.white => 'White Wine',
-      WineType.rose => 'Rosé',
-    };
+    return Padding(
+      padding: EdgeInsets.only(left: context.paddingH * 1.3),
+      child: Wrap(
+        spacing: context.w * 0.02,
+        runSpacing: context.s,
+        children: [
+          _TypeChoice(
+            type: WineType.red,
+            label: 'Red Wine',
+            isSelected: selected == WineType.red,
+            onTap: () => onChanged(WineType.red),
+          ),
+          _TypeChoice(
+            type: WineType.white,
+            label: 'White Wine',
+            isSelected: selected == WineType.white,
+            onTap: () => onChanged(WineType.white),
+          ),
+          _TypeChoice(
+            type: WineType.rose,
+            label: 'Rosé',
+            isSelected: selected == WineType.rose,
+            onTap: () => onChanged(WineType.rose),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TypeChoice extends StatelessWidget {
+  final WineType type;
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _TypeChoice({
+    required this.type,
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     final color = switch (type) {
       WineType.red => const Color(0xFFA84343),
       WineType.white => const Color(0xFFD4C49A),
       WineType.rose => const Color(0xFFD6889A),
     };
-
-    return Padding(
-      padding: EdgeInsets.only(left: context.paddingH * 1.3),
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: onTap,
-          child: Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: context.w * 0.03,
-              vertical: context.xs + 1,
-            ),
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(context.w * 0.05),
-            ),
-            child: Text(label,
-                style: TextStyle(
-                  fontSize: context.captionFont,
-                  fontWeight: FontWeight.w600,
-                  color: color,
-                  letterSpacing: 0.2,
-                )),
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        padding: EdgeInsets.symmetric(
+          horizontal: context.w * 0.03,
+          vertical: context.xs + 1,
+        ),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? color.withValues(alpha: 0.18)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(context.w * 0.05),
+          border: Border.all(
+            color: isSelected ? color : cs.outlineVariant,
+            width: isSelected ? 1 : 0.5,
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: context.captionFont,
+            fontWeight: FontWeight.w600,
+            color: isSelected ? color : cs.onSurfaceVariant,
+            letterSpacing: 0.2,
           ),
         ),
       ),
