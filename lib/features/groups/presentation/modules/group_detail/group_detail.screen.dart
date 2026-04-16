@@ -5,9 +5,12 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../core/routes/app.routes.dart';
+import 'package:intl/intl.dart';
 import '../../../../auth/controller/auth.provider.dart';
 import '../../../../friends/domain/entities/friend_profile.entity.dart';
 import '../../../../friends/presentation/widgets/friend_avatar.widget.dart';
+import '../../../../tastings/controller/tastings.provider.dart';
+import '../../../../tastings/domain/entities/tasting.entity.dart';
 import '../../../../wines/domain/entities/wine.entity.dart';
 import '../../../controller/group.provider.dart';
 import '../../../domain/entities/group.entity.dart';
@@ -121,9 +124,9 @@ class _Body extends ConsumerWidget {
         SizedBox(height: context.s),
         _SharedWines(groupId: group.id),
         SizedBox(height: context.l),
-        _SectionHeader(label: 'Tastings'),
+        _TastingsSectionHeader(groupId: group.id),
         SizedBox(height: context.s),
-        _TastingsPlaceholder(),
+        _TastingsList(groupId: group.id),
         SizedBox(height: context.xl),
         Padding(
           padding:
@@ -428,29 +431,162 @@ class _GroupWineRow extends StatelessWidget {
   }
 }
 
-class _TastingsPlaceholder extends StatelessWidget {
+class _TastingsSectionHeader extends StatelessWidget {
+  final String groupId;
+  const _TastingsSectionHeader({required this.groupId});
+
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text('Tastings',
+                style: TextStyle(
+                  fontSize: context.captionFont,
+                  fontWeight: FontWeight.w700,
+                  color: cs.primary,
+                  letterSpacing: 0.3,
+                )),
+          ),
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () =>
+                context.push(AppRoutes.tastingCreatePath(groupId)),
+            child: Row(
+              children: [
+                Icon(Icons.add,
+                    size: context.w * 0.04, color: cs.primary),
+                SizedBox(width: context.w * 0.01),
+                Text('Plan tasting',
+                    style: TextStyle(
+                      fontSize: context.captionFont,
+                      fontWeight: FontWeight.w600,
+                      color: cs.primary,
+                    )),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TastingsList extends ConsumerWidget {
+  final String groupId;
+  const _TastingsList({required this.groupId});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final cs = Theme.of(context).colorScheme;
+    final tastingsAsync = ref.watch(groupTastingsProvider(groupId));
+    return tastingsAsync.when(
+      data: (tastings) {
+        if (tastings.isEmpty) {
+          return Padding(
+            padding:
+                EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
+            child: Text('No tastings planned yet.',
+                style: TextStyle(
+                    fontSize: context.captionFont,
+                    color: cs.onSurfaceVariant)),
+          );
+        }
+        return ListView.separated(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          padding:
+              EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
+          itemCount: tastings.length,
+          separatorBuilder: (_, __) => SizedBox(height: context.s),
+          itemBuilder: (_, i) => _TastingRow(tasting: tastings[i]),
+        );
+      },
+      loading: () => const SizedBox.shrink(),
+      error: (_, __) => const SizedBox.shrink(),
+    );
+  }
+}
+
+class _TastingRow extends StatelessWidget {
+  final TastingEntity tasting;
+  const _TastingRow({required this.tasting});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final local = tasting.scheduledAt.toLocal();
+    final dateLabel = DateFormat.MMMd().format(local);
+    final timeLabel = DateFormat.Hm().format(local);
+    return GestureDetector(
+      onTap: () =>
+          context.push(AppRoutes.tastingDetailPath(tasting.id)),
       child: Container(
-        padding: EdgeInsets.all(context.m),
+        padding: EdgeInsets.all(context.w * 0.04),
         decoration: BoxDecoration(
           color: cs.surfaceContainer,
           borderRadius: BorderRadius.circular(context.w * 0.03),
         ),
         child: Row(
           children: [
-            Icon(Icons.event_outlined,
-                color: cs.outline, size: context.w * 0.05),
-            SizedBox(width: context.w * 0.03),
-            Expanded(
-              child: Text('Tastings coming soon',
-                  style: TextStyle(
-                      fontSize: context.captionFont,
-                      color: cs.onSurfaceVariant)),
+            Container(
+              width: context.w * 0.12,
+              height: context.w * 0.12,
+              decoration: BoxDecoration(
+                color: cs.primaryContainer,
+                borderRadius: BorderRadius.circular(context.w * 0.02),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(DateFormat.MMM().format(local).toUpperCase(),
+                      style: TextStyle(
+                        fontSize: context.captionFont * 0.8,
+                        fontWeight: FontWeight.w600,
+                        color: cs.primary,
+                        letterSpacing: 0.3,
+                      )),
+                  Text(DateFormat.d().format(local),
+                      style: TextStyle(
+                        fontSize: context.bodyFont,
+                        fontWeight: FontWeight.bold,
+                        color: cs.primary,
+                        height: 1.05,
+                      )),
+                ],
+              ),
             ),
+            SizedBox(width: context.w * 0.04),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(tasting.title,
+                      style: TextStyle(
+                          fontSize: context.bodyFont,
+                          fontWeight: FontWeight.w700),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis),
+                  SizedBox(height: context.xs * 0.4),
+                  Text(
+                    [
+                      '$dateLabel · $timeLabel',
+                      if (tasting.location != null) tasting.location,
+                    ].whereType<String>().join(' · '),
+                    style: TextStyle(
+                        fontSize: context.captionFont,
+                        color: cs.onSurfaceVariant),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+            Icon(Icons.chevron_right,
+                size: context.w * 0.045, color: cs.outline),
           ],
         ),
       ),

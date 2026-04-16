@@ -28,4 +28,11 @@ class AppRoutes {
   static const String friends = '/friends';
   static const String friendProfile = '/friends/:id';
   static String friendProfilePath(String id) => '/friends/$id';
+
+  // Tastings
+  static const String tastingCreate = '/groups/:groupId/tastings/new';
+  static String tastingCreatePath(String groupId) =>
+      '/groups/$groupId/tastings/new';
+  static const String tastingDetail = '/tastings/:id';
+  static String tastingDetailPath(String id) => '/tastings/$id';
 }
