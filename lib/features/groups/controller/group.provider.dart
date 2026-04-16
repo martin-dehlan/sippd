@@ -1,5 +1,9 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../auth/controller/auth.provider.dart';
+import '../../friends/data/models/friend_profile.model.dart';
+import '../../friends/domain/entities/friend_profile.entity.dart';
+import '../../wines/data/models/wine.model.dart';
+import '../../wines/domain/entities/wine.entity.dart';
 import '../domain/entities/group.entity.dart';
 import '../data/models/group.model.dart';
 
@@ -88,6 +92,12 @@ class GroupController extends _$GroupController {
     });
   }
 
+  Future<void> deleteGroup(String groupId) async {
+    final client = ref.read(supabaseClientProvider);
+    await client.from('groups').delete().eq('id', groupId);
+    ref.invalidateSelf();
+  }
+
   Future<void> leaveGroup(String groupId) async {
     final userId = ref.read(currentUserIdProvider);
     if (userId == null) return;
@@ -102,4 +112,60 @@ class GroupController extends _$GroupController {
 
     ref.invalidateSelf();
   }
+}
+
+@riverpod
+Future<GroupEntity?> groupDetail(GroupDetailRef ref, String groupId) async {
+  final client = ref.read(supabaseClientProvider);
+  final row =
+      await client.from('groups').select().eq('id', groupId).maybeSingle();
+  if (row == null) return null;
+  return GroupModel.fromJson(row).toEntity();
+}
+
+@riverpod
+Future<List<FriendProfileEntity>> groupMembers(
+    GroupMembersRef ref, String groupId) async {
+  final client = ref.read(supabaseClientProvider);
+  final memberRows = (await client
+      .from('group_members')
+      .select('user_id, role')
+      .eq('group_id', groupId)) as List;
+  if (memberRows.isEmpty) return const [];
+  final ids = memberRows
+      .map((m) => (m as Map<String, dynamic>)['user_id'] as String)
+      .toList();
+  final profileRows = (await client
+      .from('profiles')
+      .select()
+      .inFilter('id', ids)) as List;
+  return profileRows
+      .map((p) => FriendProfileModel.fromJson(p as Map<String, dynamic>)
+          .toEntity())
+      .toList();
+}
+
+@riverpod
+Future<List<WineEntity>> groupWines(
+    GroupWinesRef ref, String groupId) async {
+  final client = ref.read(supabaseClientProvider);
+  final shareRows = (await client
+      .from('group_wines')
+      .select('wine_id, shared_at')
+      .eq('group_id', groupId)
+      .order('shared_at', ascending: false)) as List;
+  if (shareRows.isEmpty) return const [];
+  final wineIds = shareRows
+      .map((s) => (s as Map<String, dynamic>)['wine_id'] as String)
+      .toList();
+  final wineRows = (await client
+      .from('wines')
+      .select()
+      .inFilter('id', wineIds)) as List;
+  final byId = {
+    for (final r in wineRows)
+      (r as Map<String, dynamic>)['id'] as String:
+          WineModel.fromJson(r).toEntity(),
+  };
+  return wineIds.map((id) => byId[id]).whereType<WineEntity>().toList();
 }

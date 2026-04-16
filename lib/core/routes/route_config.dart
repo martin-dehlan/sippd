@@ -6,6 +6,7 @@ import '../../features/auth/presentation/modules/login/login.screen.dart';
 import '../../features/auth/presentation/modules/profile/profile.screen.dart';
 import '../../features/friends/presentation/modules/friend_profile/friend_profile.screen.dart';
 import '../../features/friends/presentation/modules/friends/friends.screen.dart';
+import '../../features/groups/presentation/modules/group_detail/group_detail.screen.dart';
 import '../../features/groups/presentation/modules/group_list/group_list.screen.dart';
 import '../../features/scanner/presentation/modules/scan/scan.screen.dart';
 import '../../features/scanner/presentation/modules/scan/scan_label.screen.dart';
@@ -59,6 +60,13 @@ GoRouter goRouter(GoRouterRef ref) {
           final id = state.pathParameters['id']!;
           return WineDetailScreen(wineId: id);
         },
+      ),
+
+      // Group detail
+      GoRoute(
+        path: AppRoutes.groupDetail,
+        builder: (context, state) =>
+            GroupDetailScreen(groupId: state.pathParameters['id']!),
       ),
 
       // Friends
