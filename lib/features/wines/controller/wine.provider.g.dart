@@ -6,11 +6,11 @@ part of 'wine.provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$appDatabaseHash() => r'68c9ad772c198d1a34d2dcccc0a6a35f43092fd5';
+String _$appDatabaseHash() => r'3d3a397d2ea952fc020fce0506793a5564e93530';
 
 /// See also [appDatabase].
 @ProviderFor(appDatabase)
-final appDatabaseProvider = AutoDisposeProvider<AppDatabase>.internal(
+final appDatabaseProvider = Provider<AppDatabase>.internal(
   appDatabase,
   name: r'appDatabaseProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -22,7 +22,7 @@ final appDatabaseProvider = AutoDisposeProvider<AppDatabase>.internal(
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-typedef AppDatabaseRef = AutoDisposeProviderRef<AppDatabase>;
+typedef AppDatabaseRef = ProviderRef<AppDatabase>;
 String _$wineSupabaseApiHash() => r'c7f531f534bb916800db25129831814544f26c5d';
 
 /// See also [wineSupabaseApi].

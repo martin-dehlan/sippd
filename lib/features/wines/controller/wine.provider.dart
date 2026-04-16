@@ -13,7 +13,7 @@ part 'wine.provider.g.dart';
 // DEPENDENCIES
 // ========================================
 
-@riverpod
+@Riverpod(keepAlive: true)
 AppDatabase appDatabase(AppDatabaseRef ref) {
   return AppDatabase();
 }
