@@ -13,6 +13,7 @@ import '../../../../wines/domain/entities/wine.entity.dart';
 import '../../../controller/tastings.provider.dart';
 import '../../../domain/entities/tasting.entity.dart';
 import '../../../domain/entities/tasting_attendee.entity.dart';
+import '../../widgets/calendar_export_sheet.dart';
 
 class TastingDetailScreen extends ConsumerWidget {
   final String tastingId;
@@ -36,6 +37,31 @@ class TastingDetailScreen extends ConsumerWidget {
       ),
       floatingActionButton: const _BackFab(),
       floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
+    );
+  }
+}
+
+class _CalendarIconButton extends StatelessWidget {
+  final VoidCallback onTap;
+  const _CalendarIconButton({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: Container(
+        width: context.w * 0.1,
+        height: context.w * 0.1,
+        decoration: BoxDecoration(
+          color: cs.surfaceContainer,
+          shape: BoxShape.circle,
+          border: Border.all(color: cs.outlineVariant, width: 0.5),
+        ),
+        child: Icon(Icons.event_outlined,
+            size: context.w * 0.045, color: cs.onSurface),
+      ),
     );
   }
 }
@@ -79,15 +105,42 @@ class _Body extends ConsumerWidget {
       children: [
         SizedBox(height: context.xl * 1.5),
         Padding(
+          padding: EdgeInsets.only(
+              left: context.paddingH * 1.3,
+              right: context.paddingH * 0.8),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Text(
+                  tasting.title.toUpperCase(),
+                  style: GoogleFonts.playfairDisplay(
+                    fontSize: context.titleFont * 1.2,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.5,
+                    height: 1.05,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              _CalendarIconButton(
+                onTap: () => showCalendarExportSheet(
+                    context: context, tasting: tasting),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(height: context.s),
+        Padding(
           padding:
               EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
           child: Text(
-            tasting.title.toUpperCase(),
-            style: GoogleFonts.playfairDisplay(
-              fontSize: context.titleFont * 1.2,
-              fontWeight: FontWeight.w800,
-              letterSpacing: -0.5,
-              height: 1.05,
+            '${DateFormat.yMMMMEEEEd().format(local)} · ${DateFormat.Hm().format(local)}',
+            style: TextStyle(
+              fontSize: context.bodyFont,
+              color: cs.onSurfaceVariant,
+              fontWeight: FontWeight.w500,
             ),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
