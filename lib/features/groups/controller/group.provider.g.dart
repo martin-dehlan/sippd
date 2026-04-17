@@ -269,7 +269,7 @@ class _GroupMembersProviderElement
   String get groupId => (origin as GroupMembersProvider).groupId;
 }
 
-String _$groupWineRatingsHash() => r'6700ad251f6e51643650084f71ac47fedcaf9e26';
+String _$groupWineRatingsHash() => r'db57e087bf11ae4b5fa1ee3b27be531f1b5fd236';
 
 /// See also [groupWineRatings].
 @ProviderFor(groupWineRatings)
@@ -406,7 +406,7 @@ class _GroupWineRatingsProviderElement
   String get wineId => (origin as GroupWineRatingsProvider).wineId;
 }
 
-String _$groupWinesHash() => r'43e0acdfda4c4f3b89ed2889c1545ae19e6bf4f3';
+String _$groupWinesHash() => r'78d0934253743f8a870b9c9a0a77496457ce618b';
 
 /// See also [groupWines].
 @ProviderFor(groupWines)

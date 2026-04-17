@@ -165,15 +165,28 @@ Future<List<GroupWineRatingEntity>> groupWineRatings(
     GroupWineRatingsRef ref, String groupId, String wineId) async {
   final client = ref.read(supabaseClientProvider);
 
-  final wineRow = await client
-      .from('wines')
-      .select('user_id, rating, updated_at, created_at')
-      .eq('id', wineId)
-      .maybeSingle();
-  final ownerId = wineRow?['user_id'] as String?;
-  final ownerRating = (wineRow?['rating'] as num?)?.toDouble();
-  final ownerUpdated = wineRow?['updated_at'] as String? ??
-      wineRow?['created_at'] as String?;
+  // Watch local wines so owner edits (rating/notes) propagate immediately.
+  final localWines = ref.watch(wineControllerProvider).valueOrNull ?? const [];
+  final localWine = localWines.where((w) => w.id == wineId).firstOrNull;
+
+  String? ownerId;
+  double? ownerRating;
+  String? ownerUpdated;
+  if (localWine != null) {
+    ownerId = localWine.userId;
+    ownerRating = localWine.rating;
+    ownerUpdated = localWine.updatedAt?.toIso8601String();
+  } else {
+    final wineRow = await client
+        .from('wines')
+        .select('user_id, rating, updated_at, created_at')
+        .eq('id', wineId)
+        .maybeSingle();
+    ownerId = wineRow?['user_id'] as String?;
+    ownerRating = (wineRow?['rating'] as num?)?.toDouble();
+    ownerUpdated = wineRow?['updated_at'] as String? ??
+        wineRow?['created_at'] as String?;
+  }
 
   final memberRows = (await client
       .from('group_wine_ratings')
@@ -270,6 +283,10 @@ class GroupWineRatingController extends _$GroupWineRatingController {
 @riverpod
 Future<List<WineEntity>> groupWines(
     GroupWinesRef ref, String groupId) async {
+  // Re-run whenever local wines change so owner edits propagate instantly.
+  final localWines = ref.watch(wineControllerProvider).valueOrNull ?? const [];
+  final localById = {for (final w in localWines) w.id: w};
+
   final client = ref.read(supabaseClientProvider);
   final shareRows = (await client
       .from('group_wines')
@@ -277,17 +294,27 @@ Future<List<WineEntity>> groupWines(
       .eq('group_id', groupId)
       .order('shared_at', ascending: false)) as List;
   if (shareRows.isEmpty) return const [];
+
   final wineIds = shareRows
       .map((s) => (s as Map<String, dynamic>)['wine_id'] as String)
       .toList();
-  final wineRows = (await client
-      .from('wines')
-      .select()
-      .inFilter('id', wineIds)) as List;
-  final byId = {
-    for (final r in wineRows)
-      (r as Map<String, dynamic>)['id'] as String:
-          WineModel.fromJson(r).toEntity(),
-  };
-  return wineIds.map((id) => byId[id]).whereType<WineEntity>().toList();
+
+  final missingIds =
+      wineIds.where((id) => !localById.containsKey(id)).toList();
+  final remoteById = <String, WineEntity>{};
+  if (missingIds.isNotEmpty) {
+    final wineRows = (await client
+        .from('wines')
+        .select()
+        .inFilter('id', missingIds)) as List;
+    for (final r in wineRows) {
+      final m = r as Map<String, dynamic>;
+      remoteById[m['id'] as String] = WineModel.fromJson(m).toEntity();
+    }
+  }
+
+  return wineIds
+      .map((id) => localById[id] ?? remoteById[id])
+      .whereType<WineEntity>()
+      .toList();
 }
