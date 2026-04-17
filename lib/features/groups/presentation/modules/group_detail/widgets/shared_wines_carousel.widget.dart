@@ -10,45 +10,80 @@ import '../../../../controller/group.provider.dart';
 import '../../../../domain/entities/group_wine_rating.entity.dart';
 import 'group_wine_rating_sheet.widget.dart';
 
-class SharedWinesCarousel extends ConsumerWidget {
+class SharedWinesCarousel extends ConsumerStatefulWidget {
   final String groupId;
   const SharedWinesCarousel({super.key, required this.groupId});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SharedWinesCarousel> createState() =>
+      _SharedWinesCarouselState();
+}
+
+class _SharedWinesCarouselState extends ConsumerState<SharedWinesCarousel> {
+  late final PageController _pageController =
+      PageController(viewportFraction: 0.82);
+  double _page = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController.addListener(() {
+      setState(() => _page = _pageController.page ?? 0);
+    });
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final winesAsync = ref.watch(groupWinesProvider(groupId));
+    final winesAsync = ref.watch(groupWinesProvider(widget.groupId));
+
     return winesAsync.when(
       data: (wines) {
         if (wines.isEmpty) {
           return Padding(
-            padding: EdgeInsets.symmetric(
-                horizontal: context.paddingH * 1.3),
+            padding: EdgeInsets.symmetric(horizontal: context.paddingH),
             child: Text('No wines shared yet.',
                 style: TextStyle(
                     fontSize: context.bodyFont * 0.95,
-                    color: cs.onSurface)),
+                    color: cs.onSurfaceVariant)),
           );
         }
-        final cardWidth = context.w * 0.6;
         return SizedBox(
-          height: cardWidth * 1.35,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            padding: EdgeInsets.symmetric(
-                horizontal: context.paddingH * 1.3),
+          height: context.h * 0.26,
+          child: PageView.builder(
+            controller: _pageController,
             itemCount: wines.length,
-            separatorBuilder: (_, _) => SizedBox(width: context.w * 0.03),
-            itemBuilder: (_, i) => _WineCard(
-              groupId: groupId,
-              wine: wines[i],
-              width: cardWidth,
-            ),
+            padEnds: true,
+            itemBuilder: (_, i) {
+              final delta = (i - _page).abs().clamp(0.0, 1.0);
+              final scale = 1 - delta * 0.06;
+              final opacity = 1 - delta * 0.25;
+              return Opacity(
+                opacity: opacity,
+                child: Transform.scale(
+                  scale: scale,
+                  child: Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: context.w * 0.02),
+                    child: _WineCard(
+                      groupId: widget.groupId,
+                      wine: wines[i],
+                    ),
+                  ),
+                ),
+              );
+            },
           ),
         );
       },
       loading: () => SizedBox(
-        height: context.w * 0.3,
+        height: context.h * 0.26,
         child: const Center(child: CircularProgressIndicator()),
       ),
       error: (_, _) => const SizedBox.shrink(),
@@ -59,12 +94,7 @@ class SharedWinesCarousel extends ConsumerWidget {
 class _WineCard extends ConsumerWidget {
   final String groupId;
   final WineEntity wine;
-  final double width;
-  const _WineCard({
-    required this.groupId,
-    required this.wine,
-    required this.width,
-  });
+  const _WineCard({required this.groupId, required this.wine});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -80,42 +110,32 @@ class _WineCard extends ConsumerWidget {
     return GestureDetector(
       onTap: () => context.push(AppRoutes.wineDetailPath(wine.id)),
       child: Container(
-        width: width,
-        padding: EdgeInsets.all(context.w * 0.04),
+        padding: EdgeInsets.all(context.w * 0.05),
         decoration: BoxDecoration(
           color: cs.surfaceContainer,
-          borderRadius: BorderRadius.circular(context.w * 0.04),
+          borderRadius: BorderRadius.circular(context.w * 0.05),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                Container(
-                  width: context.w * 0.02,
-                  height: context.w * 0.08,
-                  decoration: BoxDecoration(
-                    color: typeColor,
-                    borderRadius: BorderRadius.circular(context.w * 0.01),
-                  ),
-                ),
-                SizedBox(width: context.w * 0.02),
-                Text(
-                  _typeLabel(wine.type),
-                  style: TextStyle(
-                    fontSize: context.captionFont * 0.8,
-                    fontWeight: FontWeight.w600,
-                    color: cs.onSurfaceVariant,
-                    letterSpacing: 0.4,
+                _TypePill(label: _typeLabel(wine.type), color: typeColor),
+                const Spacer(),
+                _RateIconButton(
+                  onTap: () => showGroupWineRatingSheet(
+                    context: context,
+                    groupId: groupId,
+                    wine: wine,
                   ),
                 ),
               ],
             ),
-            SizedBox(height: context.s),
+            SizedBox(height: context.m),
             Text(
               wine.name,
               style: TextStyle(
-                fontSize: context.bodyFont * 1.05,
+                fontSize: context.bodyFont * 1.15,
                 fontWeight: FontWeight.w800,
                 letterSpacing: -0.3,
                 height: 1.15,
@@ -137,17 +157,9 @@ class _WineCard extends ConsumerWidget {
               overflow: TextOverflow.ellipsis,
             ),
             const Spacer(),
-            _RatingRow(
+            _RatingFooter(
               ratings: ratingsAsync.valueOrNull ?? const [],
               fallback: wine.rating,
-            ),
-            SizedBox(height: context.s),
-            _RateButton(
-              onTap: () => showGroupWineRatingSheet(
-                context: context,
-                groupId: groupId,
-                wine: wine,
-              ),
             ),
           ],
         ),
@@ -162,11 +174,70 @@ class _WineCard extends ConsumerWidget {
       };
 }
 
-class _RatingRow extends StatelessWidget {
+class _TypePill extends StatelessWidget {
+  final String label;
+  final Color color;
+  const _TypePill({required this.label, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+          horizontal: context.w * 0.02, vertical: context.xs),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(context.w * 0.015),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: context.w * 0.015,
+            height: context.w * 0.015,
+            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+          ),
+          SizedBox(width: context.xs),
+          Text(label,
+              style: TextStyle(
+                fontSize: context.captionFont * 0.8,
+                fontWeight: FontWeight.w700,
+                color: color,
+                letterSpacing: 0.6,
+              )),
+        ],
+      ),
+    );
+  }
+}
+
+class _RateIconButton extends StatelessWidget {
+  final VoidCallback onTap;
+  const _RateIconButton({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        padding: EdgeInsets.all(context.xs),
+        decoration: BoxDecoration(
+          color: cs.primary.withValues(alpha: 0.12),
+          shape: BoxShape.circle,
+        ),
+        child: Icon(Icons.star_rounded,
+            size: context.w * 0.045, color: cs.primary),
+      ),
+    );
+  }
+}
+
+class _RatingFooter extends StatelessWidget {
   final List<GroupWineRatingEntity> ratings;
   final double fallback;
 
-  const _RatingRow({required this.ratings, required this.fallback});
+  const _RatingFooter({required this.ratings, required this.fallback});
 
   @override
   Widget build(BuildContext context) {
@@ -176,26 +247,26 @@ class _RatingRow extends StatelessWidget {
         ? ratings.map((r) => r.rating).reduce((a, b) => a + b) /
             ratings.length
         : fallback;
-    final count = ratings.length;
 
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
           avg.toStringAsFixed(1),
           style: TextStyle(
-            fontSize: context.titleFont * 0.9,
+            fontSize: context.titleFont * 0.85,
             fontWeight: FontWeight.w800,
             color: cs.primary,
             height: 1,
             letterSpacing: -1,
           ),
         ),
+        SizedBox(width: context.xs * 0.5),
         Padding(
-          padding: EdgeInsets.only(bottom: context.xs * 0.8),
+          padding: EdgeInsets.only(top: context.xs * 0.8),
           child: Text('/10',
               style: TextStyle(
-                fontSize: context.captionFont,
+                fontSize: context.captionFont * 0.9,
                 color: cs.onSurfaceVariant,
               )),
         ),
@@ -203,13 +274,8 @@ class _RatingRow extends StatelessWidget {
         if (hasRatings)
           _AvatarStack(
             ratings: ratings.take(3).toList(),
-            extra: count > 3 ? count - 3 : 0,
-          )
-        else
-          Text('No ratings',
-              style: TextStyle(
-                  fontSize: context.captionFont * 0.9,
-                  color: cs.outline)),
+            extra: ratings.length > 3 ? ratings.length - 3 : 0,
+          ),
       ],
     );
   }
@@ -224,10 +290,10 @@ class _AvatarStack extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final size = context.w * 0.065;
-    final overlap = size * 0.55;
-    final stackWidth =
-        ratings.length * overlap + (size - overlap) + (extra > 0 ? size : 0);
+    final size = context.w * 0.07;
+    final overlap = size * 0.6;
+    final total = ratings.length + (extra > 0 ? 1 : 0);
+    final stackWidth = (total - 1) * overlap + size;
 
     return SizedBox(
       width: stackWidth,
@@ -272,42 +338,6 @@ class _AvatarStack extends StatelessWidget {
               ),
             ),
         ],
-      ),
-    );
-  }
-}
-
-class _RateButton extends StatelessWidget {
-  final VoidCallback onTap;
-  const _RateButton({required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return GestureDetector(
-      onTap: onTap,
-      behavior: HitTestBehavior.opaque,
-      child: Container(
-        width: double.infinity,
-        padding: EdgeInsets.symmetric(vertical: context.s),
-        decoration: BoxDecoration(
-          color: cs.primary.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(context.w * 0.025),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.star_outline,
-                size: context.w * 0.045, color: cs.primary),
-            SizedBox(width: context.xs),
-            Text('Rate',
-                style: TextStyle(
-                  fontSize: context.captionFont,
-                  fontWeight: FontWeight.w600,
-                  color: cs.primary,
-                )),
-          ],
-        ),
       ),
     );
   }
