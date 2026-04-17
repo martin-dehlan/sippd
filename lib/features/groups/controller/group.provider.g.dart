@@ -269,6 +269,143 @@ class _GroupMembersProviderElement
   String get groupId => (origin as GroupMembersProvider).groupId;
 }
 
+String _$groupWineRatingsHash() => r'5ca2bc08e60796894b59ed06322f19759219f401';
+
+/// See also [groupWineRatings].
+@ProviderFor(groupWineRatings)
+const groupWineRatingsProvider = GroupWineRatingsFamily();
+
+/// See also [groupWineRatings].
+class GroupWineRatingsFamily
+    extends Family<AsyncValue<List<GroupWineRatingEntity>>> {
+  /// See also [groupWineRatings].
+  const GroupWineRatingsFamily();
+
+  /// See also [groupWineRatings].
+  GroupWineRatingsProvider call(String groupId, String wineId) {
+    return GroupWineRatingsProvider(groupId, wineId);
+  }
+
+  @override
+  GroupWineRatingsProvider getProviderOverride(
+    covariant GroupWineRatingsProvider provider,
+  ) {
+    return call(provider.groupId, provider.wineId);
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'groupWineRatingsProvider';
+}
+
+/// See also [groupWineRatings].
+class GroupWineRatingsProvider
+    extends AutoDisposeFutureProvider<List<GroupWineRatingEntity>> {
+  /// See also [groupWineRatings].
+  GroupWineRatingsProvider(String groupId, String wineId)
+    : this._internal(
+        (ref) => groupWineRatings(ref as GroupWineRatingsRef, groupId, wineId),
+        from: groupWineRatingsProvider,
+        name: r'groupWineRatingsProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$groupWineRatingsHash,
+        dependencies: GroupWineRatingsFamily._dependencies,
+        allTransitiveDependencies:
+            GroupWineRatingsFamily._allTransitiveDependencies,
+        groupId: groupId,
+        wineId: wineId,
+      );
+
+  GroupWineRatingsProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.groupId,
+    required this.wineId,
+  }) : super.internal();
+
+  final String groupId;
+  final String wineId;
+
+  @override
+  Override overrideWith(
+    FutureOr<List<GroupWineRatingEntity>> Function(GroupWineRatingsRef provider)
+    create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: GroupWineRatingsProvider._internal(
+        (ref) => create(ref as GroupWineRatingsRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        groupId: groupId,
+        wineId: wineId,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<List<GroupWineRatingEntity>>
+  createElement() {
+    return _GroupWineRatingsProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is GroupWineRatingsProvider &&
+        other.groupId == groupId &&
+        other.wineId == wineId;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, groupId.hashCode);
+    hash = _SystemHash.combine(hash, wineId.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin GroupWineRatingsRef
+    on AutoDisposeFutureProviderRef<List<GroupWineRatingEntity>> {
+  /// The parameter `groupId` of this provider.
+  String get groupId;
+
+  /// The parameter `wineId` of this provider.
+  String get wineId;
+}
+
+class _GroupWineRatingsProviderElement
+    extends AutoDisposeFutureProviderElement<List<GroupWineRatingEntity>>
+    with GroupWineRatingsRef {
+  _GroupWineRatingsProviderElement(super.provider);
+
+  @override
+  String get groupId => (origin as GroupWineRatingsProvider).groupId;
+  @override
+  String get wineId => (origin as GroupWineRatingsProvider).wineId;
+}
+
 String _$groupWinesHash() => r'43e0acdfda4c4f3b89ed2889c1545ae19e6bf4f3';
 
 /// See also [groupWines].
@@ -407,5 +544,22 @@ final groupControllerProvider =
     );
 
 typedef _$GroupController = AutoDisposeAsyncNotifier<List<GroupEntity>>;
+String _$groupWineRatingControllerHash() =>
+    r'56a6c9e0684728ae50f766e48f38521e5c33cf1a';
+
+/// See also [GroupWineRatingController].
+@ProviderFor(GroupWineRatingController)
+final groupWineRatingControllerProvider =
+    AutoDisposeAsyncNotifierProvider<GroupWineRatingController, void>.internal(
+      GroupWineRatingController.new,
+      name: r'groupWineRatingControllerProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$groupWineRatingControllerHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+typedef _$GroupWineRatingController = AutoDisposeAsyncNotifier<void>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

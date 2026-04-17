@@ -6,7 +6,9 @@ import '../../wines/controller/wine.provider.dart';
 import '../../wines/data/models/wine.model.dart';
 import '../../wines/domain/entities/wine.entity.dart';
 import '../domain/entities/group.entity.dart';
+import '../domain/entities/group_wine_rating.entity.dart';
 import '../data/models/group.model.dart';
+import '../data/models/group_wine_rating.model.dart';
 
 part 'group.provider.g.dart';
 
@@ -156,6 +158,83 @@ Future<List<FriendProfileEntity>> groupMembers(
       .map((p) => FriendProfileModel.fromJson(p as Map<String, dynamic>)
           .toEntity())
       .toList();
+}
+
+@riverpod
+Future<List<GroupWineRatingEntity>> groupWineRatings(
+    GroupWineRatingsRef ref, String groupId, String wineId) async {
+  final client = ref.read(supabaseClientProvider);
+  final rows = (await client
+      .from('group_wine_ratings')
+      .select()
+      .eq('group_id', groupId)
+      .eq('wine_id', wineId)) as List;
+  if (rows.isEmpty) return const [];
+
+  final models = rows
+      .map((r) => GroupWineRatingModel.fromJson(r as Map<String, dynamic>))
+      .toList();
+
+  final userIds = models.map((m) => m.userId).toSet().toList();
+  final profileRows = (await client
+      .from('profiles')
+      .select('id, username, display_name, avatar_url')
+      .inFilter('id', userIds)) as List;
+  final profiles = {
+    for (final p in profileRows)
+      (p as Map<String, dynamic>)['id'] as String: p,
+  };
+
+  return models
+      .map((m) => m.toEntity(
+            username: profiles[m.userId]?['username'] as String?,
+            displayName: profiles[m.userId]?['display_name'] as String?,
+            avatarUrl: profiles[m.userId]?['avatar_url'] as String?,
+          ))
+      .toList()
+    ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+}
+
+@riverpod
+class GroupWineRatingController extends _$GroupWineRatingController {
+  @override
+  FutureOr<void> build() {}
+
+  Future<void> upsertRating({
+    required String groupId,
+    required String wineId,
+    required double rating,
+    String? notes,
+  }) async {
+    final userId = ref.read(currentUserIdProvider);
+    if (userId == null) return;
+    final client = ref.read(supabaseClientProvider);
+    await client.from('group_wine_ratings').upsert({
+      'group_id': groupId,
+      'wine_id': wineId,
+      'user_id': userId,
+      'rating': rating,
+      'notes': notes,
+      'updated_at': DateTime.now().toIso8601String(),
+    });
+    ref.invalidate(groupWineRatingsProvider(groupId, wineId));
+  }
+
+  Future<void> deleteRating({
+    required String groupId,
+    required String wineId,
+  }) async {
+    final userId = ref.read(currentUserIdProvider);
+    if (userId == null) return;
+    final client = ref.read(supabaseClientProvider);
+    await client
+        .from('group_wine_ratings')
+        .delete()
+        .eq('group_id', groupId)
+        .eq('wine_id', wineId)
+        .eq('user_id', userId);
+    ref.invalidate(groupWineRatingsProvider(groupId, wineId));
+  }
 }
 
 @riverpod
