@@ -26,6 +26,7 @@ mixin _$GroupWineRatingEntity {
   String? get username => throw _privateConstructorUsedError;
   String? get displayName => throw _privateConstructorUsedError;
   String? get avatarUrl => throw _privateConstructorUsedError;
+  bool get isOwner => throw _privateConstructorUsedError;
 
   /// Create a copy of GroupWineRatingEntity
   /// with the given fields replaced by the non-null parameter values.
@@ -51,6 +52,7 @@ abstract class $GroupWineRatingEntityCopyWith<$Res> {
     String? username,
     String? displayName,
     String? avatarUrl,
+    bool isOwner,
   });
 }
 
@@ -81,6 +83,7 @@ class _$GroupWineRatingEntityCopyWithImpl<
     Object? username = freezed,
     Object? displayName = freezed,
     Object? avatarUrl = freezed,
+    Object? isOwner = null,
   }) {
     return _then(
       _value.copyWith(
@@ -120,6 +123,10 @@ class _$GroupWineRatingEntityCopyWithImpl<
                 ? _value.avatarUrl
                 : avatarUrl // ignore: cast_nullable_to_non_nullable
                       as String?,
+            isOwner: null == isOwner
+                ? _value.isOwner
+                : isOwner // ignore: cast_nullable_to_non_nullable
+                      as bool,
           )
           as $Val,
     );
@@ -145,6 +152,7 @@ abstract class _$$GroupWineRatingEntityImplCopyWith<$Res>
     String? username,
     String? displayName,
     String? avatarUrl,
+    bool isOwner,
   });
 }
 
@@ -172,6 +180,7 @@ class __$$GroupWineRatingEntityImplCopyWithImpl<$Res>
     Object? username = freezed,
     Object? displayName = freezed,
     Object? avatarUrl = freezed,
+    Object? isOwner = null,
   }) {
     return _then(
       _$GroupWineRatingEntityImpl(
@@ -211,6 +220,10 @@ class __$$GroupWineRatingEntityImplCopyWithImpl<$Res>
             ? _value.avatarUrl
             : avatarUrl // ignore: cast_nullable_to_non_nullable
                   as String?,
+        isOwner: null == isOwner
+            ? _value.isOwner
+            : isOwner // ignore: cast_nullable_to_non_nullable
+                  as bool,
       ),
     );
   }
@@ -229,6 +242,7 @@ class _$GroupWineRatingEntityImpl implements _GroupWineRatingEntity {
     this.username,
     this.displayName,
     this.avatarUrl,
+    this.isOwner = false,
   });
 
   @override
@@ -249,10 +263,13 @@ class _$GroupWineRatingEntityImpl implements _GroupWineRatingEntity {
   final String? displayName;
   @override
   final String? avatarUrl;
+  @override
+  @JsonKey()
+  final bool isOwner;
 
   @override
   String toString() {
-    return 'GroupWineRatingEntity(groupId: $groupId, wineId: $wineId, userId: $userId, rating: $rating, notes: $notes, updatedAt: $updatedAt, username: $username, displayName: $displayName, avatarUrl: $avatarUrl)';
+    return 'GroupWineRatingEntity(groupId: $groupId, wineId: $wineId, userId: $userId, rating: $rating, notes: $notes, updatedAt: $updatedAt, username: $username, displayName: $displayName, avatarUrl: $avatarUrl, isOwner: $isOwner)';
   }
 
   @override
@@ -272,7 +289,8 @@ class _$GroupWineRatingEntityImpl implements _GroupWineRatingEntity {
             (identical(other.displayName, displayName) ||
                 other.displayName == displayName) &&
             (identical(other.avatarUrl, avatarUrl) ||
-                other.avatarUrl == avatarUrl));
+                other.avatarUrl == avatarUrl) &&
+            (identical(other.isOwner, isOwner) || other.isOwner == isOwner));
   }
 
   @override
@@ -287,6 +305,7 @@ class _$GroupWineRatingEntityImpl implements _GroupWineRatingEntity {
     username,
     displayName,
     avatarUrl,
+    isOwner,
   );
 
   /// Create a copy of GroupWineRatingEntity
@@ -313,6 +332,7 @@ abstract class _GroupWineRatingEntity implements GroupWineRatingEntity {
     final String? username,
     final String? displayName,
     final String? avatarUrl,
+    final bool isOwner,
   }) = _$GroupWineRatingEntityImpl;
 
   @override
@@ -333,6 +353,8 @@ abstract class _GroupWineRatingEntity implements GroupWineRatingEntity {
   String? get displayName;
   @override
   String? get avatarUrl;
+  @override
+  bool get isOwner;
 
   /// Create a copy of GroupWineRatingEntity
   /// with the given fields replaced by the non-null parameter values.

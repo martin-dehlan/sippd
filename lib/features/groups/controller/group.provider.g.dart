@@ -269,7 +269,7 @@ class _GroupMembersProviderElement
   String get groupId => (origin as GroupMembersProvider).groupId;
 }
 
-String _$groupWineRatingsHash() => r'5ca2bc08e60796894b59ed06322f19759219f401';
+String _$groupWineRatingsHash() => r'6700ad251f6e51643650084f71ac47fedcaf9e26';
 
 /// See also [groupWineRatings].
 @ProviderFor(groupWineRatings)

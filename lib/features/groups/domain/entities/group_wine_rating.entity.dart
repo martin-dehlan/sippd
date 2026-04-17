@@ -14,5 +14,6 @@ class GroupWineRatingEntity with _$GroupWineRatingEntity {
     String? username,
     String? displayName,
     String? avatarUrl,
+    @Default(false) bool isOwner,
   }) = _GroupWineRatingEntity;
 }

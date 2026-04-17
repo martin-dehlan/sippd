@@ -164,18 +164,34 @@ Future<List<FriendProfileEntity>> groupMembers(
 Future<List<GroupWineRatingEntity>> groupWineRatings(
     GroupWineRatingsRef ref, String groupId, String wineId) async {
   final client = ref.read(supabaseClientProvider);
-  final rows = (await client
+
+  final wineRow = await client
+      .from('wines')
+      .select('user_id, rating, updated_at, created_at')
+      .eq('id', wineId)
+      .maybeSingle();
+  final ownerId = wineRow?['user_id'] as String?;
+  final ownerRating = (wineRow?['rating'] as num?)?.toDouble();
+  final ownerUpdated = wineRow?['updated_at'] as String? ??
+      wineRow?['created_at'] as String?;
+
+  final memberRows = (await client
       .from('group_wine_ratings')
       .select()
       .eq('group_id', groupId)
       .eq('wine_id', wineId)) as List;
-  if (rows.isEmpty) return const [];
 
-  final models = rows
+  final memberModels = memberRows
       .map((r) => GroupWineRatingModel.fromJson(r as Map<String, dynamic>))
+      .where((m) => m.userId != ownerId)
       .toList();
 
-  final userIds = models.map((m) => m.userId).toSet().toList();
+  final userIds = <String>{
+    ...memberModels.map((m) => m.userId),
+    ?ownerId,
+  }.toList();
+  if (userIds.isEmpty) return const [];
+
   final profileRows = (await client
       .from('profiles')
       .select('id, username, display_name, avatar_url')
@@ -185,14 +201,28 @@ Future<List<GroupWineRatingEntity>> groupWineRatings(
       (p as Map<String, dynamic>)['id'] as String: p,
   };
 
-  return models
-      .map((m) => m.toEntity(
-            username: profiles[m.userId]?['username'] as String?,
-            displayName: profiles[m.userId]?['display_name'] as String?,
-            avatarUrl: profiles[m.userId]?['avatar_url'] as String?,
-          ))
-      .toList()
-    ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+  final list = <GroupWineRatingEntity>[];
+  if (ownerId != null && ownerRating != null) {
+    list.add(GroupWineRatingEntity(
+      groupId: groupId,
+      wineId: wineId,
+      userId: ownerId,
+      rating: ownerRating,
+      updatedAt: DateTime.tryParse(ownerUpdated ?? '') ?? DateTime.now(),
+      username: profiles[ownerId]?['username'] as String?,
+      displayName: profiles[ownerId]?['display_name'] as String?,
+      avatarUrl: profiles[ownerId]?['avatar_url'] as String?,
+      isOwner: true,
+    ));
+  }
+  list.addAll(memberModels.map((m) => m.toEntity(
+        username: profiles[m.userId]?['username'] as String?,
+        displayName: profiles[m.userId]?['display_name'] as String?,
+        avatarUrl: profiles[m.userId]?['avatar_url'] as String?,
+      )));
+
+  list.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+  return list;
 }
 
 @riverpod

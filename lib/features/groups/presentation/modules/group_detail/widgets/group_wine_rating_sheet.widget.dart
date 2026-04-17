@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../../../common/utils/responsive.dart';
 import '../../../../../auth/controller/auth.provider.dart';
 import '../../../../../profile/presentation/widgets/profile_avatar.widget.dart';
+import '../../../../../wines/controller/wine.provider.dart';
 import '../../../../../wines/domain/entities/wine.entity.dart';
 import '../../../../controller/group.provider.dart';
 import '../../../../domain/entities/group_wine_rating.entity.dart';
@@ -46,20 +47,38 @@ class _SheetState extends ConsumerState<_Sheet> {
     super.dispose();
   }
 
+  bool get _isOwner {
+    final uid = ref.read(currentUserIdProvider);
+    return uid != null && uid == widget.wine.userId;
+  }
+
   Future<void> _save() async {
     if (_myRating == null || _saving) return;
     setState(() => _saving = true);
     try {
-      await ref
-          .read(groupWineRatingControllerProvider.notifier)
-          .upsertRating(
-            groupId: widget.groupId,
-            wineId: widget.wine.id,
-            rating: _myRating!,
-            notes: _notesController.text.trim().isEmpty
-                ? null
-                : _notesController.text.trim(),
-          );
+      if (_isOwner) {
+        final updated = widget.wine.copyWith(
+          rating: _myRating!,
+          notes: _notesController.text.trim().isEmpty
+              ? widget.wine.notes
+              : _notesController.text.trim(),
+          updatedAt: DateTime.now(),
+        );
+        await ref.read(wineControllerProvider.notifier).updateWine(updated);
+      } else {
+        await ref
+            .read(groupWineRatingControllerProvider.notifier)
+            .upsertRating(
+              groupId: widget.groupId,
+              wineId: widget.wine.id,
+              rating: _myRating!,
+              notes: _notesController.text.trim().isEmpty
+                  ? null
+                  : _notesController.text.trim(),
+            );
+      }
+      ref.invalidate(
+          groupWineRatingsProvider(widget.groupId, widget.wine.id));
       if (mounted) Navigator.of(context).pop();
     } catch (e) {
       if (mounted) {
@@ -73,6 +92,7 @@ class _SheetState extends ConsumerState<_Sheet> {
   }
 
   Future<void> _delete() async {
+    if (_isOwner) return;
     setState(() => _saving = true);
     try {
       await ref
@@ -92,14 +112,20 @@ class _SheetState extends ConsumerState<_Sheet> {
         groupWineRatingsProvider(widget.groupId, widget.wine.id));
 
     if (!_loaded) {
-      ratingsAsync.whenData((list) {
-        final mine = list.where((r) => r.userId == userId).firstOrNull;
-        if (mine != null) {
-          _myRating = mine.rating;
-          _notesController.text = mine.notes ?? '';
-        }
+      if (userId == widget.wine.userId) {
+        _myRating = widget.wine.rating;
+        _notesController.text = widget.wine.notes ?? '';
         _loaded = true;
-      });
+      } else {
+        ratingsAsync.whenData((list) {
+          final mine = list.where((r) => r.userId == userId).firstOrNull;
+          if (mine != null) {
+            _myRating = mine.rating;
+            _notesController.text = mine.notes ?? '';
+          }
+          _loaded = true;
+        });
+      }
     }
 
     return Padding(
@@ -192,7 +218,8 @@ class _SheetState extends ConsumerState<_Sheet> {
           SizedBox(height: context.m),
           Row(
             children: [
-              if (_loaded &&
+              if (!_isOwner &&
+                  _loaded &&
                   ratingsAsync.valueOrNull
                           ?.any((r) => r.userId == userId) ==
                       true)
