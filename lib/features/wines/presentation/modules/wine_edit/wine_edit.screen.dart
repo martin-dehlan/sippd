@@ -25,7 +25,7 @@ class WineEditScreen extends ConsumerWidget {
               return const Center(child: Text('Wine not found'));
             }
             return WineForm(
-              submitLabel: 'Save changes',
+              autoSave: true,
               initial: _toFormData(wine),
               onSubmit: (data) async {
                 final updated = wine.copyWith(
@@ -50,7 +50,6 @@ class WineEditScreen extends ConsumerWidget {
                     .read(wineControllerProvider.notifier)
                     .updateWine(updated);
                 ref.invalidate(wineDetailProvider(wineId));
-                if (context.mounted) context.pop();
               },
             );
           },

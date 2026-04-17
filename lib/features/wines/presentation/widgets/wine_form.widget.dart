@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -51,12 +52,14 @@ class WineForm extends StatefulWidget {
   final WineFormData? initial;
   final String submitLabel;
   final Future<void> Function(WineFormData data) onSubmit;
+  final bool autoSave;
 
   const WineForm({
     super.key,
     this.initial,
     this.submitLabel = 'Save wine',
     required this.onSubmit,
+    this.autoSave = false,
   });
 
   @override
@@ -87,6 +90,8 @@ class _WineFormState extends State<WineForm>
   String? _memoryImageUrl;
   String? _memoryLocalImagePath;
 
+  Timer? _autoSaveDebounce;
+
   @override
   void initState() {
     super.initState();
@@ -98,6 +103,7 @@ class _WineFormState extends State<WineForm>
       if (_nameError && _nameController.text.trim().isNotEmpty) {
         setState(() => _nameError = false);
       }
+      _scheduleAutoSave();
     });
 
     final init = widget.initial;
@@ -120,11 +126,37 @@ class _WineFormState extends State<WineForm>
 
   @override
   void dispose() {
+    _autoSaveDebounce?.cancel();
     _nameController.dispose();
     _nameFocus.dispose();
     _shake.dispose();
     super.dispose();
   }
+
+  void _scheduleAutoSave() {
+    if (!widget.autoSave) return;
+    if (_nameController.text.trim().isEmpty) return;
+    _autoSaveDebounce?.cancel();
+    _autoSaveDebounce = Timer(const Duration(milliseconds: 500), () {
+      widget.onSubmit(_collect());
+    });
+  }
+
+  WineFormData _collect() => WineFormData(
+        name: _nameController.text.trim(),
+        rating: _rating,
+        type: _type,
+        price: _price,
+        vintage: _vintage,
+        grape: _grape,
+        country: _country,
+        location: _location,
+        notes: _notes,
+        imageUrl: _imageUrl,
+        localImagePath: _localImagePath,
+        memoryImageUrl: _memoryImageUrl,
+        memoryLocalImagePath: _memoryLocalImagePath,
+      );
 
   Future<void> _submit() async {
     if (_nameController.text.trim().isEmpty) {
@@ -143,27 +175,14 @@ class _WineFormState extends State<WineForm>
       return;
     }
 
-    await widget.onSubmit(WineFormData(
-      name: _nameController.text.trim(),
-      rating: _rating,
-      type: _type,
-      price: _price,
-      vintage: _vintage,
-      grape: _grape,
-      country: _country,
-      location: _location,
-      notes: _notes,
-      imageUrl: _imageUrl,
-      localImagePath: _localImagePath,
-      memoryImageUrl: _memoryImageUrl,
-      memoryLocalImagePath: _memoryLocalImagePath,
-    ));
+    await widget.onSubmit(_collect());
   }
 
   Future<void> _editRating() async {
     final result = await showRatingSheet(context: context, initial: _rating);
     if (result == null) return;
     setState(() => _rating = result);
+    _scheduleAutoSave();
   }
 
   Future<void> _editPrice() async {
@@ -176,6 +195,7 @@ class _WineFormState extends State<WineForm>
     );
     if (result == null) return;
     setState(() => _price = result.isEmpty ? null : double.tryParse(result));
+    _scheduleAutoSave();
   }
 
   Future<void> _editVintage() async {
@@ -185,6 +205,7 @@ class _WineFormState extends State<WineForm>
     );
     if (result == null) return;
     setState(() => _vintage = result.year);
+    _scheduleAutoSave();
   }
 
   Future<void> _editGrape() async {
@@ -196,6 +217,7 @@ class _WineFormState extends State<WineForm>
     );
     if (result == null) return;
     setState(() => _grape = result.isEmpty ? null : result);
+    _scheduleAutoSave();
   }
 
   Future<void> _editNotes() async {
@@ -208,6 +230,7 @@ class _WineFormState extends State<WineForm>
     );
     if (result == null) return;
     setState(() => _notes = result.isEmpty ? null : result);
+    _scheduleAutoSave();
   }
 
   Future<void> _editPlace() async {
@@ -217,6 +240,7 @@ class _WineFormState extends State<WineForm>
     );
     if (result == null) return;
     setState(() => _location = result);
+    _scheduleAutoSave();
   }
 
   @override
@@ -235,7 +259,10 @@ class _WineFormState extends State<WineForm>
         SizedBox(height: context.s),
         WineFormTypeChipRow(
           selected: _type,
-          onChanged: (t) => setState(() => _type = t),
+          onChanged: (t) {
+            setState(() => _type = t);
+            _scheduleAutoSave();
+          },
         ),
         SizedBox(height: context.l),
         Padding(
@@ -252,10 +279,13 @@ class _WineFormState extends State<WineForm>
                     placeholderIcon: Icons.wine_bar_outlined,
                     imageUrl: _imageUrl,
                     localPath: _localImagePath,
-                    onChanged: (v) => setState(() {
-                      _imageUrl = v.imageUrl;
-                      _localImagePath = v.localPath;
-                    }),
+                    onChanged: (v) {
+                      setState(() {
+                        _imageUrl = v.imageUrl;
+                        _localImagePath = v.localPath;
+                      });
+                      _scheduleAutoSave();
+                    },
                   ),
                 ),
               ),
@@ -282,7 +312,10 @@ class _WineFormState extends State<WineForm>
                         onTap: () => showWineCountryPicker(
                           context: context,
                           selected: _country,
-                          onChanged: (c) => setState(() => _country = c),
+                          onChanged: (c) {
+                            setState(() => _country = c);
+                            _scheduleAutoSave();
+                          },
                         ),
                       ),
                     ],
@@ -305,10 +338,13 @@ class _WineFormState extends State<WineForm>
         WineFormMemoryTile(
           imageUrl: _memoryImageUrl,
           localPath: _memoryLocalImagePath,
-          onChanged: (v) => setState(() {
-            _memoryImageUrl = v.imageUrl;
-            _memoryLocalImagePath = v.localPath;
-          }),
+          onChanged: (v) {
+            setState(() {
+              _memoryImageUrl = v.imageUrl;
+              _memoryLocalImagePath = v.localPath;
+            });
+            _scheduleAutoSave();
+          },
         ),
         SizedBox(height: context.l),
         SizedBox(
@@ -318,31 +354,33 @@ class _WineFormState extends State<WineForm>
             onTap: _editPlace,
           ),
         ),
-        SizedBox(height: context.l),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: context.paddingH),
-          child: SizedBox(
-            width: double.infinity,
-            height: context.h * 0.065,
-            child: FilledButton.icon(
-              onPressed: _submit,
-              icon: const Icon(Icons.check),
-              label: Text(
-                widget.submitLabel,
-                style: TextStyle(
-                  fontSize: context.bodyFont * 1.05,
-                  fontWeight: FontWeight.w700,
+        if (!widget.autoSave) ...[
+          SizedBox(height: context.l),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: context.paddingH),
+            child: SizedBox(
+              width: double.infinity,
+              height: context.h * 0.065,
+              child: FilledButton.icon(
+                onPressed: _submit,
+                icon: const Icon(Icons.check),
+                label: Text(
+                  widget.submitLabel,
+                  style: TextStyle(
+                    fontSize: context.bodyFont * 1.05,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
-              ),
-              style: FilledButton.styleFrom(
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(context.w * 0.04),
+                style: FilledButton.styleFrom(
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(context.w * 0.04),
+                  ),
                 ),
               ),
             ),
           ),
-        ),
+        ],
         SizedBox(height: context.xl),
       ],
     );
