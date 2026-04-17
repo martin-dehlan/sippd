@@ -57,14 +57,20 @@ class _SheetState extends ConsumerState<_Sheet> {
     setState(() => _saving = true);
     try {
       if (_isOwner) {
-        final updated = widget.wine.copyWith(
+        final fresh = await ref
+                .read(wineRepositoryProvider)
+                .getWineById(widget.wine.id) ??
+            widget.wine;
+        final updated = fresh.copyWith(
           rating: _myRating!,
           notes: _notesController.text.trim().isEmpty
-              ? widget.wine.notes
+              ? fresh.notes
               : _notesController.text.trim(),
           updatedAt: DateTime.now(),
         );
         await ref.read(wineControllerProvider.notifier).updateWine(updated);
+        ref.invalidate(groupWinesProvider(widget.groupId));
+        ref.invalidate(wineDetailProvider(widget.wine.id));
       } else {
         await ref
             .read(groupWineRatingControllerProvider.notifier)
@@ -113,9 +119,13 @@ class _SheetState extends ConsumerState<_Sheet> {
 
     if (!_loaded) {
       if (userId == widget.wine.userId) {
-        _myRating = widget.wine.rating;
-        _notesController.text = widget.wine.notes ?? '';
-        _loaded = true;
+        final localAsync = ref.watch(wineDetailProvider(widget.wine.id));
+        localAsync.whenData((local) {
+          final source = local ?? widget.wine;
+          _myRating = source.rating;
+          _notesController.text = source.notes ?? '';
+          _loaded = true;
+        });
       } else {
         ratingsAsync.whenData((list) {
           final mine = list.where((r) => r.userId == userId).firstOrNull;
