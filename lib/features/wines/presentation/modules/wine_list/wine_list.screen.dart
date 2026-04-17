@@ -269,16 +269,23 @@ class WineEmptyState extends StatelessWidget {
               fontWeight: FontWeight.w600,
             ),
           ),
-          SizedBox(height: context.xs),
-          Text(
-            hasFilter
-                ? 'Try a different filter'
-                : 'Tap + to add your first wine',
-            style: TextStyle(
-              fontSize: context.captionFont,
-              color: cs.onSurfaceVariant,
+          if (hasFilter) ...[
+            SizedBox(height: context.xs),
+            Text(
+              'Try a different filter',
+              style: TextStyle(
+                fontSize: context.captionFont,
+                color: cs.onSurfaceVariant,
+              ),
             ),
-          ),
+          ] else ...[
+            SizedBox(height: context.l),
+            FilledButton.icon(
+              onPressed: () => context.push(AppRoutes.wineAdd),
+              icon: const Icon(Icons.add),
+              label: const Text('Add wine'),
+            ),
+          ],
         ],
       ),
     );

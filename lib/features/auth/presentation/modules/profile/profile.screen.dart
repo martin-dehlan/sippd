@@ -120,16 +120,6 @@ class ProfileScreen extends ConsumerWidget {
 
             // Menu items
             _MenuItem(
-              icon: Icons.wine_bar,
-              label: 'My Wines',
-              onTap: () => context.go(AppRoutes.wines),
-            ),
-            _MenuItem(
-              icon: Icons.group,
-              label: 'My Groups',
-              onTap: () => context.go(AppRoutes.groups),
-            ),
-            _MenuItem(
               icon: Icons.people_outline,
               label: 'Friends',
               onTap: () => context.push(AppRoutes.friends),
