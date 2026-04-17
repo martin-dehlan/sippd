@@ -191,12 +191,11 @@ class _SheetState extends ConsumerState<_Sheet> {
             value: _myRating ?? 5.0,
             min: 0,
             max: 10,
-            divisions: 100,
+            divisions: 20,
             activeColor: cs.primary,
             onChanged: _saving
                 ? null
-                : (v) => setState(() =>
-                    _myRating = double.parse(v.toStringAsFixed(1))),
+                : (v) => setState(() => _myRating = v),
           ),
           SizedBox(height: context.s),
           TextField(
