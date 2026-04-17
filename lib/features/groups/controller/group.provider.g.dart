@@ -388,7 +388,7 @@ class _GroupWinesProviderElement
   String get groupId => (origin as GroupWinesProvider).groupId;
 }
 
-String _$groupControllerHash() => r'1db6929cbb1c20ead0952aa4cda23a8d88afea51';
+String _$groupControllerHash() => r'591047af0a8eb4fbe8e13f3313eb64c6247c561e';
 
 /// See also [GroupController].
 @ProviderFor(GroupController)

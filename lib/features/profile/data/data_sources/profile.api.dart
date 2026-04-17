@@ -43,4 +43,18 @@ class ProfileApi {
         .update({'username': username.toLowerCase()})
         .eq('id', _uid);
   }
+
+  Future<void> updateDisplayName(String? displayName) async {
+    await _client
+        .from('profiles')
+        .update({'display_name': displayName})
+        .eq('id', _uid);
+  }
+
+  Future<void> updateAvatarUrl(String? avatarUrl) async {
+    await _client
+        .from('profiles')
+        .update({'avatar_url': avatarUrl})
+        .eq('id', _uid);
+  }
 }

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../../profile/controller/profile.provider.dart';
+import '../../../../profile/presentation/widgets/profile_avatar.widget.dart';
 import '../../../../wines/controller/wine.provider.dart';
 import '../../../controller/auth.provider.dart';
 
@@ -41,27 +42,22 @@ class ProfileScreen extends ConsumerWidget {
             Center(
               child: Column(
                 children: [
-                  Container(
-                    width: context.w * 0.22,
-                    height: context.w * 0.22,
-                    decoration: BoxDecoration(
-                      color: cs.primaryContainer,
-                      shape: BoxShape.circle,
-                    ),
-                    child: user != null
-                        ? Center(
-                            child: Text(
-                              _initials(headlineName),
-                              style: TextStyle(
-                                fontSize: context.headingFont,
-                                fontWeight: FontWeight.bold,
-                                color: cs.primary,
-                              ),
-                            ),
-                          )
-                        : Icon(Icons.person,
-                            size: context.w * 0.1, color: cs.primary),
-                  ),
+                  user != null
+                      ? ProfileAvatar(
+                          avatarUrl: profile?.avatarUrl,
+                          fallbackText: headlineName,
+                          size: context.w * 0.22,
+                        )
+                      : Container(
+                          width: context.w * 0.22,
+                          height: context.w * 0.22,
+                          decoration: BoxDecoration(
+                            color: cs.primaryContainer,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(Icons.person,
+                              size: context.w * 0.1, color: cs.primary),
+                        ),
                   SizedBox(height: context.m),
                   Text(
                     profile?.username != null
@@ -119,6 +115,12 @@ class ProfileScreen extends ConsumerWidget {
             SizedBox(height: context.xl),
 
             // Menu items
+            if (user != null)
+              _MenuItem(
+                icon: Icons.edit_outlined,
+                label: 'Edit profile',
+                onTap: () => context.push(AppRoutes.profileEdit),
+              ),
             _MenuItem(
               icon: Icons.people_outline,
               label: 'Friends',
@@ -164,11 +166,6 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  String _initials(String name) {
-    final clean = name.replaceAll(RegExp(r'[^A-Za-z0-9]'), '');
-    if (clean.length < 2) return clean.toUpperCase();
-    return clean.substring(0, 2).toUpperCase();
-  }
 }
 
 class _StatCard extends StatelessWidget {

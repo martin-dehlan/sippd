@@ -7,6 +7,7 @@ import '../../features/auth/presentation/modules/login/login.screen.dart';
 import '../../features/auth/presentation/modules/profile/profile.screen.dart';
 import '../../features/profile/controller/profile.provider.dart';
 import '../../features/profile/presentation/modules/choose_username/choose_username.screen.dart';
+import '../../features/profile/presentation/modules/edit_profile/edit_profile.screen.dart';
 import '../../features/friends/presentation/modules/friend_profile/friend_profile.screen.dart';
 import '../../features/friends/presentation/modules/friends/friends.screen.dart';
 import '../../features/groups/presentation/modules/group_detail/group_detail.screen.dart';
@@ -118,6 +119,12 @@ GoRouter goRouter(GoRouterRef ref) {
         path: AppRoutes.tastingDetail,
         builder: (context, state) =>
             TastingDetailScreen(tastingId: state.pathParameters['id']!),
+      ),
+
+      // Profile edit
+      GoRoute(
+        path: AppRoutes.profileEdit,
+        builder: (context, state) => const EditProfileScreen(),
       ),
 
       // Friends

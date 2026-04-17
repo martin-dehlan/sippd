@@ -10,6 +10,7 @@ class AppRoutes {
   static const String wines = '/wines';
   static const String groups = '/groups';
   static const String profile = '/profile';
+  static const String profileEdit = '/profile/edit';
 
   // Wine
   static const String wineDetail = '/wines/:id';

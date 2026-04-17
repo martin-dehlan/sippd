@@ -23,6 +23,25 @@ final profileApiProvider = AutoDisposeProvider<ProfileApi>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef ProfileApiRef = AutoDisposeProviderRef<ProfileApi>;
+String _$profileImageServiceHash() =>
+    r'f7910201b413071016c1a0b203b8ec1ffc38cc72';
+
+/// See also [profileImageService].
+@ProviderFor(profileImageService)
+final profileImageServiceProvider =
+    AutoDisposeProvider<ProfileImageService?>.internal(
+      profileImageService,
+      name: r'profileImageServiceProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$profileImageServiceHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef ProfileImageServiceRef = AutoDisposeProviderRef<ProfileImageService?>;
 String _$currentProfileHash() => r'8bc83a1eae7bac904bd554e796d47bfba05da6aa';
 
 /// See also [currentProfile].
@@ -41,7 +60,7 @@ final currentProfileProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef CurrentProfileRef = AutoDisposeStreamProviderRef<ProfileEntity?>;
-String _$profileControllerHash() => r'41b2611eb710546368a73e4b5b34330ca9387700';
+String _$profileControllerHash() => r'dfc088219aec140b67890f0b6670ae8f442c4b6e';
 
 /// See also [ProfileController].
 @ProviderFor(ProfileController)
