@@ -21,7 +21,7 @@ class SharedWinesCarousel extends ConsumerStatefulWidget {
 
 class _SharedWinesCarouselState extends ConsumerState<SharedWinesCarousel> {
   late final PageController _pageController =
-      PageController(viewportFraction: 0.82);
+      PageController(viewportFraction: 0.62);
   double _page = 0;
 
   @override
@@ -55,25 +55,27 @@ class _SharedWinesCarouselState extends ConsumerState<SharedWinesCarousel> {
           );
         }
         return SizedBox(
-          height: context.h * 0.26,
+          height: context.h * 0.28,
           child: PageView.builder(
             controller: _pageController,
             itemCount: wines.length,
             padEnds: true,
+            clipBehavior: Clip.none,
             itemBuilder: (_, i) {
-              final delta = (i - _page).abs().clamp(0.0, 1.0);
-              final scale = 1 - delta * 0.06;
-              final opacity = 1 - delta * 0.25;
-              return Opacity(
-                opacity: opacity,
-                child: Transform.scale(
-                  scale: scale,
-                  child: Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: context.w * 0.02),
+              final delta = (i - _page).abs().clamp(0.0, 2.0);
+              final scale = (1 - delta * 0.12).clamp(0.76, 1.0);
+              final opacity = (1 - delta * 0.35).clamp(0.3, 1.0);
+              final translate = delta * context.w * 0.03;
+              return Transform.translate(
+                offset: Offset(0, translate),
+                child: Opacity(
+                  opacity: opacity,
+                  child: Transform.scale(
+                    scale: scale,
                     child: _WineCard(
                       groupId: widget.groupId,
                       wine: wines[i],
+                      isActive: delta < 0.5,
                     ),
                   ),
                 ),
@@ -94,7 +96,12 @@ class _SharedWinesCarouselState extends ConsumerState<SharedWinesCarousel> {
 class _WineCard extends ConsumerWidget {
   final String groupId;
   final WineEntity wine;
-  const _WineCard({required this.groupId, required this.wine});
+  final bool isActive;
+  const _WineCard({
+    required this.groupId,
+    required this.wine,
+    this.isActive = true,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -110,10 +117,20 @@ class _WineCard extends ConsumerWidget {
     return GestureDetector(
       onTap: () => context.push(AppRoutes.wineDetailPath(wine.id)),
       child: Container(
+        margin: EdgeInsets.symmetric(horizontal: context.w * 0.01),
         padding: EdgeInsets.all(context.w * 0.05),
         decoration: BoxDecoration(
           color: cs.surfaceContainer,
           borderRadius: BorderRadius.circular(context.w * 0.05),
+          boxShadow: isActive
+              ? [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.25),
+                    blurRadius: 20,
+                    offset: const Offset(0, 8),
+                  ),
+                ]
+              : null,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
