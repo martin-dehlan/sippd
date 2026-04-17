@@ -49,7 +49,12 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
   }
 
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a wine name')),
+      );
+      return;
+    }
 
     final wine = WineEntity(
       id: const Uuid().v4(),
@@ -234,16 +239,29 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
                   onTap: _editPlace,
                 ),
               ),
-              SizedBox(height: context.m),
-              Center(
-                child: TextButton(
-                  onPressed: _submit,
-                  child: Text(
-                    'Save wine',
-                    style: TextStyle(
-                      fontSize: context.bodyFont,
-                      fontWeight: FontWeight.w600,
-                      color: Theme.of(context).colorScheme.primary,
+              SizedBox(height: context.l),
+              Padding(
+                padding:
+                    EdgeInsets.symmetric(horizontal: context.paddingH),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: context.h * 0.065,
+                  child: FilledButton.icon(
+                    onPressed: _submit,
+                    icon: const Icon(Icons.check),
+                    label: Text(
+                      'Save wine',
+                      style: TextStyle(
+                        fontSize: context.bodyFont * 1.05,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    style: FilledButton.styleFrom(
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.circular(context.w * 0.04),
+                      ),
                     ),
                   ),
                 ),

@@ -35,6 +35,31 @@ class GroupDetailScreen extends ConsumerWidget {
           error: (e, _) => Center(child: Text('Error: $e')),
         ),
       ),
+      floatingActionButton: const _FloatingBackButton(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
+    );
+  }
+}
+
+class _FloatingBackButton extends StatelessWidget {
+  const _FloatingBackButton();
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final size = context.w * 0.16;
+    return SizedBox(
+      width: size,
+      height: size,
+      child: FloatingActionButton(
+        heroTag: 'group-detail-back',
+        backgroundColor: cs.surfaceContainer,
+        foregroundColor: cs.onSurface,
+        elevation: 2,
+        shape: const CircleBorder(),
+        onPressed: () => context.pop(),
+        child: Icon(Icons.arrow_back_ios_new, size: context.w * 0.06),
+      ),
     );
   }
 }
@@ -53,9 +78,7 @@ class _Body extends ConsumerWidget {
     return ListView(
       padding: EdgeInsets.zero,
       children: [
-        SizedBox(height: context.s),
-        _TopBar(),
-        SizedBox(height: context.m),
+        SizedBox(height: context.xl * 1.5),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: padH),
           child: Text(
@@ -181,34 +204,6 @@ class _Body extends ConsumerWidget {
       await ref.read(groupControllerProvider.notifier).leaveGroup(groupId);
     }
     if (context.mounted) context.pop();
-  }
-}
-
-class _TopBar extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: context.paddingH),
-      child: Row(
-        children: [
-          Material(
-            color: cs.surfaceContainer,
-            shape: const CircleBorder(),
-            clipBehavior: Clip.antiAlias,
-            child: InkWell(
-              onTap: () => context.pop(),
-              child: SizedBox(
-                width: context.w * 0.1,
-                height: context.w * 0.1,
-                child: Icon(Icons.arrow_back_ios_new,
-                    color: cs.onSurface, size: context.w * 0.045),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }
 
