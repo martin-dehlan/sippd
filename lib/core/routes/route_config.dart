@@ -19,6 +19,7 @@ import '../../features/scanner/presentation/modules/scan_result/scan_result.scre
 import '../../features/wines/presentation/modules/wine_list/wine_list.screen.dart';
 import '../../features/wines/presentation/modules/wine_add/wine_add.screen.dart';
 import '../../features/wines/presentation/modules/wine_detail/wine_detail.screen.dart';
+import '../../features/wines/presentation/modules/wine_edit/wine_edit.screen.dart';
 import 'app.routes.dart';
 
 part 'route_config.g.dart';
@@ -88,6 +89,13 @@ GoRouter goRouter(GoRouterRef ref) {
         builder: (context, state) {
           final id = state.pathParameters['id']!;
           return WineDetailScreen(wineId: id);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.wineEdit,
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return WineEditScreen(wineId: id);
         },
       ),
 

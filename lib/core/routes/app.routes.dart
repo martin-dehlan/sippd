@@ -14,7 +14,9 @@ class AppRoutes {
   // Wine
   static const String wineDetail = '/wines/:id';
   static const String wineAdd = '/wines/add';
+  static const String wineEdit = '/wines/:id/edit';
   static String wineDetailPath(String id) => '/wines/$id';
+  static String wineEditPath(String id) => '/wines/$id/edit';
 
   // Scanner
   static const String scan = '/scan';

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:latlong2/latlong.dart';
 import '../../../../../common/utils/responsive.dart';
+import '../../../../../core/routes/app.routes.dart';
 import '../../../../groups/presentation/widgets/share_wine_sheet.dart';
 import '../../../controller/wine.provider.dart';
 import '../../../domain/entities/wine.entity.dart';
@@ -105,12 +107,25 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
                   Expanded(child: _NameTitle(name: widget.wine.name)),
                   Padding(
                     padding: EdgeInsets.only(right: context.paddingH * 0.7),
-                    child: _ShareButton(
-                      onTap: () => showShareWineSheet(
-                        context: context,
-                        ref: ref,
-                        wineId: widget.wine.id,
-                      ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _IconCircleButton(
+                          icon: Icons.edit_outlined,
+                          onTap: () => context.push(
+                            AppRoutes.wineEditPath(widget.wine.id),
+                          ),
+                        ),
+                        SizedBox(width: context.w * 0.02),
+                        _IconCircleButton(
+                          icon: Icons.ios_share,
+                          onTap: () => showShareWineSheet(
+                            context: context,
+                            ref: ref,
+                            wineId: widget.wine.id,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -191,9 +206,10 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
   }
 }
 
-class _ShareButton extends StatelessWidget {
+class _IconCircleButton extends StatelessWidget {
+  final IconData icon;
   final VoidCallback onTap;
-  const _ShareButton({required this.onTap});
+  const _IconCircleButton({required this.icon, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -209,8 +225,7 @@ class _ShareButton extends StatelessWidget {
           shape: BoxShape.circle,
           border: Border.all(color: cs.outlineVariant, width: 0.5),
         ),
-        child: Icon(Icons.ios_share,
-            size: context.w * 0.045, color: cs.onSurface),
+        child: Icon(icon, size: context.w * 0.045, color: cs.onSurface),
       ),
     );
   }
