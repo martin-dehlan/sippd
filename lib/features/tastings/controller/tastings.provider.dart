@@ -79,25 +79,20 @@ class TastingsController extends _$TastingsController {
     final api = ref.read(tastingsApiProvider);
     if (api == null) return null;
 
-    state = const AsyncValue.loading();
-    TastingEntity? created;
-    state = await AsyncValue.guard(() async {
-      final model = await api.create(
-        groupId: groupId,
-        title: title,
-        description: description,
-        location: location,
-        latitude: latitude,
-        longitude: longitude,
-        scheduledAt: scheduledAt,
-      );
-      if (wineIds.isNotEmpty) {
-        await api.addWines(model.id, wineIds);
-      }
-      created = model.toEntity();
-    });
+    final model = await api.create(
+      groupId: groupId,
+      title: title,
+      description: description,
+      location: location,
+      latitude: latitude,
+      longitude: longitude,
+      scheduledAt: scheduledAt,
+    );
+    if (wineIds.isNotEmpty) {
+      await api.addWines(model.id, wineIds);
+    }
     ref.invalidate(groupTastingsProvider(groupId));
-    return created;
+    return model.toEntity();
   }
 
   Future<void> addWines(String tastingId, List<String> wineIds) async {
