@@ -2,6 +2,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../auth/controller/auth.provider.dart';
 import '../../friends/data/models/friend_profile.model.dart';
 import '../../friends/domain/entities/friend_profile.entity.dart';
+import '../../wines/controller/wine.provider.dart';
 import '../../wines/data/models/wine.model.dart';
 import '../../wines/domain/entities/wine.entity.dart';
 import '../domain/entities/group.entity.dart';
@@ -84,6 +85,18 @@ class GroupController extends _$GroupController {
     if (userId == null) return;
 
     final client = ref.read(supabaseClientProvider);
+
+    // Ensure the wine exists in Supabase before creating the FK row.
+    // Local-first wines may not be synced yet (or may carry a legacy
+    // `local_user` user_id) — upsert with current uid so RLS + FK pass.
+    final wine =
+        await ref.read(wineRepositoryProvider).getWineById(wineId);
+    if (wine != null) {
+      final model = wine
+          .copyWith(userId: userId, updatedAt: DateTime.now())
+          .toModel();
+      await client.from('wines').upsert(model.toJson());
+    }
 
     await client.from('group_wines').upsert({
       'group_id': groupId,

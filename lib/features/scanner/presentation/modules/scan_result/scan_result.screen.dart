@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../core/routes/app.routes.dart';
+import '../../../../auth/controller/auth.provider.dart';
 import '../../../../wines/controller/wine.provider.dart';
 import '../../../../wines/domain/entities/wine.entity.dart';
 import '../../../controller/scanner.provider.dart';
@@ -96,7 +97,7 @@ class _ScanResultScreenState extends ConsumerState<ScanResultScreen>
       grape: data.grape,
       vintage: data.vintage,
       imageUrl: data.imageUrl,
-      userId: 'local_user',
+      userId: ref.read(currentUserIdProvider) ?? 'local_user',
       createdAt: DateTime.now(),
     );
 

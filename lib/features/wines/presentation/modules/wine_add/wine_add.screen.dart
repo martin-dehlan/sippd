@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,6 +10,7 @@ import 'package:uuid/uuid.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/text_input_sheet.dart';
 import '../../../../../common/widgets/year_picker_sheet.dart';
+import '../../../../auth/controller/auth.provider.dart';
 import '../../../../locations/domain/entities/location.entity.dart';
 import '../../../../locations/presentation/widgets/location_search_sheet.dart';
 import '../../../controller/wine.provider.dart';
@@ -23,9 +26,14 @@ class WineAddScreen extends ConsumerStatefulWidget {
   ConsumerState<WineAddScreen> createState() => _WineAddScreenState();
 }
 
-class _WineAddScreenState extends ConsumerState<WineAddScreen> {
-  final _formKey = GlobalKey<FormState>();
+class _WineAddScreenState extends ConsumerState<WineAddScreen>
+    with SingleTickerProviderStateMixin {
   final _nameController = TextEditingController();
+  final _nameFocus = FocusNode();
+  final _nameFieldKey = GlobalKey();
+  late final AnimationController _shake;
+
+  bool _nameError = false;
 
   double _rating = 5.0;
   WineType _type = WineType.red;
@@ -43,16 +51,41 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
   String? _memoryLocalImagePath;
 
   @override
+  void initState() {
+    super.initState();
+    _shake = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 400),
+    );
+    _nameController.addListener(() {
+      if (_nameError && _nameController.text.trim().isNotEmpty) {
+        setState(() => _nameError = false);
+      }
+    });
+  }
+
+  @override
   void dispose() {
     _nameController.dispose();
+    _nameFocus.dispose();
+    _shake.dispose();
     super.dispose();
   }
 
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a wine name')),
-      );
+    if (_nameController.text.trim().isEmpty) {
+      setState(() => _nameError = true);
+      final ctx = _nameFieldKey.currentContext;
+      if (ctx != null) {
+        await Scrollable.ensureVisible(
+          ctx,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+          alignment: 0.2,
+        );
+      }
+      _nameFocus.requestFocus();
+      _shake.forward(from: 0);
       return;
     }
 
@@ -73,7 +106,7 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
       localImagePath: _localImagePath,
       memoryImageUrl: _memoryImageUrl,
       memoryLocalImagePath: _memoryLocalImagePath,
-      userId: 'local_user',
+      userId: ref.read(currentUserIdProvider) ?? 'local_user',
       createdAt: DateTime.now(),
     );
 
@@ -144,14 +177,18 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Form(
-        key: _formKey,
-        child: SafeArea(
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: [
-              SizedBox(height: context.xl * 1.5),
-              _NameField(controller: _nameController),
+      body: SafeArea(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            SizedBox(height: context.xl * 1.5),
+            _NameField(
+              key: _nameFieldKey,
+              controller: _nameController,
+              focusNode: _nameFocus,
+              hasError: _nameError,
+              shake: _shake,
+            ),
               SizedBox(height: context.s),
               _TypeChipRow(
                 selected: _type,
@@ -266,9 +303,8 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: context.xl),
-            ],
-          ),
+            SizedBox(height: context.xl),
+          ],
         ),
       ),
       floatingActionButton: const _FloatingBackButton(),
@@ -302,7 +338,16 @@ class _FloatingBackButton extends StatelessWidget {
 
 class _NameField extends StatelessWidget {
   final TextEditingController controller;
-  const _NameField({required this.controller});
+  final FocusNode focusNode;
+  final bool hasError;
+  final AnimationController shake;
+  const _NameField({
+    super.key,
+    required this.controller,
+    required this.focusNode,
+    required this.hasError,
+    required this.shake,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -314,32 +359,42 @@ class _NameField extends StatelessWidget {
       height: 1.05,
       color: cs.onSurface,
     );
-    return Padding(
-      padding: EdgeInsets.only(
-        left: context.paddingH * 1.3,
-        right: context.paddingH * 1.3,
-      ),
-      child: TextFormField(
-        controller: controller,
-        cursorColor: cs.primary,
-        cursorWidth: 1.5,
-        textCapitalization: TextCapitalization.characters,
-        style: titleStyle,
-        decoration: InputDecoration(
-          hintText: 'WINE NAME',
-          hintStyle: titleStyle.copyWith(color: cs.outline),
-          filled: false,
-          fillColor: Colors.transparent,
-          border: InputBorder.none,
-          enabledBorder: InputBorder.none,
-          focusedBorder: InputBorder.none,
-          errorBorder: InputBorder.none,
-          disabledBorder: InputBorder.none,
-          isDense: true,
-          contentPadding: EdgeInsets.zero,
+    final hintColor = hasError ? cs.error : cs.outline;
+    return AnimatedBuilder(
+      animation: shake,
+      builder: (_, child) {
+        final dx = shake.isAnimating
+            ? sin(shake.value * pi * 4) * 10
+            : 0.0;
+        return Transform.translate(offset: Offset(dx, 0), child: child);
+      },
+      child: Padding(
+        padding: EdgeInsets.only(
+          left: context.paddingH * 1.3,
+          right: context.paddingH * 1.3,
         ),
-        validator: (v) => v == null || v.trim().isEmpty ? 'Required' : null,
-        textInputAction: TextInputAction.done,
+        child: TextField(
+          controller: controller,
+          focusNode: focusNode,
+          cursorColor: cs.primary,
+          cursorWidth: 1.5,
+          textCapitalization: TextCapitalization.characters,
+          style: titleStyle,
+          decoration: InputDecoration(
+            hintText: 'WINE NAME',
+            hintStyle: titleStyle.copyWith(color: hintColor),
+            filled: false,
+            fillColor: Colors.transparent,
+            border: InputBorder.none,
+            enabledBorder: InputBorder.none,
+            focusedBorder: InputBorder.none,
+            errorBorder: InputBorder.none,
+            disabledBorder: InputBorder.none,
+            isDense: true,
+            contentPadding: EdgeInsets.zero,
+          ),
+          textInputAction: TextInputAction.done,
+        ),
       ),
     );
   }
