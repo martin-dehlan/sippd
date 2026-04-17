@@ -83,11 +83,36 @@ class GroupListScreen extends ConsumerWidget {
                 },
                 loading: () =>
                     const Center(child: CircularProgressIndicator()),
-                error: (_, _) => Center(
-                  child: Text('Sign in to see groups',
-                      style: TextStyle(
-                          color: cs.onSurfaceVariant,
-                          fontSize: context.captionFont)),
+                error: (error, _) => Center(
+                  child: Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: context.paddingH),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.error_outline,
+                            color: cs.error, size: context.w * 0.1),
+                        SizedBox(height: context.m),
+                        Text('Could not load groups',
+                            style: TextStyle(
+                                fontSize: context.bodyFont,
+                                fontWeight: FontWeight.w600)),
+                        SizedBox(height: context.xs),
+                        Text(error.toString(),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontSize: context.captionFont,
+                                color: cs.onSurfaceVariant)),
+                        SizedBox(height: context.m),
+                        FilledButton.icon(
+                          onPressed: () =>
+                              ref.invalidate(groupControllerProvider),
+                          icon: const Icon(Icons.refresh),
+                          label: const Text('Retry'),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ),

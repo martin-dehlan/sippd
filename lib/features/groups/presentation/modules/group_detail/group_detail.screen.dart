@@ -1,22 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:share_plus/share_plus.dart';
 
-import '../../../../../common/services/deep_link/deep_link.service.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../core/routes/app.routes.dart';
-import 'package:intl/intl.dart';
 import '../../../../auth/controller/auth.provider.dart';
-import '../../../../friends/domain/entities/friend_profile.entity.dart';
-import '../../../../friends/presentation/widgets/friend_avatar.widget.dart';
-import '../../../../tastings/controller/tastings.provider.dart';
-import '../../../../tastings/domain/entities/tasting.entity.dart';
-import '../../../../wines/domain/entities/wine.entity.dart';
 import '../../../controller/group.provider.dart';
 import '../../../domain/entities/group.entity.dart';
+import 'widgets/invite_code_pill.widget.dart';
+import 'widgets/members_strip.widget.dart';
+import 'widgets/shared_wines_carousel.widget.dart';
+import 'widgets/tastings_calendar.widget.dart';
+import 'widgets/wine_picker_sheet.widget.dart';
 
 class GroupDetailScreen extends ConsumerWidget {
   final String groupId;
@@ -39,31 +35,6 @@ class GroupDetailScreen extends ConsumerWidget {
           error: (e, _) => Center(child: Text('Error: $e')),
         ),
       ),
-      floatingActionButton: const _BackFab(),
-      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
-    );
-  }
-}
-
-class _BackFab extends StatelessWidget {
-  const _BackFab();
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    final size = context.w * 0.16;
-    return SizedBox(
-      width: size,
-      height: size,
-      child: FloatingActionButton(
-        heroTag: 'group-detail-back',
-        backgroundColor: cs.surfaceContainer,
-        foregroundColor: cs.onSurface,
-        elevation: 2,
-        shape: const CircleBorder(),
-        onPressed: () => context.pop(),
-        child: Icon(Icons.arrow_back_ios_new, size: context.w * 0.06),
-      ),
     );
   }
 }
@@ -77,14 +48,16 @@ class _Body extends ConsumerWidget {
     final cs = Theme.of(context).colorScheme;
     final currentUid = ref.watch(currentUserIdProvider);
     final isOwner = currentUid == group.createdBy;
+    final padH = context.paddingH * 1.3;
 
     return ListView(
       padding: EdgeInsets.zero,
       children: [
-        SizedBox(height: context.xl * 1.5),
+        SizedBox(height: context.s),
+        _TopBar(),
+        SizedBox(height: context.m),
         Padding(
-          padding:
-              EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
+          padding: EdgeInsets.symmetric(horizontal: padH),
           child: Text(
             group.name.toUpperCase(),
             style: GoogleFonts.playfairDisplay(
@@ -100,8 +73,7 @@ class _Body extends ConsumerWidget {
         if (group.description != null && group.description!.isNotEmpty) ...[
           SizedBox(height: context.s),
           Padding(
-            padding:
-                EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
+            padding: EdgeInsets.symmetric(horizontal: padH),
             child: Text(
               group.description!,
               style: TextStyle(
@@ -112,40 +84,60 @@ class _Body extends ConsumerWidget {
             ),
           ),
         ],
-        SizedBox(height: context.l),
+        SizedBox(height: context.m),
         Padding(
-          padding:
-              EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
-          child: _InviteCodeCard(
-              code: group.inviteCode, groupName: group.name),
+          padding: EdgeInsets.symmetric(horizontal: padH),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: InviteCodePill(
+              code: group.inviteCode,
+              groupName: group.name,
+            ),
+          ),
         ),
         SizedBox(height: context.l),
-        _SectionHeader(label: 'Members'),
-        SizedBox(height: context.s),
-        _MembersRow(groupId: group.id),
-        SizedBox(height: context.l),
-        _SectionHeader(label: 'Shared wines'),
-        SizedBox(height: context.s),
-        _SharedWines(groupId: group.id),
-        SizedBox(height: context.l),
-        _TastingsSectionHeader(groupId: group.id),
-        SizedBox(height: context.s),
-        _TastingsList(groupId: group.id),
-        SizedBox(height: context.xl),
         Padding(
-          padding:
-              EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
-          child: Center(
-            child: TextButton(
-              onPressed: () => _confirmLeaveOrDelete(
-                  context, ref, group.id, isOwner),
-              child: Text(
-                isOwner ? 'Delete group' : 'Leave group',
-                style: TextStyle(
-                  fontSize: context.bodyFont,
-                  fontWeight: FontWeight.w500,
-                  color: cs.error,
-                ),
+          padding: EdgeInsets.symmetric(horizontal: padH),
+          child: MembersStrip(
+            groupId: group.id,
+            ownerId: group.createdBy,
+          ),
+        ),
+        SizedBox(height: context.l),
+        _SectionHeader(
+          label: 'Shared wines',
+          action: _SectionAction(
+            icon: Icons.add,
+            label: 'Share',
+            onTap: () =>
+                WinePickerSheet.show(context, groupId: group.id),
+          ),
+        ),
+        SizedBox(height: context.s),
+        SharedWinesCarousel(groupId: group.id),
+        SizedBox(height: context.l),
+        _SectionHeader(
+          label: 'Tastings',
+          action: _SectionAction(
+            icon: Icons.add,
+            label: 'Plan',
+            onTap: () =>
+                context.push(AppRoutes.tastingCreatePath(group.id)),
+          ),
+        ),
+        SizedBox(height: context.s),
+        TastingsCalendar(groupId: group.id),
+        SizedBox(height: context.xl),
+        Center(
+          child: TextButton(
+            onPressed: () => _confirmLeaveOrDelete(
+                context, ref, group.id, isOwner),
+            child: Text(
+              isOwner ? 'Delete group' : 'Leave group',
+              style: TextStyle(
+                fontSize: context.bodyFont,
+                fontWeight: FontWeight.w500,
+                color: cs.error,
               ),
             ),
           ),
@@ -155,8 +147,12 @@ class _Body extends ConsumerWidget {
     );
   }
 
-  Future<void> _confirmLeaveOrDelete(BuildContext context, WidgetRef ref,
-      String groupId, bool isOwner) async {
+  Future<void> _confirmLeaveOrDelete(
+    BuildContext context,
+    WidgetRef ref,
+    String groupId,
+    bool isOwner,
+  ) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -188,65 +184,26 @@ class _Body extends ConsumerWidget {
   }
 }
 
-class _InviteCodeCard extends StatelessWidget {
-  final String code;
-  final String groupName;
-  const _InviteCodeCard({required this.code, required this.groupName});
-
+class _TopBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    return Container(
-      padding: EdgeInsets.symmetric(
-          horizontal: context.w * 0.04, vertical: context.m),
-      decoration: BoxDecoration(
-        color: cs.surfaceContainer,
-        borderRadius: BorderRadius.circular(context.w * 0.03),
-      ),
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: context.paddingH),
       child: Row(
         children: [
-          Icon(Icons.link, color: cs.primary, size: context.w * 0.05),
-          SizedBox(width: context.w * 0.03),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Invite code',
-                    style: TextStyle(
-                        fontSize: context.captionFont,
-                        color: cs.primary,
-                        fontWeight: FontWeight.w500,
-                        letterSpacing: 0.3)),
-                SizedBox(height: context.xs * 0.3),
-                Text(code,
-                    style: TextStyle(
-                        fontSize: context.bodyFont * 1.1,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.5)),
-              ],
-            ),
-          ),
-          IconButton(
-            icon: Icon(Icons.copy,
-                color: cs.outline, size: context.w * 0.05),
-            tooltip: 'Copy code',
-            onPressed: () async {
-              await Clipboard.setData(ClipboardData(text: code));
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Invite code copied')),
-                );
-              }
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.ios_share,
-                color: cs.primary, size: context.w * 0.05),
-            tooltip: 'Share invite',
-            onPressed: () => Share.share(
-              'Join "$groupName" on Sippd: '
-              '${DeepLinkService.groupInviteUri(code)}',
-              subject: 'Join $groupName on Sippd',
+          Material(
+            color: cs.surfaceContainer,
+            shape: const CircleBorder(),
+            clipBehavior: Clip.antiAlias,
+            child: InkWell(
+              onTap: () => context.pop(),
+              child: SizedBox(
+                width: context.w * 0.1,
+                height: context.w * 0.1,
+                child: Icon(Icons.arrow_back_ios_new,
+                    color: cs.onSurface, size: context.w * 0.045),
+              ),
             ),
           ),
         ],
@@ -257,355 +214,63 @@ class _InviteCodeCard extends StatelessWidget {
 
 class _SectionHeader extends StatelessWidget {
   final String label;
-  const _SectionHeader({required this.label});
+  final Widget? action;
+  const _SectionHeader({required this.label, this.action});
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
-      child: Text(label,
-          style: TextStyle(
-            fontSize: context.captionFont,
-            fontWeight: FontWeight.w700,
-            color: cs.primary,
-            letterSpacing: 0.3,
-          )),
-    );
-  }
-}
-
-class _MembersRow extends ConsumerWidget {
-  final String groupId;
-  const _MembersRow({required this.groupId});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final membersAsync = ref.watch(groupMembersProvider(groupId));
-    return membersAsync.when(
-      data: (members) {
-        if (members.isEmpty) {
-          return Padding(
-            padding:
-                EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
-            child: Text('No members yet.',
-                style: TextStyle(
-                    fontSize: context.captionFont,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant)),
-          );
-        }
-        return SizedBox(
-          height: context.w * 0.2,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            padding:
-                EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
-            itemCount: members.length,
-            separatorBuilder: (_, __) => SizedBox(width: context.w * 0.03),
-            itemBuilder: (_, i) => _MemberAvatar(member: members[i]),
-          ),
-        );
-      },
-      loading: () => SizedBox(
-        height: context.w * 0.2,
-        child: const Center(child: CircularProgressIndicator()),
-      ),
-      error: (_, __) => const SizedBox.shrink(),
-    );
-  }
-}
-
-class _MemberAvatar extends StatelessWidget {
-  final FriendProfileEntity member;
-  const _MemberAvatar({required this.member});
-
-  @override
-  Widget build(BuildContext context) {
-    final name = member.displayName ?? member.username ?? '?';
-    return GestureDetector(
-      onTap: () => context.push(AppRoutes.friendProfilePath(member.id)),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
+      child: Row(
         children: [
-          FriendAvatar(profile: member, size: context.w * 0.13),
-          SizedBox(height: context.xs * 0.5),
-          SizedBox(
-            width: context.w * 0.16,
+          Expanded(
             child: Text(
-              name,
-              textAlign: TextAlign.center,
+              label,
               style: TextStyle(
-                fontSize: context.captionFont * 0.85,
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                fontSize: context.bodyFont,
+                fontWeight: FontWeight.w700,
+                color: cs.onSurface,
+                letterSpacing: -0.2,
               ),
-              overflow: TextOverflow.ellipsis,
             ),
           ),
+          ?action,
         ],
       ),
     );
   }
 }
 
-class _SharedWines extends ConsumerWidget {
-  final String groupId;
-  const _SharedWines({required this.groupId});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final cs = Theme.of(context).colorScheme;
-    final winesAsync = ref.watch(groupWinesProvider(groupId));
-    return winesAsync.when(
-      data: (wines) {
-        if (wines.isEmpty) {
-          return Padding(
-            padding:
-                EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
-            child: Text('No wines shared yet.',
-                style: TextStyle(
-                    fontSize: context.captionFont,
-                    color: cs.onSurfaceVariant)),
-          );
-        }
-        return ListView.separated(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          padding:
-              EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
-          itemCount: wines.length,
-          separatorBuilder: (_, __) => SizedBox(height: context.s),
-          itemBuilder: (_, i) => _GroupWineRow(wine: wines[i]),
-        );
-      },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (_, __) => const SizedBox.shrink(),
-    );
-  }
-}
-
-class _GroupWineRow extends StatelessWidget {
-  final WineEntity wine;
-  const _GroupWineRow({required this.wine});
+class _SectionAction extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+  const _SectionAction({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final typeColor = switch (wine.type) {
-      WineType.red => const Color(0xFFA84343),
-      WineType.white => const Color(0xFFD4C49A),
-      WineType.rose => const Color(0xFFD6889A),
-    };
-    return Container(
-      padding: EdgeInsets.all(context.w * 0.04),
-      decoration: BoxDecoration(
-        color: cs.surfaceContainer,
-        borderRadius: BorderRadius.circular(context.w * 0.03),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: context.w * 0.025,
-            height: context.w * 0.1,
-            decoration: BoxDecoration(
-              color: typeColor,
-              borderRadius: BorderRadius.circular(context.w * 0.01),
-            ),
-          ),
-          SizedBox(width: context.w * 0.04),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(wine.name.toUpperCase(),
-                    style: TextStyle(
-                        fontSize: context.bodyFont,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: -0.2),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis),
-                SizedBox(height: context.xs * 0.4),
-                Text(
-                  [
-                    if (wine.vintage != null) wine.vintage.toString(),
-                    if (wine.country != null) wine.country,
-                  ].join(' · '),
-                  style: TextStyle(
-                      fontSize: context.captionFont,
-                      color: cs.onSurfaceVariant),
-                ),
-              ],
-            ),
-          ),
-          Text(wine.rating.toStringAsFixed(1),
-              style: TextStyle(
-                fontSize: context.bodyFont * 1.2,
-                fontWeight: FontWeight.bold,
-                color: cs.primary,
-              )),
-        ],
-      ),
-    );
-  }
-}
-
-class _TastingsSectionHeader extends StatelessWidget {
-  final String groupId;
-  const _TastingsSectionHeader({required this.groupId});
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text('Tastings',
-                style: TextStyle(
-                  fontSize: context.captionFont,
-                  fontWeight: FontWeight.w700,
-                  color: cs.primary,
-                  letterSpacing: 0.3,
-                )),
-          ),
-          GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: () =>
-                context.push(AppRoutes.tastingCreatePath(groupId)),
-            child: Row(
-              children: [
-                Icon(Icons.add,
-                    size: context.w * 0.04, color: cs.primary),
-                SizedBox(width: context.w * 0.01),
-                Text('Plan tasting',
-                    style: TextStyle(
-                      fontSize: context.captionFont,
-                      fontWeight: FontWeight.w600,
-                      color: cs.primary,
-                    )),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _TastingsList extends ConsumerWidget {
-  final String groupId;
-  const _TastingsList({required this.groupId});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final cs = Theme.of(context).colorScheme;
-    final tastingsAsync = ref.watch(groupTastingsProvider(groupId));
-    return tastingsAsync.when(
-      data: (tastings) {
-        if (tastings.isEmpty) {
-          return Padding(
-            padding:
-                EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
-            child: Text('No tastings planned yet.',
-                style: TextStyle(
-                    fontSize: context.captionFont,
-                    color: cs.onSurfaceVariant)),
-          );
-        }
-        return ListView.separated(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          padding:
-              EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
-          itemCount: tastings.length,
-          separatorBuilder: (_, __) => SizedBox(height: context.s),
-          itemBuilder: (_, i) => _TastingRow(tasting: tastings[i]),
-        );
-      },
-      loading: () => const SizedBox.shrink(),
-      error: (_, __) => const SizedBox.shrink(),
-    );
-  }
-}
-
-class _TastingRow extends StatelessWidget {
-  final TastingEntity tasting;
-  const _TastingRow({required this.tasting});
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    final local = tasting.scheduledAt.toLocal();
-    final dateLabel = DateFormat.MMMd().format(local);
-    final timeLabel = DateFormat.Hm().format(local);
     return GestureDetector(
-      onTap: () =>
-          context.push(AppRoutes.tastingDetailPath(tasting.id)),
-      child: Container(
-        padding: EdgeInsets.all(context.w * 0.04),
-        decoration: BoxDecoration(
-          color: cs.surfaceContainer,
-          borderRadius: BorderRadius.circular(context.w * 0.03),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: context.w * 0.12,
-              height: context.w * 0.12,
-              decoration: BoxDecoration(
-                color: cs.primaryContainer,
-                borderRadius: BorderRadius.circular(context.w * 0.02),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(DateFormat.MMM().format(local).toUpperCase(),
-                      style: TextStyle(
-                        fontSize: context.captionFont * 0.8,
-                        fontWeight: FontWeight.w600,
-                        color: cs.primary,
-                        letterSpacing: 0.3,
-                      )),
-                  Text(DateFormat.d().format(local),
-                      style: TextStyle(
-                        fontSize: context.bodyFont,
-                        fontWeight: FontWeight.bold,
-                        color: cs.primary,
-                        height: 1.05,
-                      )),
-                ],
-              ),
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: Row(
+        children: [
+          Icon(icon, size: context.w * 0.04, color: cs.primary),
+          SizedBox(width: context.w * 0.01),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: context.captionFont,
+              fontWeight: FontWeight.w600,
+              color: cs.primary,
             ),
-            SizedBox(width: context.w * 0.04),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(tasting.title,
-                      style: TextStyle(
-                          fontSize: context.bodyFont,
-                          fontWeight: FontWeight.w700),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis),
-                  SizedBox(height: context.xs * 0.4),
-                  Text(
-                    [
-                      '$dateLabel · $timeLabel',
-                      if (tasting.location != null) tasting.location,
-                    ].whereType<String>().join(' · '),
-                    style: TextStyle(
-                        fontSize: context.captionFont,
-                        color: cs.onSurfaceVariant),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-            ),
-            Icon(Icons.chevron_right,
-                size: context.w * 0.045, color: cs.outline),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
