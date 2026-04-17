@@ -91,6 +91,43 @@ class _CircleIcon extends StatelessWidget {
   }
 }
 
+class _WhenRow extends StatelessWidget {
+  final DateTime when;
+  const _WhenRow({required this.when});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Row(
+      children: [
+        Icon(Icons.event,
+            size: context.w * 0.04, color: cs.onSurfaceVariant),
+        SizedBox(width: context.xs),
+        Text(
+          DateFormat.yMMMEd().format(when),
+          style: TextStyle(
+            fontSize: context.bodyFont,
+            color: cs.onSurface,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        SizedBox(width: context.m),
+        Icon(Icons.access_time,
+            size: context.w * 0.04, color: cs.onSurfaceVariant),
+        SizedBox(width: context.xs),
+        Text(
+          DateFormat.Hm().format(when),
+          style: TextStyle(
+            fontSize: context.bodyFont,
+            color: cs.onSurface,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class _BackFab extends StatelessWidget {
   const _BackFab();
 
@@ -167,29 +204,7 @@ class _Body extends ConsumerWidget {
         Padding(
           padding:
               EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
-          child: Text(
-            '${DateFormat.yMMMMEEEEd().format(local)} · ${DateFormat.Hm().format(local)}',
-            style: TextStyle(
-              fontSize: context.bodyFont,
-              color: cs.onSurfaceVariant,
-              fontWeight: FontWeight.w500,
-            ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-        SizedBox(height: context.s),
-        Padding(
-          padding:
-              EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
-          child: Text(
-            '${DateFormat.yMMMMEEEEd().format(local)} · ${DateFormat.Hm().format(local)}',
-            style: TextStyle(
-              fontSize: context.bodyFont,
-              color: cs.onSurfaceVariant,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
+          child: _WhenRow(when: local),
         ),
         if (tasting.description != null &&
             tasting.description!.isNotEmpty) ...[
