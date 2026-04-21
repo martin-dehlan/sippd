@@ -100,8 +100,8 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
         opacity: _fadeIn,
         child: SlideTransition(
           position: _slideUp,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+          child: ListView(
+            padding: EdgeInsets.zero,
             children: [
               SizedBox(height: context.xl * 1.5),
               Row(
@@ -135,12 +135,11 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
               ),
               SizedBox(height: context.s),
               _TypeSubtitle(type: widget.wine.type),
-              SizedBox(height: context.l),
-              Expanded(
-                flex: 5,
-                child: Padding(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: context.paddingH),
+              SizedBox(height: context.xl),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: context.paddingH),
+                child: SizedBox(
+                  height: context.h * 0.32,
                   child: Row(
                     children: [
                       Expanded(
@@ -153,8 +152,11 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
                   ),
                 ),
               ),
-              Expanded(
-                flex: 4,
+              SizedBox(height: context.xl),
+              const _SectionHeader(label: 'PLACE'),
+              SizedBox(height: context.s),
+              SizedBox(
+                height: context.h * 0.28,
                 child: _PlaceSection(
                   location: widget.wine.location,
                   latitude: widget.wine.latitude,
@@ -162,12 +164,9 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
                   hasCoords: hasCoords,
                 ),
               ),
-              _MemoriesStrip(wineId: widget.wine.id),
-              Padding(
-                padding: EdgeInsets.only(
-                  bottom: context.m,
-                  top: context.s,
-                ),
+              _MemoriesSection(wineId: widget.wine.id),
+              SizedBox(height: context.xl),
+              Center(
                 child: TextButton(
                   onPressed: () => _confirmDelete(context),
                   child: Text(
@@ -180,6 +179,7 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
                   ),
                 ),
               ),
+              SizedBox(height: context.xxl * 1.5),
             ],
           ),
         ),
@@ -580,9 +580,31 @@ class _PlaceSection extends StatelessWidget {
   }
 }
 
-class _MemoriesStrip extends ConsumerWidget {
+class _SectionHeader extends StatelessWidget {
+  final String label;
+  const _SectionHeader({required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: context.paddingH),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: context.captionFont,
+          fontWeight: FontWeight.w700,
+          color: cs.primary,
+          letterSpacing: 0.5,
+        ),
+      ),
+    );
+  }
+}
+
+class _MemoriesSection extends ConsumerWidget {
   final String wineId;
-  const _MemoriesStrip({required this.wineId});
+  const _MemoriesSection({required this.wineId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -590,22 +612,29 @@ class _MemoriesStrip extends ConsumerWidget {
     final memories = memoriesAsync.valueOrNull ?? const [];
     if (memories.isEmpty) return const SizedBox.shrink();
 
-    final size = context.w * 0.18;
+    final size = context.w * 0.22;
     return Padding(
-      padding: EdgeInsets.only(top: context.m),
-      child: SizedBox(
-        height: size,
-        child: ListView.separated(
-          scrollDirection: Axis.horizontal,
-          padding: EdgeInsets.symmetric(horizontal: context.paddingH),
-          itemCount: memories.length,
-          separatorBuilder: (_, _) => SizedBox(width: context.w * 0.025),
-          itemBuilder: (_, i) => _MemoryThumb(
-            memory: memories[i],
-            size: size,
-            onTap: () => _openViewer(context, memories, i),
+      padding: EdgeInsets.only(top: context.xl),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const _SectionHeader(label: 'MEMORIES'),
+          SizedBox(height: context.s),
+          SizedBox(
+            height: size,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              padding: EdgeInsets.symmetric(horizontal: context.paddingH),
+              itemCount: memories.length,
+              separatorBuilder: (_, _) => SizedBox(width: context.w * 0.025),
+              itemBuilder: (_, i) => _MemoryThumb(
+                memory: memories[i],
+                size: size,
+                onTap: () => _openViewer(context, memories, i),
+              ),
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
