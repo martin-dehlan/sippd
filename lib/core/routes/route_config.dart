@@ -5,6 +5,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../features/auth/controller/auth.provider.dart';
 import '../../features/auth/presentation/modules/login/login.screen.dart';
 import '../../features/auth/presentation/modules/profile/profile.screen.dart';
+import '../../features/onboarding/controller/onboarding.provider.dart';
+import '../../features/onboarding/presentation/modules/onboarding.screen.dart';
 import '../../features/profile/controller/profile.provider.dart';
 import '../../features/profile/presentation/modules/choose_username/choose_username.screen.dart';
 import '../../features/profile/presentation/modules/edit_profile/edit_profile.screen.dart';
@@ -28,30 +30,62 @@ part 'route_config.g.dart';
 @riverpod
 GoRouter goRouter(GoRouterRef ref) {
   final router = GoRouter(
-    initialLocation: AppRoutes.login,
+    initialLocation: AppRoutes.onboarding,
     debugLogDiagnostics: true,
     redirect: (context, state) {
-      final authed = ref.read(isAuthenticatedProvider);
-      if (!authed) return null;
-
-      final profile = ref.read(currentProfileProvider).valueOrNull;
-      if (profile == null) return null;
-
-      final needsUsername =
-          profile.username == null || profile.username!.isEmpty;
       final loc = state.matchedLocation;
+      final authed = ref.read(isAuthenticatedProvider);
+      final seen = ref.read(onboardingSeenProvider);
+      final guest = ref.read(isGuestProvider);
 
-      if (needsUsername && loc != AppRoutes.chooseUsername) {
-        return AppRoutes.chooseUsername;
+      // Gate 1: first-run onboarding.
+      if (!seen && !authed) {
+        return loc == AppRoutes.onboarding ? null : AppRoutes.onboarding;
       }
-      if (!needsUsername &&
-          (loc == AppRoutes.chooseUsername || loc == AppRoutes.login)) {
-        return AppRoutes.wines;
+
+      // Gate 2: authed → existing username flow.
+      if (authed) {
+        final profile = ref.read(currentProfileProvider).valueOrNull;
+        if (profile == null) return null;
+        final needsUsername =
+            profile.username == null || profile.username!.isEmpty;
+        if (needsUsername && loc != AppRoutes.chooseUsername) {
+          return AppRoutes.chooseUsername;
+        }
+        if (!needsUsername &&
+            (loc == AppRoutes.chooseUsername ||
+             loc == AppRoutes.login ||
+             loc == AppRoutes.onboarding)) {
+          return AppRoutes.wines;
+        }
+        return null;
+      }
+
+      // Gate 3: not authed, onboarding done.
+      // Guest: allowed on wines + scan. Cloud features bounce to login.
+      if (guest) {
+        const cloudPrefixes = [
+          AppRoutes.groups,
+          AppRoutes.friends,
+          AppRoutes.profile,
+        ];
+        final needsAuth = cloudPrefixes.any(loc.startsWith);
+        if (needsAuth) return AppRoutes.login;
+        return null;
+      }
+
+      // Gate 4: not authed, not guest → send to login unless already there.
+      if (loc != AppRoutes.login && loc != AppRoutes.onboarding) {
+        return AppRoutes.login;
       }
       return null;
     },
     routes: [
       // Auth
+      GoRoute(
+        path: AppRoutes.onboarding,
+        builder: (context, state) => const OnboardingScreen(),
+      ),
       GoRoute(
         path: AppRoutes.login,
         builder: (context, state) => const LoginScreen(),
@@ -159,6 +193,7 @@ GoRouter goRouter(GoRouterRef ref) {
 
   ref.listen(authControllerProvider, (_, _) => router.refresh());
   ref.listen(currentProfileProvider, (_, _) => router.refresh());
+  ref.listen(onboardingControllerProvider, (_, _) => router.refresh());
 
   return router;
 }

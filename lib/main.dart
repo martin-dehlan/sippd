@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'common/services/deep_link/deep_link.provider.dart';
@@ -12,6 +13,7 @@ import 'common/theme/app_theme.dart';
 import 'core/routes/app.routes.dart';
 import 'core/routes/route_config.dart';
 import 'features/groups/controller/group.provider.dart';
+import 'features/onboarding/controller/onboarding.provider.dart';
 import 'features/push/controller/push.provider.dart';
 import 'features/push/data/push_handler.service.dart';
 import 'firebase_options.dart';
@@ -31,7 +33,16 @@ void main() async {
     anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
   );
 
-  runApp(const ProviderScope(child: SippdApp()));
+  final prefs = await SharedPreferences.getInstance();
+
+  runApp(
+    ProviderScope(
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
+      ],
+      child: const SippdApp(),
+    ),
+  );
 }
 
 class SippdApp extends ConsumerStatefulWidget {
