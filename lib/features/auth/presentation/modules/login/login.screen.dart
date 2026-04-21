@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../../common/utils/responsive.dart';
+import '../../../../../common/widgets/app_logo.widget.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../controller/auth.provider.dart';
 import '../../widgets/google_sign_in_button.widget.dart';
@@ -84,8 +85,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   // Logo area
-                  Icon(Icons.wine_bar,
-                      size: context.w * 0.15, color: cs.primary),
+                  AppLogo(size: context.w * 0.28),
                   SizedBox(height: context.m),
                   Text(
                     'Sippd',

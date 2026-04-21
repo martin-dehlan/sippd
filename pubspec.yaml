@@ -52,6 +52,7 @@ dependencies:
   flutter_map: ^8.0.0
   latlong2: ^0.9.1
   nominatim_flutter: ^0.0.6
+  geolocator: ^13.0.2
 
   # Env
   flutter_dotenv: ^5.2.1
@@ -81,7 +82,36 @@ dev_dependencies:
   # Testing
   mocktail: ^1.0.4
 
+  # Branding
+  flutter_launcher_icons: ^0.14.1
+  flutter_native_splash: ^2.4.3
+
 flutter:
   uses-material-design: true
   assets:
     - .env
+    - assets/branding/logo.png
+  fonts:
+    - family: Sippd
+      fonts:
+        - asset: assets/fonts/Sippd.ttf
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/branding/logo_icon.png"
+  remove_alpha_ios: true
+  background_color_ios: "#14101A"
+  adaptive_icon_background: "#14101A"
+  adaptive_icon_foreground: "assets/branding/logo_icon.png"
+  min_sdk_android: 21
+
+flutter_native_splash:
+  color: "#14101A"
+  image: "assets/branding/logo_splash.png"
+  android_12:
+    color: "#14101A"
+    image: "assets/branding/logo_splash.png"
+  ios: true
+  android: true
+  fullscreen: false

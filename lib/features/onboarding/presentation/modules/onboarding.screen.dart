@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../common/utils/responsive.dart';
+import '../../../../common/widgets/app_logo.widget.dart';
 import '../../../../core/routes/app.routes.dart';
 import '../../controller/onboarding.provider.dart';
 
@@ -25,13 +26,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       body:
           'Rate, photograph and remember every wine you try. Your notes '
           'stay on your phone — sync when you sign in.',
-    ),
-    _PageData(
-      icon: Icons.qr_code_scanner_rounded,
-      title: 'Scan & discover',
-      body:
-          'Scan a bottle to auto-fill details. Add memories, pin the place '
-          'you tried it, keep your cellar honest.',
     ),
     _PageData(
       icon: Icons.groups_2_rounded,
@@ -80,23 +74,40 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            Align(
-              alignment: Alignment.centerRight,
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: context.paddingH,
-                  vertical: context.s,
-                ),
-                child: TextButton(
-                  onPressed: _skipToLogin,
-                  child: Text(
-                    'Skip',
-                    style: TextStyle(
-                      fontSize: context.bodyFont * 0.95,
-                      color: cs.onSurfaceVariant,
+            Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: context.paddingH,
+                vertical: context.s,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      AppLogo(size: context.w * 0.09),
+                      SizedBox(width: context.w * 0.02),
+                      Text(
+                        'Sippd',
+                        style: TextStyle(
+                          fontSize: context.bodyFont * 1.05,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: -0.3,
+                          color: cs.onSurface,
+                        ),
+                      ),
+                    ],
+                  ),
+                  TextButton(
+                    onPressed: _skipToLogin,
+                    child: Text(
+                      'Skip',
+                      style: TextStyle(
+                        fontSize: context.bodyFont * 0.95,
+                        color: cs.onSurfaceVariant,
+                      ),
                     ),
                   ),
-                ),
+                ],
               ),
             ),
             Expanded(
