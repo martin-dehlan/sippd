@@ -14,6 +14,7 @@ import '../../../locations/presentation/widgets/location_search_sheet.dart';
 import '../../domain/entities/wine.entity.dart';
 import 'rating_sheet.dart';
 import 'wine_country_picker.widget.dart';
+import 'wine_memories_editor.widget.dart';
 import 'wine_photo_picker.widget.dart';
 
 class WineFormData {
@@ -28,8 +29,7 @@ class WineFormData {
   final String? notes;
   final String? imageUrl;
   final String? localImagePath;
-  final String? memoryImageUrl;
-  final String? memoryLocalImagePath;
+  final List<MemoryDraft> memories;
 
   const WineFormData({
     required this.name,
@@ -43,8 +43,7 @@ class WineFormData {
     this.notes,
     this.imageUrl,
     this.localImagePath,
-    this.memoryImageUrl,
-    this.memoryLocalImagePath,
+    this.memories = const [],
   });
 }
 
@@ -52,6 +51,7 @@ class WineForm extends StatefulWidget {
   final WineFormData? initial;
   final String submitLabel;
   final Future<void> Function(WineFormData data) onSubmit;
+  final ValueChanged<WineFormData>? onChanged;
   final bool autoSave;
 
   const WineForm({
@@ -59,6 +59,7 @@ class WineForm extends StatefulWidget {
     this.initial,
     this.submitLabel = 'Save wine',
     required this.onSubmit,
+    this.onChanged,
     this.autoSave = false,
   });
 
@@ -87,8 +88,7 @@ class _WineFormState extends State<WineForm>
 
   String? _imageUrl;
   String? _localImagePath;
-  String? _memoryImageUrl;
-  String? _memoryLocalImagePath;
+  List<MemoryDraft> _memories = const [];
 
   Timer? _autoSaveDebounce;
 
@@ -119,8 +119,7 @@ class _WineFormState extends State<WineForm>
       _notes = init.notes;
       _imageUrl = init.imageUrl;
       _localImagePath = init.localImagePath;
-      _memoryImageUrl = init.memoryImageUrl;
-      _memoryLocalImagePath = init.memoryLocalImagePath;
+      _memories = init.memories;
     }
   }
 
@@ -134,6 +133,7 @@ class _WineFormState extends State<WineForm>
   }
 
   void _scheduleAutoSave() {
+    widget.onChanged?.call(_collect());
     if (!widget.autoSave) return;
     if (_nameController.text.trim().isEmpty) return;
     _autoSaveDebounce?.cancel();
@@ -154,8 +154,7 @@ class _WineFormState extends State<WineForm>
         notes: _notes,
         imageUrl: _imageUrl,
         localImagePath: _localImagePath,
-        memoryImageUrl: _memoryImageUrl,
-        memoryLocalImagePath: _memoryLocalImagePath,
+        memories: _memories,
       );
 
   Future<void> _submit() async {
@@ -335,14 +334,10 @@ class _WineFormState extends State<WineForm>
           onNotesTap: _editNotes,
         ),
         SizedBox(height: context.l),
-        WineFormMemoryTile(
-          imageUrl: _memoryImageUrl,
-          localPath: _memoryLocalImagePath,
-          onChanged: (v) {
-            setState(() {
-              _memoryImageUrl = v.imageUrl;
-              _memoryLocalImagePath = v.localPath;
-            });
+        WineMemoriesEditor(
+          memories: _memories,
+          onChanged: (next) {
+            setState(() => _memories = next);
             _scheduleAutoSave();
           },
         ),
@@ -575,13 +570,13 @@ class WineFormTypeChipRow extends StatelessWidget {
         children: [
           WineFormTypeChoice(
             type: WineType.red,
-            label: 'Red Wine',
+            label: 'Red',
             isSelected: selected == WineType.red,
             onTap: () => onChanged(WineType.red),
           ),
           WineFormTypeChoice(
             type: WineType.white,
-            label: 'White Wine',
+            label: 'White',
             isSelected: selected == WineType.white,
             onTap: () => onChanged(WineType.white),
           ),
@@ -590,6 +585,12 @@ class WineFormTypeChipRow extends StatelessWidget {
             label: 'Rosé',
             isSelected: selected == WineType.rose,
             onTap: () => onChanged(WineType.rose),
+          ),
+          WineFormTypeChoice(
+            type: WineType.sparkling,
+            label: 'Sparkling',
+            isSelected: selected == WineType.sparkling,
+            onTap: () => onChanged(WineType.sparkling),
           ),
         ],
       ),
@@ -618,6 +619,7 @@ class WineFormTypeChoice extends StatelessWidget {
       WineType.red => const Color(0xFFA84343),
       WineType.white => const Color(0xFFD4C49A),
       WineType.rose => const Color(0xFFD6889A),
+      WineType.sparkling => const Color(0xFFD4A84B),
     };
     return GestureDetector(
       onTap: onTap,
@@ -779,36 +781,6 @@ class WineFormFieldChip extends StatelessWidget {
                     fontWeight: FontWeight.w500,
                     color: isEmpty ? cs.outline : cs.onSurface)),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class WineFormMemoryTile extends StatelessWidget {
-  final String? imageUrl;
-  final String? localPath;
-  final ValueChanged<({String? imageUrl, String? localPath})> onChanged;
-
-  const WineFormMemoryTile({
-    super.key,
-    required this.imageUrl,
-    required this.localPath,
-    required this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: context.paddingH),
-      child: SizedBox(
-        height: context.h * 0.18,
-        child: WinePhotoPicker(
-          label: 'Memory photo',
-          placeholderIcon: Icons.photo_camera_front_outlined,
-          imageUrl: imageUrl,
-          localPath: localPath,
-          onChanged: onChanged,
         ),
       ),
     );

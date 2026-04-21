@@ -2,7 +2,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'wine.entity.freezed.dart';
 
-enum WineType { red, white, rose }
+enum WineType { red, white, rose, sparkling }
 
 @freezed
 class WineEntity with _$WineEntity {
@@ -20,8 +20,6 @@ class WineEntity with _$WineEntity {
     String? notes,
     String? imageUrl,
     String? localImagePath,
-    String? memoryImageUrl,
-    String? memoryLocalImagePath,
     int? vintage,
     String? grape,
     required String userId,

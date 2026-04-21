@@ -129,6 +129,7 @@ class _WinePickerRow extends StatelessWidget {
       WineType.red => const Color(0xFFA84343),
       WineType.white => const Color(0xFFD4C49A),
       WineType.rose => const Color(0xFFD6889A),
+      WineType.sparkling => const Color(0xFFD4A84B),
     };
     return InkWell(
       onTap: onTap,

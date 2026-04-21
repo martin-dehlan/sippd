@@ -273,6 +273,7 @@ class _FoundView extends StatelessWidget {
             ButtonSegment(value: WineType.red, label: Text('Red')),
             ButtonSegment(value: WineType.white, label: Text('White')),
             ButtonSegment(value: WineType.rose, label: Text('Rosé')),
+            ButtonSegment(value: WineType.sparkling, label: Text('Sparkling')),
           ],
           selected: {type},
           onSelectionChanged: (v) => onTypeChanged(v.first),

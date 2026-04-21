@@ -75,6 +75,45 @@ final wineImageServiceProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef WineImageServiceRef = AutoDisposeProviderRef<WineImageService?>;
+String _$wineMemorySupabaseApiHash() =>
+    r'223bf6db0966b3409f2eaabb7520205275fa0c0d';
+
+/// See also [wineMemorySupabaseApi].
+@ProviderFor(wineMemorySupabaseApi)
+final wineMemorySupabaseApiProvider =
+    AutoDisposeProvider<WineMemorySupabaseApi?>.internal(
+      wineMemorySupabaseApi,
+      name: r'wineMemorySupabaseApiProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$wineMemorySupabaseApiHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef WineMemorySupabaseApiRef =
+    AutoDisposeProviderRef<WineMemorySupabaseApi?>;
+String _$wineMemoryRepositoryHash() =>
+    r'6e49d54d9eb5316d7b68058da124898531242b4b';
+
+/// See also [wineMemoryRepository].
+@ProviderFor(wineMemoryRepository)
+final wineMemoryRepositoryProvider =
+    AutoDisposeProvider<WineMemoryRepository>.internal(
+      wineMemoryRepository,
+      name: r'wineMemoryRepositoryProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$wineMemoryRepositoryHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef WineMemoryRepositoryRef = AutoDisposeProviderRef<WineMemoryRepository>;
 String _$wineDetailHash() => r'e16e2db7c1f552d816b73dc417075b660dab01b5';
 
 /// Copied from Dart SDK
@@ -215,7 +254,7 @@ class _WineDetailProviderElement
   String get wineId => (origin as WineDetailProvider).wineId;
 }
 
-String _$wineControllerHash() => r'3eea439fd75a0dd0090f8da46c3558f3e86e498e';
+String _$wineControllerHash() => r'9dbc95be1de884c3d2d189d3ae56bf1fb2f7ab76';
 
 /// See also [WineController].
 @ProviderFor(WineController)
@@ -234,6 +273,154 @@ final wineControllerProvider =
     );
 
 typedef _$WineController = AutoDisposeStreamNotifier<List<WineEntity>>;
+String _$wineMemoriesControllerHash() =>
+    r'0ef78da4e923322e3c2eac93fafb47e465f10b42';
+
+abstract class _$WineMemoriesController
+    extends BuildlessAutoDisposeStreamNotifier<List<WineMemoryEntity>> {
+  late final String wineId;
+
+  Stream<List<WineMemoryEntity>> build(String wineId);
+}
+
+/// See also [WineMemoriesController].
+@ProviderFor(WineMemoriesController)
+const wineMemoriesControllerProvider = WineMemoriesControllerFamily();
+
+/// See also [WineMemoriesController].
+class WineMemoriesControllerFamily
+    extends Family<AsyncValue<List<WineMemoryEntity>>> {
+  /// See also [WineMemoriesController].
+  const WineMemoriesControllerFamily();
+
+  /// See also [WineMemoriesController].
+  WineMemoriesControllerProvider call(String wineId) {
+    return WineMemoriesControllerProvider(wineId);
+  }
+
+  @override
+  WineMemoriesControllerProvider getProviderOverride(
+    covariant WineMemoriesControllerProvider provider,
+  ) {
+    return call(provider.wineId);
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'wineMemoriesControllerProvider';
+}
+
+/// See also [WineMemoriesController].
+class WineMemoriesControllerProvider
+    extends
+        AutoDisposeStreamNotifierProviderImpl<
+          WineMemoriesController,
+          List<WineMemoryEntity>
+        > {
+  /// See also [WineMemoriesController].
+  WineMemoriesControllerProvider(String wineId)
+    : this._internal(
+        () => WineMemoriesController()..wineId = wineId,
+        from: wineMemoriesControllerProvider,
+        name: r'wineMemoriesControllerProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$wineMemoriesControllerHash,
+        dependencies: WineMemoriesControllerFamily._dependencies,
+        allTransitiveDependencies:
+            WineMemoriesControllerFamily._allTransitiveDependencies,
+        wineId: wineId,
+      );
+
+  WineMemoriesControllerProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.wineId,
+  }) : super.internal();
+
+  final String wineId;
+
+  @override
+  Stream<List<WineMemoryEntity>> runNotifierBuild(
+    covariant WineMemoriesController notifier,
+  ) {
+    return notifier.build(wineId);
+  }
+
+  @override
+  Override overrideWith(WineMemoriesController Function() create) {
+    return ProviderOverride(
+      origin: this,
+      override: WineMemoriesControllerProvider._internal(
+        () => create()..wineId = wineId,
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        wineId: wineId,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeStreamNotifierProviderElement<
+    WineMemoriesController,
+    List<WineMemoryEntity>
+  >
+  createElement() {
+    return _WineMemoriesControllerProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is WineMemoriesControllerProvider && other.wineId == wineId;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, wineId.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin WineMemoriesControllerRef
+    on AutoDisposeStreamNotifierProviderRef<List<WineMemoryEntity>> {
+  /// The parameter `wineId` of this provider.
+  String get wineId;
+}
+
+class _WineMemoriesControllerProviderElement
+    extends
+        AutoDisposeStreamNotifierProviderElement<
+          WineMemoriesController,
+          List<WineMemoryEntity>
+        >
+    with WineMemoriesControllerRef {
+  _WineMemoriesControllerProviderElement(super.provider);
+
+  @override
+  String get wineId => (origin as WineMemoriesControllerProvider).wineId;
+}
+
 String _$wineTypeFilterHash() => r'18cccdfcd3b77a9c7ff2d4f7b3efdbc65c9c432d';
 
 /// See also [WineTypeFilter].

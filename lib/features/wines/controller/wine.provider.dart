@@ -2,10 +2,14 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../common/database/database.dart';
 import '../../auth/controller/auth.provider.dart';
 import '../domain/entities/wine.entity.dart';
+import '../domain/entities/wine_memory.entity.dart';
 import '../domain/repositories/wine.repository.dart';
+import '../domain/repositories/wine_memory.repository.dart';
 import '../data/data_sources/wine_image.service.dart';
+import '../data/data_sources/wine_memory_supabase.api.dart';
 import '../data/data_sources/wine_supabase.api.dart';
 import '../data/repositories/wine.repository.impl.dart';
+import '../data/repositories/wine_memory.repository.impl.dart';
 
 part 'wine.provider.g.dart';
 
@@ -41,6 +45,21 @@ WineImageService? wineImageService(WineImageServiceRef ref) {
   return WineImageService(client);
 }
 
+@riverpod
+WineMemorySupabaseApi? wineMemorySupabaseApi(WineMemorySupabaseApiRef ref) {
+  final isAuth = ref.watch(isAuthenticatedProvider);
+  if (!isAuth) return null;
+  final client = ref.read(supabaseClientProvider);
+  return WineMemorySupabaseApi(client);
+}
+
+@riverpod
+WineMemoryRepository wineMemoryRepository(WineMemoryRepositoryRef ref) {
+  final db = ref.read(appDatabaseProvider);
+  final api = ref.watch(wineMemorySupabaseApiProvider);
+  return WineMemoryRepositoryImpl(db.wineMemoriesDao, api);
+}
+
 // ========================================
 // STATE MANAGEMENT
 // ========================================
@@ -61,6 +80,7 @@ class WineController extends _$WineController {
   }
 
   Future<void> deleteWine(String id) async {
+    await ref.read(wineMemoryRepositoryProvider).deleteByWine(id);
     await ref.read(wineRepositoryProvider).deleteWine(id);
   }
 }
@@ -72,6 +92,22 @@ class WineController extends _$WineController {
 @riverpod
 Future<WineEntity?> wineDetail(WineDetailRef ref, String wineId) async {
   return ref.read(wineRepositoryProvider).getWineById(wineId);
+}
+
+@riverpod
+class WineMemoriesController extends _$WineMemoriesController {
+  @override
+  Stream<List<WineMemoryEntity>> build(String wineId) {
+    return ref.read(wineMemoryRepositoryProvider).watchByWine(wineId);
+  }
+
+  Future<void> addMemory(WineMemoryEntity memory) async {
+    await ref.read(wineMemoryRepositoryProvider).addMemory(memory);
+  }
+
+  Future<void> deleteMemory(String id) async {
+    await ref.read(wineMemoryRepositoryProvider).deleteMemory(id);
+  }
 }
 
 // ========================================

@@ -36,10 +36,6 @@ mixin _$WineModel {
   String? get imageUrl => throw _privateConstructorUsedError;
   @JsonKey(name: 'local_image_path')
   String? get localImagePath => throw _privateConstructorUsedError;
-  @JsonKey(name: 'memory_image_url')
-  String? get memoryImageUrl => throw _privateConstructorUsedError;
-  @JsonKey(name: 'memory_local_image_path')
-  String? get memoryLocalImagePath => throw _privateConstructorUsedError;
   int? get vintage => throw _privateConstructorUsedError;
   String? get grape => throw _privateConstructorUsedError;
   @JsonKey(name: 'user_id')
@@ -79,8 +75,6 @@ abstract class $WineModelCopyWith<$Res> {
     String? notes,
     @JsonKey(name: 'image_url') String? imageUrl,
     @JsonKey(name: 'local_image_path') String? localImagePath,
-    @JsonKey(name: 'memory_image_url') String? memoryImageUrl,
-    @JsonKey(name: 'memory_local_image_path') String? memoryLocalImagePath,
     int? vintage,
     String? grape,
     @JsonKey(name: 'user_id') String userId,
@@ -118,8 +112,6 @@ class _$WineModelCopyWithImpl<$Res, $Val extends WineModel>
     Object? notes = freezed,
     Object? imageUrl = freezed,
     Object? localImagePath = freezed,
-    Object? memoryImageUrl = freezed,
-    Object? memoryLocalImagePath = freezed,
     Object? vintage = freezed,
     Object? grape = freezed,
     Object? userId = null,
@@ -181,14 +173,6 @@ class _$WineModelCopyWithImpl<$Res, $Val extends WineModel>
                 ? _value.localImagePath
                 : localImagePath // ignore: cast_nullable_to_non_nullable
                       as String?,
-            memoryImageUrl: freezed == memoryImageUrl
-                ? _value.memoryImageUrl
-                : memoryImageUrl // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            memoryLocalImagePath: freezed == memoryLocalImagePath
-                ? _value.memoryLocalImagePath
-                : memoryLocalImagePath // ignore: cast_nullable_to_non_nullable
-                      as String?,
             vintage: freezed == vintage
                 ? _value.vintage
                 : vintage // ignore: cast_nullable_to_non_nullable
@@ -242,8 +226,6 @@ abstract class _$$WineModelImplCopyWith<$Res>
     String? notes,
     @JsonKey(name: 'image_url') String? imageUrl,
     @JsonKey(name: 'local_image_path') String? localImagePath,
-    @JsonKey(name: 'memory_image_url') String? memoryImageUrl,
-    @JsonKey(name: 'memory_local_image_path') String? memoryLocalImagePath,
     int? vintage,
     String? grape,
     @JsonKey(name: 'user_id') String userId,
@@ -280,8 +262,6 @@ class __$$WineModelImplCopyWithImpl<$Res>
     Object? notes = freezed,
     Object? imageUrl = freezed,
     Object? localImagePath = freezed,
-    Object? memoryImageUrl = freezed,
-    Object? memoryLocalImagePath = freezed,
     Object? vintage = freezed,
     Object? grape = freezed,
     Object? userId = null,
@@ -343,14 +323,6 @@ class __$$WineModelImplCopyWithImpl<$Res>
             ? _value.localImagePath
             : localImagePath // ignore: cast_nullable_to_non_nullable
                   as String?,
-        memoryImageUrl: freezed == memoryImageUrl
-            ? _value.memoryImageUrl
-            : memoryImageUrl // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        memoryLocalImagePath: freezed == memoryLocalImagePath
-            ? _value.memoryLocalImagePath
-            : memoryLocalImagePath // ignore: cast_nullable_to_non_nullable
-                  as String?,
         vintage: freezed == vintage
             ? _value.vintage
             : vintage // ignore: cast_nullable_to_non_nullable
@@ -397,8 +369,6 @@ class _$WineModelImpl implements _WineModel {
     this.notes,
     @JsonKey(name: 'image_url') this.imageUrl,
     @JsonKey(name: 'local_image_path') this.localImagePath,
-    @JsonKey(name: 'memory_image_url') this.memoryImageUrl,
-    @JsonKey(name: 'memory_local_image_path') this.memoryLocalImagePath,
     this.vintage,
     this.grape,
     @JsonKey(name: 'user_id') required this.userId,
@@ -440,12 +410,6 @@ class _$WineModelImpl implements _WineModel {
   @JsonKey(name: 'local_image_path')
   final String? localImagePath;
   @override
-  @JsonKey(name: 'memory_image_url')
-  final String? memoryImageUrl;
-  @override
-  @JsonKey(name: 'memory_local_image_path')
-  final String? memoryLocalImagePath;
-  @override
   final int? vintage;
   @override
   final String? grape;
@@ -464,7 +428,7 @@ class _$WineModelImpl implements _WineModel {
 
   @override
   String toString() {
-    return 'WineModel(id: $id, name: $name, rating: $rating, type: $type, price: $price, currency: $currency, country: $country, location: $location, latitude: $latitude, longitude: $longitude, notes: $notes, imageUrl: $imageUrl, localImagePath: $localImagePath, memoryImageUrl: $memoryImageUrl, memoryLocalImagePath: $memoryLocalImagePath, vintage: $vintage, grape: $grape, userId: $userId, visibility: $visibility, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'WineModel(id: $id, name: $name, rating: $rating, type: $type, price: $price, currency: $currency, country: $country, location: $location, latitude: $latitude, longitude: $longitude, notes: $notes, imageUrl: $imageUrl, localImagePath: $localImagePath, vintage: $vintage, grape: $grape, userId: $userId, visibility: $visibility, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -491,10 +455,6 @@ class _$WineModelImpl implements _WineModel {
                 other.imageUrl == imageUrl) &&
             (identical(other.localImagePath, localImagePath) ||
                 other.localImagePath == localImagePath) &&
-            (identical(other.memoryImageUrl, memoryImageUrl) ||
-                other.memoryImageUrl == memoryImageUrl) &&
-            (identical(other.memoryLocalImagePath, memoryLocalImagePath) ||
-                other.memoryLocalImagePath == memoryLocalImagePath) &&
             (identical(other.vintage, vintage) || other.vintage == vintage) &&
             (identical(other.grape, grape) || other.grape == grape) &&
             (identical(other.userId, userId) || other.userId == userId) &&
@@ -523,8 +483,6 @@ class _$WineModelImpl implements _WineModel {
     notes,
     imageUrl,
     localImagePath,
-    memoryImageUrl,
-    memoryLocalImagePath,
     vintage,
     grape,
     userId,
@@ -562,9 +520,6 @@ abstract class _WineModel implements WineModel {
     final String? notes,
     @JsonKey(name: 'image_url') final String? imageUrl,
     @JsonKey(name: 'local_image_path') final String? localImagePath,
-    @JsonKey(name: 'memory_image_url') final String? memoryImageUrl,
-    @JsonKey(name: 'memory_local_image_path')
-    final String? memoryLocalImagePath,
     final int? vintage,
     final String? grape,
     @JsonKey(name: 'user_id') required final String userId,
@@ -604,12 +559,6 @@ abstract class _WineModel implements WineModel {
   @override
   @JsonKey(name: 'local_image_path')
   String? get localImagePath;
-  @override
-  @JsonKey(name: 'memory_image_url')
-  String? get memoryImageUrl;
-  @override
-  @JsonKey(name: 'memory_local_image_path')
-  String? get memoryLocalImagePath;
   @override
   int? get vintage;
   @override

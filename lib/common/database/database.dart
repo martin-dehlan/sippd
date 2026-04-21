@@ -2,19 +2,21 @@ import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 
 import 'tables/wines.table.dart';
+import 'tables/wine_memories.table.dart';
 import 'daos/wines.dao.dart';
+import 'daos/wine_memories.dao.dart';
 
 part 'database.g.dart';
 
 @DriftDatabase(
-  tables: [WinesTable],
-  daos: [WinesDao],
+  tables: [WinesTable, WineMemoriesTable],
+  daos: [WinesDao, WineMemoriesDao],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -22,17 +24,13 @@ class AppDatabase extends _$AppDatabase {
           await m.createAll();
         },
         onUpgrade: (Migrator m, int from, int to) async {
-          if (from < 2) {
-            await m.addColumn(winesTable, winesTable.memoryImageUrl);
-            await m.addColumn(winesTable, winesTable.memoryLocalImagePath);
+          // Beta wipe-and-recreate: schema v5 drops single memory cols on
+          // wines and introduces wine_memories. Existing local data is
+          // discarded.
+          for (final table in allTables) {
+            await m.deleteTable(table.actualTableName);
           }
-          if (from < 3) {
-            await m.addColumn(winesTable, winesTable.latitude);
-            await m.addColumn(winesTable, winesTable.longitude);
-          }
-          if (from < 4) {
-            await m.addColumn(winesTable, winesTable.visibility);
-          }
+          await m.createAll();
         },
       );
 

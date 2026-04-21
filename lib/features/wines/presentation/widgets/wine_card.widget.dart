@@ -155,6 +155,7 @@ class WineCardWidget extends StatelessWidget {
         WineType.red => 'Red',
         WineType.white => 'White',
         WineType.rose => 'Rosé',
+        WineType.sparkling => 'Sparkling',
       };
 }
 
@@ -171,6 +172,7 @@ class WineCardImage extends StatelessWidget {
       WineType.red => const Color(0xFF8B2252),
       WineType.white => const Color(0xFF9E8B5E),
       WineType.rose => const Color(0xFFB5658A),
+      WineType.sparkling => const Color(0xFFB8923B),
     };
 
     return Container(
@@ -247,6 +249,7 @@ class WineTypeDot extends StatelessWidget {
       WineType.red => const Color(0xFFA84343),
       WineType.white => const Color(0xFFD4C49A),
       WineType.rose => const Color(0xFFD6889A),
+      WineType.sparkling => const Color(0xFFD4A84B),
     };
 
     return Container(
@@ -267,11 +270,13 @@ class WineTypeBadge extends StatelessWidget {
       WineType.red => 'Red',
       WineType.white => 'White',
       WineType.rose => 'Rosé',
+      WineType.sparkling => 'Sparkling',
     };
     final color = switch (type) {
       WineType.red => const Color(0xFFA84343),
       WineType.white => const Color(0xFFD4C49A),
       WineType.rose => const Color(0xFFD6889A),
+      WineType.sparkling => const Color(0xFFD4A84B),
     };
 
     return Container(

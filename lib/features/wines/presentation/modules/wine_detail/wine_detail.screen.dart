@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,6 +11,7 @@ import '../../../../../core/routes/app.routes.dart';
 import '../../../../groups/presentation/widgets/share_wine_sheet.dart';
 import '../../../controller/wine.provider.dart';
 import '../../../domain/entities/wine.entity.dart';
+import '../../../domain/entities/wine_memory.entity.dart';
 
 class WineDetailScreen extends ConsumerWidget {
   final String wineId;
@@ -159,6 +162,7 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
                   hasCoords: hasCoords,
                 ),
               ),
+              _MemoriesStrip(wineId: widget.wine.id),
               Padding(
                 padding: EdgeInsets.only(
                   bottom: context.m,
@@ -291,6 +295,7 @@ class _WineImage extends StatelessWidget {
       WineType.red => const Color(0xFF8B2252),
       WineType.white => const Color(0xFFB8A04A),
       WineType.rose => const Color(0xFFB5658A),
+      WineType.sparkling => const Color(0xFFB8923B),
     };
 
     return Stack(
@@ -445,14 +450,16 @@ class _WineTypeChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final label = switch (type) {
-      WineType.red => 'Red Wine',
-      WineType.white => 'White Wine',
+      WineType.red => 'Red',
+      WineType.white => 'White',
       WineType.rose => 'Rosé',
+      WineType.sparkling => 'Sparkling',
     };
     final color = switch (type) {
       WineType.red => const Color(0xFFA84343),
       WineType.white => const Color(0xFFD4C49A),
       WineType.rose => const Color(0xFFD6889A),
+      WineType.sparkling => const Color(0xFFD4A84B),
     };
     return Container(
       padding: EdgeInsets.symmetric(
@@ -570,6 +577,197 @@ class _PlaceSection extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class _MemoriesStrip extends ConsumerWidget {
+  final String wineId;
+  const _MemoriesStrip({required this.wineId});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final memoriesAsync = ref.watch(wineMemoriesControllerProvider(wineId));
+    final memories = memoriesAsync.valueOrNull ?? const [];
+    if (memories.isEmpty) return const SizedBox.shrink();
+
+    final size = context.w * 0.18;
+    return Padding(
+      padding: EdgeInsets.only(top: context.m),
+      child: SizedBox(
+        height: size,
+        child: ListView.separated(
+          scrollDirection: Axis.horizontal,
+          padding: EdgeInsets.symmetric(horizontal: context.paddingH),
+          itemCount: memories.length,
+          separatorBuilder: (_, _) => SizedBox(width: context.w * 0.025),
+          itemBuilder: (_, i) => _MemoryThumb(
+            memory: memories[i],
+            size: size,
+            onTap: () => _openViewer(context, memories, i),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _openViewer(
+    BuildContext context,
+    List<WineMemoryEntity> memories,
+    int initialIndex,
+  ) {
+    Navigator.of(context).push(
+      PageRouteBuilder(
+        opaque: false,
+        barrierColor: Colors.black.withValues(alpha: 0.95),
+        pageBuilder: (_, _, _) => _MemoryViewer(
+          memories: memories,
+          initialIndex: initialIndex,
+        ),
+      ),
+    );
+  }
+}
+
+class _MemoryThumb extends StatelessWidget {
+  final WineMemoryEntity memory;
+  final double size;
+  final VoidCallback onTap;
+
+  const _MemoryThumb({
+    required this.memory,
+    required this.size,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: size,
+        height: size,
+        clipBehavior: Clip.antiAlias,
+        decoration: BoxDecoration(
+          color: cs.surfaceContainer,
+          borderRadius: BorderRadius.circular(context.w * 0.03),
+          border: Border.all(color: cs.outlineVariant, width: 0.5),
+        ),
+        child: _memoryImage(memory, cs),
+      ),
+    );
+  }
+
+  Widget _memoryImage(WineMemoryEntity m, ColorScheme cs) {
+    if (m.localImagePath != null) {
+      return Image.file(File(m.localImagePath!), fit: BoxFit.cover);
+    }
+    if (m.imageUrl != null) {
+      return Image.network(m.imageUrl!, fit: BoxFit.cover);
+    }
+    return Icon(Icons.broken_image_outlined, color: cs.outline);
+  }
+}
+
+class _MemoryViewer extends StatefulWidget {
+  final List<WineMemoryEntity> memories;
+  final int initialIndex;
+
+  const _MemoryViewer({
+    required this.memories,
+    required this.initialIndex,
+  });
+
+  @override
+  State<_MemoryViewer> createState() => _MemoryViewerState();
+}
+
+class _MemoryViewerState extends State<_MemoryViewer> {
+  late final PageController _controller =
+      PageController(initialPage: widget.initialIndex);
+  late int _index = widget.initialIndex;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: SafeArea(
+        child: Stack(
+          children: [
+            PageView.builder(
+              controller: _controller,
+              itemCount: widget.memories.length,
+              onPageChanged: (i) => setState(() => _index = i),
+              itemBuilder: (_, i) {
+                final m = widget.memories[i];
+                return InteractiveViewer(
+                  minScale: 1,
+                  maxScale: 4,
+                  child: Center(child: _viewerImage(m)),
+                );
+              },
+            ),
+            Positioned(
+              top: context.m,
+              right: context.m,
+              child: GestureDetector(
+                onTap: () => Navigator.pop(context),
+                child: Container(
+                  padding: EdgeInsets.all(context.s),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.5),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(Icons.close,
+                      color: Colors.white, size: context.w * 0.06),
+                ),
+              ),
+            ),
+            if (widget.memories.length > 1)
+              Positioned(
+                bottom: context.l,
+                left: 0,
+                right: 0,
+                child: Center(
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                        horizontal: context.m, vertical: context.xs * 1.4),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.5),
+                      borderRadius: BorderRadius.circular(context.w * 0.05),
+                    ),
+                    child: Text(
+                      '${_index + 1} / ${widget.memories.length}',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: context.captionFont,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _viewerImage(WineMemoryEntity m) {
+    if (m.localImagePath != null) {
+      return Image.file(File(m.localImagePath!), fit: BoxFit.contain);
+    }
+    if (m.imageUrl != null) {
+      return Image.network(m.imageUrl!, fit: BoxFit.contain);
+    }
+    return const Icon(Icons.broken_image_outlined,
+        color: Colors.white, size: 80);
   }
 }
 

@@ -49,6 +49,15 @@ class WineTypeFilterBar extends ConsumerWidget {
                 .read(wineTypeFilterProvider.notifier)
                 .setFilter(WineType.rose),
           ),
+          SizedBox(width: context.w * 0.02),
+          _FilterChip(
+            label: 'Sparkling',
+            isSelected: selected == WineType.sparkling,
+            dotColor: const Color(0xFFD4A84B),
+            onTap: () => ref
+                .read(wineTypeFilterProvider.notifier)
+                .setFilter(WineType.sparkling),
+          ),
         ],
       ),
     );
