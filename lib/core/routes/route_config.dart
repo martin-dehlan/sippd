@@ -31,6 +31,7 @@ part 'route_config.g.dart';
 GoRouter goRouter(GoRouterRef ref) {
   final router = GoRouter(
     initialLocation: AppRoutes.onboarding,
+    restorationScopeId: 'sippd_router',
     debugLogDiagnostics: true,
     redirect: (context, state) {
       final loc = state.matchedLocation;

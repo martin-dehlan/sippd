@@ -421,7 +421,7 @@ class _WineMemoriesControllerProviderElement
   String get wineId => (origin as WineMemoriesControllerProvider).wineId;
 }
 
-String _$wineTypeFilterHash() => r'18cccdfcd3b77a9c7ff2d4f7b3efdbc65c9c432d';
+String _$wineTypeFilterHash() => r'fa4fc894cabfe8e15545bdc6193fc12bebaf4a2e';
 
 /// See also [WineTypeFilter].
 @ProviderFor(WineTypeFilter)

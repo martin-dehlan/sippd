@@ -1,6 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../common/database/database.dart';
 import '../../auth/controller/auth.provider.dart';
+import '../../onboarding/controller/onboarding.provider.dart';
 import '../domain/entities/wine.entity.dart';
 import '../domain/entities/wine_memory.entity.dart';
 import '../domain/repositories/wine.repository.dart';
@@ -114,12 +115,28 @@ class WineMemoriesController extends _$WineMemoriesController {
 // FILTER STATE
 // ========================================
 
+const _wineTypeFilterKey = 'wine_type_filter';
+
 @riverpod
 class WineTypeFilter extends _$WineTypeFilter {
   @override
-  WineType? build() => null;
+  WineType? build() {
+    final prefs = ref.watch(sharedPreferencesProvider);
+    final stored = prefs.getString(_wineTypeFilterKey);
+    if (stored == null) return null;
+    return WineType.values.firstWhere(
+      (t) => t.name == stored,
+      orElse: () => WineType.red,
+    );
+  }
 
-  void setFilter(WineType? type) {
+  Future<void> setFilter(WineType? type) async {
+    final prefs = ref.read(sharedPreferencesProvider);
+    if (type == null) {
+      await prefs.remove(_wineTypeFilterKey);
+    } else {
+      await prefs.setString(_wineTypeFilterKey, type.name);
+    }
     state = type;
   }
 }

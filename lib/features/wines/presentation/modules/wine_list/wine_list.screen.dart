@@ -21,6 +21,7 @@ class WineListScreen extends ConsumerWidget {
     return Scaffold(
       body: SafeArea(
         child: CustomScrollView(
+          restorationId: 'wine_list_scroll',
           slivers: [
             SliverToBoxAdapter(child: SizedBox(height: context.xl)),
 
@@ -36,25 +37,14 @@ class WineListScreen extends ConsumerWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text(
-                                'SIPPD',
-                                style: GoogleFonts.playfairDisplay(
-                                  fontSize: context.titleFont * 1.3,
-                                  fontWeight: FontWeight.w800,
-                                  letterSpacing: -0.5,
-                                  height: 1.05,
-                                ),
-                              ),
-                              SizedBox(width: context.w * 0.025),
-                              Text(
-                                '🍷',
-                                style:
-                                    TextStyle(fontSize: context.titleFont * 0.9),
-                              ),
-                            ],
+                          Text(
+                            'SIPPD',
+                            style: GoogleFonts.playfairDisplay(
+                              fontSize: context.titleFont * 1.3,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: -0.5,
+                              height: 1.05,
+                            ),
                           ),
                           SizedBox(height: context.xs),
                           Text(
@@ -67,12 +57,6 @@ class WineListScreen extends ConsumerWidget {
                         ],
                       ),
                     ),
-                    _HeaderIconButton(
-                      icon: Icons.qr_code_scanner,
-                      onTap: () => context.push(AppRoutes.scan),
-                      tooltip: 'Scan wine',
-                    ),
-                    SizedBox(width: context.w * 0.02),
                     _HeaderIconButton(
                       icon: Icons.add,
                       onTap: () => context.push(AppRoutes.wineAdd),

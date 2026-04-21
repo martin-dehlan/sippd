@@ -74,6 +74,7 @@ class GroupListScreen extends ConsumerWidget {
                     );
                   }
                   return ListView.separated(
+                    restorationId: 'group_list_scroll',
                     padding: EdgeInsets.symmetric(
                         horizontal: context.paddingH * 1.3),
                     itemCount: groups.length,

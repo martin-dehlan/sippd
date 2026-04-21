@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../common/utils/responsive.dart';
+import '../../application/location_search.service.dart';
 import '../../controller/location.provider.dart';
 import '../../domain/entities/location.entity.dart';
 
@@ -27,6 +28,7 @@ class _LocationSearchWidgetState extends ConsumerState<LocationSearchWidget> {
   final _focusNode = FocusNode();
   Timer? _debounce;
   bool _showResults = false;
+  bool _gpsBusy = false;
 
   @override
   void initState() {
@@ -73,6 +75,28 @@ class _LocationSearchWidgetState extends ConsumerState<LocationSearchWidget> {
     widget.onLocationSelected(location);
   }
 
+  Future<void> _useCurrentLocation() async {
+    if (_gpsBusy) return;
+    setState(() => _gpsBusy = true);
+    final messenger = ScaffoldMessenger.maybeOf(context);
+    try {
+      final service = ref.read(locationSearchServiceProvider);
+      final loc = await service.resolveCurrentLocation();
+      if (!mounted) return;
+      _onSelected(loc);
+    } on LocationUnavailable catch (e) {
+      messenger?.showSnackBar(
+        SnackBar(content: Text(e.message)),
+      );
+    } catch (_) {
+      messenger?.showSnackBar(
+        const SnackBar(content: Text('Could not read current location')),
+      );
+    } finally {
+      if (mounted) setState(() => _gpsBusy = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final searchState = ref.watch(locationSearchControllerProvider);
@@ -105,6 +129,11 @@ class _LocationSearchWidgetState extends ConsumerState<LocationSearchWidget> {
                 : null,
           ),
           onChanged: _onSearchChanged,
+        ),
+        SizedBox(height: context.s),
+        _UseMyLocationButton(
+          busy: _gpsBusy,
+          onTap: _useCurrentLocation,
         ),
         if (_showResults) ...[
           SizedBox(height: context.s),
@@ -175,6 +204,56 @@ class _LocationSearchWidgetState extends ConsumerState<LocationSearchWidget> {
           ),
         ],
       ],
+    );
+  }
+}
+
+class _UseMyLocationButton extends StatelessWidget {
+  final bool busy;
+  final VoidCallback onTap;
+
+  const _UseMyLocationButton({required this.busy, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Material(
+      color: cs.surfaceContainer,
+      borderRadius: BorderRadius.circular(context.w * 0.03),
+      child: InkWell(
+        onTap: busy ? null : onTap,
+        borderRadius: BorderRadius.circular(context.w * 0.03),
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+              horizontal: context.w * 0.04, vertical: context.s * 1.5),
+          child: Row(
+            children: [
+              SizedBox(
+                width: context.w * 0.05,
+                height: context.w * 0.05,
+                child: busy
+                    ? CircularProgressIndicator(
+                        strokeWidth: 2, color: cs.primary)
+                    : Icon(Icons.my_location,
+                        size: context.w * 0.05, color: cs.primary),
+              ),
+              SizedBox(width: context.w * 0.03),
+              Expanded(
+                child: Text(
+                  busy ? 'Finding your location…' : 'Use my current location',
+                  style: TextStyle(
+                    fontSize: context.captionFont,
+                    fontWeight: FontWeight.w600,
+                    color: cs.onSurface,
+                  ),
+                ),
+              ),
+              Icon(Icons.chevron_right,
+                  size: context.w * 0.05, color: cs.onSurfaceVariant),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

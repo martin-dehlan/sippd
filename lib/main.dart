@@ -94,6 +94,7 @@ class _SippdAppState extends ConsumerState<SippdApp> {
       darkTheme: AppTheme.dark,
       themeMode: ThemeMode.dark,
       routerConfig: router,
+      restorationScopeId: 'sippd_app',
       debugShowCheckedModeBanner: false,
     );
   }
