@@ -29,7 +29,7 @@ class MembersStrip extends ConsumerWidget {
           alignment: Alignment.centerLeft,
           child: InkWell(
             onTap: () => MembersSheet.show(context,
-                members: members, ownerId: ownerId),
+                groupId: groupId, members: members, ownerId: ownerId),
             borderRadius: BorderRadius.circular(context.w * 0.1),
             child: Padding(
               padding: EdgeInsets.symmetric(
@@ -43,16 +43,55 @@ class MembersStrip extends ConsumerWidget {
           ),
         );
       },
-      loading: () => SizedBox(
-        height: context.w * 0.12,
-        child: const Align(
-            alignment: Alignment.centerLeft,
-            child: SizedBox(
-                width: 18,
-                height: 18,
-                child: CircularProgressIndicator(strokeWidth: 2))),
-      ),
+      loading: () => _MembersSkeleton(size: context.w * 0.11),
       error: (_, _) => const SizedBox.shrink(),
+    );
+  }
+}
+
+class _MembersSkeleton extends StatelessWidget {
+  final double size;
+  const _MembersSkeleton({required this.size});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final overlap = size * 0.35;
+    const count = 3;
+    final width = size + (count - 1) * (size - overlap);
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+            vertical: context.xs, horizontal: context.xs),
+        child: SizedBox(
+          width: width,
+          height: size,
+          child: Stack(
+            children: [
+              for (int i = 0; i < count; i++)
+                Positioned(
+                  left: i * (size - overlap),
+                  child: Container(
+                    padding: EdgeInsets.all(size * 0.03),
+                    decoration: BoxDecoration(
+                      color: cs.surface,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Container(
+                      width: size - size * 0.06,
+                      height: size - size * 0.06,
+                      decoration: BoxDecoration(
+                        color: cs.surfaceContainerHighest,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

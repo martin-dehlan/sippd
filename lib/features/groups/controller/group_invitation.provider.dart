@@ -1,6 +1,8 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../auth/controller/auth.provider.dart';
+import '../../friends/controller/friends.provider.dart';
+import '../../friends/domain/entities/friend_profile.entity.dart';
 import '../data/models/group_invitation.model.dart';
 import '../domain/entities/group_invitation.entity.dart';
 import 'group.provider.dart';
@@ -68,6 +70,49 @@ Future<List<({String groupId, String name, String? imageUrl})>>
             name: g['name'] as String,
             imageUrl: g['image_url'] as String?,
           ))
+      .toList();
+}
+
+/// Friends of the current user who are not yet in the group and don't
+/// already have a pending invite. Used by the group members sheet to
+/// offer an "Invite friends" flow.
+@riverpod
+Future<List<FriendProfileEntity>> invitableFriendsForGroup(
+  InvitableFriendsForGroupRef ref,
+  String groupId,
+) async {
+  final userId = ref.watch(currentUserIdProvider);
+  if (userId == null) return const [];
+
+  final client = ref.read(supabaseClientProvider);
+
+  final friends =
+      await ref.watch(friendsListProvider.future);
+  if (friends.isEmpty) return const [];
+  final friendIds = friends.map((f) => f.id).toList();
+
+  final members = await client
+      .from('group_members')
+      .select('user_id')
+      .eq('group_id', groupId)
+      .inFilter('user_id', friendIds);
+  final memberIds = (members as List)
+      .map((m) => m['user_id'] as String)
+      .toSet();
+
+  final pending = await client
+      .from('group_invitations')
+      .select('invitee_id')
+      .eq('group_id', groupId)
+      .eq('status', 'pending')
+      .inFilter('invitee_id', friendIds);
+  final pendingIds = (pending as List)
+      .map((m) => m['invitee_id'] as String)
+      .toSet();
+
+  return friends
+      .where((f) =>
+          !memberIds.contains(f.id) && !pendingIds.contains(f.id))
       .toList();
 }
 
@@ -156,6 +201,7 @@ class GroupInvitationController extends _$GroupInvitationController {
     });
 
     ref.invalidate(invitableGroupsForFriendProvider(inviteeId));
+    ref.invalidate(invitableFriendsForGroupProvider(groupId));
   }
 
   Future<void> accept(GroupInvitationEntity invitation) async {

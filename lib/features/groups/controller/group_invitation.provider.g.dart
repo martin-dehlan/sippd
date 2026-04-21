@@ -197,6 +197,161 @@ class _InvitableGroupsForFriendProviderElement
   String get friendId => (origin as InvitableGroupsForFriendProvider).friendId;
 }
 
+String _$invitableFriendsForGroupHash() =>
+    r'397875879e0cfc69fa2756d9d50855f38d59c12f';
+
+/// Friends of the current user who are not yet in the group and don't
+/// already have a pending invite. Used by the group members sheet to
+/// offer an "Invite friends" flow.
+///
+/// Copied from [invitableFriendsForGroup].
+@ProviderFor(invitableFriendsForGroup)
+const invitableFriendsForGroupProvider = InvitableFriendsForGroupFamily();
+
+/// Friends of the current user who are not yet in the group and don't
+/// already have a pending invite. Used by the group members sheet to
+/// offer an "Invite friends" flow.
+///
+/// Copied from [invitableFriendsForGroup].
+class InvitableFriendsForGroupFamily
+    extends Family<AsyncValue<List<FriendProfileEntity>>> {
+  /// Friends of the current user who are not yet in the group and don't
+  /// already have a pending invite. Used by the group members sheet to
+  /// offer an "Invite friends" flow.
+  ///
+  /// Copied from [invitableFriendsForGroup].
+  const InvitableFriendsForGroupFamily();
+
+  /// Friends of the current user who are not yet in the group and don't
+  /// already have a pending invite. Used by the group members sheet to
+  /// offer an "Invite friends" flow.
+  ///
+  /// Copied from [invitableFriendsForGroup].
+  InvitableFriendsForGroupProvider call(String groupId) {
+    return InvitableFriendsForGroupProvider(groupId);
+  }
+
+  @override
+  InvitableFriendsForGroupProvider getProviderOverride(
+    covariant InvitableFriendsForGroupProvider provider,
+  ) {
+    return call(provider.groupId);
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'invitableFriendsForGroupProvider';
+}
+
+/// Friends of the current user who are not yet in the group and don't
+/// already have a pending invite. Used by the group members sheet to
+/// offer an "Invite friends" flow.
+///
+/// Copied from [invitableFriendsForGroup].
+class InvitableFriendsForGroupProvider
+    extends AutoDisposeFutureProvider<List<FriendProfileEntity>> {
+  /// Friends of the current user who are not yet in the group and don't
+  /// already have a pending invite. Used by the group members sheet to
+  /// offer an "Invite friends" flow.
+  ///
+  /// Copied from [invitableFriendsForGroup].
+  InvitableFriendsForGroupProvider(String groupId)
+    : this._internal(
+        (ref) => invitableFriendsForGroup(
+          ref as InvitableFriendsForGroupRef,
+          groupId,
+        ),
+        from: invitableFriendsForGroupProvider,
+        name: r'invitableFriendsForGroupProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$invitableFriendsForGroupHash,
+        dependencies: InvitableFriendsForGroupFamily._dependencies,
+        allTransitiveDependencies:
+            InvitableFriendsForGroupFamily._allTransitiveDependencies,
+        groupId: groupId,
+      );
+
+  InvitableFriendsForGroupProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.groupId,
+  }) : super.internal();
+
+  final String groupId;
+
+  @override
+  Override overrideWith(
+    FutureOr<List<FriendProfileEntity>> Function(
+      InvitableFriendsForGroupRef provider,
+    )
+    create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: InvitableFriendsForGroupProvider._internal(
+        (ref) => create(ref as InvitableFriendsForGroupRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        groupId: groupId,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<List<FriendProfileEntity>> createElement() {
+    return _InvitableFriendsForGroupProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is InvitableFriendsForGroupProvider &&
+        other.groupId == groupId;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, groupId.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin InvitableFriendsForGroupRef
+    on AutoDisposeFutureProviderRef<List<FriendProfileEntity>> {
+  /// The parameter `groupId` of this provider.
+  String get groupId;
+}
+
+class _InvitableFriendsForGroupProviderElement
+    extends AutoDisposeFutureProviderElement<List<FriendProfileEntity>>
+    with InvitableFriendsForGroupRef {
+  _InvitableFriendsForGroupProviderElement(super.provider);
+
+  @override
+  String get groupId => (origin as InvitableFriendsForGroupProvider).groupId;
+}
+
 String _$myGroupInvitationsHash() =>
     r'6df929ec2b87d827d1d3ea0dd5b619007f3b8f66';
 
@@ -221,7 +376,7 @@ final myGroupInvitationsProvider =
 typedef MyGroupInvitationsRef =
     AutoDisposeFutureProviderRef<List<GroupInvitationInboxItem>>;
 String _$groupInvitationControllerHash() =>
-    r'190208e23459cafe9afa3edee99f5d06351f182a';
+    r'153d54f18de534f42ff1b955de40d10a9257c382';
 
 /// See also [GroupInvitationController].
 @ProviderFor(GroupInvitationController)
