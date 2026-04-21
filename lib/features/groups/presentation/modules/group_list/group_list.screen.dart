@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -7,6 +6,7 @@ import '../../../../../common/utils/responsive.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../controller/group.provider.dart';
 import '../../../domain/entities/group.entity.dart';
+import '../../widgets/group_invitations_inbox.widget.dart';
 
 class GroupListScreen extends ConsumerWidget {
   const GroupListScreen({super.key});
@@ -64,6 +64,7 @@ class GroupListScreen extends ConsumerWidget {
                   onTap: () => _showJoinSheet(context, ref)),
             ),
             SizedBox(height: context.m),
+            const GroupInvitationsInbox(),
             Expanded(
               child: groupsAsync.when(
                 data: (groups) {
@@ -281,44 +282,32 @@ class _GroupCard extends StatelessWidget {
               width: context.w * 0.12,
               height: context.w * 0.12,
               decoration: BoxDecoration(
-                color: cs.primaryContainer,
+                color: group.imageUrl == null
+                    ? cs.primaryContainer
+                    : cs.surfaceContainer,
                 borderRadius: BorderRadius.circular(context.w * 0.03),
+                image: group.imageUrl != null
+                    ? DecorationImage(
+                        image: NetworkImage(group.imageUrl!),
+                        fit: BoxFit.cover,
+                      )
+                    : null,
               ),
-              child: Icon(Icons.wine_bar,
-                  color: cs.primary, size: context.w * 0.06),
+              child: group.imageUrl == null
+                  ? Icon(Icons.wine_bar,
+                      color: cs.primary, size: context.w * 0.06)
+                  : null,
             ),
             SizedBox(width: context.w * 0.04),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(group.name,
-                      style: TextStyle(
-                          fontSize: context.bodyFont,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: -0.2)),
-                  SizedBox(height: context.xs * 0.5),
-                  Text('Code: ${group.inviteCode}',
-                      style: TextStyle(
-                          fontSize: context.captionFont * 0.9,
-                          color: cs.onSurfaceVariant)),
-                ],
-              ),
+              child: Text(group.name,
+                  style: TextStyle(
+                      fontSize: context.bodyFont,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: -0.2)),
             ),
-            IconButton(
-              icon: Icon(Icons.copy,
-                  color: cs.outline, size: context.w * 0.045),
-              tooltip: 'Copy invite code',
-              onPressed: () async {
-                await Clipboard.setData(
-                    ClipboardData(text: group.inviteCode));
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Invite code copied')),
-                  );
-                }
-              },
-            ),
+            Icon(Icons.arrow_forward_ios,
+                size: context.w * 0.035, color: cs.outline),
           ],
         ),
       ),

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../../common/utils/responsive.dart';
+import '../../../../groups/presentation/widgets/friend_actions_sheet.widget.dart';
 import '../../../../wines/domain/entities/wine.entity.dart';
 import '../../../controller/friends.provider.dart';
 import '../../../domain/entities/friend_profile.entity.dart';
@@ -118,7 +119,14 @@ class _Header extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
       child: Row(
         children: [
-          FriendAvatar(profile: profile, size: context.w * 0.2),
+          GestureDetector(
+            onTap: () => showFriendActionsSheet(
+              context: context,
+              friendId: profile.id,
+              friendDisplayName: displayName,
+            ),
+            child: FriendAvatar(profile: profile, size: context.w * 0.2),
+          ),
           SizedBox(width: context.w * 0.05),
           Expanded(
             child: Column(
