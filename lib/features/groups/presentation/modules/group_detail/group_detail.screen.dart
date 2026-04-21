@@ -8,6 +8,7 @@ import '../../../../../core/routes/app.routes.dart';
 import '../../../../auth/controller/auth.provider.dart';
 import '../../../controller/group.provider.dart';
 import '../../../domain/entities/group.entity.dart';
+import 'widgets/edit_group_sheet.widget.dart';
 import 'widgets/invite_code_pill.widget.dart';
 import 'widgets/members_strip.widget.dart';
 import 'widgets/shared_wines_carousel.widget.dart';
@@ -81,16 +82,32 @@ class _Body extends ConsumerWidget {
         SizedBox(height: context.xl * 1.5),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: padH),
-          child: Text(
-            group.name.toUpperCase(),
-            style: GoogleFonts.playfairDisplay(
-              fontSize: context.titleFont * 1.2,
-              fontWeight: FontWeight.w800,
-              letterSpacing: -0.5,
-              height: 1.05,
-            ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _GroupAvatar(group: group),
+              SizedBox(width: context.m),
+              Expanded(
+                child: Text(
+                  group.name.toUpperCase(),
+                  style: GoogleFonts.playfairDisplay(
+                    fontSize: context.titleFont * 1.2,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.5,
+                    height: 1.05,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              if (isOwner)
+                IconButton(
+                  icon: Icon(Icons.edit_outlined,
+                      size: context.w * 0.055, color: cs.onSurfaceVariant),
+                  tooltip: 'Gruppe bearbeiten',
+                  onPressed: () => EditGroupSheet.show(context, group),
+                ),
+            ],
           ),
         ),
         if (group.description != null && group.description!.isNotEmpty) ...[
@@ -107,23 +124,24 @@ class _Body extends ConsumerWidget {
             ),
           ),
         ],
-        SizedBox(height: context.m),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: padH),
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: InviteCodePill(
-              code: group.inviteCode,
-              groupName: group.name,
-            ),
-          ),
-        ),
         SizedBox(height: context.l),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: padH),
-          child: MembersStrip(
-            groupId: group.id,
-            ownerId: group.createdBy,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: MembersStrip(
+                  groupId: group.id,
+                  ownerId: group.createdBy,
+                ),
+              ),
+              SizedBox(width: context.s),
+              InviteCodePill(
+                code: group.inviteCode,
+                groupName: group.name,
+              ),
+            ],
           ),
         ),
         SizedBox(height: context.l),
@@ -267,6 +285,35 @@ class _SectionAction extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _GroupAvatar extends StatelessWidget {
+  final GroupEntity group;
+  const _GroupAvatar({required this.group});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final size = context.w * 0.14;
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: cs.surfaceContainer,
+        image: group.imageUrl != null
+            ? DecorationImage(
+                image: NetworkImage(group.imageUrl!),
+                fit: BoxFit.cover,
+              )
+            : null,
+      ),
+      child: group.imageUrl == null
+          ? Icon(Icons.groups_outlined,
+              size: size * 0.5, color: cs.onSurfaceVariant)
+          : null,
     );
   }
 }

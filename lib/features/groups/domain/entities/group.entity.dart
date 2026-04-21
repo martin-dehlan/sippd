@@ -8,6 +8,7 @@ class GroupEntity with _$GroupEntity {
     required String id,
     required String name,
     String? description,
+    String? imageUrl,
     required String inviteCode,
     required String createdBy,
     required DateTime createdAt,

@@ -80,11 +80,7 @@ class _TastingsCalendarState extends ConsumerState<TastingsCalendar> {
       loading: () => Padding(
         padding:
             EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
-        child: const SizedBox(
-          height: 24,
-          width: 24,
-          child: CircularProgressIndicator(strokeWidth: 2),
-        ),
+        child: const _TastingSkeleton(),
       ),
       error: (_, _) => const SizedBox.shrink(),
     );
@@ -283,6 +279,68 @@ class _PastToggle extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _TastingSkeleton extends StatelessWidget {
+  const _TastingSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final radius = BorderRadius.circular(context.w * 0.035);
+    final block = cs.surfaceContainer;
+    final subBlock = cs.surfaceContainerHighest;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        for (var i = 0; i < 2; i++) ...[
+          if (i > 0) SizedBox(height: context.s),
+          Container(
+            padding: EdgeInsets.symmetric(
+                horizontal: context.w * 0.035, vertical: context.s),
+            decoration: BoxDecoration(color: block, borderRadius: radius),
+            child: Row(
+              children: [
+                Container(
+                  width: context.w * 0.13,
+                  height: context.w * 0.13,
+                  decoration: BoxDecoration(
+                    color: subBlock,
+                    borderRadius: BorderRadius.circular(context.w * 0.025),
+                  ),
+                ),
+                SizedBox(width: context.w * 0.035),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        height: context.bodyFont,
+                        width: context.w * 0.45,
+                        decoration: BoxDecoration(
+                          color: subBlock,
+                          borderRadius: BorderRadius.circular(context.w * 0.01),
+                        ),
+                      ),
+                      SizedBox(height: context.xs),
+                      Container(
+                        height: context.captionFont,
+                        width: context.w * 0.3,
+                        decoration: BoxDecoration(
+                          color: subBlock,
+                          borderRadius: BorderRadius.circular(context.w * 0.01),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ],
     );
   }
 }

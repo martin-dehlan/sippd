@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import '../domain/entities/scanned_wine.entity.dart';
 
 class OpenFoodFactsApi {
@@ -23,6 +24,8 @@ class OpenFoodFactsApi {
       );
 
       final data = response.data;
+      debugPrint(
+          '[OFF] $barcode → status=${data is Map ? data['status'] : 'n/a'}');
       if (data == null || data['status'] != 1 || data['product'] == null) {
         return ScannedWineData(
           barcode: barcode,
@@ -43,7 +46,9 @@ class OpenFoodFactsApi {
         source: ScanSource.barcode,
         found: true,
       );
-    } on DioException {
+    } on DioException catch (e) {
+      debugPrint('[OFF] $barcode → DioException ${e.type} '
+          'status=${e.response?.statusCode}');
       return ScannedWineData(
         barcode: barcode,
         source: ScanSource.barcode,

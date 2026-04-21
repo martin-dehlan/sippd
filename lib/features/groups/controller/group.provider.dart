@@ -5,6 +5,7 @@ import '../../friends/domain/entities/friend_profile.entity.dart';
 import '../../wines/controller/wine.provider.dart';
 import '../../wines/data/models/wine.model.dart';
 import '../../wines/domain/entities/wine.entity.dart';
+import '../data/data_sources/group_image.service.dart';
 import '../domain/entities/group.entity.dart';
 import '../domain/entities/group_wine_rating.entity.dart';
 import '../data/models/group.model.dart';
@@ -113,6 +114,28 @@ class GroupController extends _$GroupController {
     ref.invalidateSelf();
   }
 
+  Future<void> updateGroup({
+    required String groupId,
+    String? name,
+    String? description,
+    String? imageUrl,
+    bool clearImage = false,
+  }) async {
+    final client = ref.read(supabaseClientProvider);
+    final patch = <String, dynamic>{};
+    if (name != null) patch['name'] = name;
+    if (description != null) patch['description'] = description;
+    if (clearImage) {
+      patch['image_url'] = null;
+    } else if (imageUrl != null) {
+      patch['image_url'] = imageUrl;
+    }
+    if (patch.isEmpty) return;
+    await client.from('groups').update(patch).eq('id', groupId);
+    ref.invalidateSelf();
+    ref.invalidate(groupDetailProvider(groupId));
+  }
+
   Future<void> leaveGroup(String groupId) async {
     final userId = ref.read(currentUserIdProvider);
     if (userId == null) return;
@@ -127,6 +150,12 @@ class GroupController extends _$GroupController {
 
     ref.invalidateSelf();
   }
+}
+
+@riverpod
+GroupImageService groupImageService(GroupImageServiceRef ref) {
+  final client = ref.read(supabaseClientProvider);
+  return GroupImageService(client);
 }
 
 @riverpod
@@ -261,6 +290,7 @@ class GroupWineRatingController extends _$GroupWineRatingController {
       'updated_at': DateTime.now().toIso8601String(),
     });
     ref.invalidate(groupWineRatingsProvider(groupId, wineId));
+    ref.invalidate(groupWineRanksProvider(groupId));
   }
 
   Future<void> deleteRating({
@@ -277,7 +307,60 @@ class GroupWineRatingController extends _$GroupWineRatingController {
         .eq('wine_id', wineId)
         .eq('user_id', userId);
     ref.invalidate(groupWineRatingsProvider(groupId, wineId));
+    ref.invalidate(groupWineRanksProvider(groupId));
   }
+}
+
+@riverpod
+Future<Map<String, int>> groupWineRanks(
+    GroupWineRanksRef ref, String groupId) async {
+  final wines = await ref.watch(groupWinesProvider(groupId).future);
+  if (wines.isEmpty) return const {};
+
+  final client = ref.read(supabaseClientProvider);
+  final wineIds = wines.map((w) => w.id).toList();
+
+  final ratingRows = (await client
+      .from('group_wine_ratings')
+      .select('wine_id, user_id, rating')
+      .eq('group_id', groupId)
+      .inFilter('wine_id', wineIds)) as List;
+
+  final ownerByWine = {for (final w in wines) w.id: w.userId};
+
+  // Owner rating counts once; member ratings excluded if from owner
+  final perWine = <String, List<double>>{};
+  for (final w in wines) {
+    perWine[w.id] = [w.rating];
+  }
+  for (final row in ratingRows) {
+    final m = row as Map<String, dynamic>;
+    final wineId = m['wine_id'] as String;
+    final userId = m['user_id'] as String;
+    if (userId == ownerByWine[wineId]) continue;
+    perWine.putIfAbsent(wineId, () => []).add((m['rating'] as num).toDouble());
+  }
+
+  final avgByWine = <String, double>{
+    for (final e in perWine.entries)
+      if (e.value.isNotEmpty)
+        e.key: e.value.reduce((a, b) => a + b) / e.value.length,
+  };
+
+  final sorted = avgByWine.entries.toList()
+    ..sort((a, b) => b.value.compareTo(a.value));
+
+  final ranks = <String, int>{};
+  int prevRank = 0;
+  double? prevAvg;
+  for (var i = 0; i < sorted.length; i++) {
+    final e = sorted[i];
+    final rank = (prevAvg != null && prevAvg == e.value) ? prevRank : i + 1;
+    ranks[e.key] = rank;
+    prevRank = rank;
+    prevAvg = e.value;
+  }
+  return ranks;
 }
 
 @riverpod

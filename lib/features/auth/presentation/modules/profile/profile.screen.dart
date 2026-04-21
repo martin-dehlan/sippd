@@ -30,13 +30,7 @@ class ProfileScreen extends ConsumerWidget {
         child: ListView(
           padding: EdgeInsets.symmetric(horizontal: context.paddingH),
           children: [
-            SizedBox(height: context.m),
-            Text('Profile',
-                style: TextStyle(
-                    fontSize: context.titleFont,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: -0.5)),
-            SizedBox(height: context.l),
+            SizedBox(height: context.xl * 1.5),
 
             // Avatar + info
             Center(

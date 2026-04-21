@@ -10,6 +10,7 @@ import '../../../../../core/routes/app.routes.dart';
 import '../../../../auth/controller/auth.provider.dart';
 import '../../../../friends/presentation/widgets/friend_avatar.widget.dart';
 import '../../../../wines/domain/entities/wine.entity.dart';
+import '../../../../wines/presentation/widgets/wine_card.widget.dart';
 import '../../../controller/tastings.provider.dart';
 import '../../../domain/entities/tasting.entity.dart';
 import '../../../domain/entities/tasting_attendee.entity.dart';
@@ -668,8 +669,9 @@ class _WinesSection extends ConsumerWidget {
                   horizontal: context.paddingH * 1.3),
               itemCount: wines.length,
               separatorBuilder: (_, __) => SizedBox(height: context.s),
-              itemBuilder: (_, i) => _WineRow(
+              itemBuilder: (_, i) => _WineLineupCard(
                 wine: wines[i],
+                rank: i + 1,
                 canRemove: isOwner,
                 onRemove: () => ref
                     .read(tastingsControllerProvider.notifier)
@@ -685,13 +687,15 @@ class _WinesSection extends ConsumerWidget {
   }
 }
 
-class _WineRow extends StatelessWidget {
+class _WineLineupCard extends StatelessWidget {
   final WineEntity wine;
+  final int rank;
   final bool canRemove;
   final VoidCallback onRemove;
 
-  const _WineRow({
+  const _WineLineupCard({
     required this.wine,
+    required this.rank,
     required this.canRemove,
     required this.onRemove,
   });
@@ -699,45 +703,32 @@ class _WineRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final typeColor = switch (wine.type) {
-      WineType.red => const Color(0xFFA84343),
-      WineType.white => const Color(0xFFD4C49A),
-      WineType.rose => const Color(0xFFD6889A),
-    };
-    return Container(
-      padding: EdgeInsets.all(context.w * 0.04),
-      decoration: BoxDecoration(
-        color: cs.surfaceContainer,
-        borderRadius: BorderRadius.circular(context.w * 0.03),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: context.w * 0.025,
-            height: context.w * 0.1,
-            decoration: BoxDecoration(
-              color: typeColor,
-              borderRadius: BorderRadius.circular(context.w * 0.01),
+    return Stack(
+      children: [
+        WineCardWidget(
+          wine: wine,
+          rank: rank,
+          onTap: () => context.push(AppRoutes.wineDetailPath(wine.id)),
+        ),
+        if (canRemove)
+          Positioned(
+            top: context.xs,
+            right: context.xs,
+            child: GestureDetector(
+              onTap: onRemove,
+              behavior: HitTestBehavior.opaque,
+              child: Container(
+                padding: EdgeInsets.all(context.xs),
+                decoration: BoxDecoration(
+                  color: cs.surface.withValues(alpha: 0.85),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(Icons.close,
+                    size: context.w * 0.04, color: cs.onSurfaceVariant),
+              ),
             ),
           ),
-          SizedBox(width: context.w * 0.04),
-          Expanded(
-            child: Text(wine.name.toUpperCase(),
-                style: TextStyle(
-                    fontSize: context.bodyFont,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: -0.2),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis),
-          ),
-          if (canRemove)
-            IconButton(
-              icon: Icon(Icons.close,
-                  size: context.w * 0.045, color: cs.outline),
-              onPressed: onRemove,
-            ),
-        ],
-      ),
+      ],
     );
   }
 }

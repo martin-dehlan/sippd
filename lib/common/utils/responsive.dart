@@ -10,6 +10,7 @@ extension ResponsiveContext on BuildContext {
   double get m => h * 0.02;
   double get l => h * 0.03;
   double get xl => h * 0.04;
+  double get xxl => h * 0.06;
 
   // Padding
   double get paddingH => w * 0.05;

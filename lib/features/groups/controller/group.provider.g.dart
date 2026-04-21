@@ -6,6 +6,24 @@ part of 'group.provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
+String _$groupImageServiceHash() => r'8bc48a744f9157c8f5ee9e29a97ea5a8a2e99557';
+
+/// See also [groupImageService].
+@ProviderFor(groupImageService)
+final groupImageServiceProvider =
+    AutoDisposeProvider<GroupImageService>.internal(
+      groupImageService,
+      name: r'groupImageServiceProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$groupImageServiceHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef GroupImageServiceRef = AutoDisposeProviderRef<GroupImageService>;
 String _$groupDetailHash() => r'e304511963d1d1fcc064a0ea0bbb9981d16b62ba';
 
 /// Copied from Dart SDK
@@ -406,6 +424,127 @@ class _GroupWineRatingsProviderElement
   String get wineId => (origin as GroupWineRatingsProvider).wineId;
 }
 
+String _$groupWineRanksHash() => r'fb3421974ae8ebb77a45dd714a2a6a82174cfd29';
+
+/// See also [groupWineRanks].
+@ProviderFor(groupWineRanks)
+const groupWineRanksProvider = GroupWineRanksFamily();
+
+/// See also [groupWineRanks].
+class GroupWineRanksFamily extends Family<AsyncValue<Map<String, int>>> {
+  /// See also [groupWineRanks].
+  const GroupWineRanksFamily();
+
+  /// See also [groupWineRanks].
+  GroupWineRanksProvider call(String groupId) {
+    return GroupWineRanksProvider(groupId);
+  }
+
+  @override
+  GroupWineRanksProvider getProviderOverride(
+    covariant GroupWineRanksProvider provider,
+  ) {
+    return call(provider.groupId);
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'groupWineRanksProvider';
+}
+
+/// See also [groupWineRanks].
+class GroupWineRanksProvider
+    extends AutoDisposeFutureProvider<Map<String, int>> {
+  /// See also [groupWineRanks].
+  GroupWineRanksProvider(String groupId)
+    : this._internal(
+        (ref) => groupWineRanks(ref as GroupWineRanksRef, groupId),
+        from: groupWineRanksProvider,
+        name: r'groupWineRanksProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$groupWineRanksHash,
+        dependencies: GroupWineRanksFamily._dependencies,
+        allTransitiveDependencies:
+            GroupWineRanksFamily._allTransitiveDependencies,
+        groupId: groupId,
+      );
+
+  GroupWineRanksProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.groupId,
+  }) : super.internal();
+
+  final String groupId;
+
+  @override
+  Override overrideWith(
+    FutureOr<Map<String, int>> Function(GroupWineRanksRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: GroupWineRanksProvider._internal(
+        (ref) => create(ref as GroupWineRanksRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        groupId: groupId,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<Map<String, int>> createElement() {
+    return _GroupWineRanksProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is GroupWineRanksProvider && other.groupId == groupId;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, groupId.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin GroupWineRanksRef on AutoDisposeFutureProviderRef<Map<String, int>> {
+  /// The parameter `groupId` of this provider.
+  String get groupId;
+}
+
+class _GroupWineRanksProviderElement
+    extends AutoDisposeFutureProviderElement<Map<String, int>>
+    with GroupWineRanksRef {
+  _GroupWineRanksProviderElement(super.provider);
+
+  @override
+  String get groupId => (origin as GroupWineRanksProvider).groupId;
+}
+
 String _$groupWinesHash() => r'78d0934253743f8a870b9c9a0a77496457ce618b';
 
 /// See also [groupWines].
@@ -525,7 +664,7 @@ class _GroupWinesProviderElement
   String get groupId => (origin as GroupWinesProvider).groupId;
 }
 
-String _$groupControllerHash() => r'591047af0a8eb4fbe8e13f3313eb64c6247c561e';
+String _$groupControllerHash() => r'4434e659a9c55ee348fd2ae1f4fc5704080230db';
 
 /// See also [GroupController].
 @ProviderFor(GroupController)
@@ -545,7 +684,7 @@ final groupControllerProvider =
 
 typedef _$GroupController = AutoDisposeAsyncNotifier<List<GroupEntity>>;
 String _$groupWineRatingControllerHash() =>
-    r'56a6c9e0684728ae50f766e48f38521e5c33cf1a';
+    r'931e274401fa058f6d4b6fade8954ccb2a1b665b';
 
 /// See also [GroupWineRatingController].
 @ProviderFor(GroupWineRatingController)

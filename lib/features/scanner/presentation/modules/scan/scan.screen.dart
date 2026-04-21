@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -17,22 +19,63 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
   final _mobileScannerController = MobileScannerController(
     detectionSpeed: DetectionSpeed.normal,
     facing: CameraFacing.back,
+    formats: const [
+      BarcodeFormat.ean13,
+      BarcodeFormat.ean8,
+      BarcodeFormat.upcA,
+      BarcodeFormat.upcE,
+    ],
   );
   bool _isProcessing = false;
+  String? _lastBarcode;
+  DateTime? _lastLookupAt;
+  String? _statusMessage;
+  Timer? _statusTimer;
+
+  static const _cooldown = Duration(seconds: 3);
 
   @override
   void dispose() {
+    _statusTimer?.cancel();
     _mobileScannerController.dispose();
     super.dispose();
+  }
+
+  bool _isValidEan(String code) {
+    if (code.length < 8 || code.length > 13) return false;
+    return RegExp(r'^\d+$').hasMatch(code);
+  }
+
+  void _showStatus(String msg) {
+    _statusTimer?.cancel();
+    setState(() => _statusMessage = msg);
+    _statusTimer = Timer(const Duration(seconds: 2), () {
+      if (!mounted) return;
+      setState(() => _statusMessage = null);
+    });
   }
 
   Future<void> _onBarcodeDetected(BarcodeCapture capture) async {
     if (_isProcessing) return;
     final barcode = capture.barcodes.firstOrNull?.rawValue;
     if (barcode == null || barcode.isEmpty) return;
+    if (!_isValidEan(barcode)) {
+      debugPrint('[Scanner] rejected invalid code: $barcode');
+      return;
+    }
 
+    // Dedup same barcode in cooldown window
+    final now = DateTime.now();
+    if (_lastBarcode == barcode &&
+        _lastLookupAt != null &&
+        now.difference(_lastLookupAt!) < _cooldown) {
+      return;
+    }
+    _lastBarcode = barcode;
+    _lastLookupAt = now;
+
+    debugPrint('[Scanner] lookup barcode: $barcode');
     setState(() => _isProcessing = true);
-    await _mobileScannerController.stop();
 
     await ref
         .read(scannerControllerProvider.notifier)
@@ -41,22 +84,17 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
 
     final data = ref.read(scannerControllerProvider).valueOrNull;
     if (data != null && data.found) {
+      debugPrint('[Scanner] hit: ${data.name} (${data.brand})');
+      setState(() => _isProcessing = false);
       context.push(AppRoutes.scanResult);
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text("Couldn't find this wine. Add it manually?"),
-        action: SnackBarAction(
-          label: 'Add',
-          onPressed: () => context.push(AppRoutes.wineAdd),
-        ),
-      ),
-    );
+    debugPrint('[Scanner] miss for $barcode');
     ref.read(scannerControllerProvider.notifier).reset();
+    if (!mounted) return;
     setState(() => _isProcessing = false);
-    await _mobileScannerController.start();
+    _showStatus('Nicht gefunden – nochmal scannen oder manuell eintragen');
   }
 
   @override
@@ -73,6 +111,42 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
 
           // Overlay
           ScanOverlay(isProcessing: _isProcessing),
+
+          // Inline status toast (miss / invalid)
+          if (_statusMessage != null)
+            Positioned(
+              left: 0,
+              right: 0,
+              top: context.h * 0.18,
+              child: Center(
+                child: AnimatedOpacity(
+                  opacity: _statusMessage == null ? 0 : 1,
+                  duration: const Duration(milliseconds: 200),
+                  child: Container(
+                    margin: EdgeInsets.symmetric(
+                        horizontal: context.w * 0.08),
+                    padding: EdgeInsets.symmetric(
+                        horizontal: context.w * 0.04,
+                        vertical: context.s),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.75),
+                      borderRadius:
+                          BorderRadius.circular(context.w * 0.03),
+                      border: Border.all(color: Colors.white24),
+                    ),
+                    child: Text(
+                      _statusMessage!,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: context.captionFont,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
 
           // Top bar
           Positioned(

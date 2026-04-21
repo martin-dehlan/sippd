@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../controller/wine.provider.dart';
@@ -21,11 +22,13 @@ class WineListScreen extends ConsumerWidget {
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
+            SliverToBoxAdapter(child: SizedBox(height: context.xl)),
+
             // Header
             SliverToBoxAdapter(
               child: Padding(
                 padding: EdgeInsets.symmetric(
-                    horizontal: context.paddingH, vertical: context.m),
+                    horizontal: context.paddingH * 1.3),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
@@ -34,20 +37,22 @@ class WineListScreen extends ConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Text(
-                                'Sippd',
-                                style: TextStyle(
-                                  fontSize: context.titleFont,
-                                  fontWeight: FontWeight.bold,
+                                'SIPPD',
+                                style: GoogleFonts.playfairDisplay(
+                                  fontSize: context.titleFont * 1.3,
+                                  fontWeight: FontWeight.w800,
                                   letterSpacing: -0.5,
+                                  height: 1.05,
                                 ),
                               ),
-                              SizedBox(width: context.w * 0.02),
+                              SizedBox(width: context.w * 0.025),
                               Text(
                                 '🍷',
                                 style:
-                                    TextStyle(fontSize: context.titleFont * 0.8),
+                                    TextStyle(fontSize: context.titleFont * 0.9),
                               ),
                             ],
                           ),
@@ -78,10 +83,13 @@ class WineListScreen extends ConsumerWidget {
               ),
             ),
 
+            SliverToBoxAdapter(child: SizedBox(height: context.l)),
+
             // Filter chips
             SliverToBoxAdapter(
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: context.paddingH),
+                padding:
+                    EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
                 child: const WineTypeFilterBar(),
               ),
             ),

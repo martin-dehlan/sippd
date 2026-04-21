@@ -20,6 +20,7 @@ mixin _$GroupEntity {
   String get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
+  String? get imageUrl => throw _privateConstructorUsedError;
   String get inviteCode => throw _privateConstructorUsedError;
   String get createdBy => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
@@ -44,6 +45,7 @@ abstract class $GroupEntityCopyWith<$Res> {
     String id,
     String name,
     String? description,
+    String? imageUrl,
     String inviteCode,
     String createdBy,
     DateTime createdAt,
@@ -70,6 +72,7 @@ class _$GroupEntityCopyWithImpl<$Res, $Val extends GroupEntity>
     Object? id = null,
     Object? name = null,
     Object? description = freezed,
+    Object? imageUrl = freezed,
     Object? inviteCode = null,
     Object? createdBy = null,
     Object? createdAt = null,
@@ -89,6 +92,10 @@ class _$GroupEntityCopyWithImpl<$Res, $Val extends GroupEntity>
             description: freezed == description
                 ? _value.description
                 : description // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            imageUrl: freezed == imageUrl
+                ? _value.imageUrl
+                : imageUrl // ignore: cast_nullable_to_non_nullable
                       as String?,
             inviteCode: null == inviteCode
                 ? _value.inviteCode
@@ -129,6 +136,7 @@ abstract class _$$GroupEntityImplCopyWith<$Res>
     String id,
     String name,
     String? description,
+    String? imageUrl,
     String inviteCode,
     String createdBy,
     DateTime createdAt,
@@ -154,6 +162,7 @@ class __$$GroupEntityImplCopyWithImpl<$Res>
     Object? id = null,
     Object? name = null,
     Object? description = freezed,
+    Object? imageUrl = freezed,
     Object? inviteCode = null,
     Object? createdBy = null,
     Object? createdAt = null,
@@ -173,6 +182,10 @@ class __$$GroupEntityImplCopyWithImpl<$Res>
         description: freezed == description
             ? _value.description
             : description // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        imageUrl: freezed == imageUrl
+            ? _value.imageUrl
+            : imageUrl // ignore: cast_nullable_to_non_nullable
                   as String?,
         inviteCode: null == inviteCode
             ? _value.inviteCode
@@ -206,6 +219,7 @@ class _$GroupEntityImpl implements _GroupEntity {
     required this.id,
     required this.name,
     this.description,
+    this.imageUrl,
     required this.inviteCode,
     required this.createdBy,
     required this.createdAt,
@@ -219,6 +233,8 @@ class _$GroupEntityImpl implements _GroupEntity {
   final String name;
   @override
   final String? description;
+  @override
+  final String? imageUrl;
   @override
   final String inviteCode;
   @override
@@ -234,7 +250,7 @@ class _$GroupEntityImpl implements _GroupEntity {
 
   @override
   String toString() {
-    return 'GroupEntity(id: $id, name: $name, description: $description, inviteCode: $inviteCode, createdBy: $createdBy, createdAt: $createdAt, memberCount: $memberCount, wineCount: $wineCount)';
+    return 'GroupEntity(id: $id, name: $name, description: $description, imageUrl: $imageUrl, inviteCode: $inviteCode, createdBy: $createdBy, createdAt: $createdAt, memberCount: $memberCount, wineCount: $wineCount)';
   }
 
   @override
@@ -246,6 +262,8 @@ class _$GroupEntityImpl implements _GroupEntity {
             (identical(other.name, name) || other.name == name) &&
             (identical(other.description, description) ||
                 other.description == description) &&
+            (identical(other.imageUrl, imageUrl) ||
+                other.imageUrl == imageUrl) &&
             (identical(other.inviteCode, inviteCode) ||
                 other.inviteCode == inviteCode) &&
             (identical(other.createdBy, createdBy) ||
@@ -264,6 +282,7 @@ class _$GroupEntityImpl implements _GroupEntity {
     id,
     name,
     description,
+    imageUrl,
     inviteCode,
     createdBy,
     createdAt,
@@ -285,6 +304,7 @@ abstract class _GroupEntity implements GroupEntity {
     required final String id,
     required final String name,
     final String? description,
+    final String? imageUrl,
     required final String inviteCode,
     required final String createdBy,
     required final DateTime createdAt,
@@ -298,6 +318,8 @@ abstract class _GroupEntity implements GroupEntity {
   String get name;
   @override
   String? get description;
+  @override
+  String? get imageUrl;
   @override
   String get inviteCode;
   @override

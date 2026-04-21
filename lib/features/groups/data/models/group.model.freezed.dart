@@ -24,6 +24,8 @@ mixin _$GroupModel {
   String get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
+  @JsonKey(name: 'image_url')
+  String? get imageUrl => throw _privateConstructorUsedError;
   @JsonKey(name: 'invite_code')
   String get inviteCode => throw _privateConstructorUsedError;
   @JsonKey(name: 'created_by')
@@ -52,6 +54,7 @@ abstract class $GroupModelCopyWith<$Res> {
     String id,
     String name,
     String? description,
+    @JsonKey(name: 'image_url') String? imageUrl,
     @JsonKey(name: 'invite_code') String inviteCode,
     @JsonKey(name: 'created_by') String createdBy,
     @JsonKey(name: 'created_at') DateTime createdAt,
@@ -76,6 +79,7 @@ class _$GroupModelCopyWithImpl<$Res, $Val extends GroupModel>
     Object? id = null,
     Object? name = null,
     Object? description = freezed,
+    Object? imageUrl = freezed,
     Object? inviteCode = null,
     Object? createdBy = null,
     Object? createdAt = null,
@@ -93,6 +97,10 @@ class _$GroupModelCopyWithImpl<$Res, $Val extends GroupModel>
             description: freezed == description
                 ? _value.description
                 : description // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            imageUrl: freezed == imageUrl
+                ? _value.imageUrl
+                : imageUrl // ignore: cast_nullable_to_non_nullable
                       as String?,
             inviteCode: null == inviteCode
                 ? _value.inviteCode
@@ -125,6 +133,7 @@ abstract class _$$GroupModelImplCopyWith<$Res>
     String id,
     String name,
     String? description,
+    @JsonKey(name: 'image_url') String? imageUrl,
     @JsonKey(name: 'invite_code') String inviteCode,
     @JsonKey(name: 'created_by') String createdBy,
     @JsonKey(name: 'created_at') DateTime createdAt,
@@ -148,6 +157,7 @@ class __$$GroupModelImplCopyWithImpl<$Res>
     Object? id = null,
     Object? name = null,
     Object? description = freezed,
+    Object? imageUrl = freezed,
     Object? inviteCode = null,
     Object? createdBy = null,
     Object? createdAt = null,
@@ -165,6 +175,10 @@ class __$$GroupModelImplCopyWithImpl<$Res>
         description: freezed == description
             ? _value.description
             : description // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        imageUrl: freezed == imageUrl
+            ? _value.imageUrl
+            : imageUrl // ignore: cast_nullable_to_non_nullable
                   as String?,
         inviteCode: null == inviteCode
             ? _value.inviteCode
@@ -190,6 +204,7 @@ class _$GroupModelImpl implements _GroupModel {
     required this.id,
     required this.name,
     this.description,
+    @JsonKey(name: 'image_url') this.imageUrl,
     @JsonKey(name: 'invite_code') required this.inviteCode,
     @JsonKey(name: 'created_by') required this.createdBy,
     @JsonKey(name: 'created_at') required this.createdAt,
@@ -205,6 +220,9 @@ class _$GroupModelImpl implements _GroupModel {
   @override
   final String? description;
   @override
+  @JsonKey(name: 'image_url')
+  final String? imageUrl;
+  @override
   @JsonKey(name: 'invite_code')
   final String inviteCode;
   @override
@@ -216,7 +234,7 @@ class _$GroupModelImpl implements _GroupModel {
 
   @override
   String toString() {
-    return 'GroupModel(id: $id, name: $name, description: $description, inviteCode: $inviteCode, createdBy: $createdBy, createdAt: $createdAt)';
+    return 'GroupModel(id: $id, name: $name, description: $description, imageUrl: $imageUrl, inviteCode: $inviteCode, createdBy: $createdBy, createdAt: $createdAt)';
   }
 
   @override
@@ -228,6 +246,8 @@ class _$GroupModelImpl implements _GroupModel {
             (identical(other.name, name) || other.name == name) &&
             (identical(other.description, description) ||
                 other.description == description) &&
+            (identical(other.imageUrl, imageUrl) ||
+                other.imageUrl == imageUrl) &&
             (identical(other.inviteCode, inviteCode) ||
                 other.inviteCode == inviteCode) &&
             (identical(other.createdBy, createdBy) ||
@@ -243,6 +263,7 @@ class _$GroupModelImpl implements _GroupModel {
     id,
     name,
     description,
+    imageUrl,
     inviteCode,
     createdBy,
     createdAt,
@@ -267,6 +288,7 @@ abstract class _GroupModel implements GroupModel {
     required final String id,
     required final String name,
     final String? description,
+    @JsonKey(name: 'image_url') final String? imageUrl,
     @JsonKey(name: 'invite_code') required final String inviteCode,
     @JsonKey(name: 'created_by') required final String createdBy,
     @JsonKey(name: 'created_at') required final DateTime createdAt,
@@ -281,6 +303,9 @@ abstract class _GroupModel implements GroupModel {
   String get name;
   @override
   String? get description;
+  @override
+  @JsonKey(name: 'image_url')
+  String? get imageUrl;
   @override
   @JsonKey(name: 'invite_code')
   String get inviteCode;
