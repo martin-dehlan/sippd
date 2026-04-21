@@ -84,11 +84,86 @@ class _SharedWinesCarouselState extends ConsumerState<SharedWinesCarousel> {
           ),
         );
       },
-      loading: () => SizedBox(
-        height: context.h * 0.26,
-        child: const Center(child: CircularProgressIndicator()),
-      ),
+      loading: () => const _CarouselSkeleton(),
       error: (_, _) => const SizedBox.shrink(),
+    );
+  }
+}
+
+class _CarouselSkeleton extends StatelessWidget {
+  const _CarouselSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final cardWidth = context.w * 0.56;
+    final cardHeight = context.h * 0.24;
+    return SizedBox(
+      height: context.h * 0.28,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        physics: const NeverScrollableScrollPhysics(),
+        padding: EdgeInsets.symmetric(horizontal: context.w * 0.08),
+        itemCount: 3,
+        itemBuilder: (_, i) {
+          final scale = i == 1 ? 1.0 : 0.88;
+          final opacity = i == 1 ? 1.0 : 0.6;
+          return Align(
+            alignment: Alignment.center,
+            child: Opacity(
+              opacity: opacity,
+              child: Transform.scale(
+                scale: scale,
+                child: Container(
+                  width: cardWidth,
+                  height: cardHeight,
+                  margin:
+                      EdgeInsets.symmetric(horizontal: context.w * 0.015),
+                  padding: EdgeInsets.all(context.w * 0.05),
+                  decoration: BoxDecoration(
+                    color: cs.surfaceContainer,
+                    borderRadius: BorderRadius.circular(context.w * 0.05),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        height: context.captionFont * 1.8,
+                        width: context.w * 0.14,
+                        decoration: BoxDecoration(
+                          color: cs.surfaceContainerHighest,
+                          borderRadius:
+                              BorderRadius.circular(context.w * 0.02),
+                        ),
+                      ),
+                      SizedBox(height: context.m),
+                      Container(
+                        height: context.bodyFont * 1.1,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: cs.surfaceContainerHighest,
+                          borderRadius:
+                              BorderRadius.circular(context.w * 0.01),
+                        ),
+                      ),
+                      SizedBox(height: context.xs),
+                      Container(
+                        height: context.captionFont,
+                        width: context.w * 0.3,
+                        decoration: BoxDecoration(
+                          color: cs.surfaceContainerHighest,
+                          borderRadius:
+                              BorderRadius.circular(context.w * 0.01),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 }
@@ -108,11 +183,20 @@ class _WineCard extends ConsumerWidget {
     final cs = Theme.of(context).colorScheme;
     final ratingsAsync =
         ref.watch(groupWineRatingsProvider(groupId, wine.id));
+    final ranksAsync = ref.watch(groupWineRanksProvider(groupId));
+    final rank = ranksAsync.valueOrNull?[wine.id];
     final typeColor = switch (wine.type) {
       WineType.red => const Color(0xFFA84343),
       WineType.white => const Color(0xFFD4C49A),
       WineType.rose => const Color(0xFFD6889A),
+      WineType.sparkling => const Color(0xFFD4A84B),
     };
+
+    void openRateSheet() => showGroupWineRatingSheet(
+          context: context,
+          groupId: groupId,
+          wine: wine,
+        );
 
     return GestureDetector(
       onTap: () => context.push(AppRoutes.wineDetailPath(wine.id)),
@@ -139,28 +223,26 @@ class _WineCard extends ConsumerWidget {
               children: [
                 _TypePill(label: _typeLabel(wine.type), color: typeColor),
                 const Spacer(),
-                _RateIconButton(
-                  onTap: () => showGroupWineRatingSheet(
-                    context: context,
-                    groupId: groupId,
-                    wine: wine,
-                  ),
-                ),
+                if (rank != null) _RankBadge(rank: rank),
               ],
             ),
-            SizedBox(height: context.m),
+            SizedBox(height: context.s),
+            Expanded(
+              child: _WineImageArea(wine: wine, typeColor: typeColor),
+            ),
+            SizedBox(height: context.s),
             Text(
               wine.name,
               style: TextStyle(
-                fontSize: context.bodyFont * 1.15,
+                fontSize: context.bodyFont * 1.1,
                 fontWeight: FontWeight.w800,
                 letterSpacing: -0.3,
                 height: 1.15,
               ),
-              maxLines: 2,
+              maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
-            SizedBox(height: context.xs),
+            SizedBox(height: context.xs * 0.5),
             Text(
               [
                 if (wine.vintage != null) wine.vintage.toString(),
@@ -173,10 +255,11 @@ class _WineCard extends ConsumerWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
-            const Spacer(),
+            SizedBox(height: context.xs),
             _RatingFooter(
               ratings: ratingsAsync.valueOrNull ?? const [],
               fallback: wine.rating,
+              onTapScore: openRateSheet,
             ),
           ],
         ),
@@ -188,7 +271,49 @@ class _WineCard extends ConsumerWidget {
         WineType.red => 'RED',
         WineType.white => 'WHITE',
         WineType.rose => 'ROSÉ',
+        WineType.sparkling => 'SPARKLING',
       };
+}
+
+class _WineImageArea extends StatelessWidget {
+  final WineEntity wine;
+  final Color typeColor;
+  const _WineImageArea({required this.wine, required this.typeColor});
+
+  @override
+  Widget build(BuildContext context) {
+    final size = context.w * 0.22;
+    return Center(
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          color: typeColor.withValues(alpha: 0.08),
+          shape: BoxShape.circle,
+        ),
+        alignment: Alignment.center,
+        child: wine.imageUrl != null
+            ? ClipOval(
+                child: Image.network(
+                  wine.imageUrl!,
+                  width: size,
+                  height: size,
+                  fit: BoxFit.contain,
+                  errorBuilder: (_, _, _) => Icon(
+                    Icons.wine_bar,
+                    size: size * 0.55,
+                    color: typeColor.withValues(alpha: 0.6),
+                  ),
+                ),
+              )
+            : Icon(
+                Icons.wine_bar,
+                size: size * 0.55,
+                color: typeColor.withValues(alpha: 0.6),
+              ),
+      ),
+    );
+  }
 }
 
 class _TypePill extends StatelessWidget {
@@ -227,24 +352,29 @@ class _TypePill extends StatelessWidget {
   }
 }
 
-class _RateIconButton extends StatelessWidget {
-  final VoidCallback onTap;
-  const _RateIconButton({required this.onTap});
+class _RankBadge extends StatelessWidget {
+  final int rank;
+  const _RankBadge({required this.rank});
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    return GestureDetector(
-      onTap: onTap,
-      behavior: HitTestBehavior.opaque,
-      child: Container(
-        padding: EdgeInsets.all(context.xs),
-        decoration: BoxDecoration(
-          color: cs.primary.withValues(alpha: 0.12),
-          shape: BoxShape.circle,
+    return Container(
+      padding: EdgeInsets.symmetric(
+          horizontal: context.w * 0.025, vertical: context.xs * 1.2),
+      decoration: BoxDecoration(
+        color: cs.primary.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(context.w * 0.03),
+      ),
+      child: Text(
+        '#$rank',
+        style: TextStyle(
+          fontSize: context.captionFont * 1.0,
+          fontWeight: FontWeight.w800,
+          color: cs.primary,
+          height: 1,
+          letterSpacing: -0.3,
         ),
-        child: Icon(Icons.star_rounded,
-            size: context.w * 0.045, color: cs.primary),
       ),
     );
   }
@@ -253,8 +383,13 @@ class _RateIconButton extends StatelessWidget {
 class _RatingFooter extends StatelessWidget {
   final List<GroupWineRatingEntity> ratings;
   final double fallback;
+  final VoidCallback onTapScore;
 
-  const _RatingFooter({required this.ratings, required this.fallback});
+  const _RatingFooter({
+    required this.ratings,
+    required this.fallback,
+    required this.onTapScore,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -268,24 +403,36 @@ class _RatingFooter extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Text(
-          avg.toStringAsFixed(1),
-          style: TextStyle(
-            fontSize: context.titleFont * 0.85,
-            fontWeight: FontWeight.w800,
-            color: cs.primary,
-            height: 1,
-            letterSpacing: -1,
+        GestureDetector(
+          onTap: onTapScore,
+          behavior: HitTestBehavior.opaque,
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: context.xs),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  avg.toStringAsFixed(1),
+                  style: TextStyle(
+                    fontSize: context.titleFont * 0.85,
+                    fontWeight: FontWeight.w800,
+                    color: cs.primary,
+                    height: 1,
+                    letterSpacing: -1,
+                  ),
+                ),
+                SizedBox(width: context.xs * 0.5),
+                Padding(
+                  padding: EdgeInsets.only(top: context.xs * 0.8),
+                  child: Text('/10',
+                      style: TextStyle(
+                        fontSize: context.captionFont * 0.9,
+                        color: cs.onSurfaceVariant,
+                      )),
+                ),
+              ],
+            ),
           ),
-        ),
-        SizedBox(width: context.xs * 0.5),
-        Padding(
-          padding: EdgeInsets.only(top: context.xs * 0.8),
-          child: Text('/10',
-              style: TextStyle(
-                fontSize: context.captionFont * 0.9,
-                color: cs.onSurfaceVariant,
-              )),
         ),
         const Spacer(),
         if (hasRatings)
