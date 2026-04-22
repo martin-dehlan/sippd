@@ -10,40 +10,42 @@ import 'members_sheet.widget.dart';
 class MembersStrip extends ConsumerWidget {
   final String groupId;
   final String? ownerId;
-  const MembersStrip({super.key, required this.groupId, this.ownerId});
+  final VoidCallback? onInviteTap;
+
+  const MembersStrip({
+    super.key,
+    required this.groupId,
+    this.ownerId,
+    this.onInviteTap,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final cs = Theme.of(context).colorScheme;
+    final size = context.w * 0.09;
     final membersAsync = ref.watch(groupMembersProvider(groupId));
     return membersAsync.when(
       data: (members) {
-        if (members.isEmpty) {
-          return Text('No members yet.',
-              style: TextStyle(
-                fontSize: context.captionFont,
-                color: cs.onSurfaceVariant,
-              ));
-        }
-        return Align(
-          alignment: Alignment.centerLeft,
-          child: InkWell(
-            onTap: () => MembersSheet.show(context,
-                groupId: groupId, members: members, ownerId: ownerId),
-            borderRadius: BorderRadius.circular(context.w * 0.1),
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                  vertical: context.xs, horizontal: context.xs),
-              child: _AvatarStack(
-                members: members.take(5).toList(),
-                extra: members.length > 5 ? members.length - 5 : 0,
-                size: context.w * 0.11,
-              ),
+        return InkWell(
+          onTap: members.isEmpty
+              ? null
+              : () => MembersSheet.show(context,
+                  groupId: groupId,
+                  members: members,
+                  ownerId: ownerId),
+          borderRadius: BorderRadius.circular(context.w * 0.1),
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+                vertical: context.xs, horizontal: context.xs),
+            child: _AvatarStack(
+              members: members.take(5).toList(),
+              extra: members.length > 5 ? members.length - 5 : 0,
+              size: size,
+              onInviteTap: onInviteTap,
             ),
           ),
         );
       },
-      loading: () => _MembersSkeleton(size: context.w * 0.11),
+      loading: () => _MembersSkeleton(size: size),
       error: (_, _) => const SizedBox.shrink(),
     );
   }
@@ -100,18 +102,25 @@ class _AvatarStack extends StatelessWidget {
   final List<FriendProfileEntity> members;
   final int extra;
   final double size;
+  final VoidCallback? onInviteTap;
+
   const _AvatarStack({
     required this.members,
     required this.size,
     this.extra = 0,
+    this.onInviteTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final overlap = size * 0.35;
-    final slots = members.length + (extra > 0 ? 1 : 0);
-    final width = size + (slots - 1) * (size - overlap);
+    final overlap = size * 0.55;
+    final memberSlots = members.length + (extra > 0 ? 1 : 0);
+    final inviteSlot = onInviteTap != null ? 1 : 0;
+    final slots = memberSlots + inviteSlot;
+    final width = slots == 0 ? 0.0 : size + (slots - 1) * (size - overlap);
+    final inner = size - size * 0.06;
+
     return SizedBox(
       width: width,
       height: size,
@@ -128,7 +137,7 @@ class _AvatarStack extends StatelessWidget {
                 ),
                 child: FriendAvatar(
                   profile: members[i],
-                  size: size - size * 0.06,
+                  size: inner,
                 ),
               ),
             ),
@@ -142,8 +151,8 @@ class _AvatarStack extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
                 child: Container(
-                  width: size - size * 0.06,
-                  height: size - size * 0.06,
+                  width: inner,
+                  height: inner,
                   decoration: BoxDecoration(
                     color: cs.primaryContainer,
                     shape: BoxShape.circle,
@@ -155,6 +164,35 @@ class _AvatarStack extends StatelessWidget {
                       fontSize: size * 0.32,
                       fontWeight: FontWeight.w700,
                       color: cs.primary,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          if (onInviteTap != null)
+            Positioned(
+              left: memberSlots * (size - overlap),
+              child: GestureDetector(
+                onTap: onInviteTap,
+                behavior: HitTestBehavior.opaque,
+                child: Container(
+                  padding: EdgeInsets.all(size * 0.03),
+                  decoration: BoxDecoration(
+                    color: cs.surface,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Container(
+                    width: inner,
+                    height: inner,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: cs.surfaceContainerHighest,
+                    ),
+                    alignment: Alignment.center,
+                    child: Icon(
+                      Icons.person_add_alt_1_rounded,
+                      color: cs.onSurface,
+                      size: inner * 0.5,
                     ),
                   ),
                 ),

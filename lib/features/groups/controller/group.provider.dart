@@ -2,6 +2,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../auth/controller/auth.provider.dart';
 import '../../friends/data/models/friend_profile.model.dart';
 import '../../friends/domain/entities/friend_profile.entity.dart';
+import '../../onboarding/controller/onboarding.provider.dart';
 import '../../wines/controller/wine.provider.dart';
 import '../../wines/data/models/wine.model.dart';
 import '../../wines/domain/entities/wine.entity.dart';
@@ -43,7 +44,7 @@ class GroupController extends _$GroupController {
     return groups;
   }
 
-  Future<void> createGroup(String name, {String? description}) async {
+  Future<void> createGroup(String name) async {
     final userId = ref.read(currentUserIdProvider);
     if (userId == null) return;
 
@@ -51,7 +52,6 @@ class GroupController extends _$GroupController {
 
     await client.from('groups').insert({
       'name': name,
-      'description': description,
       'created_by': userId,
     });
 
@@ -117,21 +117,26 @@ class GroupController extends _$GroupController {
   Future<void> updateGroup({
     required String groupId,
     String? name,
-    String? description,
     String? imageUrl,
     bool clearImage = false,
   }) async {
     final client = ref.read(supabaseClientProvider);
     final patch = <String, dynamic>{};
     if (name != null) patch['name'] = name;
-    if (description != null) patch['description'] = description;
     if (clearImage) {
       patch['image_url'] = null;
     } else if (imageUrl != null) {
       patch['image_url'] = imageUrl;
     }
     if (patch.isEmpty) return;
-    await client.from('groups').update(patch).eq('id', groupId);
+    final rows = await client
+        .from('groups')
+        .update(patch)
+        .eq('id', groupId)
+        .select();
+    if (rows.isEmpty) {
+      throw Exception('You do not have permission to edit this group.');
+    }
     ref.invalidateSelf();
     ref.invalidate(groupDetailProvider(groupId));
   }
@@ -149,6 +154,36 @@ class GroupController extends _$GroupController {
         .eq('user_id', userId);
 
     ref.invalidateSelf();
+  }
+}
+
+// ========================================
+// SORT STATE
+// ========================================
+
+enum GroupSortMode { recent, name }
+
+const _groupSortModeKey = 'group_sort_mode';
+
+@riverpod
+class GroupSort extends _$GroupSort {
+  @override
+  GroupSortMode build() {
+    final prefs = ref.watch(sharedPreferencesProvider);
+    final stored = prefs.getString(_groupSortModeKey);
+    return GroupSortMode.values.firstWhere(
+      (m) => m.name == stored,
+      orElse: () => GroupSortMode.recent,
+    );
+  }
+
+  Future<void> toggle() async {
+    final next = state == GroupSortMode.recent
+        ? GroupSortMode.name
+        : GroupSortMode.recent;
+    final prefs = ref.read(sharedPreferencesProvider);
+    await prefs.setString(_groupSortModeKey, next.name);
+    state = next;
   }
 }
 

@@ -19,7 +19,6 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$GroupEntity {
   String get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
-  String? get description => throw _privateConstructorUsedError;
   String? get imageUrl => throw _privateConstructorUsedError;
   String get inviteCode => throw _privateConstructorUsedError;
   String get createdBy => throw _privateConstructorUsedError;
@@ -44,7 +43,6 @@ abstract class $GroupEntityCopyWith<$Res> {
   $Res call({
     String id,
     String name,
-    String? description,
     String? imageUrl,
     String inviteCode,
     String createdBy,
@@ -71,7 +69,6 @@ class _$GroupEntityCopyWithImpl<$Res, $Val extends GroupEntity>
   $Res call({
     Object? id = null,
     Object? name = null,
-    Object? description = freezed,
     Object? imageUrl = freezed,
     Object? inviteCode = null,
     Object? createdBy = null,
@@ -89,10 +86,6 @@ class _$GroupEntityCopyWithImpl<$Res, $Val extends GroupEntity>
                 ? _value.name
                 : name // ignore: cast_nullable_to_non_nullable
                       as String,
-            description: freezed == description
-                ? _value.description
-                : description // ignore: cast_nullable_to_non_nullable
-                      as String?,
             imageUrl: freezed == imageUrl
                 ? _value.imageUrl
                 : imageUrl // ignore: cast_nullable_to_non_nullable
@@ -135,7 +128,6 @@ abstract class _$$GroupEntityImplCopyWith<$Res>
   $Res call({
     String id,
     String name,
-    String? description,
     String? imageUrl,
     String inviteCode,
     String createdBy,
@@ -161,7 +153,6 @@ class __$$GroupEntityImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? name = null,
-    Object? description = freezed,
     Object? imageUrl = freezed,
     Object? inviteCode = null,
     Object? createdBy = null,
@@ -179,10 +170,6 @@ class __$$GroupEntityImplCopyWithImpl<$Res>
             ? _value.name
             : name // ignore: cast_nullable_to_non_nullable
                   as String,
-        description: freezed == description
-            ? _value.description
-            : description // ignore: cast_nullable_to_non_nullable
-                  as String?,
         imageUrl: freezed == imageUrl
             ? _value.imageUrl
             : imageUrl // ignore: cast_nullable_to_non_nullable
@@ -218,7 +205,6 @@ class _$GroupEntityImpl implements _GroupEntity {
   const _$GroupEntityImpl({
     required this.id,
     required this.name,
-    this.description,
     this.imageUrl,
     required this.inviteCode,
     required this.createdBy,
@@ -231,8 +217,6 @@ class _$GroupEntityImpl implements _GroupEntity {
   final String id;
   @override
   final String name;
-  @override
-  final String? description;
   @override
   final String? imageUrl;
   @override
@@ -250,7 +234,7 @@ class _$GroupEntityImpl implements _GroupEntity {
 
   @override
   String toString() {
-    return 'GroupEntity(id: $id, name: $name, description: $description, imageUrl: $imageUrl, inviteCode: $inviteCode, createdBy: $createdBy, createdAt: $createdAt, memberCount: $memberCount, wineCount: $wineCount)';
+    return 'GroupEntity(id: $id, name: $name, imageUrl: $imageUrl, inviteCode: $inviteCode, createdBy: $createdBy, createdAt: $createdAt, memberCount: $memberCount, wineCount: $wineCount)';
   }
 
   @override
@@ -260,8 +244,6 @@ class _$GroupEntityImpl implements _GroupEntity {
             other is _$GroupEntityImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
-            (identical(other.description, description) ||
-                other.description == description) &&
             (identical(other.imageUrl, imageUrl) ||
                 other.imageUrl == imageUrl) &&
             (identical(other.inviteCode, inviteCode) ||
@@ -281,7 +263,6 @@ class _$GroupEntityImpl implements _GroupEntity {
     runtimeType,
     id,
     name,
-    description,
     imageUrl,
     inviteCode,
     createdBy,
@@ -303,7 +284,6 @@ abstract class _GroupEntity implements GroupEntity {
   const factory _GroupEntity({
     required final String id,
     required final String name,
-    final String? description,
     final String? imageUrl,
     required final String inviteCode,
     required final String createdBy,
@@ -316,8 +296,6 @@ abstract class _GroupEntity implements GroupEntity {
   String get id;
   @override
   String get name;
-  @override
-  String? get description;
   @override
   String? get imageUrl;
   @override

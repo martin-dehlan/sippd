@@ -22,7 +22,6 @@ class _TastingsCalendarState extends ConsumerState<TastingsCalendar> {
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
     final tastingsAsync =
         ref.watch(groupTastingsProvider(widget.groupId));
 
@@ -45,12 +44,9 @@ class _TastingsCalendarState extends ConsumerState<TastingsCalendar> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (upcoming.isEmpty && past.isEmpty)
-                Text(
-                  'No tastings yet. Tap Plan to create one.',
-                  style: TextStyle(
-                    fontSize: context.bodyFont * 0.95,
-                    color: cs.onSurfaceVariant,
-                  ),
+                _EmptyTastings(
+                  onPlan: () => context
+                      .push(AppRoutes.tastingCreatePath(widget.groupId)),
                 )
               else ...[
                 for (var i = 0; i < upcoming.length; i++) ...[
@@ -275,6 +271,98 @@ class _PastToggle extends StatelessWidget {
               fontSize: context.captionFont,
               fontWeight: FontWeight.w600,
               color: cs.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _EmptyTastings extends StatelessWidget {
+  final VoidCallback onPlan;
+  const _EmptyTastings({required this.onPlan});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(
+        horizontal: context.w * 0.06,
+        vertical: context.l,
+      ),
+      decoration: BoxDecoration(
+        color: cs.surfaceContainerHigh.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(context.w * 0.05),
+        border: Border.all(
+          color: cs.outlineVariant.withValues(alpha: 0.5),
+          width: 1,
+        ),
+      ),
+      child: Column(
+        children: [
+          Container(
+            width: context.w * 0.14,
+            height: context.w * 0.14,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: cs.surfaceContainerHighest,
+            ),
+            alignment: Alignment.center,
+            child: Icon(Icons.event_outlined,
+                size: context.w * 0.07, color: cs.onSurfaceVariant),
+          ),
+          SizedBox(height: context.m),
+          Text(
+            'No tastings yet',
+            style: TextStyle(
+              fontSize: context.bodyFont * 1.05,
+              fontWeight: FontWeight.w700,
+              color: cs.onSurface,
+              letterSpacing: -0.2,
+            ),
+          ),
+          SizedBox(height: context.xs),
+          Text(
+            'Schedule one to gather the group over a bottle.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: context.captionFont * 1.05,
+              color: cs.onSurfaceVariant,
+              height: 1.35,
+            ),
+          ),
+          SizedBox(height: context.m),
+          Material(
+            color: cs.primary,
+            borderRadius: BorderRadius.circular(context.w * 0.1),
+            clipBehavior: Clip.antiAlias,
+            child: InkWell(
+              onTap: onPlan,
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: context.w * 0.06,
+                  vertical: context.s * 1.2,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.add_rounded,
+                        size: context.w * 0.045, color: cs.onPrimary),
+                    SizedBox(width: context.w * 0.015),
+                    Text(
+                      'Plan a tasting',
+                      style: TextStyle(
+                        fontSize: context.captionFont * 1.1,
+                        fontWeight: FontWeight.w700,
+                        color: cs.onPrimary,
+                        letterSpacing: 0.2,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
         ],

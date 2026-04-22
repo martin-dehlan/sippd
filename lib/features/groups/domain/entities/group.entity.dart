@@ -7,7 +7,6 @@ class GroupEntity with _$GroupEntity {
   const factory GroupEntity({
     required String id,
     required String name,
-    String? description,
     String? imageUrl,
     required String inviteCode,
     required String createdBy,

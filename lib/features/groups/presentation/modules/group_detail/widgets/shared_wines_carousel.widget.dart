@@ -9,6 +9,7 @@ import '../../../../../wines/domain/entities/wine.entity.dart';
 import '../../../../controller/group.provider.dart';
 import '../../../../domain/entities/group_wine_rating.entity.dart';
 import 'group_wine_rating_sheet.widget.dart';
+import 'wine_picker_sheet.widget.dart';
 
 class SharedWinesCarousel extends ConsumerStatefulWidget {
   final String groupId;
@@ -40,18 +41,14 @@ class _SharedWinesCarouselState extends ConsumerState<SharedWinesCarousel> {
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
     final winesAsync = ref.watch(groupWinesProvider(widget.groupId));
 
     return winesAsync.when(
       data: (wines) {
         if (wines.isEmpty) {
-          return Padding(
-            padding: EdgeInsets.symmetric(horizontal: context.paddingH),
-            child: Text('No wines shared yet.',
-                style: TextStyle(
-                    fontSize: context.bodyFont * 0.95,
-                    color: cs.onSurfaceVariant)),
+          return _EmptyShared(
+            onShare: () =>
+                WinePickerSheet.show(context, groupId: widget.groupId),
           );
         }
         return SizedBox(
@@ -90,6 +87,130 @@ class _SharedWinesCarouselState extends ConsumerState<SharedWinesCarousel> {
   }
 }
 
+class _EmptyShared extends StatelessWidget {
+  final VoidCallback onShare;
+  const _EmptyShared({required this.onShare});
+
+  @override
+  Widget build(BuildContext context) {
+    return _EmptyStateCard(
+      icon: Icons.wine_bar_outlined,
+      title: 'No wines shared yet',
+      subtitle: 'Pick one from your cellar to kick off the list.',
+      buttonLabel: 'Share a wine',
+      buttonIcon: Icons.add_rounded,
+      onTap: onShare,
+    );
+  }
+}
+
+class _EmptyStateCard extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final String buttonLabel;
+  final IconData buttonIcon;
+  final VoidCallback onTap;
+
+  const _EmptyStateCard({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.buttonLabel,
+    required this.buttonIcon,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: context.w * 0.06,
+          vertical: context.l,
+        ),
+        decoration: BoxDecoration(
+          color: cs.surfaceContainerHigh.withValues(alpha: 0.5),
+          borderRadius: BorderRadius.circular(context.w * 0.05),
+          border: Border.all(
+            color: cs.outlineVariant.withValues(alpha: 0.5),
+            width: 1,
+          ),
+        ),
+        child: Column(
+          children: [
+            Container(
+              width: context.w * 0.14,
+              height: context.w * 0.14,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: cs.surfaceContainerHighest,
+              ),
+              alignment: Alignment.center,
+              child: Icon(icon,
+                  size: context.w * 0.07, color: cs.onSurfaceVariant),
+            ),
+            SizedBox(height: context.m),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: context.bodyFont * 1.05,
+                fontWeight: FontWeight.w700,
+                color: cs.onSurface,
+                letterSpacing: -0.2,
+              ),
+            ),
+            SizedBox(height: context.xs),
+            Text(
+              subtitle,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: context.captionFont * 1.05,
+                color: cs.onSurfaceVariant,
+                height: 1.35,
+              ),
+            ),
+            SizedBox(height: context.m),
+            Material(
+              color: cs.primary,
+              borderRadius: BorderRadius.circular(context.w * 0.1),
+              clipBehavior: Clip.antiAlias,
+              child: InkWell(
+                onTap: onTap,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: context.w * 0.06,
+                    vertical: context.s * 1.2,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(buttonIcon,
+                          size: context.w * 0.045, color: cs.onPrimary),
+                      SizedBox(width: context.w * 0.015),
+                      Text(
+                        buttonLabel,
+                        style: TextStyle(
+                          fontSize: context.captionFont * 1.1,
+                          fontWeight: FontWeight.w700,
+                          color: cs.onPrimary,
+                          letterSpacing: 0.2,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _CarouselSkeleton extends StatelessWidget {
   const _CarouselSkeleton();
 
@@ -121,7 +242,7 @@ class _CarouselSkeleton extends StatelessWidget {
                       EdgeInsets.symmetric(horizontal: context.w * 0.015),
                   padding: EdgeInsets.all(context.w * 0.05),
                   decoration: BoxDecoration(
-                    color: cs.surfaceContainer,
+                    color: cs.surfaceContainerHigh,
                     borderRadius: BorderRadius.circular(context.w * 0.05),
                   ),
                   child: Column(
@@ -204,7 +325,7 @@ class _WineCard extends ConsumerWidget {
         margin: EdgeInsets.symmetric(horizontal: context.w * 0.01),
         padding: EdgeInsets.all(context.w * 0.05),
         decoration: BoxDecoration(
-          color: cs.surfaceContainer,
+          color: cs.surfaceContainerHigh,
           borderRadius: BorderRadius.circular(context.w * 0.05),
           boxShadow: isActive
               ? [
@@ -323,19 +444,20 @@ class _TypePill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Container(
       padding: EdgeInsets.symmetric(
-          horizontal: context.w * 0.02, vertical: context.xs),
+          horizontal: context.w * 0.022, vertical: context.xs),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.15),
+        color: cs.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(context.w * 0.015),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: context.w * 0.015,
-            height: context.w * 0.015,
+            width: context.w * 0.018,
+            height: context.w * 0.018,
             decoration: BoxDecoration(color: color, shape: BoxShape.circle),
           ),
           SizedBox(width: context.xs),
@@ -343,7 +465,7 @@ class _TypePill extends StatelessWidget {
               style: TextStyle(
                 fontSize: context.captionFont * 0.8,
                 fontWeight: FontWeight.w700,
-                color: color,
+                color: cs.onSurface,
                 letterSpacing: 0.6,
               )),
         ],
@@ -363,7 +485,7 @@ class _RankBadge extends StatelessWidget {
       padding: EdgeInsets.symmetric(
           horizontal: context.w * 0.025, vertical: context.xs * 1.2),
       decoration: BoxDecoration(
-        color: cs.primary.withValues(alpha: 0.12),
+        color: cs.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(context.w * 0.03),
       ),
       child: Text(
@@ -371,7 +493,7 @@ class _RankBadge extends StatelessWidget {
         style: TextStyle(
           fontSize: context.captionFont * 1.0,
           fontWeight: FontWeight.w800,
-          color: cs.primary,
+          color: cs.onSurface,
           height: 1,
           letterSpacing: -0.3,
         ),
@@ -416,7 +538,7 @@ class _RatingFooter extends StatelessWidget {
                   style: TextStyle(
                     fontSize: context.titleFont * 0.85,
                     fontWeight: FontWeight.w800,
-                    color: cs.primary,
+                    color: cs.onSurface,
                     height: 1,
                     letterSpacing: -1,
                   ),
@@ -455,22 +577,27 @@ class _AvatarStack extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final size = context.w * 0.07;
+    final borderWidth = 2.0;
+    final drawn = size + borderWidth * 2;
     final overlap = size * 0.6;
     final total = ratings.length + (extra > 0 ? 1 : 0);
-    final stackWidth = (total - 1) * overlap + size;
+    final stackWidth = (total - 1) * overlap + drawn;
 
     return SizedBox(
       width: stackWidth,
-      height: size,
+      height: drawn,
       child: Stack(
+        clipBehavior: Clip.none,
         children: [
           for (var i = 0; i < ratings.length; i++)
             Positioned(
               left: i * overlap,
+              top: 0,
               child: Container(
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  border: Border.all(color: cs.surfaceContainer, width: 2),
+                  border:
+                      Border.all(color: cs.surfaceContainer, width: borderWidth),
                 ),
                 child: ProfileAvatar(
                   avatarUrl: ratings[i].avatarUrl,
@@ -484,6 +611,7 @@ class _AvatarStack extends StatelessWidget {
           if (extra > 0)
             Positioned(
               left: ratings.length * overlap,
+              top: 0,
               child: Container(
                 width: size,
                 height: size,
@@ -491,7 +619,8 @@ class _AvatarStack extends StatelessWidget {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: cs.primaryContainer,
-                  border: Border.all(color: cs.surfaceContainer, width: 2),
+                  border:
+                      Border.all(color: cs.surfaceContainer, width: borderWidth),
                 ),
                 child: Text('+$extra',
                     style: TextStyle(

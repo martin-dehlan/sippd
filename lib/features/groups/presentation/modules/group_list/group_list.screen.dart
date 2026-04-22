@@ -14,6 +14,7 @@ class GroupListScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final groupsAsync = ref.watch(groupControllerProvider);
+    final sortMode = ref.watch(groupSortProvider);
     final cs = Theme.of(context).colorScheme;
 
     return Scaffold(
@@ -49,6 +50,27 @@ class GroupListScreen extends ConsumerWidget {
                       ],
                     ),
                   ),
+                  Tooltip(
+                    message: sortMode == GroupSortMode.recent
+                        ? 'Sort: recent'
+                        : 'Sort: name',
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () =>
+                          ref.read(groupSortProvider.notifier).toggle(),
+                      child: Padding(
+                        padding: EdgeInsets.all(context.w * 0.02),
+                        child: Icon(
+                          sortMode == GroupSortMode.recent
+                              ? Icons.schedule_rounded
+                              : Icons.sort_by_alpha_rounded,
+                          size: context.w * 0.055,
+                          color: cs.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: context.w * 0.01),
                   _HeaderAddButton(
                     onTap: () => _showCreateSheet(context, ref),
                     tooltip: 'Create group',
@@ -73,14 +95,21 @@ class GroupListScreen extends ConsumerWidget {
                       onCreate: () => _showCreateSheet(context, ref),
                     );
                   }
+                  final sorted = List<GroupEntity>.from(groups)
+                    ..sort(switch (sortMode) {
+                      GroupSortMode.recent =>
+                        (a, b) => b.createdAt.compareTo(a.createdAt),
+                      GroupSortMode.name => (a, b) =>
+                          a.name.toLowerCase().compareTo(b.name.toLowerCase()),
+                    });
                   return ListView.separated(
                     restorationId: 'group_list_scroll',
                     padding: EdgeInsets.symmetric(
                         horizontal: context.paddingH * 1.3),
-                    itemCount: groups.length,
+                    itemCount: sorted.length,
                     separatorBuilder: (_, _) =>
                         SizedBox(height: context.s),
-                    itemBuilder: (_, index) => _GroupCard(group: groups[index]),
+                    itemBuilder: (_, index) => _GroupCard(group: sorted[index]),
                   );
                 },
                 loading: () =>
@@ -126,7 +155,6 @@ class GroupListScreen extends ConsumerWidget {
 
   void _showCreateSheet(BuildContext context, WidgetRef ref) {
     final nameController = TextEditingController();
-    final descController = TextEditingController();
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -137,16 +165,10 @@ class GroupListScreen extends ConsumerWidget {
       ),
       builder: (ctx) => _CreateSheet(
         nameController: nameController,
-        descController: descController,
         onSubmit: () async {
           final name = nameController.text.trim();
           if (name.isEmpty) return;
-          await ref.read(groupControllerProvider.notifier).createGroup(
-                name,
-                description: descController.text.trim().isEmpty
-                    ? null
-                    : descController.text.trim(),
-              );
+          await ref.read(groupControllerProvider.notifier).createGroup(name);
           if (ctx.mounted) Navigator.pop(ctx);
         },
       ),
@@ -302,6 +324,8 @@ class _GroupCard extends StatelessWidget {
             SizedBox(width: context.w * 0.04),
             Expanded(
               child: Text(group.name,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                       fontSize: context.bodyFont,
                       fontWeight: FontWeight.w700,
@@ -352,12 +376,10 @@ class _GroupEmptyState extends StatelessWidget {
 
 class _CreateSheet extends StatelessWidget {
   final TextEditingController nameController;
-  final TextEditingController descController;
   final VoidCallback onSubmit;
 
   const _CreateSheet({
     required this.nameController,
-    required this.descController,
     required this.onSubmit,
   });
 
@@ -397,14 +419,7 @@ class _CreateSheet extends StatelessWidget {
                 hint: 'Group name',
                 autofocus: true,
                 big: true,
-              ),
-              SizedBox(height: context.s),
-              Container(height: 1, color: cs.outlineVariant),
-              SizedBox(height: context.m),
-              _BorderlessField(
-                controller: descController,
-                hint: 'Description (optional)',
-                maxLines: 3,
+                maxLength: 30,
               ),
               SizedBox(height: context.l),
               SizedBox(
@@ -511,14 +526,14 @@ class _BorderlessField extends StatelessWidget {
   final String hint;
   final bool autofocus;
   final bool big;
-  final int maxLines;
+  final int? maxLength;
 
   const _BorderlessField({
     required this.controller,
     required this.hint,
     this.autofocus = false,
     this.big = false,
-    this.maxLines = 1,
+    this.maxLength,
   });
 
   @override
@@ -540,7 +555,8 @@ class _BorderlessField extends StatelessWidget {
     return TextField(
       controller: controller,
       autofocus: autofocus,
-      maxLines: maxLines,
+      maxLines: 1,
+      maxLength: maxLength,
       cursorColor: cs.primary,
       cursorWidth: 1.5,
       style: style,

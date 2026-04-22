@@ -664,7 +664,7 @@ class _GroupWinesProviderElement
   String get groupId => (origin as GroupWinesProvider).groupId;
 }
 
-String _$groupControllerHash() => r'4434e659a9c55ee348fd2ae1f4fc5704080230db';
+String _$groupControllerHash() => r'94ee2c05f87f92f51b1ccf4554918895c9bcd183';
 
 /// See also [GroupController].
 @ProviderFor(GroupController)
@@ -683,6 +683,22 @@ final groupControllerProvider =
     );
 
 typedef _$GroupController = AutoDisposeAsyncNotifier<List<GroupEntity>>;
+String _$groupSortHash() => r'6f24d9bbff6d74dd2831dd22d2b96846c2d3c84c';
+
+/// See also [GroupSort].
+@ProviderFor(GroupSort)
+final groupSortProvider =
+    AutoDisposeNotifierProvider<GroupSort, GroupSortMode>.internal(
+      GroupSort.new,
+      name: r'groupSortProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$groupSortHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+typedef _$GroupSort = AutoDisposeNotifier<GroupSortMode>;
 String _$groupWineRatingControllerHash() =>
     r'931e274401fa058f6d4b6fade8954ccb2a1b665b';
 

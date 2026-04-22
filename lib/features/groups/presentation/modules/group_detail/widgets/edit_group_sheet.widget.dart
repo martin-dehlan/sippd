@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -32,11 +33,15 @@ class _EditGroupSheetState extends ConsumerState<EditGroupSheet> {
   late final TextEditingController _nameController;
   late String? _imageUrl;
   bool _busy = false;
+  String? _errorMessage;
 
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: widget.group.name);
+    final initialName = widget.group.name.length > 30
+        ? widget.group.name.substring(0, 30)
+        : widget.group.name;
+    _nameController = TextEditingController(text: initialName);
     _imageUrl = widget.group.imageUrl;
   }
 
@@ -63,7 +68,7 @@ class _EditGroupSheetState extends ConsumerState<EditGroupSheet> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Upload fehlgeschlagen: $e')),
+          SnackBar(content: Text('Upload failed: $e')),
         );
       }
     } finally {
@@ -82,7 +87,7 @@ class _EditGroupSheetState extends ConsumerState<EditGroupSheet> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Löschen fehlgeschlagen: $e')),
+          SnackBar(content: Text('Delete failed: $e')),
         );
       }
     } finally {
@@ -107,18 +112,18 @@ class _EditGroupSheetState extends ConsumerState<EditGroupSheet> {
             SizedBox(height: context.s),
             ListTile(
               leading: const Icon(Icons.photo_camera_outlined),
-              title: const Text('Kamera'),
+              title: const Text('Camera'),
               onTap: () => Navigator.pop(ctx, ImageSource.camera),
             ),
             ListTile(
               leading: const Icon(Icons.photo_library_outlined),
-              title: const Text('Galerie'),
+              title: const Text('Gallery'),
               onTap: () => Navigator.pop(ctx, ImageSource.gallery),
             ),
             if (_imageUrl != null)
               ListTile(
                 leading: Icon(Icons.delete_outline, color: cs.error),
-                title: Text('Bild entfernen',
+                title: Text('Remove photo',
                     style: TextStyle(color: cs.error)),
                 onTap: () {
                   Navigator.pop(ctx);
@@ -142,7 +147,10 @@ class _EditGroupSheetState extends ConsumerState<EditGroupSheet> {
       return;
     }
 
-    setState(() => _busy = true);
+    setState(() {
+      _busy = true;
+      _errorMessage = null;
+    });
     try {
       await ref.read(groupControllerProvider.notifier).updateGroup(
             groupId: widget.group.id,
@@ -153,9 +161,7 @@ class _EditGroupSheetState extends ConsumerState<EditGroupSheet> {
       if (mounted) Navigator.pop(context);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Speichern fehlgeschlagen: $e')),
-        );
+        setState(() => _errorMessage = 'Save failed: $e');
       }
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -190,7 +196,7 @@ class _EditGroupSheetState extends ConsumerState<EditGroupSheet> {
           ),
           SizedBox(height: context.l),
           Text(
-            'Gruppe bearbeiten',
+            'Edit group',
             style: TextStyle(
               fontSize: context.bodyFont * 1.1,
               fontWeight: FontWeight.w700,
@@ -251,6 +257,8 @@ class _EditGroupSheetState extends ConsumerState<EditGroupSheet> {
             controller: _nameController,
             enabled: !_busy,
             textCapitalization: TextCapitalization.words,
+            maxLength: 30,
+            inputFormatters: [LengthLimitingTextInputFormatter(30)],
             decoration: InputDecoration(
               filled: true,
               fillColor: cs.surfaceContainer,
@@ -264,6 +272,16 @@ class _EditGroupSheetState extends ConsumerState<EditGroupSheet> {
               ),
             ),
           ),
+          if (_errorMessage != null) ...[
+            SizedBox(height: context.m),
+            Text(
+              _errorMessage!,
+              style: TextStyle(
+                color: cs.error,
+                fontSize: context.captionFont,
+              ),
+            ),
+          ],
           SizedBox(height: context.xl),
           SizedBox(
             width: double.infinity,
@@ -281,7 +299,7 @@ class _EditGroupSheetState extends ConsumerState<EditGroupSheet> {
                       width: context.m,
                       child: const CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Text('Speichern'),
+                  : const Text('Save'),
             ),
           ),
         ],

@@ -9,7 +9,6 @@ class GroupModel with _$GroupModel {
   const factory GroupModel({
     required String id,
     required String name,
-    String? description,
     @JsonKey(name: 'image_url') String? imageUrl,
     @JsonKey(name: 'invite_code') required String inviteCode,
     @JsonKey(name: 'created_by') required String createdBy,
@@ -25,7 +24,6 @@ extension GroupModelX on GroupModel {
       GroupEntity(
         id: id,
         name: name,
-        description: description,
         imageUrl: imageUrl,
         inviteCode: inviteCode,
         createdBy: createdBy,

@@ -9,7 +9,7 @@ import '../../../../auth/controller/auth.provider.dart';
 import '../../../controller/group.provider.dart';
 import '../../../domain/entities/group.entity.dart';
 import 'widgets/edit_group_sheet.widget.dart';
-import 'widgets/invite_code_pill.widget.dart';
+import 'widgets/invite_share_sheet.widget.dart';
 import 'widgets/members_strip.widget.dart';
 import 'widgets/shared_wines_carousel.widget.dart';
 import 'widgets/tastings_calendar.widget.dart';
@@ -85,63 +85,43 @@ class _Body extends ConsumerWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              _GroupAvatar(group: group),
-              SizedBox(width: context.m),
               Expanded(
                 child: Text(
                   group.name.toUpperCase(),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.playfairDisplay(
                     fontSize: context.titleFont * 1.2,
                     fontWeight: FontWeight.w800,
                     letterSpacing: -0.5,
                     height: 1.05,
                   ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
                 ),
               ),
+              SizedBox(width: context.m),
               if (isOwner)
-                IconButton(
-                  icon: Icon(Icons.edit_outlined,
-                      size: context.w * 0.055, color: cs.onSurfaceVariant),
-                  tooltip: 'Gruppe bearbeiten',
-                  onPressed: () => EditGroupSheet.show(context, group),
+                _OwnerMenu(
+                  onEdit: () => EditGroupSheet.show(context, group),
+                  onDelete: () => _confirmDelete(context, ref, group.id),
                 ),
             ],
           ),
         ),
-        if (group.description != null && group.description!.isNotEmpty) ...[
-          SizedBox(height: context.s),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: padH),
-            child: Text(
-              group.description!,
-              style: TextStyle(
-                fontSize: context.bodyFont,
-                color: cs.onSurfaceVariant,
-                height: 1.4,
-              ),
-            ),
-          ),
-        ],
         SizedBox(height: context.l),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: padH),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Expanded(
-                child: MembersStrip(
-                  groupId: group.id,
-                  ownerId: group.createdBy,
-                ),
-              ),
-              SizedBox(width: context.s),
-              InviteCodePill(
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: MembersStrip(
+              groupId: group.id,
+              ownerId: group.createdBy,
+              onInviteTap: () => InviteShareSheet.show(
+                context,
                 code: group.inviteCode,
+                groupId: group.id,
                 groupName: group.name,
               ),
-            ],
+            ),
           ),
         ),
         SizedBox(height: context.l),
@@ -168,39 +148,37 @@ class _Body extends ConsumerWidget {
         ),
         SizedBox(height: context.s),
         TastingsCalendar(groupId: group.id),
-        SizedBox(height: context.xl),
-        Center(
-          child: TextButton(
-            onPressed: () => _confirmLeaveOrDelete(
-                context, ref, group.id, isOwner),
-            child: Text(
-              isOwner ? 'Delete group' : 'Leave group',
-              style: TextStyle(
-                fontSize: context.bodyFont,
-                fontWeight: FontWeight.w500,
-                color: cs.error,
+        if (!isOwner) ...[
+          SizedBox(height: context.xl),
+          Center(
+            child: TextButton(
+              onPressed: () => _confirmLeave(context, ref, group.id),
+              child: Text(
+                'Leave group',
+                style: TextStyle(
+                  fontSize: context.bodyFont,
+                  fontWeight: FontWeight.w500,
+                  color: cs.error,
+                ),
               ),
             ),
           ),
-        ),
+        ],
         SizedBox(height: context.xl * 2),
       ],
     );
   }
 
-  Future<void> _confirmLeaveOrDelete(
+  Future<void> _confirmLeave(
     BuildContext context,
     WidgetRef ref,
     String groupId,
-    bool isOwner,
   ) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(isOwner ? 'Delete group?' : 'Leave group?'),
-        content: Text(isOwner
-            ? 'The group and its shared wines will be removed for everyone.'
-            : 'You can rejoin later with the invite code.'),
+        title: const Text('Leave group?'),
+        content: const Text('You can rejoin later with the invite code.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
@@ -208,7 +186,7 @@ class _Body extends ConsumerWidget {
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text(isOwner ? 'Delete' : 'Leave',
+            child: Text('Leave',
                 style:
                     TextStyle(color: Theme.of(ctx).colorScheme.error)),
           ),
@@ -216,14 +194,95 @@ class _Body extends ConsumerWidget {
       ),
     );
     if (confirmed != true || !context.mounted) return;
-    if (isOwner) {
-      await ref.read(groupControllerProvider.notifier).deleteGroup(groupId);
-    } else {
-      await ref.read(groupControllerProvider.notifier).leaveGroup(groupId);
-    }
+    await ref.read(groupControllerProvider.notifier).leaveGroup(groupId);
+    if (context.mounted) context.pop();
+  }
+
+  Future<void> _confirmDelete(
+    BuildContext context,
+    WidgetRef ref,
+    String groupId,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Delete group?'),
+        content: const Text(
+          'The group and its shared wines will be removed for everyone.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text('Delete',
+                style:
+                    TextStyle(color: Theme.of(ctx).colorScheme.error)),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !context.mounted) return;
+    await ref.read(groupControllerProvider.notifier).deleteGroup(groupId);
     if (context.mounted) context.pop();
   }
 }
+
+class _OwnerMenu extends StatelessWidget {
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
+  const _OwnerMenu({required this.onEdit, required this.onDelete});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return PopupMenuButton<_MenuAction>(
+      icon: Icon(Icons.more_vert,
+          size: context.w * 0.06, color: cs.onSurfaceVariant),
+      tooltip: 'Mehr',
+      color: cs.surfaceContainerHigh,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(context.w * 0.03),
+      ),
+      onSelected: (value) {
+        switch (value) {
+          case _MenuAction.edit:
+            onEdit();
+          case _MenuAction.delete:
+            onDelete();
+        }
+      },
+      itemBuilder: (ctx) => [
+        PopupMenuItem(
+          value: _MenuAction.edit,
+          child: Row(
+            children: [
+              Icon(Icons.edit_outlined,
+                  size: context.w * 0.045, color: cs.onSurface),
+              SizedBox(width: context.s),
+              const Text('Edit group'),
+            ],
+          ),
+        ),
+        PopupMenuItem(
+          value: _MenuAction.delete,
+          child: Row(
+            children: [
+              Icon(Icons.delete_outline,
+                  size: context.w * 0.045, color: cs.error),
+              SizedBox(width: context.s),
+              Text('Delete group', style: TextStyle(color: cs.error)),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+enum _MenuAction { edit, delete }
 
 class _SectionHeader extends StatelessWidget {
   final String label;
@@ -239,12 +298,12 @@ class _SectionHeader extends StatelessWidget {
         children: [
           Expanded(
             child: Text(
-              label,
+              label.toUpperCase(),
               style: TextStyle(
-                fontSize: context.bodyFont,
+                fontSize: context.captionFont * 0.95,
                 fontWeight: FontWeight.w700,
-                color: cs.onSurface,
-                letterSpacing: -0.2,
+                color: cs.onSurface.withValues(alpha: 0.72),
+                letterSpacing: 1.2,
               ),
             ),
           ),
@@ -289,31 +348,3 @@ class _SectionAction extends StatelessWidget {
   }
 }
 
-class _GroupAvatar extends StatelessWidget {
-  final GroupEntity group;
-  const _GroupAvatar({required this.group});
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    final size = context.w * 0.14;
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: cs.surfaceContainer,
-        image: group.imageUrl != null
-            ? DecorationImage(
-                image: NetworkImage(group.imageUrl!),
-                fit: BoxFit.cover,
-              )
-            : null,
-      ),
-      child: group.imageUrl == null
-          ? Icon(Icons.groups_outlined,
-              size: size * 0.5, color: cs.onSurfaceVariant)
-          : null,
-    );
-  }
-}

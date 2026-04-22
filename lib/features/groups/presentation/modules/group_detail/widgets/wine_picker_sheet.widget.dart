@@ -30,6 +30,11 @@ class WinePickerSheet extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
     final winesAsync = ref.watch(wineControllerProvider);
+    final sharedIds =
+        ref.watch(groupWinesProvider(groupId)).valueOrNull
+                ?.map((w) => w.id)
+                .toSet() ??
+            const <String>{};
 
     return SafeArea(
       child: Padding(
@@ -75,30 +80,46 @@ class WinePickerSheet extends ConsumerWidget {
                       ),
                     );
                   }
-                  final sorted = List<WineEntity>.from(wines)
-                    ..sort((a, b) => b.rating.compareTo(a.rating));
+                  final sorted = List<WineEntity>.from(wines)..sort((a, b) {
+                    final aShared = sharedIds.contains(a.id) ? 1 : 0;
+                    final bShared = sharedIds.contains(b.id) ? 1 : 0;
+                    if (aShared != bShared) return aShared - bShared;
+                    return b.rating.compareTo(a.rating);
+                  });
                   return ListView.separated(
                     shrinkWrap: true,
                     itemCount: sorted.length,
                     separatorBuilder: (_, _) =>
                         SizedBox(height: context.xs),
-                    itemBuilder: (_, i) => _WinePickerRow(
-                      wine: sorted[i],
-                      onTap: () async {
-                        await ref
-                            .read(groupControllerProvider.notifier)
-                            .shareWineToGroup(groupId, sorted[i].id);
-                        ref.invalidate(groupWinesProvider(groupId));
-                        if (context.mounted) {
-                          Navigator.pop(context);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                                content: Text(
-                                    '${sorted[i].name} shared')),
-                          );
-                        }
-                      },
-                    ),
+                    itemBuilder: (_, i) {
+                      final wine = sorted[i];
+                      final isShared = sharedIds.contains(wine.id);
+                      return _WinePickerRow(
+                        wine: wine,
+                        isShared: isShared,
+                        onTap: isShared
+                            ? null
+                            : () async {
+                                await ref
+                                    .read(groupControllerProvider
+                                        .notifier)
+                                    .shareWineToGroup(
+                                        groupId, wine.id);
+                                ref.invalidate(
+                                    groupWinesProvider(groupId));
+                                if (context.mounted) {
+                                  Navigator.pop(context);
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(
+                                    SnackBar(
+                                      content:
+                                          Text('${wine.name} shared'),
+                                    ),
+                                  );
+                                }
+                              },
+                      );
+                    },
                   );
                 },
                 loading: () =>
@@ -119,8 +140,14 @@ class WinePickerSheet extends ConsumerWidget {
 
 class _WinePickerRow extends StatelessWidget {
   final WineEntity wine;
-  final VoidCallback onTap;
-  const _WinePickerRow({required this.wine, required this.onTap});
+  final VoidCallback? onTap;
+  final bool isShared;
+
+  const _WinePickerRow({
+    required this.wine,
+    required this.onTap,
+    this.isShared = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -131,56 +158,94 @@ class _WinePickerRow extends StatelessWidget {
       WineType.rose => const Color(0xFFD6889A),
       WineType.sparkling => const Color(0xFFD4A84B),
     };
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(context.w * 0.03),
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-            horizontal: context.w * 0.02, vertical: context.s),
-        child: Row(
-          children: [
-            Container(
-              width: context.w * 0.02,
-              height: context.w * 0.1,
-              decoration: BoxDecoration(
-                color: typeColor,
-                borderRadius: BorderRadius.circular(context.w * 0.01),
+    return Opacity(
+      opacity: isShared ? 0.5 : 1,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(context.w * 0.03),
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+              horizontal: context.w * 0.02, vertical: context.s),
+          child: Row(
+            children: [
+              Container(
+                width: context.w * 0.02,
+                height: context.w * 0.1,
+                decoration: BoxDecoration(
+                  color: typeColor,
+                  borderRadius: BorderRadius.circular(context.w * 0.01),
+                ),
               ),
-            ),
-            SizedBox(width: context.w * 0.03),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(wine.name,
+              SizedBox(width: context.w * 0.03),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(wine.name,
+                        style: TextStyle(
+                            fontSize: context.bodyFont,
+                            fontWeight: FontWeight.w700),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis),
+                    SizedBox(height: context.xs * 0.4),
+                    Text(
+                      [
+                        if (wine.vintage != null) wine.vintage.toString(),
+                        if (wine.country != null) wine.country,
+                      ].join(' · '),
                       style: TextStyle(
-                          fontSize: context.bodyFont,
-                          fontWeight: FontWeight.w700),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis),
-                  SizedBox(height: context.xs * 0.4),
-                  Text(
-                    [
-                      if (wine.vintage != null) wine.vintage.toString(),
-                      if (wine.country != null) wine.country,
-                    ].join(' · '),
-                    style: TextStyle(
-                        fontSize: context.captionFont,
-                        color: cs.onSurfaceVariant),
+                          fontSize: context.captionFont,
+                          color: cs.onSurfaceVariant),
+                    ),
+                  ],
+                ),
+              ),
+              if (isShared)
+                _SharedChip()
+              else
+                Text(
+                  wine.rating.toStringAsFixed(1),
+                  style: TextStyle(
+                    fontSize: context.bodyFont * 1.1,
+                    fontWeight: FontWeight.bold,
+                    color: cs.onSurface,
                   ),
-                ],
-              ),
-            ),
-            Text(
-              wine.rating.toStringAsFixed(1),
-              style: TextStyle(
-                fontSize: context.bodyFont * 1.1,
-                fontWeight: FontWeight.bold,
-                color: cs.primary,
-              ),
-            ),
-          ],
+                ),
+            ],
+          ),
         ),
+      ),
+    );
+  }
+}
+
+class _SharedChip extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Container(
+      padding: EdgeInsets.symmetric(
+          horizontal: context.w * 0.025, vertical: context.xs),
+      decoration: BoxDecoration(
+        color: cs.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(context.w * 0.02),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.check_rounded,
+              size: context.w * 0.035, color: cs.onSurfaceVariant),
+          SizedBox(width: context.xs),
+          Text(
+            'Shared',
+            style: TextStyle(
+              fontSize: context.captionFont * 0.9,
+              fontWeight: FontWeight.w600,
+              color: cs.onSurfaceVariant,
+              letterSpacing: 0.3,
+            ),
+          ),
+        ],
       ),
     );
   }
