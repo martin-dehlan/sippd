@@ -8,7 +8,9 @@ import 'package:latlong2/latlong.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../../auth/controller/auth.provider.dart';
+import '../../../../friends/domain/entities/friend_profile.entity.dart';
 import '../../../../friends/presentation/widgets/friend_avatar.widget.dart';
+import '../../../../groups/controller/group.provider.dart';
 import '../../../../wines/domain/entities/wine.entity.dart';
 import '../../../../wines/presentation/widgets/wine_card.widget.dart';
 import '../../../controller/tastings.provider.dart';
@@ -87,6 +89,72 @@ class _CircleIcon extends StatelessWidget {
           border: Border.all(color: cs.outlineVariant, width: 0.5),
         ),
         child: Icon(icon, size: context.w * 0.045, color: cs.onSurface),
+      ),
+    );
+  }
+}
+
+enum _TastingMenuAction { edit, cancel }
+
+class _OverflowMenu extends StatelessWidget {
+  final VoidCallback onEdit;
+  final VoidCallback onCancel;
+  const _OverflowMenu({required this.onEdit, required this.onCancel});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final size = context.w * 0.1;
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: cs.surfaceContainer,
+        shape: BoxShape.circle,
+        border: Border.all(color: cs.outlineVariant, width: 0.5),
+      ),
+      child: PopupMenuButton<_TastingMenuAction>(
+        icon: Icon(Icons.more_vert,
+            size: context.w * 0.05, color: cs.onSurface),
+        tooltip: 'More',
+        padding: EdgeInsets.zero,
+        color: cs.surfaceContainerHigh,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(context.w * 0.03),
+        ),
+        onSelected: (value) {
+          switch (value) {
+            case _TastingMenuAction.edit:
+              onEdit();
+            case _TastingMenuAction.cancel:
+              onCancel();
+          }
+        },
+        itemBuilder: (ctx) => [
+          PopupMenuItem(
+            value: _TastingMenuAction.edit,
+            child: Row(
+              children: [
+                Icon(Icons.edit_outlined,
+                    size: context.w * 0.045, color: cs.onSurface),
+                SizedBox(width: context.s),
+                const Text('Edit tasting'),
+              ],
+            ),
+          ),
+          PopupMenuItem(
+            value: _TastingMenuAction.cancel,
+            child: Row(
+              children: [
+                Icon(Icons.event_busy_outlined,
+                    size: context.w * 0.045, color: cs.error),
+                SizedBox(width: context.s),
+                Text('Cancel tasting',
+                    style: TextStyle(color: cs.error)),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -198,6 +266,14 @@ class _Body extends ConsumerWidget {
                   subject: tasting.title,
                 ),
               ),
+              if (isOwner) ...[
+                SizedBox(width: context.w * 0.02),
+                _OverflowMenu(
+                  onEdit: () => context
+                      .push(AppRoutes.tastingEditPath(tasting.id)),
+                  onCancel: () => _confirmDelete(context, ref, tasting),
+                ),
+              ],
             ],
           ),
         ),
@@ -224,6 +300,11 @@ class _Body extends ConsumerWidget {
           ),
         ],
         SizedBox(height: context.l),
+        _Section(
+          label: 'People',
+          child: _AttendeesCard(tasting: tasting),
+        ),
+        SizedBox(height: context.l),
         _RsvpBar(tasting: tasting),
         SizedBox(height: context.l),
         if (tasting.location != null) ...[
@@ -237,25 +318,7 @@ class _Body extends ConsumerWidget {
           ),
           SizedBox(height: context.l),
         ],
-        _Section(
-          label: 'Going',
-          child: _AttendeesStrip(tastingId: tasting.id),
-        ),
-        SizedBox(height: context.l),
         _WinesSection(tasting: tasting, isOwner: isOwner),
-        SizedBox(height: context.xl),
-        if (isOwner)
-          Center(
-            child: TextButton(
-              onPressed: () => _confirmDelete(context, ref, tasting),
-              child: Text('Cancel tasting',
-                  style: TextStyle(
-                    fontSize: context.bodyFont,
-                    fontWeight: FontWeight.w500,
-                    color: cs.error,
-                  )),
-            ),
-          ),
         SizedBox(height: context.xl * 2),
       ],
     );
@@ -303,12 +366,12 @@ class _Section extends StatelessWidget {
       children: [
         Padding(
           padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
-          child: Text(label,
+          child: Text(label.toUpperCase(),
               style: TextStyle(
-                fontSize: context.captionFont,
+                fontSize: context.captionFont * 0.95,
                 fontWeight: FontWeight.w700,
-                color: cs.primary,
-                letterSpacing: 0.3,
+                color: cs.onSurface.withValues(alpha: 0.72),
+                letterSpacing: 1.2,
               )),
         ),
         SizedBox(height: context.s),
@@ -324,6 +387,7 @@ class _RsvpBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final cs = Theme.of(context).colorScheme;
     final attendeesAsync =
         ref.watch(tastingAttendeesProvider(tasting.id));
     final currentUid = ref.watch(currentUserIdProvider);
@@ -340,73 +404,44 @@ class _RsvpBar extends ConsumerWidget {
       padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
       child: Row(
         children: [
-          _RsvpButton(
-            label: 'Going',
-            active: myStatus == RsvpStatus.going,
-            onTap: () => ref
-                .read(tastingsControllerProvider.notifier)
-                .setRsvp(tasting.id, RsvpStatus.going),
-          ),
-          SizedBox(width: context.w * 0.02),
-          _RsvpButton(
-            label: 'Maybe',
-            active: myStatus == RsvpStatus.maybe,
-            onTap: () => ref
-                .read(tastingsControllerProvider.notifier)
-                .setRsvp(tasting.id, RsvpStatus.maybe),
-          ),
-          SizedBox(width: context.w * 0.02),
-          _RsvpButton(
-            label: 'Decline',
-            active: myStatus == RsvpStatus.declined,
-            onTap: () => ref
-                .read(tastingsControllerProvider.notifier)
-                .setRsvp(tasting.id, RsvpStatus.declined),
+          Text('Your response',
+              style: TextStyle(
+                fontSize: context.captionFont,
+                color: cs.onSurfaceVariant,
+                fontWeight: FontWeight.w500,
+                letterSpacing: 0.2,
+              )),
+          const Spacer(),
+          SegmentedButton<RsvpStatus>(
+            showSelectedIcon: false,
+            style: ButtonStyle(
+              visualDensity: VisualDensity.compact,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              textStyle: WidgetStateProperty.all(TextStyle(
+                fontSize: context.captionFont,
+                fontWeight: FontWeight.w600,
+              )),
+            ),
+            segments: const [
+              ButtonSegment(
+                  value: RsvpStatus.going, label: Text('Going')),
+              ButtonSegment(
+                  value: RsvpStatus.maybe, label: Text('Maybe')),
+              ButtonSegment(
+                  value: RsvpStatus.declined, label: Text('No')),
+            ],
+            selected: myStatus == RsvpStatus.noResponse
+                ? const <RsvpStatus>{}
+                : {myStatus},
+            emptySelectionAllowed: true,
+            onSelectionChanged: (s) {
+              if (s.isEmpty) return;
+              ref
+                  .read(tastingsControllerProvider.notifier)
+                  .setRsvp(tasting.id, s.first);
+            },
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _RsvpButton extends StatelessWidget {
-  final String label;
-  final bool active;
-  final VoidCallback onTap;
-
-  const _RsvpButton({
-    required this.label,
-    required this.active,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 150),
-          height: context.h * 0.055,
-          decoration: BoxDecoration(
-            color: active ? cs.primary : cs.surfaceContainer,
-            borderRadius: BorderRadius.circular(context.w * 0.03),
-            border: Border.all(
-              color: active ? cs.primary : cs.outlineVariant,
-              width: 0.5,
-            ),
-          ),
-          alignment: Alignment.center,
-          child: Text(
-            label,
-            style: TextStyle(
-              fontSize: context.captionFont,
-              fontWeight: FontWeight.w600,
-              color: active ? cs.onPrimary : cs.onSurface,
-            ),
-          ),
-        ),
       ),
     );
   }
@@ -508,84 +543,337 @@ class _PlaceCard extends StatelessWidget {
   }
 }
 
-class _AttendeesStrip extends ConsumerWidget {
-  final String tastingId;
-  const _AttendeesStrip({required this.tastingId});
+typedef _AttendeeEntry = ({FriendProfileEntity profile, RsvpStatus status});
+
+Color _rsvpColor(RsvpStatus s, ColorScheme cs) => switch (s) {
+      RsvpStatus.going => const Color(0xFF6DC383),
+      RsvpStatus.maybe => const Color(0xFFE0A860),
+      RsvpStatus.declined => cs.error,
+      RsvpStatus.noResponse => cs.outline,
+    };
+
+int _rsvpOrder(RsvpStatus s) => switch (s) {
+      RsvpStatus.going => 0,
+      RsvpStatus.maybe => 1,
+      RsvpStatus.noResponse => 2,
+      RsvpStatus.declined => 3,
+    };
+
+class _AttendeesCard extends ConsumerWidget {
+  final TastingEntity tasting;
+  const _AttendeesCard({required this.tasting});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
     final attendeesAsync =
-        ref.watch(tastingAttendeesProvider(tastingId));
-    return attendeesAsync.when(
-      data: (all) {
-        final going =
-            all.where((a) => a.status == RsvpStatus.going).toList();
-        if (going.isEmpty) {
-          return Padding(
-            padding:
-                EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
-            child: Text('No one confirmed yet.',
-                style: TextStyle(
-                    fontSize: context.captionFont,
-                    color: cs.onSurfaceVariant)),
-          );
-        }
-        return SizedBox(
-          height: context.w * 0.2,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            padding:
-                EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
-            itemCount: going.length,
-            separatorBuilder: (_, __) => SizedBox(width: context.w * 0.03),
-            itemBuilder: (_, i) {
-              final a = going[i];
-              final name = a.profile?.displayName ??
-                  a.profile?.username ??
-                  '?';
-              return GestureDetector(
-                onTap: a.profile != null
-                    ? () => context.push(
-                        AppRoutes.friendProfilePath(a.profile!.id))
-                    : null,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (a.profile != null)
-                      FriendAvatar(
-                          profile: a.profile!, size: context.w * 0.13)
-                    else
-                      Container(
-                        width: context.w * 0.13,
-                        height: context.w * 0.13,
-                        decoration: BoxDecoration(
-                          color: cs.primaryContainer,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(Icons.person,
-                            color: cs.primary, size: context.w * 0.06),
-                      ),
-                    SizedBox(height: context.xs * 0.5),
-                    SizedBox(
-                      width: context.w * 0.16,
-                      child: Text(name,
-                          textAlign: TextAlign.center,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: context.captionFont * 0.85,
-                            color: cs.onSurfaceVariant,
-                          )),
-                    ),
-                  ],
-                ),
-              );
-            },
+        ref.watch(tastingAttendeesProvider(tasting.id));
+    final membersAsync = ref.watch(groupMembersProvider(tasting.groupId));
+
+    final attendees = attendeesAsync.valueOrNull ?? const [];
+    final members = membersAsync.valueOrNull ?? const [];
+
+    if (members.isEmpty && attendeesAsync.isLoading ||
+        membersAsync.isLoading && members.isEmpty) {
+      return Padding(
+        padding:
+            EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
+        child: SizedBox(
+          height: context.w * 0.11,
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: SizedBox(
+              width: context.w * 0.05,
+              height: context.w * 0.05,
+              child: CircularProgressIndicator(
+                  strokeWidth: 2, color: cs.primary),
+            ),
           ),
-        );
-      },
-      loading: () => const SizedBox.shrink(),
-      error: (_, __) => const SizedBox.shrink(),
+        ),
+      );
+    }
+
+    final statusById = <String, RsvpStatus>{
+      for (final a in attendees)
+        if (a.profile != null) a.profile!.id: a.status,
+    };
+
+    final combined = <_AttendeeEntry>[
+      for (final m in members)
+        (profile: m, status: statusById[m.id] ?? RsvpStatus.noResponse),
+    ]..sort((a, b) => _rsvpOrder(a.status).compareTo(_rsvpOrder(b.status)));
+
+    if (combined.isEmpty) {
+      return Padding(
+        padding:
+            EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
+        child: Text('No one invited yet.',
+            style: TextStyle(
+                fontSize: context.captionFont,
+                color: cs.onSurfaceVariant)),
+      );
+    }
+
+    final going =
+        combined.where((e) => e.status == RsvpStatus.going).length;
+    final maybe =
+        combined.where((e) => e.status == RsvpStatus.maybe).length;
+    final declined =
+        combined.where((e) => e.status == RsvpStatus.declined).length;
+    final pending = combined
+        .where((e) => e.status == RsvpStatus.noResponse)
+        .length;
+
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () => _showAttendeesSheet(context, combined),
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _AvatarCluster(items: combined, maxVisible: 6),
+            SizedBox(height: context.s),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    [
+                      if (going > 0) '$going going',
+                      if (maybe > 0) '$maybe maybe',
+                      if (declined > 0) '$declined declined',
+                      if (pending > 0) '$pending pending',
+                    ].join(' · '),
+                    style: TextStyle(
+                      fontSize: context.captionFont,
+                      color: cs.onSurfaceVariant,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+                Icon(Icons.chevron_right,
+                    size: context.w * 0.045, color: cs.outline),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+void _showAttendeesSheet(
+    BuildContext context, List<_AttendeeEntry> all) {
+  showModalBottomSheet(
+    context: context,
+    backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+    isScrollControlled: true,
+    builder: (_) => _AttendeesSheet(all: all),
+  );
+}
+
+class _AvatarCluster extends StatelessWidget {
+  final List<_AttendeeEntry> items;
+  final int maxVisible;
+  const _AvatarCluster({required this.items, required this.maxVisible});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final avatarSize = context.w * 0.11;
+    final step = avatarSize * 0.72;
+    final showOverflow = items.length > maxVisible;
+    final visibleCount = showOverflow ? maxVisible - 1 : items.length;
+    final overflow = items.length - visibleCount;
+    final slots = visibleCount + (showOverflow ? 1 : 0);
+    final totalWidth = step * (slots - 1) + avatarSize;
+
+    return SizedBox(
+      width: totalWidth,
+      height: avatarSize,
+      child: Stack(
+        children: [
+          for (int i = 0; i < visibleCount; i++)
+            Positioned(
+              left: i * step,
+              child: _AvatarWithStatus(
+                item: items[i],
+                size: avatarSize,
+              ),
+            ),
+          if (showOverflow)
+            Positioned(
+              left: visibleCount * step,
+              child: Container(
+                width: avatarSize,
+                height: avatarSize,
+                padding: const EdgeInsets.all(2),
+                decoration: BoxDecoration(
+                  color: cs.surface,
+                  shape: BoxShape.circle,
+                ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: cs.surfaceContainerHigh,
+                    shape: BoxShape.circle,
+                  ),
+                  alignment: Alignment.center,
+                  child: Text('+$overflow',
+                      style: TextStyle(
+                        fontSize: context.captionFont * 0.9,
+                        fontWeight: FontWeight.w700,
+                        color: cs.onSurface,
+                      )),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AvatarWithStatus extends StatelessWidget {
+  final _AttendeeEntry item;
+  final double size;
+  const _AvatarWithStatus({required this.item, required this.size});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final dotSize = size * 0.32;
+    return SizedBox(
+      width: size,
+      height: size,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Container(
+            width: size,
+            height: size,
+            padding: const EdgeInsets.all(2),
+            decoration: BoxDecoration(
+              color: cs.surface,
+              shape: BoxShape.circle,
+            ),
+            child: ClipOval(
+              child: FriendAvatar(profile: item.profile, size: size - 4),
+            ),
+          ),
+          Positioned(
+            right: 0,
+            bottom: 0,
+            child: Container(
+              width: dotSize,
+              height: dotSize,
+              decoration: BoxDecoration(
+                color: _rsvpColor(item.status, cs),
+                shape: BoxShape.circle,
+                border: Border.all(color: cs.surface, width: 1.5),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AttendeesSheet extends StatelessWidget {
+  final List<_AttendeeEntry> all;
+  const _AttendeesSheet({required this.all});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final groups = <(String, RsvpStatus)>[
+      ('Going', RsvpStatus.going),
+      ('Maybe', RsvpStatus.maybe),
+      ('Declined', RsvpStatus.declined),
+      ('Pending', RsvpStatus.noResponse),
+    ];
+
+    final children = <Widget>[];
+    children.add(Center(
+      child: Container(
+        width: context.w * 0.12,
+        height: 4,
+        margin: EdgeInsets.only(bottom: context.m),
+        decoration: BoxDecoration(
+          color: cs.outlineVariant,
+          borderRadius: BorderRadius.circular(2),
+        ),
+      ),
+    ));
+
+    for (final (label, status) in groups) {
+      final members =
+          all.where((a) => a.status == status).toList();
+      if (members.isEmpty) continue;
+      children.add(Padding(
+        padding: EdgeInsets.only(top: context.s, bottom: context.xs),
+        child: Row(
+          children: [
+            Container(
+              width: context.w * 0.025,
+              height: context.w * 0.025,
+              decoration: BoxDecoration(
+                color: _rsvpColor(status, cs),
+                shape: BoxShape.circle,
+              ),
+            ),
+            SizedBox(width: context.s),
+            Text('$label · ${members.length}',
+                style: TextStyle(
+                  fontSize: context.captionFont,
+                  fontWeight: FontWeight.w700,
+                  color: cs.onSurface.withValues(alpha: 0.72),
+                  letterSpacing: 1.2,
+                )),
+          ],
+        ),
+      ));
+      for (final m in members) {
+        children.add(InkWell(
+          onTap: () {
+            Navigator.pop(context);
+            context.push(AppRoutes.friendProfilePath(m.profile.id));
+          },
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: context.xs),
+            child: Row(
+              children: [
+                FriendAvatar(
+                    profile: m.profile, size: context.w * 0.1),
+                SizedBox(width: context.m),
+                Expanded(
+                  child: Text(
+                    m.profile.displayName ??
+                        m.profile.username ??
+                        'Unknown',
+                    style: TextStyle(
+                      fontSize: context.bodyFont,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ));
+      }
+    }
+
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+            horizontal: context.paddingH * 1.3, vertical: context.m),
+        child: ListView(
+          shrinkWrap: true,
+          children: children,
+        ),
+      ),
     );
   }
 }
@@ -608,12 +896,12 @@ class _WinesSection extends ConsumerWidget {
           child: Row(
             children: [
               Expanded(
-                child: Text('Wines',
+                child: Text('WINES',
                     style: TextStyle(
-                      fontSize: context.captionFont,
+                      fontSize: context.captionFont * 0.95,
                       fontWeight: FontWeight.w700,
-                      color: cs.primary,
-                      letterSpacing: 0.3,
+                      color: cs.onSurface.withValues(alpha: 0.72),
+                      letterSpacing: 1.2,
                     )),
               ),
               if (isOwner)

@@ -531,7 +531,7 @@ class _TastingAttendeesProviderElement
 }
 
 String _$tastingsControllerHash() =>
-    r'87b040839b2d50c3dba3b4230dae1214a24fccb2';
+    r'657358d7784c3577ef4cc7f874c5d5a8025364a6';
 
 /// See also [TastingsController].
 @ProviderFor(TastingsController)

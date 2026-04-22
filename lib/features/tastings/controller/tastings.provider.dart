@@ -122,4 +122,30 @@ class TastingsController extends _$TastingsController {
     await api.deleteTasting(tastingId);
     if (groupId != null) ref.invalidate(groupTastingsProvider(groupId));
   }
+
+  Future<TastingEntity?> updateTasting({
+    required String tastingId,
+    required String groupId,
+    required String title,
+    String? description,
+    String? location,
+    double? latitude,
+    double? longitude,
+    required DateTime scheduledAt,
+  }) async {
+    final api = ref.read(tastingsApiProvider);
+    if (api == null) return null;
+    final model = await api.update(
+      id: tastingId,
+      title: title,
+      description: description,
+      location: location,
+      latitude: latitude,
+      longitude: longitude,
+      scheduledAt: scheduledAt,
+    );
+    ref.invalidate(tastingDetailProvider(tastingId));
+    ref.invalidate(groupTastingsProvider(groupId));
+    return model.toEntity();
+  }
 }

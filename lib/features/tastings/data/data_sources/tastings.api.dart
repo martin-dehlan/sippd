@@ -160,4 +160,29 @@ class TastingsApi {
   Future<void> deleteTasting(String id) async {
     await _client.from('group_tastings').delete().eq('id', id);
   }
+
+  Future<TastingModel> update({
+    required String id,
+    required String title,
+    String? description,
+    String? location,
+    double? latitude,
+    double? longitude,
+    required DateTime scheduledAt,
+  }) async {
+    final updated = await _client
+        .from('group_tastings')
+        .update({
+          'title': title,
+          'description': description,
+          'location': location,
+          'latitude': latitude,
+          'longitude': longitude,
+          'scheduled_at': scheduledAt.toUtc().toIso8601String(),
+        })
+        .eq('id', id)
+        .select()
+        .single();
+    return TastingModel.fromJson(updated);
+  }
 }
