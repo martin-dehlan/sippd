@@ -16,6 +16,7 @@ class WineListScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final winesAsync = ref.watch(wineControllerProvider);
     final typeFilter = ref.watch(wineTypeFilterProvider);
+    final sortMode = ref.watch(wineSortProvider);
     final cs = Theme.of(context).colorScheme;
 
     return Scaffold(
@@ -57,6 +58,31 @@ class WineListScreen extends ConsumerWidget {
                         ],
                       ),
                     ),
+                    Tooltip(
+                      message: switch (sortMode) {
+                        WineSortMode.rating => 'Sort: rating',
+                        WineSortMode.recent => 'Sort: recent',
+                        WineSortMode.name => 'Sort: name',
+                      },
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () =>
+                            ref.read(wineSortProvider.notifier).toggle(),
+                        child: Padding(
+                          padding: EdgeInsets.all(context.w * 0.02),
+                          child: Icon(
+                            switch (sortMode) {
+                              WineSortMode.rating => Icons.sort_rounded,
+                              WineSortMode.recent => Icons.schedule_rounded,
+                              WineSortMode.name => Icons.sort_by_alpha_rounded,
+                            },
+                            size: context.w * 0.055,
+                            color: cs.onSurfaceVariant,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: context.w * 0.01),
                     _HeaderIconButton(
                       icon: Icons.add,
                       onTap: () => context.push(AppRoutes.wineAdd),
@@ -94,8 +120,20 @@ class WineListScreen extends ConsumerWidget {
                   );
                 }
 
-                final sorted = List<WineEntity>.from(filtered)
+                final byRating = List<WineEntity>.from(filtered)
                   ..sort((a, b) => b.rating.compareTo(a.rating));
+                final rankById = {
+                  for (var i = 0; i < byRating.length; i++)
+                    byRating[i].id: i + 1,
+                };
+                final sorted = switch (sortMode) {
+                  WineSortMode.rating => byRating,
+                  WineSortMode.recent => List<WineEntity>.from(filtered)
+                    ..sort((a, b) => b.createdAt.compareTo(a.createdAt)),
+                  WineSortMode.name => List<WineEntity>.from(filtered)
+                    ..sort((a, b) =>
+                        a.name.toLowerCase().compareTo(b.name.toLowerCase())),
+                };
 
                 return SliverPadding(
                   padding:
@@ -108,7 +146,8 @@ class WineListScreen extends ConsumerWidget {
                       index: index,
                       child: WineCardWidget(
                         wine: sorted[index],
-                        rank: index + 1,
+                        rank: rankById[sorted[index].id] ?? index + 1,
+                        compact: true,
                         onTap: () => context.push(
                             AppRoutes.wineDetailPath(sorted[index].id)),
                       ),

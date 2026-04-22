@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../../../../common/utils/responsive.dart';
 import '../../domain/entities/wine.entity.dart';
 
@@ -6,111 +7,82 @@ class WineCardWidget extends StatelessWidget {
   final WineEntity wine;
   final int rank;
   final VoidCallback? onTap;
+  final bool compact;
 
   const WineCardWidget({
     super.key,
     required this.wine,
     required this.rank,
     this.onTap,
+    this.compact = false,
   });
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
 
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: cs.surfaceContainer,
-          borderRadius: BorderRadius.circular(context.w * 0.04),
-          border: Border.all(color: cs.outlineVariant, width: 0.5),
-        ),
-        child: Row(
-          children: [
-            // Left: Image area with rank
-            WineCardImage(wine: wine, rank: rank),
-            // Right: Info
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: context.w * 0.035,
-                  vertical: context.m,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      wine.name,
-                      style: TextStyle(
-                        fontSize: context.bodyFont,
-                        fontWeight: FontWeight.w700,
-                        height: 1.2,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
+    return Material(
+      color: cs.surfaceContainer,
+      borderRadius: BorderRadius.circular(context.w * 0.04),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(context.w * 0.04),
+        child: Ink(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(context.w * 0.04),
+            border: Border.all(color: cs.outlineVariant, width: 0.5),
+          ),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: compact ? context.h * 0.1 : context.h * 0.13,
+            ),
+            child: Row(
+              children: [
+                WineCardImage(wine: wine, rank: rank, compact: compact),
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: context.w * 0.035,
+                      vertical: compact ? context.s : context.m,
                     ),
-                    SizedBox(height: context.xs),
-                    Row(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        WineTypeDot(type: wine.type),
-                        SizedBox(width: context.w * 0.015),
-                        Text(
-                          _typeLabel(wine.type),
-                          style: TextStyle(
-                            fontSize: context.captionFont * 0.9,
-                            color: cs.onSurfaceVariant,
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                wine.name,
+                                style: TextStyle(
+                                  fontSize: context.bodyFont,
+                                  fontWeight: FontWeight.w700,
+                                  height: 1.2,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              if (!compact) ...[
+                                SizedBox(height: context.xs),
+                                WineTypeBadge(type: wine.type),
+                              ],
+                              if (_metaParts(wine).isNotEmpty) ...[
+                                SizedBox(height: context.xs),
+                                Text(
+                                  _metaParts(wine).join(' · '),
+                                  style: TextStyle(
+                                    fontSize: context.captionFont * 0.9,
+                                    color: cs.onSurfaceVariant,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ],
                           ),
                         ),
-                        if (wine.country != null) ...[
-                          Text(' · ',
-                              style: TextStyle(
-                                  color: cs.outline,
-                                  fontSize: context.captionFont)),
-                          Flexible(
-                            child: Text(
-                              wine.country!,
-                              style: TextStyle(
-                                fontSize: context.captionFont * 0.9,
-                                color: cs.onSurfaceVariant,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                    SizedBox(height: context.s),
-                    Row(
-                      children: [
-                        if (wine.price != null)
-                          Text(
-                            '€${wine.price!.toStringAsFixed(0)}',
-                            style: TextStyle(
-                              fontSize: context.captionFont,
-                              fontWeight: FontWeight.w600,
-                              color: cs.onSurfaceVariant,
-                            ),
-                          ),
-                        if (wine.grape != null) ...[
-                          if (wine.price != null)
-                            Text(' · ',
-                                style: TextStyle(
-                                    color: cs.outline,
-                                    fontSize: context.captionFont)),
-                          Flexible(
-                            child: Text(
-                              wine.grape!,
-                              style: TextStyle(
-                                fontSize: context.captionFont * 0.9,
-                                color: cs.outline,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                        const Spacer(),
-                        // Gold rating badge
+                        SizedBox(width: context.w * 0.02),
                         Container(
                           padding: EdgeInsets.symmetric(
                             horizontal: context.w * 0.025,
@@ -119,21 +91,21 @@ class WineCardWidget extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: cs.primaryContainer,
                             borderRadius:
-                                BorderRadius.circular(context.w * 0.015),
+                                BorderRadius.circular(context.w * 0.025),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(Icons.star_rounded,
-                                  size: context.w * 0.035,
-                                  color: cs.primary),
-                              SizedBox(width: context.w * 0.005),
+                                  size: context.w * 0.04,
+                                  color: const Color(0xFFD4A84B)),
+                              SizedBox(width: context.w * 0.008),
                               Text(
                                 wine.rating.toStringAsFixed(1),
                                 style: TextStyle(
-                                  fontSize: context.captionFont * 0.9,
-                                  fontWeight: FontWeight.bold,
-                                  color: cs.primary,
+                                  fontSize: context.captionFont * 0.95,
+                                  fontWeight: FontWeight.w800,
+                                  color: cs.onPrimaryContainer,
                                 ),
                               ),
                             ],
@@ -141,99 +113,103 @@ class WineCardWidget extends StatelessWidget {
                         ),
                       ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
   }
 
-  String _typeLabel(WineType type) => switch (type) {
-        WineType.red => 'Red',
-        WineType.white => 'White',
-        WineType.rose => 'Rosé',
-        WineType.sparkling => 'Sparkling',
-      };
+  List<String> _metaParts(WineEntity wine) {
+    final parts = <String>[DateFormat('MMM yyyy').format(wine.createdAt)];
+    if (wine.price != null) parts.add('€${wine.price!.toStringAsFixed(0)}');
+    if (wine.country != null) parts.add(wine.country!);
+    return parts;
+  }
 }
 
 class WineCardImage extends StatelessWidget {
   final WineEntity wine;
   final int rank;
+  final bool compact;
 
-  const WineCardImage({super.key, required this.wine, required this.rank});
+  const WineCardImage({
+    super.key,
+    required this.wine,
+    required this.rank,
+    this.compact = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final typeColor = switch (wine.type) {
-      WineType.red => const Color(0xFF8B2252),
-      WineType.white => const Color(0xFF9E8B5E),
-      WineType.rose => const Color(0xFFB5658A),
-      WineType.sparkling => const Color(0xFFB8923B),
-    };
-
-    return Container(
-      width: context.w * 0.22,
-      height: context.w * 0.22,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(context.w * 0.04),
-          bottomLeft: Radius.circular(context.w * 0.04),
-        ),
-        gradient: RadialGradient(
-          center: Alignment.center,
-          radius: 0.8,
-          colors: [
-            typeColor.withValues(alpha: 0.2),
-            cs.surfaceContainer,
-          ],
-        ),
-      ),
-      child: Stack(
-        children: [
-          Center(
-            child: wine.imageUrl != null
-                ? ClipRRect(
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(context.w * 0.04),
-                      bottomLeft: Radius.circular(context.w * 0.04),
-                    ),
-                    child: Image.network(wine.imageUrl!,
-                        fit: BoxFit.cover,
-                        width: double.infinity,
-                        height: double.infinity),
-                  )
-                : Icon(Icons.wine_bar,
-                    size: context.w * 0.09,
-                    color: typeColor.withValues(alpha: 0.5)),
-          ),
-          // Rank badge
-          Positioned(
-            top: context.xs,
-            left: context.xs,
-            child: Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: context.w * 0.018,
-                vertical: context.xs * 0.4,
+    final hasImage = wine.imageUrl != null;
+    final size = context.w * (compact ? 0.15 : 0.2);
+    final inset = context.w * 0.025;
+    final radius = context.w * 0.025;
+    return Padding(
+      padding: EdgeInsets.all(inset),
+      child: SizedBox(
+        width: size,
+        height: size,
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(radius),
+                  color: hasImage ? null : cs.surface,
+                  border: hasImage
+                      ? null
+                      : Border.all(color: cs.outlineVariant, width: 0.5),
+                ),
+                child: hasImage
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(radius),
+                        child: Image.network(
+                          wine.imageUrl!,
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                          height: double.infinity,
+                        ),
+                      )
+                    : Center(
+                        child: Icon(
+                          Icons.wine_bar_outlined,
+                          size: size * 0.4,
+                          color: cs.onSurface.withValues(alpha: 0.35),
+                        ),
+                      ),
               ),
-              decoration: BoxDecoration(
-                color: Colors.black.withValues(alpha: 0.6),
-                borderRadius: BorderRadius.circular(context.w * 0.01),
-              ),
-              child: Text(
-                '#$rank',
-                style: TextStyle(
-                  fontSize: context.captionFont * 0.75,
-                  fontWeight: FontWeight.bold,
-                  color: cs.primary,
+            ),
+            Positioned(
+              top: context.xs * 0.6,
+              left: context.xs * 0.6,
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: context.w * 0.022,
+                  vertical: context.xs * 0.5,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.85),
+                  borderRadius: BorderRadius.circular(context.w * 0.02),
+                ),
+                child: Text(
+                  '#$rank',
+                  style: TextStyle(
+                    fontSize: context.captionFont * 0.8,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
+                    letterSpacing: -0.2,
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

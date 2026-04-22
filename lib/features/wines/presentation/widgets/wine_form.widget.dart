@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:latlong2/latlong.dart';
@@ -422,10 +423,14 @@ class WineFormNameField extends StatelessWidget {
           focusNode: focusNode,
           cursorColor: cs.primary,
           cursorWidth: 1.5,
-          textCapitalization: TextCapitalization.characters,
+          textCapitalization: TextCapitalization.words,
           style: titleStyle,
+          maxLength: 60,
+          maxLines: 2,
+          minLines: 1,
+          inputFormatters: [LengthLimitingTextInputFormatter(60)],
           decoration: InputDecoration(
-            hintText: 'WINE NAME',
+            hintText: 'Wine name',
             hintStyle: titleStyle.copyWith(color: hintColor),
             filled: false,
             fillColor: Colors.transparent,

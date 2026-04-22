@@ -105,7 +105,7 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
             children: [
               SizedBox(height: context.xl * 1.5),
               Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Expanded(child: _NameTitle(name: widget.wine.name)),
                   Padding(
@@ -114,13 +114,6 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         _IconCircleButton(
-                          icon: Icons.edit_outlined,
-                          onTap: () => context.push(
-                            AppRoutes.wineEditPath(widget.wine.id),
-                          ),
-                        ),
-                        SizedBox(width: context.w * 0.02),
-                        _IconCircleButton(
                           icon: Icons.ios_share,
                           onTap: () => showShareWineSheet(
                             context: context,
@@ -128,12 +121,19 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
                             wineId: widget.wine.id,
                           ),
                         ),
+                        SizedBox(width: context.w * 0.02),
+                        _WineOverflowMenu(
+                          onEdit: () => context.push(
+                            AppRoutes.wineEditPath(widget.wine.id),
+                          ),
+                          onDelete: () => _confirmDelete(context),
+                        ),
                       ],
                     ),
                   ),
                 ],
               ),
-              SizedBox(height: context.s),
+              SizedBox(height: context.m),
               _TypeSubtitle(type: widget.wine.type),
               SizedBox(height: context.xl),
               Padding(
@@ -165,20 +165,6 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
                 ),
               ),
               _MemoriesSection(wineId: widget.wine.id),
-              SizedBox(height: context.xl),
-              Center(
-                child: TextButton(
-                  onPressed: () => _confirmDelete(context),
-                  child: Text(
-                    'Delete wine',
-                    style: TextStyle(
-                      fontSize: context.bodyFont,
-                      fontWeight: FontWeight.w500,
-                      color: Theme.of(context).colorScheme.error,
-                    ),
-                  ),
-                ),
-              ),
               SizedBox(height: context.xxl * 1.5),
             ],
           ),
@@ -270,20 +256,86 @@ class _NameTitle extends StatelessWidget {
         right: context.paddingH * 1.3,
       ),
       child: Text(
-        name.toUpperCase(),
+        name,
         textAlign: TextAlign.left,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
         style: GoogleFonts.playfairDisplay(
           fontSize: context.titleFont * 1.3,
           fontWeight: FontWeight.w800,
           letterSpacing: -0.5,
           height: 1.05,
         ),
-        maxLines: 2,
-        overflow: TextOverflow.ellipsis,
       ),
     );
   }
 }
+
+class _WineOverflowMenu extends StatelessWidget {
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
+
+  const _WineOverflowMenu({required this.onEdit, required this.onDelete});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final size = context.w * 0.1;
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: cs.surfaceContainer,
+        shape: BoxShape.circle,
+        border: Border.all(color: cs.outlineVariant, width: 0.5),
+      ),
+      child: PopupMenuButton<_WineMenuAction>(
+        icon: Icon(Icons.more_vert,
+            size: context.w * 0.05, color: cs.onSurface),
+        tooltip: 'Mehr',
+        padding: EdgeInsets.zero,
+        color: cs.surfaceContainerHigh,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(context.w * 0.03),
+        ),
+        onSelected: (value) {
+          switch (value) {
+            case _WineMenuAction.edit:
+              onEdit();
+            case _WineMenuAction.delete:
+              onDelete();
+          }
+        },
+        itemBuilder: (ctx) => [
+          PopupMenuItem(
+            value: _WineMenuAction.edit,
+            child: Row(
+              children: [
+                Icon(Icons.edit_outlined,
+                    size: context.w * 0.045, color: cs.onSurface),
+                SizedBox(width: context.s),
+                const Text('Edit wine'),
+              ],
+            ),
+          ),
+          PopupMenuItem(
+            value: _WineMenuAction.delete,
+            child: Row(
+              children: [
+                Icon(Icons.delete_outline,
+                    size: context.w * 0.045, color: cs.error),
+                SizedBox(width: context.s),
+                Text('Delete wine', style: TextStyle(color: cs.error)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+enum _WineMenuAction { edit, delete }
 
 class _WineImage extends StatelessWidget {
   final WineEntity wine;
@@ -320,7 +372,12 @@ class _WineImage extends StatelessWidget {
           ),
         ),
         wine.imageUrl != null
-            ? Image.network(wine.imageUrl!, fit: BoxFit.contain)
+            ? ClipRRect(
+                borderRadius: BorderRadius.circular(context.w * 0.05),
+                child: SizedBox.expand(
+                  child: Image.network(wine.imageUrl!, fit: BoxFit.cover),
+                ),
+              )
             : Icon(
                 Icons.wine_bar,
                 size: context.w * 0.25,

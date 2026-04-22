@@ -140,3 +140,32 @@ class WineTypeFilter extends _$WineTypeFilter {
     state = type;
   }
 }
+
+// ========================================
+// SORT STATE
+// ========================================
+
+enum WineSortMode { rating, recent, name }
+
+const _wineSortModeKey = 'wine_sort_mode';
+
+@riverpod
+class WineSort extends _$WineSort {
+  @override
+  WineSortMode build() {
+    final prefs = ref.watch(sharedPreferencesProvider);
+    final stored = prefs.getString(_wineSortModeKey);
+    return WineSortMode.values.firstWhere(
+      (m) => m.name == stored,
+      orElse: () => WineSortMode.rating,
+    );
+  }
+
+  Future<void> toggle() async {
+    final next = WineSortMode
+        .values[(state.index + 1) % WineSortMode.values.length];
+    final prefs = ref.read(sharedPreferencesProvider);
+    await prefs.setString(_wineSortModeKey, next.name);
+    state = next;
+  }
+}

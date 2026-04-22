@@ -91,12 +91,10 @@ class _FilterChip extends StatelessWidget {
           vertical: context.xs,
         ),
         decoration: BoxDecoration(
-          color: isSelected
-              ? cs.primary.withValues(alpha: 0.15)
-              : cs.surfaceContainer,
+          color: isSelected ? cs.primaryContainer : cs.surfaceContainer,
           border: Border.all(
-            color: isSelected ? cs.primary : cs.outlineVariant,
-            width: isSelected ? 1.0 : 0.5,
+            color: isSelected ? Colors.transparent : cs.outlineVariant,
+            width: isSelected ? 0 : 0.5,
           ),
           borderRadius: BorderRadius.circular(context.w * 0.05),
         ),
@@ -117,8 +115,9 @@ class _FilterChip extends StatelessWidget {
               label,
               style: TextStyle(
                 fontSize: context.captionFont,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                color: isSelected ? cs.primary : cs.onSurfaceVariant,
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
+                color:
+                    isSelected ? cs.onPrimaryContainer : cs.onSurfaceVariant,
               ),
             ),
           ],
