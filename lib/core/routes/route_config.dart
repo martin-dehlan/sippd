@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../common/widgets/splash.screen.dart';
 import '../../features/auth/controller/auth.provider.dart';
 import '../../features/auth/presentation/modules/login/login.screen.dart';
 import '../../features/auth/presentation/modules/profile/profile.screen.dart';
@@ -16,9 +18,7 @@ import '../../features/groups/presentation/modules/group_detail/group_detail.scr
 import '../../features/groups/presentation/modules/group_list/group_list.screen.dart';
 import '../../features/tastings/presentation/modules/tasting_create/tasting_create.screen.dart';
 import '../../features/tastings/presentation/modules/tasting_detail/tasting_detail.screen.dart';
-import '../../features/scanner/presentation/modules/scan/scan.screen.dart';
-import '../../features/scanner/presentation/modules/scan/scan_label.screen.dart';
-import '../../features/scanner/presentation/modules/scan_result/scan_result.screen.dart';
+import '../../features/tastings/presentation/modules/tasting_edit/tasting_edit.screen.dart';
 import '../../features/wines/presentation/modules/wine_list/wine_list.screen.dart';
 import '../../features/wines/presentation/modules/wine_add/wine_add.screen.dart';
 import '../../features/wines/presentation/modules/wine_detail/wine_detail.screen.dart';
@@ -30,14 +30,28 @@ part 'route_config.g.dart';
 @riverpod
 GoRouter goRouter(GoRouterRef ref) {
   final router = GoRouter(
-    initialLocation: AppRoutes.onboarding,
+    initialLocation: AppRoutes.splash,
     restorationScopeId: 'sippd_router',
     debugLogDiagnostics: true,
     redirect: (context, state) {
+      // Defensive: if Flutter ever forwards an auth-callback URI into the
+      // router, bounce to a sane default. Supabase SDK handles the code
+      // exchange itself via its auth listener.
+      if (state.uri.scheme == 'io.sippd' ||
+          state.uri.host == 'login-callback' ||
+          state.uri.path.contains('login-callback')) {
+        return AppRoutes.splash;
+      }
       final loc = state.matchedLocation;
       final authed = ref.read(isAuthenticatedProvider);
       final seen = ref.read(onboardingSeenProvider);
       final guest = ref.read(isGuestProvider);
+      final profileAsync = ref.read(currentProfileProvider);
+
+      // Gate 0: authed but profile not yet emitted → keep splash.
+      if (authed && !profileAsync.hasValue) {
+        return loc == AppRoutes.splash ? null : AppRoutes.splash;
+      }
 
       // Gate 1: first-run onboarding.
       if (!seen && !authed) {
@@ -46,8 +60,12 @@ GoRouter goRouter(GoRouterRef ref) {
 
       // Gate 2: authed → existing username flow.
       if (authed) {
-        final profile = ref.read(currentProfileProvider).valueOrNull;
-        if (profile == null) return null;
+        final profile = profileAsync.valueOrNull;
+        if (profile == null) {
+          return loc == AppRoutes.chooseUsername
+              ? null
+              : AppRoutes.chooseUsername;
+        }
         final needsUsername =
             profile.username == null || profile.username!.isEmpty;
         if (needsUsername && loc != AppRoutes.chooseUsername) {
@@ -56,15 +74,17 @@ GoRouter goRouter(GoRouterRef ref) {
         if (!needsUsername &&
             (loc == AppRoutes.chooseUsername ||
              loc == AppRoutes.login ||
-             loc == AppRoutes.onboarding)) {
+             loc == AppRoutes.onboarding ||
+             loc == AppRoutes.splash)) {
           return AppRoutes.wines;
         }
         return null;
       }
 
       // Gate 3: not authed, onboarding done.
-      // Guest: allowed on wines + scan. Cloud features bounce to login.
+      // Guest: allowed on wines. Cloud features bounce to login.
       if (guest) {
+        if (loc == AppRoutes.splash) return AppRoutes.wines;
         const cloudPrefixes = [
           AppRoutes.groups,
           AppRoutes.friends,
@@ -76,13 +96,20 @@ GoRouter goRouter(GoRouterRef ref) {
       }
 
       // Gate 4: not authed, not guest → send to login unless already there.
-      if (loc != AppRoutes.login && loc != AppRoutes.onboarding) {
+      if (loc != AppRoutes.login &&
+          loc != AppRoutes.onboarding &&
+          loc != AppRoutes.splash) {
         return AppRoutes.login;
       }
+      if (loc == AppRoutes.splash) return AppRoutes.login;
       return null;
     },
     routes: [
       // Auth
+      GoRoute(
+        path: AppRoutes.splash,
+        builder: (context, state) => const SplashScreen(),
+      ),
       GoRoute(
         path: AppRoutes.onboarding,
         builder: (context, state) => const OnboardingScreen(),
@@ -96,21 +123,34 @@ GoRouter goRouter(GoRouterRef ref) {
         builder: (context, state) => const ChooseUsernameScreen(),
       ),
 
-      // Main shell
-      ShellRoute(
-        builder: (context, state, child) => MainShell(child: child),
-        routes: [
-          GoRoute(
-            path: AppRoutes.wines,
-            builder: (context, state) => const WineListScreen(),
+      // Main shell — StatefulShellRoute preserves per-tab nav stack + scroll
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) =>
+            MainShell(navigationShell: navigationShell),
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.wines,
+                builder: (context, state) => const WineListScreen(),
+              ),
+            ],
           ),
-          GoRoute(
-            path: AppRoutes.groups,
-            builder: (context, state) => const GroupListScreen(),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.groups,
+                builder: (context, state) => const GroupListScreen(),
+              ),
+            ],
           ),
-          GoRoute(
-            path: AppRoutes.profile,
-            builder: (context, state) => const ProfileScreen(),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.profile,
+                builder: (context, state) => const ProfileScreen(),
+              ),
+            ],
           ),
         ],
       ),
@@ -156,6 +196,13 @@ GoRouter goRouter(GoRouterRef ref) {
             TastingDetailScreen(tastingId: state.pathParameters['id']!),
       ),
 
+      // Tasting edit
+      GoRoute(
+        path: AppRoutes.tastingEdit,
+        builder: (context, state) =>
+            TastingEditScreen(tastingId: state.pathParameters['id']!),
+      ),
+
       // Profile edit
       GoRoute(
         path: AppRoutes.profileEdit,
@@ -172,20 +219,6 @@ GoRouter goRouter(GoRouterRef ref) {
         builder: (context, state) =>
             FriendProfileScreen(friendId: state.pathParameters['id']!),
       ),
-
-      // Scanner routes
-      GoRoute(
-        path: AppRoutes.scan,
-        builder: (context, state) => const ScanScreen(),
-      ),
-      GoRoute(
-        path: AppRoutes.scanResult,
-        builder: (context, state) => const ScanResultScreen(),
-      ),
-      GoRoute(
-        path: AppRoutes.scanLabel,
-        builder: (context, state) => const ScanLabelScreen(),
-      ),
     ],
     errorBuilder: (context, state) => Scaffold(
       body: Center(child: Text('Page not found: ${state.uri}')),
@@ -193,47 +226,110 @@ GoRouter goRouter(GoRouterRef ref) {
   );
 
   ref.listen(authControllerProvider, (_, _) => router.refresh());
-  ref.listen(currentProfileProvider, (_, _) => router.refresh());
   ref.listen(onboardingControllerProvider, (_, _) => router.refresh());
+  // Refresh on:
+  //  - profile transitioning from loading → loaded (so splash can leave)
+  //  - username-presence flipping (gate-relevant)
+  // Avoid refresh on every displayName/avatar edit — causes Navigator
+  // duplicate page key assertions during mid-pop edits.
+  ref.listen(currentProfileProvider, (prev, next) {
+    final wasLoading = prev == null || !prev.hasValue;
+    final nowLoaded = next.hasValue;
+    if (wasLoading && nowLoaded) {
+      router.refresh();
+      return;
+    }
+    final prevHas =
+        (prev?.valueOrNull?.username ?? '').isNotEmpty;
+    final nextHas =
+        (next.valueOrNull?.username ?? '').isNotEmpty;
+    if (prevHas != nextHas) router.refresh();
+  });
 
   return router;
 }
 
 class MainShell extends StatelessWidget {
-  final Widget child;
-  const MainShell({super.key, required this.child});
+  final StatefulNavigationShell navigationShell;
+  const MainShell({super.key, required this.navigationShell});
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final w = MediaQuery.of(context).size.width;
+    final h = MediaQuery.of(context).size.height;
+
     return Scaffold(
-      body: child,
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _calculateIndex(context),
-        onDestinationSelected: (index) => _onTap(index, context),
-        destinations: const [
-          NavigationDestination(icon: Icon(Icons.wine_bar), label: 'Wines'),
-          NavigationDestination(icon: Icon(Icons.group), label: 'Groups'),
-          NavigationDestination(icon: Icon(Icons.person), label: 'Profile'),
-        ],
+      extendBody: true,
+      body: navigationShell,
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(
+            w * 0.05,
+            0,
+            w * 0.05,
+            h * 0.012,
+          ),
+          child: Container(
+            clipBehavior: Clip.antiAlias,
+            decoration: BoxDecoration(
+              color: cs.surfaceContainer,
+              borderRadius: BorderRadius.circular(w * 0.08),
+              border: Border.all(color: cs.outlineVariant, width: 0.5),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.28),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: w * 0.02,
+                vertical: h * 0.01,
+              ),
+              child: GNav(
+                haptic: true,
+                curve: Curves.easeOutQuart,
+                duration: const Duration(milliseconds: 320),
+                gap: 8,
+                color: cs.outline,
+                activeColor: cs.secondary,
+                iconSize: w * 0.058,
+                tabBorderRadius: 100,
+                tabBackgroundColor: cs.primary.withValues(alpha: 0.22),
+                padding: EdgeInsets.symmetric(
+                  horizontal: w * 0.045,
+                  vertical: h * 0.013,
+                ),
+                textStyle: TextStyle(
+                  fontSize: w * 0.035,
+                  fontWeight: FontWeight.w600,
+                  color: cs.secondary,
+                  letterSpacing: 0.2,
+                ),
+                selectedIndex: navigationShell.currentIndex,
+                onTabChange: _onTap,
+                tabs: const [
+                  GButton(icon: Icons.wine_bar, text: 'Wines'),
+                  GButton(icon: Icons.groups, text: 'Groups'),
+                  GButton(icon: Icons.person, text: 'Profile'),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
 
-  int _calculateIndex(BuildContext context) {
-    final location = GoRouterState.of(context).uri.toString();
-    if (location.startsWith('/groups')) return 1;
-    if (location.startsWith('/profile')) return 2;
-    return 0;
-  }
-
-  void _onTap(int index, BuildContext context) {
-    switch (index) {
-      case 0:
-        context.go(AppRoutes.wines);
-      case 1:
-        context.go(AppRoutes.groups);
-      case 2:
-        context.go(AppRoutes.profile);
-    }
+  void _onTap(int index) {
+    // initialLocation: true → re-tap of current tab pops to branch root
+    navigationShell.goBranch(
+      index,
+      initialLocation: index == navigationShell.currentIndex,
+    );
   }
 }

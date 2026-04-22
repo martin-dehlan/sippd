@@ -46,23 +46,6 @@ class AppTheme {
         foregroundColor: _textPrimary,
         systemOverlayStyle: SystemUiOverlayStyle.light,
       ),
-      navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: _darkSurface,
-        indicatorColor: _nude.withValues(alpha: 0.2),
-        iconTheme: WidgetStateProperty.resolveWith((states) {
-          if (states.contains(WidgetState.selected)) {
-            return IconThemeData(color: _nude, size: 24);
-          }
-          return IconThemeData(color: _textTertiary, size: 24);
-        }),
-        labelTextStyle: WidgetStateProperty.resolveWith((states) {
-          if (states.contains(WidgetState.selected)) {
-            return TextStyle(
-                color: _nude, fontSize: 12, fontWeight: FontWeight.w600);
-          }
-          return TextStyle(color: _textTertiary, fontSize: 12);
-        }),
-      ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           elevation: 0,

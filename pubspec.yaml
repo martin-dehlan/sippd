@@ -13,6 +13,7 @@ dependencies:
   # UI
   cupertino_icons: ^1.0.8
   google_fonts: ^6.2.1
+  google_nav_bar: ^5.0.6
 
   # State Management
   flutter_riverpod: ^2.6.1
@@ -44,9 +45,6 @@ dependencies:
   # Image
   image_picker: ^1.1.2
   cached_network_image: ^3.4.1
-
-  # Barcode Scanner
-  mobile_scanner: ^6.0.2
 
   # Location / Maps
   flutter_map: ^8.0.0

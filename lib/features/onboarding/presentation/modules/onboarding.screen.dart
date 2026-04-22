@@ -144,9 +144,13 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 ),
               ),
             ),
-            if (isLast) ...[
-              SizedBox(height: context.s),
-              TextButton(
+            SizedBox(height: context.s),
+            Visibility(
+              visible: isLast,
+              maintainSize: true,
+              maintainAnimation: true,
+              maintainState: true,
+              child: TextButton(
                 onPressed: _skipAsGuest,
                 child: Text(
                   'Skip for now — try without signing in',
@@ -156,8 +160,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   ),
                 ),
               ),
-            ] else
-              SizedBox(height: context.xl),
+            ),
             SizedBox(height: context.m),
           ],
         ),

@@ -3,6 +3,7 @@ class AppRoutes {
   static const String home = '/';
 
   // Auth
+  static const String splash = '/splash';
   static const String login = '/login';
   static const String onboarding = '/onboarding';
   static const String chooseUsername = '/onboarding/username';
@@ -20,11 +21,6 @@ class AppRoutes {
   static String wineDetailPath(String id) => '/wines/$id';
   static String wineEditPath(String id) => '/wines/$id/edit';
 
-  // Scanner
-  static const String scan = '/scan';
-  static const String scanResult = '/scan/result';
-  static const String scanLabel = '/scan/label';
-
   // Groups
   static const String groupDetail = '/groups/:id';
   static String groupDetailPath(String id) => '/groups/$id';
@@ -40,4 +36,6 @@ class AppRoutes {
       '/groups/$groupId/tastings/new';
   static const String tastingDetail = '/tastings/:id';
   static String tastingDetailPath(String id) => '/tastings/$id';
+  static const String tastingEdit = '/tastings/:id/edit';
+  static String tastingEditPath(String id) => '/tastings/$id/edit';
 }
