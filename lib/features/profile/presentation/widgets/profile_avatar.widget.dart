@@ -4,25 +4,39 @@ class ProfileAvatar extends StatelessWidget {
   final String? avatarUrl;
   final String fallbackText;
   final double size;
+  final bool showEditBadge;
+  final bool showRing;
+  final VoidCallback? onTap;
 
   const ProfileAvatar({
     super.key,
     required this.avatarUrl,
     required this.fallbackText,
     required this.size,
+    this.showEditBadge = false,
+    this.showRing = false,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final ringWidth = size * 0.025;
+    final badgeSize = size * 0.28;
 
-    return Container(
+    final avatar = Container(
       width: size,
       height: size,
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: cs.primaryContainer,
         shape: BoxShape.circle,
+        border: showRing
+            ? Border.all(
+                color: cs.primary.withValues(alpha: 0.45),
+                width: ringWidth,
+              )
+            : null,
       ),
       child: avatarUrl != null && avatarUrl!.isNotEmpty
           ? Image.network(
@@ -34,6 +48,46 @@ class ProfileAvatar extends StatelessWidget {
               ),
             )
           : _Initials(text: fallbackText, size: size),
+    );
+
+    final content = showEditBadge
+        ? SizedBox(
+            width: size,
+            height: size,
+            child: Stack(
+              children: [
+                avatar,
+                Positioned(
+                  right: 0,
+                  bottom: 0,
+                  child: Container(
+                    width: badgeSize,
+                    height: badgeSize,
+                    decoration: BoxDecoration(
+                      color: cs.primary,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: cs.surface,
+                        width: ringWidth,
+                      ),
+                    ),
+                    child: Icon(
+                      Icons.edit,
+                      size: badgeSize * 0.5,
+                      color: cs.onPrimary,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          )
+        : avatar;
+
+    if (onTap == null) return content;
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: content,
     );
   }
 }

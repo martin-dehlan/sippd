@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../../profile/controller/profile.provider.dart';
 import '../../../../profile/presentation/widgets/profile_avatar.widget.dart';
 import '../../../../wines/controller/wine.provider.dart';
 import '../../../controller/auth.provider.dart';
+
+const _privacyUrl = 'https://sippd.xyz/privacy';
+const _termsUrl = 'https://sippd.xyz/terms';
+const _supportEmail = 'support@sippd.xyz';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -40,14 +45,21 @@ class ProfileScreen extends ConsumerWidget {
                       ? ProfileAvatar(
                           avatarUrl: profile?.avatarUrl,
                           fallbackText: headlineName,
-                          size: context.w * 0.22,
+                          size: context.w * 0.26,
+                          showRing: true,
+                          showEditBadge: true,
+                          onTap: () => context.push(AppRoutes.profileEdit),
                         )
                       : Container(
-                          width: context.w * 0.22,
-                          height: context.w * 0.22,
+                          width: context.w * 0.26,
+                          height: context.w * 0.26,
                           decoration: BoxDecoration(
                             color: cs.primaryContainer,
                             shape: BoxShape.circle,
+                            border: Border.all(
+                              color: cs.primary.withValues(alpha: 0.45),
+                              width: context.w * 0.26 * 0.025,
+                            ),
                           ),
                           child: Icon(Icons.person,
                               size: context.w * 0.1, color: cs.primary),
@@ -75,67 +87,125 @@ class ProfileScreen extends ConsumerWidget {
 
             // Stats
             winesAsync.when(
-              data: (wines) => Row(
-                children: [
-                  Expanded(
+              data: (wines) {
+                final countries = wines
+                    .where((w) => w.country != null)
+                    .map((w) => w.country)
+                    .toSet()
+                    .length;
+                return Row(
+                  children: [
+                    Expanded(
                       child: _StatCard(
-                          label: 'Wines', value: wines.length.toString())),
-                  SizedBox(width: context.w * 0.03),
-                  Expanded(
+                        label: 'Wines',
+                        value: wines.length.toString(),
+                      ),
+                    ),
+                    SizedBox(width: context.w * 0.03),
+                    Expanded(
                       child: _StatCard(
-                          label: 'Avg Rating',
-                          value: wines.isEmpty
-                              ? '-'
-                              : (wines
-                                          .map((w) => w.rating)
-                                          .reduce((a, b) => a + b) /
-                                      wines.length)
-                                  .toStringAsFixed(1))),
-                  SizedBox(width: context.w * 0.03),
-                  Expanded(
+                        label: 'Avg Rating',
+                        value: wines.isEmpty
+                            ? '-'
+                            : (wines
+                                        .map((w) => w.rating)
+                                        .reduce((a, b) => a + b) /
+                                    wines.length)
+                                .toStringAsFixed(1),
+                      ),
+                    ),
+                    SizedBox(width: context.w * 0.03),
+                    Expanded(
                       child: _StatCard(
-                          label: 'Countries',
-                          value: wines
-                              .where((w) => w.country != null)
-                              .map((w) => w.country)
-                              .toSet()
-                              .length
-                              .toString())),
-                ],
-              ),
+                        label: countries == 1 ? 'Country' : 'Countries',
+                        value: countries.toString(),
+                      ),
+                    ),
+                  ],
+                );
+              },
               loading: () => const SizedBox.shrink(),
               error: (_, _) => const SizedBox.shrink(),
             ),
             SizedBox(height: context.xl),
 
-            // Menu items
-            if (user != null)
+            // ACCOUNT
+            if (user != null) ...[
+              const _SectionLabel('Account'),
               _MenuItem(
                 icon: Icons.edit_outlined,
                 label: 'Edit profile',
                 onTap: () => context.push(AppRoutes.profileEdit),
               ),
+              _MenuItem(
+                icon: Icons.people_outline,
+                label: 'Friends',
+                onTap: () => context.push(AppRoutes.friends),
+              ),
+              SizedBox(height: context.l),
+            ],
+
+            // SUPPORT
+            const _SectionLabel('Support'),
             _MenuItem(
-              icon: Icons.people_outline,
-              label: 'Friends',
-              onTap: () => context.push(AppRoutes.friends),
+              icon: Icons.mail_outline,
+              label: 'Contact us',
+              onTap: () => _launch(
+                context,
+                'mailto:$_supportEmail?subject=Sippd%20Support',
+              ),
+            ),
+            _MenuItem(
+              icon: Icons.star_border,
+              label: 'Rate Sippd',
+              onTap: () => _launch(
+                context,
+                'https://apps.apple.com/app/sippd',
+              ),
             ),
             SizedBox(height: context.l),
-            Divider(color: cs.outlineVariant, height: 1),
-            SizedBox(height: context.l),
 
-            // Sign in/out
-            if (user != null)
-              _MenuItem(
+            // LEGAL
+            const _SectionLabel('Legal'),
+            _MenuItem(
+              icon: Icons.privacy_tip_outlined,
+              label: 'Privacy Policy',
+              onTap: () => _launch(context, _privacyUrl),
+            ),
+            _MenuItem(
+              icon: Icons.description_outlined,
+              label: 'Terms of Service',
+              onTap: () => _launch(context, _termsUrl),
+            ),
+            SizedBox(height: context.xl),
+
+            // DANGER ZONE / auth actions
+            if (user != null) ...[
+              _DangerButton(
                 icon: Icons.logout,
                 label: 'Sign Out',
-                isDestructive: true,
                 onTap: () async {
                   await ref.read(authControllerProvider.notifier).signOut();
                   if (context.mounted) context.go(AppRoutes.login);
                 },
-              )
-            else
+              ),
+              SizedBox(height: context.m),
+              Center(
+                child: TextButton(
+                  onPressed: () => _confirmDelete(context, ref),
+                  child: Text(
+                    'Delete account',
+                    style: TextStyle(
+                      fontSize: context.captionFont,
+                      fontWeight: FontWeight.w500,
+                      color: cs.error.withValues(alpha: 0.7),
+                      decoration: TextDecoration.underline,
+                      decorationColor: cs.error.withValues(alpha: 0.4),
+                    ),
+                  ),
+                ),
+              ),
+            ] else
               _MenuItem(
                 icon: Icons.login,
                 label: 'Sign In',
@@ -149,7 +219,7 @@ class ProfileScreen extends ConsumerWidget {
               child: Text(
                 'Sippd v1.0.0',
                 style: TextStyle(
-                    fontSize: context.captionFont * 0.85,
+                    fontSize: context.captionFont * 0.8,
                     color: cs.outline),
               ),
             ),
@@ -159,7 +229,105 @@ class ProfileScreen extends ConsumerWidget {
       ),
     );
   }
+}
 
+Future<void> _launch(BuildContext context, String url) async {
+  final uri = Uri.parse(url);
+  final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
+  if (!ok && context.mounted) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Could not open $url')),
+    );
+  }
+}
+
+Future<void> _confirmDelete(BuildContext context, WidgetRef ref) async {
+  final cs = Theme.of(context).colorScheme;
+  final confirmController = TextEditingController();
+  final confirmed = await showDialog<bool>(
+    context: context,
+    builder: (ctx) {
+      return StatefulBuilder(
+        builder: (ctx, setState) => AlertDialog(
+          title: const Text('Delete account?'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'This permanently deletes your profile, wines, ratings, '
+                'tastings, group memberships and friends. Cannot be undone.',
+              ),
+              SizedBox(height: ctx.m),
+              const Text('Type DELETE to confirm:'),
+              SizedBox(height: ctx.s),
+              TextField(
+                controller: confirmController,
+                autofocus: true,
+                textCapitalization: TextCapitalization.characters,
+                onChanged: (_) => setState(() {}),
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: 'DELETE',
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: confirmController.text.trim() == 'DELETE'
+                  ? () => Navigator.pop(ctx, true)
+                  : null,
+              style: TextButton.styleFrom(foregroundColor: cs.error),
+              child: const Text('Delete'),
+            ),
+          ],
+        ),
+      );
+    },
+  );
+  confirmController.dispose();
+  if (confirmed != true) return;
+
+  try {
+    await ref.read(profileControllerProvider.notifier).deleteAccount();
+    if (context.mounted) context.go(AppRoutes.login);
+  } catch (e) {
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Delete failed: $e')),
+      );
+    }
+  }
+}
+
+class _SectionLabel extends StatelessWidget {
+  final String text;
+  const _SectionLabel(this.text);
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Padding(
+      padding: EdgeInsets.only(
+        left: context.w * 0.02,
+        bottom: context.s,
+      ),
+      child: Text(
+        text.toUpperCase(),
+        style: TextStyle(
+          fontSize: context.captionFont * 0.85,
+          fontWeight: FontWeight.w600,
+          color: cs.onSurfaceVariant,
+          letterSpacing: 1.2,
+        ),
+      ),
+    );
+  }
 }
 
 class _StatCard extends StatelessWidget {
@@ -186,7 +354,7 @@ class _StatCard extends StatelessWidget {
               style: TextStyle(
                   fontSize: context.headingFont,
                   fontWeight: FontWeight.bold,
-                  color: cs.primary)),
+                  color: cs.onSurface)),
           SizedBox(height: context.xs),
           Text(label,
               style: TextStyle(
@@ -202,19 +370,16 @@ class _MenuItem extends StatelessWidget {
   final IconData icon;
   final String label;
   final VoidCallback onTap;
-  final bool isDestructive;
 
   const _MenuItem({
     required this.icon,
     required this.label,
     required this.onTap,
-    this.isDestructive = false,
   });
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final color = isDestructive ? cs.error : cs.onSurface;
 
     return GestureDetector(
       onTap: onTap,
@@ -228,18 +393,62 @@ class _MenuItem extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(icon, color: isDestructive ? cs.error : cs.primary,
-                size: context.w * 0.05),
+            Icon(icon, color: cs.primary, size: context.w * 0.05),
             SizedBox(width: context.w * 0.04),
             Expanded(
               child: Text(label,
                   style: TextStyle(
                       fontSize: context.bodyFont,
                       fontWeight: FontWeight.w500,
-                      color: color)),
+                      color: cs.onSurface)),
             ),
             Icon(Icons.chevron_right,
                 size: context.w * 0.05, color: cs.outline),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DangerButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  const _DangerButton({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final fg = cs.error;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(
+            vertical: context.m, horizontal: context.w * 0.04),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(context.w * 0.03),
+          border: Border.all(color: cs.outlineVariant, width: 1),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: fg, size: context.w * 0.05),
+            SizedBox(width: context.w * 0.025),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: context.bodyFont,
+                fontWeight: FontWeight.w600,
+                color: fg,
+              ),
+            ),
           ],
         ),
       ),

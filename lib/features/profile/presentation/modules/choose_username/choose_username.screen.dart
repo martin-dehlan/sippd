@@ -177,7 +177,7 @@ class _UsernameField extends StatelessWidget {
       _UsernameState.invalid ||
       _UsernameState.tooShort =>
         cs.error,
-      _ => cs.outlineVariant,
+      _UsernameState.idle || _UsernameState.checking => cs.outlineVariant,
     };
 
     return TextField(
@@ -232,7 +232,8 @@ class _StatusLine extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final (text, color) = switch (status) {
-      _UsernameState.idle => ('3–20 chars · letters, numbers, . and _', cs.outline),
+      _UsernameState.idle =>
+        ('3–20 chars · letters, numbers, . and _', cs.outline),
       _UsernameState.tooShort => ('At least 3 characters', cs.error),
       _UsernameState.invalid =>
         ('Only letters, numbers, . and _', cs.error),

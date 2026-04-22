@@ -57,4 +57,11 @@ class ProfileController extends _$ProfileController {
     await ref.read(profileApiProvider).updateAvatarUrl(avatarUrl);
     ref.invalidate(currentProfileProvider);
   }
+
+  Future<void> deleteAccount() async {
+    final client = ref.read(supabaseClientProvider);
+    await ref.read(profileApiProvider).deleteMyAccount();
+    // Server cascade wiped data. Clear local session.
+    await client.auth.signOut();
+  }
 }

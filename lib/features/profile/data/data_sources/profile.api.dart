@@ -57,4 +57,8 @@ class ProfileApi {
         .update({'avatar_url': avatarUrl})
         .eq('id', _uid);
   }
+
+  Future<void> deleteMyAccount() async {
+    await _client.rpc('delete_my_account');
+  }
 }
