@@ -17,6 +17,8 @@ class WinesTable extends Table {
   TextColumn get localImagePath => text().nullable()();
   IntColumn get vintage => integer().nullable()();
   TextColumn get grape => text().nullable()();
+  TextColumn get winery => text().nullable()();
+  TextColumn get nameNorm => text().nullable()();
   TextColumn get userId => text()();
   TextColumn get visibility =>
       text().withDefault(const Constant('friends'))();

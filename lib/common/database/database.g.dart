@@ -161,6 +161,26 @@ class $WinesTableTable extends WinesTable
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _wineryMeta = const VerificationMeta('winery');
+  @override
+  late final GeneratedColumn<String> winery = GeneratedColumn<String>(
+    'winery',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _nameNormMeta = const VerificationMeta(
+    'nameNorm',
+  );
+  @override
+  late final GeneratedColumn<String> nameNorm = GeneratedColumn<String>(
+    'name_norm',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
   @override
   late final GeneratedColumn<String> userId = GeneratedColumn<String>(
@@ -222,6 +242,8 @@ class $WinesTableTable extends WinesTable
     localImagePath,
     vintage,
     grape,
+    winery,
+    nameNorm,
     userId,
     visibility,
     createdAt,
@@ -337,6 +359,18 @@ class $WinesTableTable extends WinesTable
         grape.isAcceptableOrUnknown(data['grape']!, _grapeMeta),
       );
     }
+    if (data.containsKey('winery')) {
+      context.handle(
+        _wineryMeta,
+        winery.isAcceptableOrUnknown(data['winery']!, _wineryMeta),
+      );
+    }
+    if (data.containsKey('name_norm')) {
+      context.handle(
+        _nameNormMeta,
+        nameNorm.isAcceptableOrUnknown(data['name_norm']!, _nameNormMeta),
+      );
+    }
     if (data.containsKey('user_id')) {
       context.handle(
         _userIdMeta,
@@ -432,6 +466,14 @@ class $WinesTableTable extends WinesTable
         DriftSqlType.string,
         data['${effectivePrefix}grape'],
       ),
+      winery: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}winery'],
+      ),
+      nameNorm: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name_norm'],
+      ),
       userId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}user_id'],
@@ -473,6 +515,8 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
   final String? localImagePath;
   final int? vintage;
   final String? grape;
+  final String? winery;
+  final String? nameNorm;
   final String userId;
   final String visibility;
   final DateTime createdAt;
@@ -493,6 +537,8 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
     this.localImagePath,
     this.vintage,
     this.grape,
+    this.winery,
+    this.nameNorm,
     required this.userId,
     required this.visibility,
     required this.createdAt,
@@ -535,6 +581,12 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
     }
     if (!nullToAbsent || grape != null) {
       map['grape'] = Variable<String>(grape);
+    }
+    if (!nullToAbsent || winery != null) {
+      map['winery'] = Variable<String>(winery);
+    }
+    if (!nullToAbsent || nameNorm != null) {
+      map['name_norm'] = Variable<String>(nameNorm);
     }
     map['user_id'] = Variable<String>(userId);
     map['visibility'] = Variable<String>(visibility);
@@ -582,6 +634,12 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
       grape: grape == null && nullToAbsent
           ? const Value.absent()
           : Value(grape),
+      winery: winery == null && nullToAbsent
+          ? const Value.absent()
+          : Value(winery),
+      nameNorm: nameNorm == null && nullToAbsent
+          ? const Value.absent()
+          : Value(nameNorm),
       userId: Value(userId),
       visibility: Value(visibility),
       createdAt: Value(createdAt),
@@ -612,6 +670,8 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
       localImagePath: serializer.fromJson<String?>(json['localImagePath']),
       vintage: serializer.fromJson<int?>(json['vintage']),
       grape: serializer.fromJson<String?>(json['grape']),
+      winery: serializer.fromJson<String?>(json['winery']),
+      nameNorm: serializer.fromJson<String?>(json['nameNorm']),
       userId: serializer.fromJson<String>(json['userId']),
       visibility: serializer.fromJson<String>(json['visibility']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
@@ -637,6 +697,8 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
       'localImagePath': serializer.toJson<String?>(localImagePath),
       'vintage': serializer.toJson<int?>(vintage),
       'grape': serializer.toJson<String?>(grape),
+      'winery': serializer.toJson<String?>(winery),
+      'nameNorm': serializer.toJson<String?>(nameNorm),
       'userId': serializer.toJson<String>(userId),
       'visibility': serializer.toJson<String>(visibility),
       'createdAt': serializer.toJson<DateTime>(createdAt),
@@ -660,6 +722,8 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
     Value<String?> localImagePath = const Value.absent(),
     Value<int?> vintage = const Value.absent(),
     Value<String?> grape = const Value.absent(),
+    Value<String?> winery = const Value.absent(),
+    Value<String?> nameNorm = const Value.absent(),
     String? userId,
     String? visibility,
     DateTime? createdAt,
@@ -682,6 +746,8 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
         : this.localImagePath,
     vintage: vintage.present ? vintage.value : this.vintage,
     grape: grape.present ? grape.value : this.grape,
+    winery: winery.present ? winery.value : this.winery,
+    nameNorm: nameNorm.present ? nameNorm.value : this.nameNorm,
     userId: userId ?? this.userId,
     visibility: visibility ?? this.visibility,
     createdAt: createdAt ?? this.createdAt,
@@ -706,6 +772,8 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
           : this.localImagePath,
       vintage: data.vintage.present ? data.vintage.value : this.vintage,
       grape: data.grape.present ? data.grape.value : this.grape,
+      winery: data.winery.present ? data.winery.value : this.winery,
+      nameNorm: data.nameNorm.present ? data.nameNorm.value : this.nameNorm,
       userId: data.userId.present ? data.userId.value : this.userId,
       visibility: data.visibility.present
           ? data.visibility.value
@@ -733,6 +801,8 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
           ..write('localImagePath: $localImagePath, ')
           ..write('vintage: $vintage, ')
           ..write('grape: $grape, ')
+          ..write('winery: $winery, ')
+          ..write('nameNorm: $nameNorm, ')
           ..write('userId: $userId, ')
           ..write('visibility: $visibility, ')
           ..write('createdAt: $createdAt, ')
@@ -742,7 +812,7 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
   }
 
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     id,
     name,
     rating,
@@ -758,11 +828,13 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
     localImagePath,
     vintage,
     grape,
+    winery,
+    nameNorm,
     userId,
     visibility,
     createdAt,
     updatedAt,
-  );
+  ]);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -782,6 +854,8 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
           other.localImagePath == this.localImagePath &&
           other.vintage == this.vintage &&
           other.grape == this.grape &&
+          other.winery == this.winery &&
+          other.nameNorm == this.nameNorm &&
           other.userId == this.userId &&
           other.visibility == this.visibility &&
           other.createdAt == this.createdAt &&
@@ -804,6 +878,8 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
   final Value<String?> localImagePath;
   final Value<int?> vintage;
   final Value<String?> grape;
+  final Value<String?> winery;
+  final Value<String?> nameNorm;
   final Value<String> userId;
   final Value<String> visibility;
   final Value<DateTime> createdAt;
@@ -825,6 +901,8 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
     this.localImagePath = const Value.absent(),
     this.vintage = const Value.absent(),
     this.grape = const Value.absent(),
+    this.winery = const Value.absent(),
+    this.nameNorm = const Value.absent(),
     this.userId = const Value.absent(),
     this.visibility = const Value.absent(),
     this.createdAt = const Value.absent(),
@@ -847,6 +925,8 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
     this.localImagePath = const Value.absent(),
     this.vintage = const Value.absent(),
     this.grape = const Value.absent(),
+    this.winery = const Value.absent(),
+    this.nameNorm = const Value.absent(),
     required String userId,
     this.visibility = const Value.absent(),
     this.createdAt = const Value.absent(),
@@ -873,6 +953,8 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
     Expression<String>? localImagePath,
     Expression<int>? vintage,
     Expression<String>? grape,
+    Expression<String>? winery,
+    Expression<String>? nameNorm,
     Expression<String>? userId,
     Expression<String>? visibility,
     Expression<DateTime>? createdAt,
@@ -895,6 +977,8 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
       if (localImagePath != null) 'local_image_path': localImagePath,
       if (vintage != null) 'vintage': vintage,
       if (grape != null) 'grape': grape,
+      if (winery != null) 'winery': winery,
+      if (nameNorm != null) 'name_norm': nameNorm,
       if (userId != null) 'user_id': userId,
       if (visibility != null) 'visibility': visibility,
       if (createdAt != null) 'created_at': createdAt,
@@ -919,6 +1003,8 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
     Value<String?>? localImagePath,
     Value<int?>? vintage,
     Value<String?>? grape,
+    Value<String?>? winery,
+    Value<String?>? nameNorm,
     Value<String>? userId,
     Value<String>? visibility,
     Value<DateTime>? createdAt,
@@ -941,6 +1027,8 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
       localImagePath: localImagePath ?? this.localImagePath,
       vintage: vintage ?? this.vintage,
       grape: grape ?? this.grape,
+      winery: winery ?? this.winery,
+      nameNorm: nameNorm ?? this.nameNorm,
       userId: userId ?? this.userId,
       visibility: visibility ?? this.visibility,
       createdAt: createdAt ?? this.createdAt,
@@ -997,6 +1085,12 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
     if (grape.present) {
       map['grape'] = Variable<String>(grape.value);
     }
+    if (winery.present) {
+      map['winery'] = Variable<String>(winery.value);
+    }
+    if (nameNorm.present) {
+      map['name_norm'] = Variable<String>(nameNorm.value);
+    }
     if (userId.present) {
       map['user_id'] = Variable<String>(userId.value);
     }
@@ -1033,6 +1127,8 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
           ..write('localImagePath: $localImagePath, ')
           ..write('vintage: $vintage, ')
           ..write('grape: $grape, ')
+          ..write('winery: $winery, ')
+          ..write('nameNorm: $nameNorm, ')
           ..write('userId: $userId, ')
           ..write('visibility: $visibility, ')
           ..write('createdAt: $createdAt, ')
@@ -1098,6 +1194,17 @@ class $WineMemoriesTableTable extends WineMemoriesTable
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _captionMeta = const VerificationMeta(
+    'caption',
+  );
+  @override
+  late final GeneratedColumn<String> caption = GeneratedColumn<String>(
+    'caption',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -1117,6 +1224,7 @@ class $WineMemoriesTableTable extends WineMemoriesTable
     userId,
     imageUrl,
     localImagePath,
+    caption,
     createdAt,
   ];
   @override
@@ -1167,6 +1275,12 @@ class $WineMemoriesTableTable extends WineMemoriesTable
         ),
       );
     }
+    if (data.containsKey('caption')) {
+      context.handle(
+        _captionMeta,
+        caption.isAcceptableOrUnknown(data['caption']!, _captionMeta),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -1202,6 +1316,10 @@ class $WineMemoriesTableTable extends WineMemoriesTable
         DriftSqlType.string,
         data['${effectivePrefix}local_image_path'],
       ),
+      caption: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}caption'],
+      ),
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -1222,6 +1340,7 @@ class WineMemoryTableData extends DataClass
   final String userId;
   final String? imageUrl;
   final String? localImagePath;
+  final String? caption;
   final DateTime createdAt;
   const WineMemoryTableData({
     required this.id,
@@ -1229,6 +1348,7 @@ class WineMemoryTableData extends DataClass
     required this.userId,
     this.imageUrl,
     this.localImagePath,
+    this.caption,
     required this.createdAt,
   });
   @override
@@ -1242,6 +1362,9 @@ class WineMemoryTableData extends DataClass
     }
     if (!nullToAbsent || localImagePath != null) {
       map['local_image_path'] = Variable<String>(localImagePath);
+    }
+    if (!nullToAbsent || caption != null) {
+      map['caption'] = Variable<String>(caption);
     }
     map['created_at'] = Variable<DateTime>(createdAt);
     return map;
@@ -1258,6 +1381,9 @@ class WineMemoryTableData extends DataClass
       localImagePath: localImagePath == null && nullToAbsent
           ? const Value.absent()
           : Value(localImagePath),
+      caption: caption == null && nullToAbsent
+          ? const Value.absent()
+          : Value(caption),
       createdAt: Value(createdAt),
     );
   }
@@ -1273,6 +1399,7 @@ class WineMemoryTableData extends DataClass
       userId: serializer.fromJson<String>(json['userId']),
       imageUrl: serializer.fromJson<String?>(json['imageUrl']),
       localImagePath: serializer.fromJson<String?>(json['localImagePath']),
+      caption: serializer.fromJson<String?>(json['caption']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
   }
@@ -1285,6 +1412,7 @@ class WineMemoryTableData extends DataClass
       'userId': serializer.toJson<String>(userId),
       'imageUrl': serializer.toJson<String?>(imageUrl),
       'localImagePath': serializer.toJson<String?>(localImagePath),
+      'caption': serializer.toJson<String?>(caption),
       'createdAt': serializer.toJson<DateTime>(createdAt),
     };
   }
@@ -1295,6 +1423,7 @@ class WineMemoryTableData extends DataClass
     String? userId,
     Value<String?> imageUrl = const Value.absent(),
     Value<String?> localImagePath = const Value.absent(),
+    Value<String?> caption = const Value.absent(),
     DateTime? createdAt,
   }) => WineMemoryTableData(
     id: id ?? this.id,
@@ -1304,6 +1433,7 @@ class WineMemoryTableData extends DataClass
     localImagePath: localImagePath.present
         ? localImagePath.value
         : this.localImagePath,
+    caption: caption.present ? caption.value : this.caption,
     createdAt: createdAt ?? this.createdAt,
   );
   WineMemoryTableData copyWithCompanion(WineMemoriesTableCompanion data) {
@@ -1315,6 +1445,7 @@ class WineMemoryTableData extends DataClass
       localImagePath: data.localImagePath.present
           ? data.localImagePath.value
           : this.localImagePath,
+      caption: data.caption.present ? data.caption.value : this.caption,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
     );
   }
@@ -1327,14 +1458,22 @@ class WineMemoryTableData extends DataClass
           ..write('userId: $userId, ')
           ..write('imageUrl: $imageUrl, ')
           ..write('localImagePath: $localImagePath, ')
+          ..write('caption: $caption, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, wineId, userId, imageUrl, localImagePath, createdAt);
+  int get hashCode => Object.hash(
+    id,
+    wineId,
+    userId,
+    imageUrl,
+    localImagePath,
+    caption,
+    createdAt,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1344,6 +1483,7 @@ class WineMemoryTableData extends DataClass
           other.userId == this.userId &&
           other.imageUrl == this.imageUrl &&
           other.localImagePath == this.localImagePath &&
+          other.caption == this.caption &&
           other.createdAt == this.createdAt);
 }
 
@@ -1353,6 +1493,7 @@ class WineMemoriesTableCompanion extends UpdateCompanion<WineMemoryTableData> {
   final Value<String> userId;
   final Value<String?> imageUrl;
   final Value<String?> localImagePath;
+  final Value<String?> caption;
   final Value<DateTime> createdAt;
   final Value<int> rowid;
   const WineMemoriesTableCompanion({
@@ -1361,6 +1502,7 @@ class WineMemoriesTableCompanion extends UpdateCompanion<WineMemoryTableData> {
     this.userId = const Value.absent(),
     this.imageUrl = const Value.absent(),
     this.localImagePath = const Value.absent(),
+    this.caption = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -1370,6 +1512,7 @@ class WineMemoriesTableCompanion extends UpdateCompanion<WineMemoryTableData> {
     required String userId,
     this.imageUrl = const Value.absent(),
     this.localImagePath = const Value.absent(),
+    this.caption = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
@@ -1381,6 +1524,7 @@ class WineMemoriesTableCompanion extends UpdateCompanion<WineMemoryTableData> {
     Expression<String>? userId,
     Expression<String>? imageUrl,
     Expression<String>? localImagePath,
+    Expression<String>? caption,
     Expression<DateTime>? createdAt,
     Expression<int>? rowid,
   }) {
@@ -1390,6 +1534,7 @@ class WineMemoriesTableCompanion extends UpdateCompanion<WineMemoryTableData> {
       if (userId != null) 'user_id': userId,
       if (imageUrl != null) 'image_url': imageUrl,
       if (localImagePath != null) 'local_image_path': localImagePath,
+      if (caption != null) 'caption': caption,
       if (createdAt != null) 'created_at': createdAt,
       if (rowid != null) 'rowid': rowid,
     });
@@ -1401,6 +1546,7 @@ class WineMemoriesTableCompanion extends UpdateCompanion<WineMemoryTableData> {
     Value<String>? userId,
     Value<String?>? imageUrl,
     Value<String?>? localImagePath,
+    Value<String?>? caption,
     Value<DateTime>? createdAt,
     Value<int>? rowid,
   }) {
@@ -1410,6 +1556,7 @@ class WineMemoriesTableCompanion extends UpdateCompanion<WineMemoryTableData> {
       userId: userId ?? this.userId,
       imageUrl: imageUrl ?? this.imageUrl,
       localImagePath: localImagePath ?? this.localImagePath,
+      caption: caption ?? this.caption,
       createdAt: createdAt ?? this.createdAt,
       rowid: rowid ?? this.rowid,
     );
@@ -1433,6 +1580,9 @@ class WineMemoriesTableCompanion extends UpdateCompanion<WineMemoryTableData> {
     if (localImagePath.present) {
       map['local_image_path'] = Variable<String>(localImagePath.value);
     }
+    if (caption.present) {
+      map['caption'] = Variable<String>(caption.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -1450,6 +1600,378 @@ class WineMemoriesTableCompanion extends UpdateCompanion<WineMemoryTableData> {
           ..write('userId: $userId, ')
           ..write('imageUrl: $imageUrl, ')
           ..write('localImagePath: $localImagePath, ')
+          ..write('caption: $caption, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $WineAliasesTableTable extends WineAliasesTable
+    with TableInfo<$WineAliasesTableTable, WineAliasTableData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $WineAliasesTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+    'user_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _localWineIdMeta = const VerificationMeta(
+    'localWineId',
+  );
+  @override
+  late final GeneratedColumn<String> localWineId = GeneratedColumn<String>(
+    'local_wine_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _canonicalWineIdMeta = const VerificationMeta(
+    'canonicalWineId',
+  );
+  @override
+  late final GeneratedColumn<String> canonicalWineId = GeneratedColumn<String>(
+    'canonical_wine_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sourceMeta = const VerificationMeta('source');
+  @override
+  late final GeneratedColumn<String> source = GeneratedColumn<String>(
+    'source',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('share_match'),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    userId,
+    localWineId,
+    canonicalWineId,
+    source,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'wine_aliases';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<WineAliasTableData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('user_id')) {
+      context.handle(
+        _userIdMeta,
+        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_userIdMeta);
+    }
+    if (data.containsKey('local_wine_id')) {
+      context.handle(
+        _localWineIdMeta,
+        localWineId.isAcceptableOrUnknown(
+          data['local_wine_id']!,
+          _localWineIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_localWineIdMeta);
+    }
+    if (data.containsKey('canonical_wine_id')) {
+      context.handle(
+        _canonicalWineIdMeta,
+        canonicalWineId.isAcceptableOrUnknown(
+          data['canonical_wine_id']!,
+          _canonicalWineIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_canonicalWineIdMeta);
+    }
+    if (data.containsKey('source')) {
+      context.handle(
+        _sourceMeta,
+        source.isAcceptableOrUnknown(data['source']!, _sourceMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {userId, localWineId};
+  @override
+  WineAliasTableData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return WineAliasTableData(
+      userId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}user_id'],
+      )!,
+      localWineId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}local_wine_id'],
+      )!,
+      canonicalWineId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}canonical_wine_id'],
+      )!,
+      source: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $WineAliasesTableTable createAlias(String alias) {
+    return $WineAliasesTableTable(attachedDatabase, alias);
+  }
+}
+
+class WineAliasTableData extends DataClass
+    implements Insertable<WineAliasTableData> {
+  final String userId;
+  final String localWineId;
+  final String canonicalWineId;
+  final String source;
+  final DateTime createdAt;
+  const WineAliasTableData({
+    required this.userId,
+    required this.localWineId,
+    required this.canonicalWineId,
+    required this.source,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['user_id'] = Variable<String>(userId);
+    map['local_wine_id'] = Variable<String>(localWineId);
+    map['canonical_wine_id'] = Variable<String>(canonicalWineId);
+    map['source'] = Variable<String>(source);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  WineAliasesTableCompanion toCompanion(bool nullToAbsent) {
+    return WineAliasesTableCompanion(
+      userId: Value(userId),
+      localWineId: Value(localWineId),
+      canonicalWineId: Value(canonicalWineId),
+      source: Value(source),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory WineAliasTableData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return WineAliasTableData(
+      userId: serializer.fromJson<String>(json['userId']),
+      localWineId: serializer.fromJson<String>(json['localWineId']),
+      canonicalWineId: serializer.fromJson<String>(json['canonicalWineId']),
+      source: serializer.fromJson<String>(json['source']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'userId': serializer.toJson<String>(userId),
+      'localWineId': serializer.toJson<String>(localWineId),
+      'canonicalWineId': serializer.toJson<String>(canonicalWineId),
+      'source': serializer.toJson<String>(source),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  WineAliasTableData copyWith({
+    String? userId,
+    String? localWineId,
+    String? canonicalWineId,
+    String? source,
+    DateTime? createdAt,
+  }) => WineAliasTableData(
+    userId: userId ?? this.userId,
+    localWineId: localWineId ?? this.localWineId,
+    canonicalWineId: canonicalWineId ?? this.canonicalWineId,
+    source: source ?? this.source,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  WineAliasTableData copyWithCompanion(WineAliasesTableCompanion data) {
+    return WineAliasTableData(
+      userId: data.userId.present ? data.userId.value : this.userId,
+      localWineId: data.localWineId.present
+          ? data.localWineId.value
+          : this.localWineId,
+      canonicalWineId: data.canonicalWineId.present
+          ? data.canonicalWineId.value
+          : this.canonicalWineId,
+      source: data.source.present ? data.source.value : this.source,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WineAliasTableData(')
+          ..write('userId: $userId, ')
+          ..write('localWineId: $localWineId, ')
+          ..write('canonicalWineId: $canonicalWineId, ')
+          ..write('source: $source, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(userId, localWineId, canonicalWineId, source, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is WineAliasTableData &&
+          other.userId == this.userId &&
+          other.localWineId == this.localWineId &&
+          other.canonicalWineId == this.canonicalWineId &&
+          other.source == this.source &&
+          other.createdAt == this.createdAt);
+}
+
+class WineAliasesTableCompanion extends UpdateCompanion<WineAliasTableData> {
+  final Value<String> userId;
+  final Value<String> localWineId;
+  final Value<String> canonicalWineId;
+  final Value<String> source;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const WineAliasesTableCompanion({
+    this.userId = const Value.absent(),
+    this.localWineId = const Value.absent(),
+    this.canonicalWineId = const Value.absent(),
+    this.source = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  WineAliasesTableCompanion.insert({
+    required String userId,
+    required String localWineId,
+    required String canonicalWineId,
+    this.source = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : userId = Value(userId),
+       localWineId = Value(localWineId),
+       canonicalWineId = Value(canonicalWineId);
+  static Insertable<WineAliasTableData> custom({
+    Expression<String>? userId,
+    Expression<String>? localWineId,
+    Expression<String>? canonicalWineId,
+    Expression<String>? source,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (userId != null) 'user_id': userId,
+      if (localWineId != null) 'local_wine_id': localWineId,
+      if (canonicalWineId != null) 'canonical_wine_id': canonicalWineId,
+      if (source != null) 'source': source,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  WineAliasesTableCompanion copyWith({
+    Value<String>? userId,
+    Value<String>? localWineId,
+    Value<String>? canonicalWineId,
+    Value<String>? source,
+    Value<DateTime>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return WineAliasesTableCompanion(
+      userId: userId ?? this.userId,
+      localWineId: localWineId ?? this.localWineId,
+      canonicalWineId: canonicalWineId ?? this.canonicalWineId,
+      source: source ?? this.source,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
+    if (localWineId.present) {
+      map['local_wine_id'] = Variable<String>(localWineId.value);
+    }
+    if (canonicalWineId.present) {
+      map['canonical_wine_id'] = Variable<String>(canonicalWineId.value);
+    }
+    if (source.present) {
+      map['source'] = Variable<String>(source.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WineAliasesTableCompanion(')
+          ..write('userId: $userId, ')
+          ..write('localWineId: $localWineId, ')
+          ..write('canonicalWineId: $canonicalWineId, ')
+          ..write('source: $source, ')
           ..write('createdAt: $createdAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -1463,8 +1985,14 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $WinesTableTable winesTable = $WinesTableTable(this);
   late final $WineMemoriesTableTable wineMemoriesTable =
       $WineMemoriesTableTable(this);
+  late final $WineAliasesTableTable wineAliasesTable = $WineAliasesTableTable(
+    this,
+  );
   late final WinesDao winesDao = WinesDao(this as AppDatabase);
   late final WineMemoriesDao wineMemoriesDao = WineMemoriesDao(
+    this as AppDatabase,
+  );
+  late final WineAliasesDao wineAliasesDao = WineAliasesDao(
     this as AppDatabase,
   );
   @override
@@ -1474,6 +2002,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   List<DatabaseSchemaEntity> get allSchemaEntities => [
     winesTable,
     wineMemoriesTable,
+    wineAliasesTable,
   ];
 }
 
@@ -1494,6 +2023,8 @@ typedef $$WinesTableTableCreateCompanionBuilder =
       Value<String?> localImagePath,
       Value<int?> vintage,
       Value<String?> grape,
+      Value<String?> winery,
+      Value<String?> nameNorm,
       required String userId,
       Value<String> visibility,
       Value<DateTime> createdAt,
@@ -1517,6 +2048,8 @@ typedef $$WinesTableTableUpdateCompanionBuilder =
       Value<String?> localImagePath,
       Value<int?> vintage,
       Value<String?> grape,
+      Value<String?> winery,
+      Value<String?> nameNorm,
       Value<String> userId,
       Value<String> visibility,
       Value<DateTime> createdAt,
@@ -1605,6 +2138,16 @@ class $$WinesTableTableFilterComposer
 
   ColumnFilters<String> get grape => $composableBuilder(
     column: $table.grape,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get winery => $composableBuilder(
+    column: $table.winery,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get nameNorm => $composableBuilder(
+    column: $table.nameNorm,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -1713,6 +2256,16 @@ class $$WinesTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get winery => $composableBuilder(
+    column: $table.winery,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get nameNorm => $composableBuilder(
+    column: $table.nameNorm,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get userId => $composableBuilder(
     column: $table.userId,
     builder: (column) => ColumnOrderings(column),
@@ -1790,6 +2343,12 @@ class $$WinesTableTableAnnotationComposer
   GeneratedColumn<String> get grape =>
       $composableBuilder(column: $table.grape, builder: (column) => column);
 
+  GeneratedColumn<String> get winery =>
+      $composableBuilder(column: $table.winery, builder: (column) => column);
+
+  GeneratedColumn<String> get nameNorm =>
+      $composableBuilder(column: $table.nameNorm, builder: (column) => column);
+
   GeneratedColumn<String> get userId =>
       $composableBuilder(column: $table.userId, builder: (column) => column);
 
@@ -1851,6 +2410,8 @@ class $$WinesTableTableTableManager
                 Value<String?> localImagePath = const Value.absent(),
                 Value<int?> vintage = const Value.absent(),
                 Value<String?> grape = const Value.absent(),
+                Value<String?> winery = const Value.absent(),
+                Value<String?> nameNorm = const Value.absent(),
                 Value<String> userId = const Value.absent(),
                 Value<String> visibility = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
@@ -1872,6 +2433,8 @@ class $$WinesTableTableTableManager
                 localImagePath: localImagePath,
                 vintage: vintage,
                 grape: grape,
+                winery: winery,
+                nameNorm: nameNorm,
                 userId: userId,
                 visibility: visibility,
                 createdAt: createdAt,
@@ -1895,6 +2458,8 @@ class $$WinesTableTableTableManager
                 Value<String?> localImagePath = const Value.absent(),
                 Value<int?> vintage = const Value.absent(),
                 Value<String?> grape = const Value.absent(),
+                Value<String?> winery = const Value.absent(),
+                Value<String?> nameNorm = const Value.absent(),
                 required String userId,
                 Value<String> visibility = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
@@ -1916,6 +2481,8 @@ class $$WinesTableTableTableManager
                 localImagePath: localImagePath,
                 vintage: vintage,
                 grape: grape,
+                winery: winery,
+                nameNorm: nameNorm,
                 userId: userId,
                 visibility: visibility,
                 createdAt: createdAt,
@@ -1954,6 +2521,7 @@ typedef $$WineMemoriesTableTableCreateCompanionBuilder =
       required String userId,
       Value<String?> imageUrl,
       Value<String?> localImagePath,
+      Value<String?> caption,
       Value<DateTime> createdAt,
       Value<int> rowid,
     });
@@ -1964,6 +2532,7 @@ typedef $$WineMemoriesTableTableUpdateCompanionBuilder =
       Value<String> userId,
       Value<String?> imageUrl,
       Value<String?> localImagePath,
+      Value<String?> caption,
       Value<DateTime> createdAt,
       Value<int> rowid,
     });
@@ -1999,6 +2568,11 @@ class $$WineMemoriesTableTableFilterComposer
 
   ColumnFilters<String> get localImagePath => $composableBuilder(
     column: $table.localImagePath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get caption => $composableBuilder(
+    column: $table.caption,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2042,6 +2616,11 @@ class $$WineMemoriesTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get caption => $composableBuilder(
+    column: $table.caption,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -2073,6 +2652,9 @@ class $$WineMemoriesTableTableAnnotationComposer
     column: $table.localImagePath,
     builder: (column) => column,
   );
+
+  GeneratedColumn<String> get caption =>
+      $composableBuilder(column: $table.caption, builder: (column) => column);
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -2123,6 +2705,7 @@ class $$WineMemoriesTableTableTableManager
                 Value<String> userId = const Value.absent(),
                 Value<String?> imageUrl = const Value.absent(),
                 Value<String?> localImagePath = const Value.absent(),
+                Value<String?> caption = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => WineMemoriesTableCompanion(
@@ -2131,6 +2714,7 @@ class $$WineMemoriesTableTableTableManager
                 userId: userId,
                 imageUrl: imageUrl,
                 localImagePath: localImagePath,
+                caption: caption,
                 createdAt: createdAt,
                 rowid: rowid,
               ),
@@ -2141,6 +2725,7 @@ class $$WineMemoriesTableTableTableManager
                 required String userId,
                 Value<String?> imageUrl = const Value.absent(),
                 Value<String?> localImagePath = const Value.absent(),
+                Value<String?> caption = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => WineMemoriesTableCompanion.insert(
@@ -2149,6 +2734,7 @@ class $$WineMemoriesTableTableTableManager
                 userId: userId,
                 imageUrl: imageUrl,
                 localImagePath: localImagePath,
+                caption: caption,
                 createdAt: createdAt,
                 rowid: rowid,
               ),
@@ -2181,6 +2767,220 @@ typedef $$WineMemoriesTableTableProcessedTableManager =
       WineMemoryTableData,
       PrefetchHooks Function()
     >;
+typedef $$WineAliasesTableTableCreateCompanionBuilder =
+    WineAliasesTableCompanion Function({
+      required String userId,
+      required String localWineId,
+      required String canonicalWineId,
+      Value<String> source,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+typedef $$WineAliasesTableTableUpdateCompanionBuilder =
+    WineAliasesTableCompanion Function({
+      Value<String> userId,
+      Value<String> localWineId,
+      Value<String> canonicalWineId,
+      Value<String> source,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+
+class $$WineAliasesTableTableFilterComposer
+    extends Composer<_$AppDatabase, $WineAliasesTableTable> {
+  $$WineAliasesTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get localWineId => $composableBuilder(
+    column: $table.localWineId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get canonicalWineId => $composableBuilder(
+    column: $table.canonicalWineId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get source => $composableBuilder(
+    column: $table.source,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$WineAliasesTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $WineAliasesTableTable> {
+  $$WineAliasesTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get localWineId => $composableBuilder(
+    column: $table.localWineId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get canonicalWineId => $composableBuilder(
+    column: $table.canonicalWineId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get source => $composableBuilder(
+    column: $table.source,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$WineAliasesTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $WineAliasesTableTable> {
+  $$WineAliasesTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<String> get localWineId => $composableBuilder(
+    column: $table.localWineId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get canonicalWineId => $composableBuilder(
+    column: $table.canonicalWineId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get source =>
+      $composableBuilder(column: $table.source, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$WineAliasesTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $WineAliasesTableTable,
+          WineAliasTableData,
+          $$WineAliasesTableTableFilterComposer,
+          $$WineAliasesTableTableOrderingComposer,
+          $$WineAliasesTableTableAnnotationComposer,
+          $$WineAliasesTableTableCreateCompanionBuilder,
+          $$WineAliasesTableTableUpdateCompanionBuilder,
+          (
+            WineAliasTableData,
+            BaseReferences<
+              _$AppDatabase,
+              $WineAliasesTableTable,
+              WineAliasTableData
+            >,
+          ),
+          WineAliasTableData,
+          PrefetchHooks Function()
+        > {
+  $$WineAliasesTableTableTableManager(
+    _$AppDatabase db,
+    $WineAliasesTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$WineAliasesTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$WineAliasesTableTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$WineAliasesTableTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> userId = const Value.absent(),
+                Value<String> localWineId = const Value.absent(),
+                Value<String> canonicalWineId = const Value.absent(),
+                Value<String> source = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => WineAliasesTableCompanion(
+                userId: userId,
+                localWineId: localWineId,
+                canonicalWineId: canonicalWineId,
+                source: source,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String userId,
+                required String localWineId,
+                required String canonicalWineId,
+                Value<String> source = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => WineAliasesTableCompanion.insert(
+                userId: userId,
+                localWineId: localWineId,
+                canonicalWineId: canonicalWineId,
+                source: source,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$WineAliasesTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $WineAliasesTableTable,
+      WineAliasTableData,
+      $$WineAliasesTableTableFilterComposer,
+      $$WineAliasesTableTableOrderingComposer,
+      $$WineAliasesTableTableAnnotationComposer,
+      $$WineAliasesTableTableCreateCompanionBuilder,
+      $$WineAliasesTableTableUpdateCompanionBuilder,
+      (
+        WineAliasTableData,
+        BaseReferences<
+          _$AppDatabase,
+          $WineAliasesTableTable,
+          WineAliasTableData
+        >,
+      ),
+      WineAliasTableData,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -2189,4 +2989,6 @@ class $AppDatabaseManager {
       $$WinesTableTableTableManager(_db, _db.winesTable);
   $$WineMemoriesTableTableTableManager get wineMemoriesTable =>
       $$WineMemoriesTableTableTableManager(_db, _db.wineMemoriesTable);
+  $$WineAliasesTableTableTableManager get wineAliasesTable =>
+      $$WineAliasesTableTableTableManager(_db, _db.wineAliasesTable);
 }

@@ -7,6 +7,7 @@ class WineMemoriesTable extends Table {
   TextColumn get userId => text()();
   TextColumn get imageUrl => text().nullable()();
   TextColumn get localImagePath => text().nullable()();
+  TextColumn get caption => text().nullable()();
   DateTimeColumn get createdAt =>
       dateTime().withDefault(currentDateAndTime)();
 
