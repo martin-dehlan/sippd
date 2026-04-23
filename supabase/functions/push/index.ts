@@ -91,6 +91,8 @@ async function resolvePush(
   }
 
   if (table === 'group_members') {
+    // Creator is auto-inserted as 'owner' on group create. Only notify real joins.
+    if (record.role === 'owner') return null;
     const { data: group } = await admin
       .from('groups')
       .select('name')

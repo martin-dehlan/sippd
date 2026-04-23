@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 /// Background isolate entry point. Must be top-level.
@@ -25,7 +26,7 @@ class PushHandlerService {
 
   Future<void> init() async {
     const androidInit =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+        AndroidInitializationSettings('ic_notification');
     const iosInit = DarwinInitializationSettings(
       requestAlertPermission: false,
       requestBadgePermission: false,
@@ -78,6 +79,8 @@ class PushHandlerService {
           'Sippd notifications',
           importance: Importance.high,
           priority: Priority.high,
+          icon: 'ic_notification',
+          color: Color(0xFF8B1E3F),
         ),
         iOS: const DarwinNotificationDetails(),
       ),
