@@ -8,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../controller/friends.provider.dart';
+import '../../../data/data_sources/friends.api.dart' show FriendRequestExistsException;
 import '../../../domain/entities/friend_profile.entity.dart';
 import '../../../domain/entities/friend_request.entity.dart';
 import '../../widgets/friend_avatar.widget.dart';
@@ -56,7 +57,12 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
         ref.watch(friendsListProvider).valueOrNull ?? const [];
     final requests =
         ref.watch(incomingFriendRequestsProvider).valueOrNull ?? const [];
-    final showEmpty = !searchMode && friends.isEmpty && requests.isEmpty;
+    final outgoing =
+        ref.watch(outgoingFriendRequestsProvider).valueOrNull ?? const [];
+    final showEmpty = !searchMode &&
+        friends.isEmpty &&
+        requests.isEmpty &&
+        outgoing.isEmpty;
 
     return Scaffold(
       body: SafeArea(
@@ -108,6 +114,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
                 _EmptyFriendsState(onFindFriends: _focusSearch)
               else ...[
                 const _RequestsSection(),
+                const _OutgoingRequestsSection(),
                 const _FriendsSection(),
               ],
               SizedBox(height: context.xl * 2),
@@ -281,6 +288,130 @@ class _RequestsSection extends ConsumerWidget {
           ),
       ],
     );
+  }
+}
+
+class _OutgoingRequestsSection extends ConsumerWidget {
+  const _OutgoingRequestsSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final outgoing =
+        ref.watch(outgoingFriendRequestsProvider).valueOrNull ?? const [];
+    if (outgoing.isEmpty) return const SizedBox.shrink();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(height: context.m),
+        _SectionHeader(label: 'Waiting for reply (${outgoing.length})'),
+        SizedBox(height: context.s),
+        for (final r in outgoing)
+          Padding(
+            padding: EdgeInsets.fromLTRB(
+                context.paddingH * 1.3,
+                0,
+                context.paddingH * 1.3,
+                context.s),
+            child: _OutgoingRequestRow(request: r),
+          ),
+      ],
+    );
+  }
+}
+
+class _OutgoingRequestRow extends ConsumerWidget {
+  final FriendRequestEntity request;
+  const _OutgoingRequestRow({required this.request});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final cs = Theme.of(context).colorScheme;
+    final profile = request.receiverProfile;
+    final name = profile?.displayName ?? profile?.username ?? 'Unknown';
+    return Container(
+      padding: EdgeInsets.all(context.w * 0.04),
+      decoration: BoxDecoration(
+        color: cs.surfaceContainer,
+        borderRadius: BorderRadius.circular(context.w * 0.03),
+        border: Border.all(color: cs.outlineVariant, width: 1),
+      ),
+      child: Row(
+        children: [
+          if (profile != null)
+            FriendAvatar(profile: profile, size: context.w * 0.12)
+          else
+            Icon(Icons.person, size: context.w * 0.12, color: cs.outline),
+          SizedBox(width: context.w * 0.04),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(name,
+                    style: TextStyle(
+                        fontSize: context.bodyFont,
+                        fontWeight: FontWeight.w600),
+                    overflow: TextOverflow.ellipsis),
+                SizedBox(height: context.xs * 0.5),
+                Row(
+                  children: [
+                    Icon(Icons.schedule,
+                        size: context.captionFont * 1.1,
+                        color: cs.primary),
+                    SizedBox(width: context.w * 0.015),
+                    Text('Request sent',
+                        style: TextStyle(
+                            fontSize: context.captionFont,
+                            color: cs.primary,
+                            fontWeight: FontWeight.w600)),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          TextButton(
+            onPressed: () => _confirmCancel(context, ref),
+            style: TextButton.styleFrom(
+              padding: EdgeInsets.symmetric(
+                  horizontal: context.w * 0.03,
+                  vertical: context.s),
+              minimumSize: Size.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            child: Text('Cancel',
+                style: TextStyle(
+                    fontSize: context.captionFont,
+                    color: cs.onSurfaceVariant,
+                    fontWeight: FontWeight.w600)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _confirmCancel(BuildContext context, WidgetRef ref) async {
+    final name = request.receiverProfile?.displayName ??
+        request.receiverProfile?.username ??
+        'this user';
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Cancel request?'),
+        content: Text('Cancel your friend request to $name?'),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('Keep')),
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: const Text('Cancel request')),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      await ref
+          .read(friendsControllerProvider.notifier)
+          .cancelRequest(request.id);
+    }
   }
 }
 
@@ -490,9 +621,14 @@ class _SearchResultRowState extends ConsumerState<_SearchResultRow> {
         _sent = true;
         _sending = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Friend request sent')),
-      );
+    } on FriendRequestExistsException {
+      // Already requested or already friends — treat as success so the
+      // button flips to ✓ instead of spamming an error.
+      if (!mounted) return;
+      setState(() {
+        _sent = true;
+        _sending = false;
+      });
     } catch (e) {
       if (!mounted) return;
       setState(() => _sending = false);
@@ -508,6 +644,13 @@ class _SearchResultRowState extends ConsumerState<_SearchResultRow> {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final friends =
+        ref.watch(friendsListProvider).valueOrNull ?? const [];
+    final outgoing =
+        ref.watch(outgoingFriendRequestsProvider).valueOrNull ?? const [];
+    final alreadyFriend = friends.any((f) => f.id == widget.profile.id);
+    final alreadyPending =
+        outgoing.any((r) => r.receiverId == widget.profile.id);
     return Container(
       padding: EdgeInsets.all(context.w * 0.04),
       decoration: BoxDecoration(
@@ -540,26 +683,92 @@ class _SearchResultRowState extends ConsumerState<_SearchResultRow> {
               ],
             ),
           ),
-          if (_sent)
-            Icon(Icons.check, color: cs.primary, size: context.w * 0.06)
-          else if (_sending)
-            SizedBox(
-              width: context.w * 0.05,
-              height: context.w * 0.05,
-              child: CircularProgressIndicator(
-                  strokeWidth: 2, color: cs.primary),
-            )
-          else
-            TextButton(
-              onPressed: _send,
-              child: Text('Add',
-                  style: TextStyle(
-                      fontSize: context.captionFont,
-                      color: cs.primary,
-                      fontWeight: FontWeight.w700)),
-            ),
+          _SearchResultTrailing(
+            alreadyFriend: alreadyFriend,
+            alreadyPending: alreadyPending,
+            sending: _sending,
+            optimisticallySent: _sent,
+            onAdd: _send,
+          ),
         ],
       ),
+    );
+  }
+}
+
+class _SearchResultTrailing extends StatelessWidget {
+  final bool alreadyFriend;
+  final bool alreadyPending;
+  final bool sending;
+  final bool optimisticallySent;
+  final VoidCallback onAdd;
+  const _SearchResultTrailing({
+    required this.alreadyFriend,
+    required this.alreadyPending,
+    required this.sending,
+    required this.optimisticallySent,
+    required this.onAdd,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    if (alreadyFriend) {
+      return _StatusChip(
+        icon: Icons.check_circle,
+        label: 'Friend',
+        color: cs.primary,
+      );
+    }
+    if (alreadyPending || optimisticallySent) {
+      return _StatusChip(
+        icon: Icons.schedule,
+        label: 'Pending',
+        color: cs.onSurfaceVariant,
+      );
+    }
+    if (sending) {
+      return SizedBox(
+        width: context.w * 0.05,
+        height: context.w * 0.05,
+        child:
+            CircularProgressIndicator(strokeWidth: 2, color: cs.primary),
+      );
+    }
+    return TextButton(
+      onPressed: onAdd,
+      child: Text('Add',
+          style: TextStyle(
+              fontSize: context.captionFont,
+              color: cs.primary,
+              fontWeight: FontWeight.w700)),
+    );
+  }
+}
+
+class _StatusChip extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+  const _StatusChip({
+    required this.icon,
+    required this.label,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: context.captionFont * 1.2, color: color),
+        SizedBox(width: context.w * 0.015),
+        Text(label,
+            style: TextStyle(
+                fontSize: context.captionFont,
+                color: color,
+                fontWeight: FontWeight.w600)),
+      ],
     );
   }
 }

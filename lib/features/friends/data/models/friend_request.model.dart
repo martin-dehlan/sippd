@@ -14,6 +14,7 @@ class FriendRequestModel with _$FriendRequestModel {
     required String status,
     @JsonKey(name: 'created_at') required DateTime createdAt,
     @JsonKey(name: 'sender') FriendProfileModel? sender,
+    @JsonKey(name: 'receiver') FriendProfileModel? receiver,
   }) = _FriendRequestModel;
 
   factory FriendRequestModel.fromJson(Map<String, dynamic> json) =>
@@ -31,5 +32,6 @@ extension FriendRequestModelX on FriendRequestModel {
         ),
         createdAt: createdAt,
         senderProfile: sender?.toEntity(),
+        receiverProfile: receiver?.toEntity(),
       );
 }

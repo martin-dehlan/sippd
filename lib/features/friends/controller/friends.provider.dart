@@ -38,6 +38,14 @@ Stream<List<FriendRequestEntity>> incomingFriendRequests(
 }
 
 @riverpod
+Stream<List<FriendRequestEntity>> outgoingFriendRequests(
+    OutgoingFriendRequestsRef ref) {
+  final repo = ref.watch(friendsRepositoryProvider);
+  if (repo == null) return Stream.value(const []);
+  return repo.watchOutgoingRequests();
+}
+
+@riverpod
 FriendWinesApi? friendWinesApi(FriendWinesApiRef ref) {
   final isAuth = ref.watch(isAuthenticatedProvider);
   if (!isAuth) return null;
@@ -132,5 +140,11 @@ class FriendsController extends _$FriendsController {
     final repo = ref.read(friendsRepositoryProvider);
     if (repo == null) throw StateError('Sign in required');
     await repo.removeFriend(friendId);
+  }
+
+  Future<void> cancelRequest(String requestId) async {
+    final repo = ref.read(friendsRepositoryProvider);
+    if (repo == null) throw StateError('Sign in required');
+    await repo.cancelRequest(requestId);
   }
 }

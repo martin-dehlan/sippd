@@ -63,6 +63,26 @@ final incomingFriendRequestsProvider =
 // ignore: unused_element
 typedef IncomingFriendRequestsRef =
     AutoDisposeStreamProviderRef<List<FriendRequestEntity>>;
+String _$outgoingFriendRequestsHash() =>
+    r'5117332095253dda870b5efb8fd83ddd2c9543eb';
+
+/// See also [outgoingFriendRequests].
+@ProviderFor(outgoingFriendRequests)
+final outgoingFriendRequestsProvider =
+    AutoDisposeStreamProvider<List<FriendRequestEntity>>.internal(
+      outgoingFriendRequests,
+      name: r'outgoingFriendRequestsProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$outgoingFriendRequestsHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef OutgoingFriendRequestsRef =
+    AutoDisposeStreamProviderRef<List<FriendRequestEntity>>;
 String _$friendWinesApiHash() => r'44dfe4290ade04ca689fc5816f16af8c2f4596d4';
 
 /// See also [friendWinesApi].
@@ -398,7 +418,7 @@ final friendSearchControllerProvider =
 
 typedef _$FriendSearchController =
     AutoDisposeAsyncNotifier<List<FriendProfileEntity>>;
-String _$friendsControllerHash() => r'c22c292f50618e436e5535c4fc44e3c7f89f526d';
+String _$friendsControllerHash() => r'f6c5613d8dffbb7e4a9e288b3c9634ac5e410dde';
 
 /// See also [FriendsController].
 @ProviderFor(FriendsController)

@@ -39,6 +39,37 @@ class FriendsApi {
             .toSet());
   }
 
+  /// Full outgoing pending requests with receiver profile joined — used to
+  /// show a "Pending" section on the friends screen so users can see who
+  /// they're waiting on and cancel if needed.
+  Stream<List<FriendRequestModel>> watchOutgoingRequests() {
+    return _client
+        .from('friend_requests')
+        .stream(primaryKey: ['id'])
+        .eq('sender_id', _uid)
+        .asyncMap((rows) async {
+      final pending = rows.where((r) => r['status'] == 'pending').toList();
+      if (pending.isEmpty) return <FriendRequestModel>[];
+      final receiverIds =
+          pending.map((r) => r['receiver_id'] as String).toSet().toList();
+      final receivers = await _client
+          .from('profiles')
+          .select()
+          .inFilter('id', receiverIds);
+      final receiverMap = {
+        for (final p in receivers as List)
+          (p as Map<String, dynamic>)['id'] as String: p,
+      };
+      return pending.map((r) {
+        final receiverId = r['receiver_id'] as String;
+        return FriendRequestModel.fromJson({
+          ...r,
+          'receiver': receiverMap[receiverId],
+        });
+      }).toList();
+    });
+  }
+
   Stream<List<FriendRequestModel>> watchIncomingRequests() {
     return _client
         .from('friend_requests')
@@ -149,6 +180,15 @@ class FriendsApi {
         .delete()
         .eq('user_id', _uid)
         .eq('friend_id', friendId);
+  }
+
+  /// Withdraw my own outgoing pending request.
+  Future<void> cancelRequest(String requestId) async {
+    await _client
+        .from('friend_requests')
+        .delete()
+        .eq('id', requestId)
+        .eq('sender_id', _uid);
   }
 }
 

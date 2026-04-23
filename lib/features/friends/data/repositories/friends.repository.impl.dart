@@ -20,6 +20,11 @@ class FriendsRepositoryImpl implements FriendsRepository {
       .map((list) => list.map((m) => m.toEntity()).toList());
 
   @override
+  Stream<List<FriendRequestEntity>> watchOutgoingRequests() => _api
+      .watchOutgoingRequests()
+      .map((list) => list.map((m) => m.toEntity()).toList());
+
+  @override
   Future<List<FriendProfileEntity>> searchUsers(String query) async {
     if (query.trim().isEmpty) return [];
     final results = await _api.searchUsers(query.trim());
@@ -40,4 +45,8 @@ class FriendsRepositoryImpl implements FriendsRepository {
 
   @override
   Future<void> removeFriend(String friendId) => _api.removeFriend(friendId);
+
+  @override
+  Future<void> cancelRequest(String requestId) =>
+      _api.cancelRequest(requestId);
 }

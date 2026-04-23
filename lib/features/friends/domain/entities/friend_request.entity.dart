@@ -14,5 +14,6 @@ class FriendRequestEntity with _$FriendRequestEntity {
     required FriendRequestStatus status,
     required DateTime createdAt,
     FriendProfileEntity? senderProfile,
+    FriendProfileEntity? receiverProfile,
   }) = _FriendRequestEntity;
 }

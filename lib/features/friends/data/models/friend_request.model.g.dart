@@ -17,6 +17,9 @@ _$FriendRequestModelImpl _$$FriendRequestModelImplFromJson(
   sender: json['sender'] == null
       ? null
       : FriendProfileModel.fromJson(json['sender'] as Map<String, dynamic>),
+  receiver: json['receiver'] == null
+      ? null
+      : FriendProfileModel.fromJson(json['receiver'] as Map<String, dynamic>),
 );
 
 Map<String, dynamic> _$$FriendRequestModelImplToJson(
@@ -28,4 +31,5 @@ Map<String, dynamic> _$$FriendRequestModelImplToJson(
   'status': instance.status,
   'created_at': instance.createdAt.toIso8601String(),
   'sender': instance.sender,
+  'receiver': instance.receiver,
 };

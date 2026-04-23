@@ -31,6 +31,8 @@ mixin _$FriendRequestModel {
   DateTime get createdAt => throw _privateConstructorUsedError;
   @JsonKey(name: 'sender')
   FriendProfileModel? get sender => throw _privateConstructorUsedError;
+  @JsonKey(name: 'receiver')
+  FriendProfileModel? get receiver => throw _privateConstructorUsedError;
 
   /// Serializes this FriendRequestModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -56,9 +58,11 @@ abstract class $FriendRequestModelCopyWith<$Res> {
     String status,
     @JsonKey(name: 'created_at') DateTime createdAt,
     @JsonKey(name: 'sender') FriendProfileModel? sender,
+    @JsonKey(name: 'receiver') FriendProfileModel? receiver,
   });
 
   $FriendProfileModelCopyWith<$Res>? get sender;
+  $FriendProfileModelCopyWith<$Res>? get receiver;
 }
 
 /// @nodoc
@@ -82,6 +86,7 @@ class _$FriendRequestModelCopyWithImpl<$Res, $Val extends FriendRequestModel>
     Object? status = null,
     Object? createdAt = null,
     Object? sender = freezed,
+    Object? receiver = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -109,6 +114,10 @@ class _$FriendRequestModelCopyWithImpl<$Res, $Val extends FriendRequestModel>
                 ? _value.sender
                 : sender // ignore: cast_nullable_to_non_nullable
                       as FriendProfileModel?,
+            receiver: freezed == receiver
+                ? _value.receiver
+                : receiver // ignore: cast_nullable_to_non_nullable
+                      as FriendProfileModel?,
           )
           as $Val,
     );
@@ -125,6 +134,20 @@ class _$FriendRequestModelCopyWithImpl<$Res, $Val extends FriendRequestModel>
 
     return $FriendProfileModelCopyWith<$Res>(_value.sender!, (value) {
       return _then(_value.copyWith(sender: value) as $Val);
+    });
+  }
+
+  /// Create a copy of FriendRequestModel
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $FriendProfileModelCopyWith<$Res>? get receiver {
+    if (_value.receiver == null) {
+      return null;
+    }
+
+    return $FriendProfileModelCopyWith<$Res>(_value.receiver!, (value) {
+      return _then(_value.copyWith(receiver: value) as $Val);
     });
   }
 }
@@ -145,10 +168,13 @@ abstract class _$$FriendRequestModelImplCopyWith<$Res>
     String status,
     @JsonKey(name: 'created_at') DateTime createdAt,
     @JsonKey(name: 'sender') FriendProfileModel? sender,
+    @JsonKey(name: 'receiver') FriendProfileModel? receiver,
   });
 
   @override
   $FriendProfileModelCopyWith<$Res>? get sender;
+  @override
+  $FriendProfileModelCopyWith<$Res>? get receiver;
 }
 
 /// @nodoc
@@ -171,6 +197,7 @@ class __$$FriendRequestModelImplCopyWithImpl<$Res>
     Object? status = null,
     Object? createdAt = null,
     Object? sender = freezed,
+    Object? receiver = freezed,
   }) {
     return _then(
       _$FriendRequestModelImpl(
@@ -198,6 +225,10 @@ class __$$FriendRequestModelImplCopyWithImpl<$Res>
             ? _value.sender
             : sender // ignore: cast_nullable_to_non_nullable
                   as FriendProfileModel?,
+        receiver: freezed == receiver
+            ? _value.receiver
+            : receiver // ignore: cast_nullable_to_non_nullable
+                  as FriendProfileModel?,
       ),
     );
   }
@@ -213,6 +244,7 @@ class _$FriendRequestModelImpl implements _FriendRequestModel {
     required this.status,
     @JsonKey(name: 'created_at') required this.createdAt,
     @JsonKey(name: 'sender') this.sender,
+    @JsonKey(name: 'receiver') this.receiver,
   });
 
   factory _$FriendRequestModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -234,10 +266,13 @@ class _$FriendRequestModelImpl implements _FriendRequestModel {
   @override
   @JsonKey(name: 'sender')
   final FriendProfileModel? sender;
+  @override
+  @JsonKey(name: 'receiver')
+  final FriendProfileModel? receiver;
 
   @override
   String toString() {
-    return 'FriendRequestModel(id: $id, senderId: $senderId, receiverId: $receiverId, status: $status, createdAt: $createdAt, sender: $sender)';
+    return 'FriendRequestModel(id: $id, senderId: $senderId, receiverId: $receiverId, status: $status, createdAt: $createdAt, sender: $sender, receiver: $receiver)';
   }
 
   @override
@@ -253,7 +288,9 @@ class _$FriendRequestModelImpl implements _FriendRequestModel {
             (identical(other.status, status) || other.status == status) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
-            (identical(other.sender, sender) || other.sender == sender));
+            (identical(other.sender, sender) || other.sender == sender) &&
+            (identical(other.receiver, receiver) ||
+                other.receiver == receiver));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -266,6 +303,7 @@ class _$FriendRequestModelImpl implements _FriendRequestModel {
     status,
     createdAt,
     sender,
+    receiver,
   );
 
   /// Create a copy of FriendRequestModel
@@ -293,6 +331,7 @@ abstract class _FriendRequestModel implements FriendRequestModel {
     required final String status,
     @JsonKey(name: 'created_at') required final DateTime createdAt,
     @JsonKey(name: 'sender') final FriendProfileModel? sender,
+    @JsonKey(name: 'receiver') final FriendProfileModel? receiver,
   }) = _$FriendRequestModelImpl;
 
   factory _FriendRequestModel.fromJson(Map<String, dynamic> json) =
@@ -314,6 +353,9 @@ abstract class _FriendRequestModel implements FriendRequestModel {
   @override
   @JsonKey(name: 'sender')
   FriendProfileModel? get sender;
+  @override
+  @JsonKey(name: 'receiver')
+  FriendProfileModel? get receiver;
 
   /// Create a copy of FriendRequestModel
   /// with the given fields replaced by the non-null parameter values.

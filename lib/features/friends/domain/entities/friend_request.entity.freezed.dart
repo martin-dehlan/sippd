@@ -23,6 +23,8 @@ mixin _$FriendRequestEntity {
   FriendRequestStatus get status => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   FriendProfileEntity? get senderProfile => throw _privateConstructorUsedError;
+  FriendProfileEntity? get receiverProfile =>
+      throw _privateConstructorUsedError;
 
   /// Create a copy of FriendRequestEntity
   /// with the given fields replaced by the non-null parameter values.
@@ -45,9 +47,11 @@ abstract class $FriendRequestEntityCopyWith<$Res> {
     FriendRequestStatus status,
     DateTime createdAt,
     FriendProfileEntity? senderProfile,
+    FriendProfileEntity? receiverProfile,
   });
 
   $FriendProfileEntityCopyWith<$Res>? get senderProfile;
+  $FriendProfileEntityCopyWith<$Res>? get receiverProfile;
 }
 
 /// @nodoc
@@ -71,6 +75,7 @@ class _$FriendRequestEntityCopyWithImpl<$Res, $Val extends FriendRequestEntity>
     Object? status = null,
     Object? createdAt = null,
     Object? senderProfile = freezed,
+    Object? receiverProfile = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -98,6 +103,10 @@ class _$FriendRequestEntityCopyWithImpl<$Res, $Val extends FriendRequestEntity>
                 ? _value.senderProfile
                 : senderProfile // ignore: cast_nullable_to_non_nullable
                       as FriendProfileEntity?,
+            receiverProfile: freezed == receiverProfile
+                ? _value.receiverProfile
+                : receiverProfile // ignore: cast_nullable_to_non_nullable
+                      as FriendProfileEntity?,
           )
           as $Val,
     );
@@ -114,6 +123,20 @@ class _$FriendRequestEntityCopyWithImpl<$Res, $Val extends FriendRequestEntity>
 
     return $FriendProfileEntityCopyWith<$Res>(_value.senderProfile!, (value) {
       return _then(_value.copyWith(senderProfile: value) as $Val);
+    });
+  }
+
+  /// Create a copy of FriendRequestEntity
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $FriendProfileEntityCopyWith<$Res>? get receiverProfile {
+    if (_value.receiverProfile == null) {
+      return null;
+    }
+
+    return $FriendProfileEntityCopyWith<$Res>(_value.receiverProfile!, (value) {
+      return _then(_value.copyWith(receiverProfile: value) as $Val);
     });
   }
 }
@@ -134,10 +157,13 @@ abstract class _$$FriendRequestEntityImplCopyWith<$Res>
     FriendRequestStatus status,
     DateTime createdAt,
     FriendProfileEntity? senderProfile,
+    FriendProfileEntity? receiverProfile,
   });
 
   @override
   $FriendProfileEntityCopyWith<$Res>? get senderProfile;
+  @override
+  $FriendProfileEntityCopyWith<$Res>? get receiverProfile;
 }
 
 /// @nodoc
@@ -160,6 +186,7 @@ class __$$FriendRequestEntityImplCopyWithImpl<$Res>
     Object? status = null,
     Object? createdAt = null,
     Object? senderProfile = freezed,
+    Object? receiverProfile = freezed,
   }) {
     return _then(
       _$FriendRequestEntityImpl(
@@ -187,6 +214,10 @@ class __$$FriendRequestEntityImplCopyWithImpl<$Res>
             ? _value.senderProfile
             : senderProfile // ignore: cast_nullable_to_non_nullable
                   as FriendProfileEntity?,
+        receiverProfile: freezed == receiverProfile
+            ? _value.receiverProfile
+            : receiverProfile // ignore: cast_nullable_to_non_nullable
+                  as FriendProfileEntity?,
       ),
     );
   }
@@ -202,6 +233,7 @@ class _$FriendRequestEntityImpl implements _FriendRequestEntity {
     required this.status,
     required this.createdAt,
     this.senderProfile,
+    this.receiverProfile,
   });
 
   @override
@@ -216,10 +248,12 @@ class _$FriendRequestEntityImpl implements _FriendRequestEntity {
   final DateTime createdAt;
   @override
   final FriendProfileEntity? senderProfile;
+  @override
+  final FriendProfileEntity? receiverProfile;
 
   @override
   String toString() {
-    return 'FriendRequestEntity(id: $id, senderId: $senderId, receiverId: $receiverId, status: $status, createdAt: $createdAt, senderProfile: $senderProfile)';
+    return 'FriendRequestEntity(id: $id, senderId: $senderId, receiverId: $receiverId, status: $status, createdAt: $createdAt, senderProfile: $senderProfile, receiverProfile: $receiverProfile)';
   }
 
   @override
@@ -236,7 +270,9 @@ class _$FriendRequestEntityImpl implements _FriendRequestEntity {
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             (identical(other.senderProfile, senderProfile) ||
-                other.senderProfile == senderProfile));
+                other.senderProfile == senderProfile) &&
+            (identical(other.receiverProfile, receiverProfile) ||
+                other.receiverProfile == receiverProfile));
   }
 
   @override
@@ -248,6 +284,7 @@ class _$FriendRequestEntityImpl implements _FriendRequestEntity {
     status,
     createdAt,
     senderProfile,
+    receiverProfile,
   );
 
   /// Create a copy of FriendRequestEntity
@@ -270,6 +307,7 @@ abstract class _FriendRequestEntity implements FriendRequestEntity {
     required final FriendRequestStatus status,
     required final DateTime createdAt,
     final FriendProfileEntity? senderProfile,
+    final FriendProfileEntity? receiverProfile,
   }) = _$FriendRequestEntityImpl;
 
   @override
@@ -284,6 +322,8 @@ abstract class _FriendRequestEntity implements FriendRequestEntity {
   DateTime get createdAt;
   @override
   FriendProfileEntity? get senderProfile;
+  @override
+  FriendProfileEntity? get receiverProfile;
 
   /// Create a copy of FriendRequestEntity
   /// with the given fields replaced by the non-null parameter values.
