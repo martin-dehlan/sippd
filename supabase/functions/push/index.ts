@@ -5,7 +5,7 @@
 // Required env (Supabase Edge Function secrets):
 //   FIREBASE_SERVICE_ACCOUNT — full service-account JSON as string
 //   PUSH_WEBHOOK_SECRET     — optional shared secret (also set as app.push_secret in Postgres)
-//   FCM_PROJECT_ID          — optional, defaults to sippd-f60b6
+//   FCM_PROJECT_ID          — optional, defaults to sippd-6e06e
 
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { JWT } from 'npm:google-auth-library@9';
@@ -26,7 +26,7 @@ interface PushMessage {
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-const FCM_PROJECT_ID = Deno.env.get('FCM_PROJECT_ID') ?? 'sippd-f60b6';
+const FCM_PROJECT_ID = Deno.env.get('FCM_PROJECT_ID') ?? 'sippd-6e06e';
 const WEBHOOK_SECRET = Deno.env.get('PUSH_WEBHOOK_SECRET');
 const FIREBASE_SERVICE_ACCOUNT = Deno.env.get('FIREBASE_SERVICE_ACCOUNT');
 

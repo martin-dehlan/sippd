@@ -3,6 +3,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 part 'auth.provider.g.dart';
 
+enum SignUpOutcome { signedIn, confirmationRequired, failed }
+
 @riverpod
 SupabaseClient supabaseClient(SupabaseClientRef ref) {
   return Supabase.instance.client;
@@ -23,21 +25,30 @@ class AuthController extends _$AuthController {
     return AsyncValue.data(user);
   }
 
-  Future<void> signUp({
+  Future<SignUpOutcome> signUp({
     required String email,
     required String password,
     String? displayName,
   }) async {
     state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() async {
+    try {
       final client = ref.read(supabaseClientProvider);
       final response = await client.auth.signUp(
         email: email,
         password: password,
         data: displayName != null ? {'display_name': displayName} : null,
+        emailRedirectTo: 'io.sippd://login-callback/',
       );
-      return response.user;
-    });
+      if (response.session == null) {
+        state = const AsyncValue.data(null);
+        return SignUpOutcome.confirmationRequired;
+      }
+      state = AsyncValue.data(response.user);
+      return SignUpOutcome.signedIn;
+    } catch (e, st) {
+      state = AsyncValue.error(e, st);
+      return SignUpOutcome.failed;
+    }
   }
 
   Future<void> signIn({

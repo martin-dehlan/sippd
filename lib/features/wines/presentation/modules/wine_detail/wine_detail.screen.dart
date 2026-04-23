@@ -621,7 +621,7 @@ class _PlaceSection extends StatelessWidget {
               TileLayer(
                 urlTemplate:
                     'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                userAgentPackageName: 'com.sippd.sippd',
+                userAgentPackageName: 'xyz.sippd.app',
               ),
               MarkerLayer(
                 markers: [

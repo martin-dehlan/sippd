@@ -35,8 +35,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     final auth = ref.read(authControllerProvider.notifier);
 
+    SignUpOutcome? signUpOutcome;
     if (_isSignUp) {
-      await auth.signUp(
+      signUpOutcome = await auth.signUp(
         email: _emailController.text.trim(),
         password: _passwordController.text,
         displayName: _displayNameController.text.trim().isNotEmpty
@@ -50,8 +51,23 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       );
     }
 
+    if (!mounted) return;
+
+    if (signUpOutcome == SignUpOutcome.confirmationRequired) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text(
+              'Check your email to confirm your account, then sign in.'),
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          duration: const Duration(seconds: 6),
+        ),
+      );
+      setState(() => _isSignUp = false);
+      return;
+    }
+
     final state = ref.read(authControllerProvider);
-    if (state.hasError && mounted) {
+    if (state.hasError) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(state.error.toString()),
@@ -66,13 +82,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final cs = Theme.of(context).colorScheme;
     final authState = ref.watch(authControllerProvider);
     final isLoading = authState.isLoading;
-
-    // Redirect if authenticated
-    ref.listen(authControllerProvider, (_, next) {
-      if (next.valueOrNull != null) {
-        context.go(AppRoutes.wines);
-      }
-    });
 
     return Scaffold(
       body: SafeArea(
