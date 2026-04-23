@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class ProfileAvatar extends StatelessWidget {
@@ -24,10 +25,12 @@ class ProfileAvatar extends StatelessWidget {
     final ringWidth = size * 0.025;
     final badgeSize = size * 0.28;
 
+    final hasImage = avatarUrl != null && avatarUrl!.isNotEmpty;
+    final fallback = _Initials(text: fallbackText, size: size);
+
     final avatar = Container(
       width: size,
       height: size,
-      clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: cs.primaryContainer,
         shape: BoxShape.circle,
@@ -38,16 +41,18 @@ class ProfileAvatar extends StatelessWidget {
               )
             : null,
       ),
-      child: avatarUrl != null && avatarUrl!.isNotEmpty
-          ? Image.network(
-              avatarUrl!,
-              fit: BoxFit.cover,
-              errorBuilder: (_, _, _) => _Initials(
-                text: fallbackText,
-                size: size,
-              ),
-            )
-          : _Initials(text: fallbackText, size: size),
+      child: ClipOval(
+        child: hasImage
+            ? CachedNetworkImage(
+                imageUrl: avatarUrl!,
+                fit: BoxFit.cover,
+                width: double.infinity,
+                height: double.infinity,
+                placeholder: (_, _) => fallback,
+                errorWidget: (_, _, _) => fallback,
+              )
+            : fallback,
+      ),
     );
 
     final content = showEditBadge

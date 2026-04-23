@@ -4,12 +4,104 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../../../common/utils/responsive.dart';
 import '../../../../../../core/routes/app.routes.dart';
-import '../../../../../profile/presentation/widgets/profile_avatar.widget.dart';
 import '../../../../../wines/domain/entities/wine.entity.dart';
 import '../../../../controller/group.provider.dart';
 import '../../../../domain/entities/group_wine_rating.entity.dart';
 import 'group_wine_rating_sheet.widget.dart';
 import 'wine_picker_sheet.widget.dart';
+
+class _RatingFooter extends StatelessWidget {
+  final List<GroupWineRatingEntity> ratings;
+  final double fallback;
+  final VoidCallback onDetails;
+
+  const _RatingFooter({
+    required this.ratings,
+    required this.fallback,
+    required this.onDetails,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final hasRatings = ratings.isNotEmpty;
+    final avg = hasRatings
+        ? ratings.map((r) => r.rating).reduce((a, b) => a + b) /
+            ratings.length
+        : fallback;
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+          avg.toStringAsFixed(1),
+          style: TextStyle(
+            fontSize: context.titleFont * 0.85,
+            fontWeight: FontWeight.w800,
+            color: cs.onSurface,
+            height: 1,
+            letterSpacing: -1,
+          ),
+        ),
+        SizedBox(width: context.xs * 0.5),
+        Padding(
+          padding: EdgeInsets.only(top: context.xs * 0.8),
+          child: Text('/10',
+              style: TextStyle(
+                fontSize: context.captionFont * 0.9,
+                color: cs.onSurfaceVariant,
+              )),
+        ),
+        const Spacer(),
+        _DetailsButton(onTap: onDetails),
+      ],
+    );
+  }
+}
+
+class _DetailsButton extends StatelessWidget {
+  final VoidCallback onTap;
+  const _DetailsButton({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Material(
+      color: cs.surfaceContainerHighest,
+      borderRadius: BorderRadius.circular(context.w * 0.025),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: context.w * 0.03,
+            vertical: context.xs * 1.1,
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Details',
+                style: TextStyle(
+                  fontSize: context.captionFont * 0.9,
+                  fontWeight: FontWeight.w700,
+                  color: cs.onSurface,
+                  letterSpacing: 0.4,
+                ),
+              ),
+              SizedBox(width: context.xs * 0.6),
+              Icon(
+                Icons.arrow_forward_rounded,
+                size: context.captionFont,
+                color: cs.onSurfaceVariant,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
 
 class SharedWinesCarousel extends ConsumerStatefulWidget {
   final String groupId;
@@ -320,7 +412,7 @@ class _WineCard extends ConsumerWidget {
         );
 
     return GestureDetector(
-      onTap: () => context.push(AppRoutes.wineDetailPath(wine.id)),
+      onTap: openRateSheet,
       child: Container(
         margin: EdgeInsets.symmetric(horizontal: context.w * 0.01),
         padding: EdgeInsets.all(context.w * 0.05),
@@ -380,7 +472,8 @@ class _WineCard extends ConsumerWidget {
             _RatingFooter(
               ratings: ratingsAsync.valueOrNull ?? const [],
               fallback: wine.rating,
-              onTapScore: openRateSheet,
+              onDetails: () =>
+                  context.push(AppRoutes.wineDetailPath(wine.id)),
             ),
           ],
         ),
@@ -502,136 +595,3 @@ class _RankBadge extends StatelessWidget {
   }
 }
 
-class _RatingFooter extends StatelessWidget {
-  final List<GroupWineRatingEntity> ratings;
-  final double fallback;
-  final VoidCallback onTapScore;
-
-  const _RatingFooter({
-    required this.ratings,
-    required this.fallback,
-    required this.onTapScore,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    final hasRatings = ratings.isNotEmpty;
-    final avg = hasRatings
-        ? ratings.map((r) => r.rating).reduce((a, b) => a + b) /
-            ratings.length
-        : fallback;
-
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        GestureDetector(
-          onTap: onTapScore,
-          behavior: HitTestBehavior.opaque,
-          child: Padding(
-            padding: EdgeInsets.symmetric(vertical: context.xs),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  avg.toStringAsFixed(1),
-                  style: TextStyle(
-                    fontSize: context.titleFont * 0.85,
-                    fontWeight: FontWeight.w800,
-                    color: cs.onSurface,
-                    height: 1,
-                    letterSpacing: -1,
-                  ),
-                ),
-                SizedBox(width: context.xs * 0.5),
-                Padding(
-                  padding: EdgeInsets.only(top: context.xs * 0.8),
-                  child: Text('/10',
-                      style: TextStyle(
-                        fontSize: context.captionFont * 0.9,
-                        color: cs.onSurfaceVariant,
-                      )),
-                ),
-              ],
-            ),
-          ),
-        ),
-        const Spacer(),
-        if (hasRatings)
-          _AvatarStack(
-            ratings: ratings.take(3).toList(),
-            extra: ratings.length > 3 ? ratings.length - 3 : 0,
-          ),
-      ],
-    );
-  }
-}
-
-class _AvatarStack extends StatelessWidget {
-  final List<GroupWineRatingEntity> ratings;
-  final int extra;
-
-  const _AvatarStack({required this.ratings, required this.extra});
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    final size = context.w * 0.07;
-    final borderWidth = 2.0;
-    final drawn = size + borderWidth * 2;
-    final overlap = size * 0.6;
-    final total = ratings.length + (extra > 0 ? 1 : 0);
-    final stackWidth = (total - 1) * overlap + drawn;
-
-    return SizedBox(
-      width: stackWidth,
-      height: drawn,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          for (var i = 0; i < ratings.length; i++)
-            Positioned(
-              left: i * overlap,
-              top: 0,
-              child: Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border:
-                      Border.all(color: cs.surfaceContainer, width: borderWidth),
-                ),
-                child: ProfileAvatar(
-                  avatarUrl: ratings[i].avatarUrl,
-                  fallbackText: ratings[i].username ??
-                      ratings[i].displayName ??
-                      '?',
-                  size: size,
-                ),
-              ),
-            ),
-          if (extra > 0)
-            Positioned(
-              left: ratings.length * overlap,
-              top: 0,
-              child: Container(
-                width: size,
-                height: size,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: cs.primaryContainer,
-                  border:
-                      Border.all(color: cs.surfaceContainer, width: borderWidth),
-                ),
-                child: Text('+$extra',
-                    style: TextStyle(
-                      fontSize: size * 0.32,
-                      fontWeight: FontWeight.bold,
-                      color: cs.primary,
-                    )),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-}

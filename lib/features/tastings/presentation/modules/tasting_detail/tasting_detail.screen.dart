@@ -634,26 +634,18 @@ class _AttendeesCard extends ConsumerWidget {
           children: [
             _AvatarCluster(items: combined, maxVisible: 6),
             SizedBox(height: context.s),
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    [
-                      if (going > 0) '$going going',
-                      if (maybe > 0) '$maybe maybe',
-                      if (declined > 0) '$declined declined',
-                      if (pending > 0) '$pending pending',
-                    ].join(' · '),
-                    style: TextStyle(
-                      fontSize: context.captionFont,
-                      color: cs.onSurfaceVariant,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-                Icon(Icons.chevron_right,
-                    size: context.w * 0.045, color: cs.outline),
-              ],
+            Text(
+              [
+                if (going > 0) '$going going',
+                if (maybe > 0) '$maybe maybe',
+                if (declined > 0) '$declined declined',
+                if (pending > 0) '$pending pending',
+              ].join(' · '),
+              style: TextStyle(
+                fontSize: context.captionFont,
+                color: cs.onSurfaceVariant,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ],
         ),
