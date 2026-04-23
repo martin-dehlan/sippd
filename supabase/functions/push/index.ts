@@ -4,8 +4,9 @@
 // Called by Postgres triggers on friend_requests, group_tastings, group_members, group_invitations.
 // Required env (Supabase Edge Function secrets):
 //   FIREBASE_SERVICE_ACCOUNT — full service-account JSON as string
-//   PUSH_WEBHOOK_SECRET     — optional shared secret (also set as app.push_secret in Postgres)
-//   FCM_PROJECT_ID          — optional, defaults to sippd-6e06e
+//   PUSH_WEBHOOK_SECRET      — shared secret; must match vault secret
+//                              'push_webhook_secret' read by notify_push trigger
+//   FCM_PROJECT_ID           — optional, defaults to sippd-6e06e
 
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { JWT } from 'npm:google-auth-library@9';
@@ -22,7 +23,17 @@ interface PushMessage {
   title: string;
   body: string;
   data?: Record<string, string>;
+  /** Android notification tag. Same tag replaces an older notification
+   *  instead of stacking — prevents spam on re-sent events. */
+  tag?: string;
+  /** iOS grouping key; all notifications with the same thread_id collapse
+   *  into one stack on the lock screen. */
+  threadId?: string;
 }
+
+// Brand color for the small-icon tint in the status bar. Matches the
+// notification_color defined in android/app/src/main/res/values/colors.xml.
+const BRAND_COLOR = '#8B1E3F';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
@@ -76,6 +87,8 @@ async function resolvePush(
         user_id: record.receiver_id,
         request_id: record.id,
       },
+      tag: `friend_accept:${record.receiver_id}`,
+      threadId: 'friends',
     };
   }
 
@@ -93,6 +106,8 @@ async function resolvePush(
       title: 'New friend request',
       body: `${name} wants to be your friend`,
       data: { type: 'friend_request', request_id: record.id },
+      tag: `friend_request:${record.sender_id}`,
+      threadId: 'friends',
     };
   }
 
@@ -115,6 +130,8 @@ async function resolvePush(
       title: 'New tasting planned',
       body: `${record.title} — ${group?.name ?? 'your group'}`,
       data: { type: 'tasting_created', tasting_id: record.id },
+      tag: `tasting:${record.id}`,
+      threadId: `group:${record.group_id}`,
     };
   }
 
@@ -131,6 +148,8 @@ async function resolvePush(
       title: 'Joined group',
       body: `Welcome to ${group?.name ?? 'the group'}`,
       data: { type: 'group_joined', group_id: record.group_id },
+      tag: `group_joined:${record.group_id}`,
+      threadId: `group:${record.group_id}`,
     };
   }
 
@@ -157,6 +176,8 @@ async function resolvePush(
         invitation_id: record.id,
         group_id: record.group_id,
       },
+      tag: `group_invite:${record.id}`,
+      threadId: `group:${record.group_id}`,
     };
   }
 
@@ -167,10 +188,17 @@ async function sendToTokens(
   accessToken: string,
   msg: PushMessage,
   tokens: string[],
-): Promise<{ sent: number; failed: number; invalidTokens: string[] }> {
+): Promise<{
+  sent: number;
+  failed: number;
+  invalidTokens: string[];
+  fcmResponses: Array<{ token: string; status: number; body: string }>;
+}> {
   let sent = 0;
   let failed = 0;
   const invalidTokens: string[] = [];
+  const fcmResponses: Array<{ token: string; status: number; body: string }> =
+    [];
   const url = `https://fcm.googleapis.com/v1/projects/${FCM_PROJECT_ID}/messages:send`;
 
   await Promise.all(
@@ -180,6 +208,27 @@ async function sendToTokens(
           token,
           notification: { title: msg.title, body: msg.body },
           data: msg.data ?? {},
+          android: {
+            priority: 'HIGH',
+            notification: {
+              icon: 'ic_notification',
+              color: BRAND_COLOR,
+              notification_priority: 'PRIORITY_MAX',
+              default_sound: true,
+              default_vibrate_timings: true,
+              ...(msg.tag ? { tag: msg.tag } : {}),
+            },
+          },
+          apns: {
+            headers: { 'apns-priority': '10' },
+            payload: {
+              aps: {
+                sound: 'default',
+                'mutable-content': 1,
+                ...(msg.threadId ? { 'thread-id': msg.threadId } : {}),
+              },
+            },
+          },
         },
       };
       const res = await fetch(url, {
@@ -190,19 +239,25 @@ async function sendToTokens(
         },
         body: JSON.stringify(body),
       });
+      const txt = await res.text();
+      const tokenPreview = token.slice(0, 20);
+      fcmResponses.push({
+        token: tokenPreview,
+        status: res.status,
+        body: txt.slice(0, 400),
+      });
       if (res.ok) {
         sent++;
       } else {
         failed++;
-        const txt = await res.text();
-        console.error(`FCM error ${res.status}: ${txt}`);
+        console.error(`FCM error ${res.status} for ${tokenPreview}: ${txt}`);
         if (res.status === 404 || res.status === 400) {
           invalidTokens.push(token);
         }
       }
     }),
   );
-  return { sent, failed, invalidTokens };
+  return { sent, failed, invalidTokens, fcmResponses };
 }
 
 Deno.serve(async (req) => {
@@ -266,6 +321,7 @@ Deno.serve(async (req) => {
       sent: result.sent,
       failed: result.failed,
       removed_invalid: result.invalidTokens.length,
+      fcm: result.fcmResponses,
     }),
     { status: 200, headers: { 'content-type': 'application/json' } },
   );
