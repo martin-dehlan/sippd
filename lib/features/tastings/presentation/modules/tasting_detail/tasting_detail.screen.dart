@@ -240,7 +240,7 @@ class _Body extends ConsumerWidget {
               left: context.paddingH * 1.3,
               right: context.paddingH * 0.8),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Expanded(
                 child: Text(
@@ -256,13 +256,13 @@ class _Body extends ConsumerWidget {
                 ),
               ),
               _CalendarIconButton(
-                onTap: () => showCalendarExportSheet(
+                onTap: () => addTastingToCalendar(
                     context: context, tasting: tasting),
               ),
               SizedBox(width: context.w * 0.02),
               _ShareIconButton(
                 onTap: () => Share.share(
-                  '${tasting.title} · ${DeepLinkService.tastingUri(tasting.id)}',
+                  '${tasting.title}\n\n${DeepLinkService.tastingHttpsUri(tasting.id)}',
                   subject: tasting.title,
                 ),
               ),
