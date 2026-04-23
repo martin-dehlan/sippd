@@ -55,11 +55,17 @@ class FriendsApi {
   }
 
   Future<List<FriendProfileModel>> searchUsers(String query) async {
+    // Strip PostgREST filter metachars + SQL LIKE wildcards to prevent
+    // filter-expression injection via the `or()` string builder.
+    final safe = query
+        .replaceAll(RegExp(r'[,()%_*\\]'), '')
+        .trim();
+    if (safe.isEmpty) return <FriendProfileModel>[];
     final rows = await _client
         .from('profiles')
         .select()
         .neq('id', _uid)
-        .or('username.ilike.%$query%,display_name.ilike.%$query%')
+        .or('username.ilike.%$safe%,display_name.ilike.%$safe%')
         .limit(20);
     return (rows as List)
         .map((p) => FriendProfileModel.fromJson(p as Map<String, dynamic>))
@@ -92,10 +98,5 @@ class FriendsApi {
         .delete()
         .eq('user_id', _uid)
         .eq('friend_id', friendId);
-    await _client
-        .from('friendships')
-        .delete()
-        .eq('user_id', friendId)
-        .eq('friend_id', _uid);
   }
 }
