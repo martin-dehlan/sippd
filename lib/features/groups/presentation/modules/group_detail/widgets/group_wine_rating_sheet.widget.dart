@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../../common/utils/responsive.dart';
@@ -19,8 +22,8 @@ Future<void> showGroupWineRatingSheet({
     isScrollControlled: true,
     backgroundColor: Theme.of(context).colorScheme.surface,
     shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(
-          top: Radius.circular(context.w * 0.06)),
+      borderRadius:
+          BorderRadius.vertical(top: Radius.circular(context.w * 0.06)),
     ),
     builder: (_) => _Sheet(groupId: groupId, wine: wine),
   );
@@ -37,12 +40,28 @@ class _Sheet extends ConsumerStatefulWidget {
 
 class _SheetState extends ConsumerState<_Sheet> {
   double? _myRating;
+  double? _savedRating;
+  String _savedNotes = '';
   final _notesController = TextEditingController();
   bool _saving = false;
   bool _loaded = false;
+  bool _justSaved = false;
+  Timer? _savedTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    _notesController.addListener(_onTextChanged);
+  }
+
+  void _onTextChanged() {
+    if (mounted) setState(() {});
+  }
 
   @override
   void dispose() {
+    _savedTimer?.cancel();
+    _notesController.removeListener(_onTextChanged);
     _notesController.dispose();
     super.dispose();
   }
@@ -55,7 +74,9 @@ class _SheetState extends ConsumerState<_Sheet> {
   Future<void> _save() async {
     if (_myRating == null || _saving) return;
     setState(() => _saving = true);
+    HapticFeedback.selectionClick();
     try {
+      final notes = _notesController.text.trim();
       if (_isOwner) {
         final fresh = await ref
                 .read(wineRepositoryProvider)
@@ -63,9 +84,7 @@ class _SheetState extends ConsumerState<_Sheet> {
             widget.wine;
         final updated = fresh.copyWith(
           rating: _myRating!,
-          notes: _notesController.text.trim().isEmpty
-              ? fresh.notes
-              : _notesController.text.trim(),
+          notes: notes.isEmpty ? fresh.notes : notes,
           updatedAt: DateTime.now(),
         );
         await ref.read(wineControllerProvider.notifier).updateWine(updated);
@@ -78,14 +97,23 @@ class _SheetState extends ConsumerState<_Sheet> {
               groupId: widget.groupId,
               wineId: widget.wine.id,
               rating: _myRating!,
-              notes: _notesController.text.trim().isEmpty
-                  ? null
-                  : _notesController.text.trim(),
+              notes: notes.isEmpty ? null : notes,
             );
       }
       ref.invalidate(
           groupWineRatingsProvider(widget.groupId, widget.wine.id));
-      if (mounted) Navigator.of(context).pop();
+      if (mounted) {
+        HapticFeedback.lightImpact();
+        setState(() {
+          _savedRating = _myRating;
+          _savedNotes = notes;
+          _justSaved = true;
+        });
+        _savedTimer?.cancel();
+        _savedTimer = Timer(const Duration(milliseconds: 1500), () {
+          if (mounted) setState(() => _justSaved = false);
+        });
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -110,9 +138,51 @@ class _SheetState extends ConsumerState<_Sheet> {
     }
   }
 
+  Future<void> _confirmUnshare() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Remove from group?'),
+        content: Text(
+          '"${widget.wine.name}" will be removed from this group. '
+          'Ratings from members will also be deleted.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(
+              'Remove',
+              style: TextStyle(color: Theme.of(ctx).colorScheme.error),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    setState(() => _saving = true);
+    try {
+      await ref.read(groupControllerProvider.notifier).unshareWineFromGroup(
+            groupId: widget.groupId,
+            wineId: widget.wine.id,
+          );
+      if (mounted) Navigator.of(context).pop();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
     final userId = ref.watch(currentUserIdProvider);
     final ratingsAsync = ref.watch(
         groupWineRatingsProvider(widget.groupId, widget.wine.id));
@@ -123,7 +193,9 @@ class _SheetState extends ConsumerState<_Sheet> {
         localAsync.whenData((local) {
           final source = local ?? widget.wine;
           _myRating = source.rating;
+          _savedRating = source.rating;
           _notesController.text = source.notes ?? '';
+          _savedNotes = source.notes ?? '';
           _loaded = true;
         });
       } else {
@@ -131,229 +203,652 @@ class _SheetState extends ConsumerState<_Sheet> {
           final mine = list.where((r) => r.userId == userId).firstOrNull;
           if (mine != null) {
             _myRating = mine.rating;
+            _savedRating = mine.rating;
             _notesController.text = mine.notes ?? '';
+            _savedNotes = mine.notes ?? '';
           }
           _loaded = true;
         });
       }
     }
 
+    final hasExistingRating = !_isOwner &&
+        _loaded &&
+        ratingsAsync.valueOrNull?.any((r) => r.userId == userId) == true;
+
+    final isDirty = _myRating != null &&
+        (_myRating != _savedRating ||
+            _notesController.text.trim() != _savedNotes.trim());
+
     return Padding(
       padding: EdgeInsets.only(
         left: context.paddingH,
         right: context.paddingH,
-        top: context.l,
-        bottom: MediaQuery.of(context).viewInsets.bottom + context.l,
+        top: context.m,
+        bottom: MediaQuery.of(context).viewInsets.bottom + context.xl,
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Center(
-            child: Container(
-              width: context.w * 0.1,
-              height: context.xs,
-              decoration: BoxDecoration(
-                color: cs.outlineVariant,
-                borderRadius: BorderRadius.circular(context.xs),
-              ),
-            ),
-          ),
-          SizedBox(height: context.m),
-          Text(
-            widget.wine.name,
-            style: TextStyle(
-                fontSize: context.headingFont,
-                fontWeight: FontWeight.bold,
-                letterSpacing: -0.3),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-          SizedBox(height: context.l),
-          Text('Your rating',
-              style: TextStyle(
-                  fontSize: context.captionFont,
-                  fontWeight: FontWeight.w600,
-                  color: cs.onSurfaceVariant)),
-          SizedBox(height: context.s),
-          Row(
-            children: [
-              Text(
-                _myRating?.toStringAsFixed(1) ?? '—',
-                style: TextStyle(
-                    fontSize: context.titleFont,
-                    fontWeight: FontWeight.w800,
-                    color: cs.primary,
-                    height: 1,
-                    letterSpacing: -1),
-              ),
-              SizedBox(width: context.xs),
-              Padding(
-                padding: EdgeInsets.only(top: context.s),
-                child: Text('/10',
-                    style: TextStyle(
-                        fontSize: context.captionFont,
-                        color: cs.onSurfaceVariant)),
-              ),
-            ],
-          ),
-          Slider(
-            value: _myRating ?? 5.0,
-            min: 0,
-            max: 10,
-            divisions: 20,
-            activeColor: cs.primary,
-            onChanged: _saving
-                ? null
-                : (v) => setState(() => _myRating = v),
-          ),
-          SizedBox(height: context.s),
-          TextField(
-            controller: _notesController,
-            maxLines: 2,
-            maxLength: 200,
-            style: TextStyle(fontSize: context.bodyFont),
-            decoration: InputDecoration(
-              hintText: 'Notes (optional)',
-              counterText: '',
-              filled: true,
-              fillColor: cs.surfaceContainer,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(context.w * 0.03),
-                borderSide: BorderSide.none,
-              ),
-            ),
-          ),
-          SizedBox(height: context.m),
-          Row(
-            children: [
-              if (!_isOwner &&
-                  _loaded &&
-                  ratingsAsync.valueOrNull
-                          ?.any((r) => r.userId == userId) ==
-                      true)
-                TextButton(
-                  onPressed: _saving ? null : _delete,
-                  child: Text('Remove',
-                      style: TextStyle(
-                          fontSize: context.bodyFont, color: cs.error)),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const _GrabHandle(),
+            SizedBox(height: context.m),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(child: _Header(wine: widget.wine)),
+                _UnshareMenu(
+                  groupId: widget.groupId,
+                  wineId: widget.wine.id,
+                  onRemove: _saving ? null : _confirmUnshare,
                 ),
-              const Spacer(),
-              FilledButton(
-                onPressed: (_myRating == null || _saving) ? null : _save,
-                style: FilledButton.styleFrom(
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.circular(context.w * 0.03),
-                  ),
-                ),
-                child: _saving
-                    ? SizedBox(
-                        width: context.w * 0.05,
-                        height: context.w * 0.05,
-                        child: CircularProgressIndicator(
-                            strokeWidth: 2, color: cs.onPrimary))
-                    : Text('Save',
-                        style: TextStyle(
-                            fontSize: context.bodyFont,
-                            fontWeight: FontWeight.w600)),
-              ),
-            ],
-          ),
-          SizedBox(height: context.l),
-          Divider(color: cs.outlineVariant, height: 1),
-          SizedBox(height: context.m),
-          Text('Group ratings',
-              style: TextStyle(
-                  fontSize: context.captionFont,
-                  fontWeight: FontWeight.w600,
-                  color: cs.onSurfaceVariant)),
-          SizedBox(height: context.s),
-          ratingsAsync.when(
-            data: (ratings) => ratings.isEmpty
-                ? Padding(
-                    padding: EdgeInsets.symmetric(vertical: context.m),
-                    child: Text('No ratings yet.',
-                        style: TextStyle(
-                            fontSize: context.captionFont,
-                            color: cs.onSurfaceVariant)),
-                  )
-                : ConstrainedBox(
-                    constraints:
-                        BoxConstraints(maxHeight: context.h * 0.3),
-                    child: ListView.separated(
-                      shrinkWrap: true,
-                      itemCount: ratings.length,
-                      separatorBuilder: (_, _) => SizedBox(height: context.s),
-                      itemBuilder: (_, i) => _RatingTile(r: ratings[i]),
-                    ),
-                  ),
-            loading: () => const Padding(
-              padding: EdgeInsets.all(8),
-              child: Center(child: CircularProgressIndicator()),
+              ],
             ),
-            error: (_, _) => const SizedBox.shrink(),
-          ),
-        ],
+            SizedBox(height: context.m),
+            const _SectionDivider(),
+            SizedBox(height: context.m),
+            _GroupZone(
+              ratingsAsync: ratingsAsync,
+              currentUserId: userId,
+            ),
+            SizedBox(height: context.m),
+            const _SectionDivider(),
+            SizedBox(height: context.m),
+            _RateZone(
+              rating: _myRating,
+              enabled: !_saving,
+              onChanged: (v) => setState(() => _myRating = v),
+              notesController: _notesController,
+            ),
+            SizedBox(height: context.l),
+            _SaveButton(
+              enabled: isDirty && !_saving,
+              saving: _saving,
+              justSaved: _justSaved,
+              onTap: _save,
+            ),
+            if (hasExistingRating) ...[
+              SizedBox(height: context.s),
+              _RemoveButton(onTap: _saving ? null : _delete),
+            ],
+          ],
+        ),
       ),
     );
   }
 }
 
-class _RatingTile extends StatelessWidget {
-  final GroupWineRatingEntity r;
-  const _RatingTile({required this.r});
+class _SectionDivider extends StatelessWidget {
+  const _SectionDivider();
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final name =
-        r.username ?? r.displayName ?? r.userId.substring(0, 6);
-    return Row(
+    return Container(
+      height: 1,
+      color: cs.outlineVariant.withValues(alpha: 0.7),
+    );
+  }
+}
+
+class _GrabHandle extends StatelessWidget {
+  const _GrabHandle();
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Center(
+      child: Container(
+        width: context.w * 0.1,
+        height: context.xs,
+        decoration: BoxDecoration(
+          color: cs.outlineVariant,
+          borderRadius: BorderRadius.circular(context.xs),
+        ),
+      ),
+    );
+  }
+}
+
+class _Header extends StatelessWidget {
+  final WineEntity wine;
+  const _Header({required this.wine});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        ProfileAvatar(
-          avatarUrl: r.avatarUrl,
-          fallbackText: name,
-          size: context.w * 0.1,
+        Text(
+          wine.name,
+          style: TextStyle(
+            fontSize: context.headingFont,
+            fontWeight: FontWeight.w700,
+            letterSpacing: -0.3,
+            height: 1.15,
+          ),
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+        ),
+        if (wine.winery != null && wine.winery!.isNotEmpty) ...[
+          SizedBox(height: context.xs),
+          Text(
+            wine.winery!,
+            style: TextStyle(
+              fontSize: context.captionFont,
+              color: cs.onSurfaceVariant,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+class _RateZone extends StatelessWidget {
+  final double? rating;
+  final bool enabled;
+  final ValueChanged<double> onChanged;
+  final TextEditingController notesController;
+  const _RateZone({
+    required this.rating,
+    required this.enabled,
+    required this.onChanged,
+    required this.notesController,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Text(
+              'Your rating',
+              style: TextStyle(
+                fontSize: context.captionFont,
+                fontWeight: FontWeight.w600,
+                color: cs.onSurface,
+                letterSpacing: 0.3,
+              ),
+            ),
+            const Spacer(),
+            Text(
+              rating?.toStringAsFixed(1) ?? '—',
+              style: TextStyle(
+                fontSize: context.titleFont * 0.9,
+                fontWeight: FontWeight.w800,
+                color: cs.primary,
+                height: 1,
+                letterSpacing: -0.6,
+                fontFeatures: const [FontFeature.tabularFigures()],
+              ),
+            ),
+            SizedBox(width: context.xs * 0.6),
+            Text(
+              '/10',
+              style: TextStyle(
+                fontSize: context.captionFont,
+                color: cs.onSurfaceVariant,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: context.xs),
+        _Slider(
+          value: rating,
+          enabled: enabled,
+          onChanged: onChanged,
+        ),
+        SizedBox(height: context.s),
+        _NotesField(controller: notesController, enabled: enabled),
+      ],
+    );
+  }
+}
+
+class _Slider extends StatelessWidget {
+  final double? value;
+  final bool enabled;
+  final ValueChanged<double> onChanged;
+  const _Slider({
+    required this.value,
+    required this.enabled,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return SliderTheme(
+      data: SliderThemeData(
+        trackHeight: context.xs * 2.2,
+        activeTrackColor: cs.primary,
+        inactiveTrackColor: cs.surfaceContainer,
+        thumbColor: cs.primary,
+        overlayColor: cs.primary.withValues(alpha: 0.12),
+        thumbShape: RoundSliderThumbShape(
+          enabledThumbRadius: context.w * 0.04,
+        ),
+        overlayShape: RoundSliderOverlayShape(
+          overlayRadius: context.w * 0.065,
+        ),
+        trackShape: const RoundedRectSliderTrackShape(),
+        showValueIndicator: ShowValueIndicator.never,
+      ),
+      child: Slider(
+        value: value ?? 5.0,
+        min: 0,
+        max: 10,
+        onChanged: enabled ? (v) => onChanged((v * 2).round() / 2) : null,
+      ),
+    );
+  }
+}
+
+class _NotesField extends StatelessWidget {
+  final TextEditingController controller;
+  final bool enabled;
+  const _NotesField({required this.controller, required this.enabled});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return TextField(
+      controller: controller,
+      enabled: enabled,
+      maxLines: 2,
+      minLines: 1,
+      maxLength: 200,
+      style: TextStyle(fontSize: context.captionFont),
+      decoration: InputDecoration(
+        hintText: 'Add a note',
+        hintStyle:
+            TextStyle(color: cs.outline, fontSize: context.captionFont),
+        counterText: '',
+        filled: true,
+        fillColor: cs.surfaceContainer,
+        isDense: true,
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: context.s * 1.5,
+          vertical: context.s * 1.2,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(context.w * 0.03),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(context.w * 0.03),
+          borderSide: BorderSide.none,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(context.w * 0.03),
+          borderSide: BorderSide(color: cs.primary, width: 1.2),
+        ),
+      ),
+    );
+  }
+}
+
+class _SaveButton extends StatelessWidget {
+  final bool enabled;
+  final bool saving;
+  final bool justSaved;
+  final VoidCallback onTap;
+  const _SaveButton({
+    required this.enabled,
+    required this.saving,
+    required this.justSaved,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final label = justSaved ? 'Saved ✓' : 'Save rating';
+    return SizedBox(
+      height: context.h * 0.055,
+      child: FilledButton(
+        onPressed: enabled ? onTap : null,
+        style: FilledButton.styleFrom(
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(context.w * 0.04),
+          ),
+        ),
+        child: saving
+            ? SizedBox(
+                width: context.w * 0.05,
+                height: context.w * 0.05,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: cs.onPrimary,
+                ),
+              )
+            : AnimatedSwitcher(
+                duration: const Duration(milliseconds: 180),
+                child: Text(
+                  label,
+                  key: ValueKey(label),
+                  style: TextStyle(
+                    fontSize: context.bodyFont,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.1,
+                  ),
+                ),
+              ),
+      ),
+    );
+  }
+}
+
+class _RemoveButton extends StatelessWidget {
+  final VoidCallback? onTap;
+  const _RemoveButton({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Center(
+      child: TextButton(
+        onPressed: onTap,
+        style: TextButton.styleFrom(
+          padding: EdgeInsets.symmetric(
+              horizontal: context.m, vertical: context.xs),
+        ),
+        child: Text(
+          'Remove my rating',
+          style: TextStyle(
+            fontSize: context.captionFont,
+            color: cs.error,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _GroupZone extends StatelessWidget {
+  final AsyncValue<List<GroupWineRatingEntity>> ratingsAsync;
+  final String? currentUserId;
+  const _GroupZone({
+    required this.ratingsAsync,
+    required this.currentUserId,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final raw = ratingsAsync.valueOrNull ?? const <GroupWineRatingEntity>[];
+    final sorted = [...raw]..sort((a, b) => b.rating.compareTo(a.rating));
+    final isSoloMe = sorted.length == 1 &&
+        currentUserId != null &&
+        sorted.first.userId == currentUserId;
+    final showBars = sorted.isNotEmpty && !isSoloMe;
+    final avg = sorted.isEmpty
+        ? null
+        : sorted.map((r) => r.rating).reduce((a, b) => a + b) / sorted.length;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Text(
+              sorted.isEmpty
+                  ? 'Ratings'
+                  : sorted.length == 1
+                      ? '1 rating'
+                      : '${sorted.length} ratings',
+              style: TextStyle(
+                fontSize: context.captionFont,
+                fontWeight: FontWeight.w600,
+                color: cs.onSurface,
+                letterSpacing: 0.3,
+              ),
+            ),
+            const Spacer(),
+            if (avg != null && sorted.length > 1) ...[
+              Text(
+                'avg ',
+                style: TextStyle(
+                  fontSize: context.captionFont,
+                  color: cs.onSurfaceVariant,
+                ),
+              ),
+              Text(
+                avg.toStringAsFixed(1),
+                style: TextStyle(
+                  fontSize: context.captionFont,
+                  color: cs.onSurface,
+                  fontWeight: FontWeight.w700,
+                  fontFeatures: const [FontFeature.tabularFigures()],
+                ),
+              ),
+            ],
+          ],
+        ),
+        SizedBox(height: context.s * 1.4),
+        ratingsAsync.when(
+          skipLoadingOnReload: true,
+          skipLoadingOnRefresh: true,
+          data: (_) {
+            if (sorted.isEmpty) {
+              return Padding(
+                padding: EdgeInsets.symmetric(vertical: context.s),
+                child: Text(
+                  'Be the first to rate',
+                  style: TextStyle(
+                    fontSize: context.captionFont,
+                    color: cs.outline,
+                  ),
+                ),
+              );
+            }
+            if (!showBars) {
+              return Padding(
+                padding: EdgeInsets.symmetric(vertical: context.s),
+                child: Text(
+                  "You're the first · invite others to rate",
+                  style: TextStyle(
+                    fontSize: context.captionFont,
+                    color: cs.outline,
+                  ),
+                ),
+              );
+            }
+            return ConstrainedBox(
+              constraints: BoxConstraints(maxHeight: context.h * 0.32),
+              child: ListView.separated(
+                shrinkWrap: true,
+                padding: EdgeInsets.zero,
+                itemCount: sorted.length,
+                separatorBuilder: (_, _) =>
+                    SizedBox(height: context.s * 1.4),
+                itemBuilder: (_, i) => _RankingBar(
+                  key: ValueKey(sorted[i].userId),
+                  r: sorted[i],
+                  isMe: sorted[i].userId == currentUserId,
+                ),
+              ),
+            );
+          },
+          loading: () => Padding(
+            padding: EdgeInsets.symmetric(vertical: context.s),
+            child: SizedBox(
+              height: context.w * 0.05,
+              width: context.w * 0.05,
+              child: const CircularProgressIndicator(strokeWidth: 2),
+            ),
+          ),
+          error: (_, _) => const SizedBox.shrink(),
+        ),
+      ],
+    );
+  }
+}
+
+class _RankingBar extends StatelessWidget {
+  final GroupWineRatingEntity r;
+  final bool isMe;
+  const _RankingBar({super.key, required this.r, required this.isMe});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final name = r.username ?? r.displayName ?? r.userId.substring(0, 6);
+    final pct = (r.rating / 10).clamp(0.0, 1.0);
+    final barH = context.w * 0.08;
+    final avatarSize = barH;
+    final fillColor = isMe
+        ? cs.primary
+        : cs.onSurfaceVariant.withValues(alpha: 0.35);
+
+    return Row(
+      children: [
+        Expanded(
+          child: LayoutBuilder(
+            builder: (_, c) {
+              final trackW = c.maxWidth;
+              return TweenAnimationBuilder<double>(
+                duration: const Duration(milliseconds: 550),
+                curve: Curves.easeOutCubic,
+                tween: Tween(begin: 0.0, end: pct),
+                builder: (_, animPct, _) {
+                  final fillW =
+                      (trackW * animPct).clamp(avatarSize, trackW);
+                  final avatarLeft =
+                      (fillW - avatarSize).clamp(0.0, trackW - avatarSize);
+                  return SizedBox(
+                    width: trackW,
+                    height: barH,
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        Positioned.fill(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: cs.surfaceContainer,
+                              borderRadius:
+                                  BorderRadius.circular(barH / 2),
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          left: 0,
+                          top: 0,
+                          bottom: 0,
+                          width: fillW,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: fillColor,
+                              borderRadius:
+                                  BorderRadius.circular(barH / 2),
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          left: avatarLeft,
+                          top: 0,
+                          bottom: 0,
+                          width: avatarSize,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: cs.surface,
+                            ),
+                            padding: const EdgeInsets.all(3),
+                            child: ClipOval(
+                              child: ProfileAvatar(
+                                avatarUrl: r.avatarUrl,
+                                fallbackText: name,
+                                size: avatarSize - 6,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              );
+            },
+          ),
         ),
         SizedBox(width: context.s),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        SizedBox(
+          width: context.w * 0.1,
+          child: Text(
+            r.rating.toStringAsFixed(1),
+            textAlign: TextAlign.right,
+            style: TextStyle(
+              fontSize: context.bodyFont,
+              fontWeight: FontWeight.w800,
+              color: isMe ? cs.primary : cs.onSurfaceVariant,
+              fontFeatures: const [FontFeature.tabularFigures()],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _UnshareMenu extends ConsumerWidget {
+  final String groupId;
+  final String wineId;
+  final VoidCallback? onRemove;
+
+  const _UnshareMenu({
+    required this.groupId,
+    required this.wineId,
+    required this.onRemove,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final uid = ref.watch(currentUserIdProvider);
+    if (uid == null) return const SizedBox.shrink();
+
+    final sharedBy = ref.watch(groupWineShareMetaProvider(groupId, wineId))
+        .valueOrNull;
+    final group = ref.watch(groupControllerProvider).valueOrNull
+        ?.where((g) => g.id == groupId)
+        .firstOrNull;
+    final isSharer = sharedBy != null && sharedBy == uid;
+    final isOwner = group != null && group.createdBy == uid;
+    if (!isSharer && !isOwner) return const SizedBox.shrink();
+
+    final cs = Theme.of(context).colorScheme;
+    return PopupMenuButton<void>(
+      icon: Icon(Icons.more_horiz, size: context.w * 0.055, color: cs.outline),
+      tooltip: 'More',
+      padding: EdgeInsets.zero,
+      color: cs.surfaceContainerHigh,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(context.w * 0.03),
+      ),
+      onSelected: (_) => onRemove?.call(),
+      itemBuilder: (_) => [
+        PopupMenuItem(
+          onTap: null,
+          enabled: onRemove != null,
+          child: Row(
             children: [
-              Row(
-                children: [
-                  Text(
-                    r.username != null ? '@$name' : name,
-                    style: TextStyle(
-                        fontSize: context.bodyFont * 0.95,
-                        fontWeight: FontWeight.w600),
-                  ),
-                  const Spacer(),
-                  Text(
-                    r.rating.toStringAsFixed(1),
-                    style: TextStyle(
-                        fontSize: context.bodyFont,
-                        fontWeight: FontWeight.w800,
-                        color: cs.primary),
-                  ),
-                  Text('/10',
-                      style: TextStyle(
-                          fontSize: context.captionFont * 0.9,
-                          color: cs.onSurfaceVariant)),
-                ],
-              ),
-              if (r.notes != null && r.notes!.isNotEmpty) ...[
-                SizedBox(height: context.xs),
-                Text(
-                  r.notes!,
-                  style: TextStyle(
-                      fontSize: context.captionFont,
-                      color: cs.onSurfaceVariant),
-                ),
-              ],
+              Icon(Icons.remove_circle_outline,
+                  size: context.w * 0.045, color: cs.error),
+              SizedBox(width: context.s),
+              Text('Remove from group', style: TextStyle(color: cs.error)),
             ],
           ),
         ),

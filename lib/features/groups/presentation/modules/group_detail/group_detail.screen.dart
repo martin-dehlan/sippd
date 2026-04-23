@@ -71,7 +71,6 @@ class _Body extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final cs = Theme.of(context).colorScheme;
     final currentUid = ref.watch(currentUserIdProvider);
     final isOwner = currentUid == group.createdBy;
     final padH = context.paddingH * 1.3;
@@ -99,11 +98,12 @@ class _Body extends ConsumerWidget {
                 ),
               ),
               SizedBox(width: context.m),
-              if (isOwner)
-                _OwnerMenu(
-                  onEdit: () => EditGroupSheet.show(context, group),
-                  onDelete: () => _confirmDelete(context, ref, group.id),
-                ),
+              _GroupMenu(
+                isOwner: isOwner,
+                onEdit: () => EditGroupSheet.show(context, group),
+                onDelete: () => _confirmDelete(context, ref, group.id),
+                onLeave: () => _confirmLeave(context, ref, group.id),
+              ),
             ],
           ),
         ),
@@ -148,22 +148,6 @@ class _Body extends ConsumerWidget {
         ),
         SizedBox(height: context.s),
         TastingsCalendar(groupId: group.id),
-        if (!isOwner) ...[
-          SizedBox(height: context.xl),
-          Center(
-            child: TextButton(
-              onPressed: () => _confirmLeave(context, ref, group.id),
-              child: Text(
-                'Leave group',
-                style: TextStyle(
-                  fontSize: context.bodyFont,
-                  fontWeight: FontWeight.w500,
-                  color: cs.error,
-                ),
-              ),
-            ),
-          ),
-        ],
         SizedBox(height: context.xl * 2),
       ],
     );
@@ -230,10 +214,17 @@ class _Body extends ConsumerWidget {
   }
 }
 
-class _OwnerMenu extends StatelessWidget {
+class _GroupMenu extends StatelessWidget {
+  final bool isOwner;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
-  const _OwnerMenu({required this.onEdit, required this.onDelete});
+  final VoidCallback onLeave;
+  const _GroupMenu({
+    required this.isOwner,
+    required this.onEdit,
+    required this.onDelete,
+    required this.onLeave,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -241,7 +232,7 @@ class _OwnerMenu extends StatelessWidget {
     return PopupMenuButton<_MenuAction>(
       icon: Icon(Icons.more_vert,
           size: context.w * 0.06, color: cs.onSurfaceVariant),
-      tooltip: 'Mehr',
+      tooltip: 'More',
       color: cs.surfaceContainerHigh,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(context.w * 0.03),
@@ -252,37 +243,52 @@ class _OwnerMenu extends StatelessWidget {
             onEdit();
           case _MenuAction.delete:
             onDelete();
+          case _MenuAction.leave:
+            onLeave();
         }
       },
       itemBuilder: (ctx) => [
-        PopupMenuItem(
-          value: _MenuAction.edit,
-          child: Row(
-            children: [
-              Icon(Icons.edit_outlined,
-                  size: context.w * 0.045, color: cs.onSurface),
-              SizedBox(width: context.s),
-              const Text('Edit group'),
-            ],
+        if (isOwner) ...[
+          PopupMenuItem(
+            value: _MenuAction.edit,
+            child: Row(
+              children: [
+                Icon(Icons.edit_outlined,
+                    size: context.w * 0.045, color: cs.onSurface),
+                SizedBox(width: context.s),
+                const Text('Edit group'),
+              ],
+            ),
           ),
-        ),
-        PopupMenuItem(
-          value: _MenuAction.delete,
-          child: Row(
-            children: [
-              Icon(Icons.delete_outline,
-                  size: context.w * 0.045, color: cs.error),
-              SizedBox(width: context.s),
-              Text('Delete group', style: TextStyle(color: cs.error)),
-            ],
+          PopupMenuItem(
+            value: _MenuAction.delete,
+            child: Row(
+              children: [
+                Icon(Icons.delete_outline,
+                    size: context.w * 0.045, color: cs.error),
+                SizedBox(width: context.s),
+                Text('Delete group', style: TextStyle(color: cs.error)),
+              ],
+            ),
           ),
-        ),
+        ] else
+          PopupMenuItem(
+            value: _MenuAction.leave,
+            child: Row(
+              children: [
+                Icon(Icons.logout,
+                    size: context.w * 0.045, color: cs.error),
+                SizedBox(width: context.s),
+                Text('Leave group', style: TextStyle(color: cs.error)),
+              ],
+            ),
+          ),
       ],
     );
   }
 }
 
-enum _MenuAction { edit, delete }
+enum _MenuAction { edit, delete, leave }
 
 class _SectionHeader extends StatelessWidget {
   final String label;
