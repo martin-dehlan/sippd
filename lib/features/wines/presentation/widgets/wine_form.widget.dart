@@ -199,7 +199,9 @@ class _WineFormState extends State<WineForm>
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
     );
     if (result == null) return;
-    setState(() => _price = result.isEmpty ? null : double.tryParse(result));
+    setState(() => _price = result.isEmpty
+        ? null
+        : double.tryParse(result.replaceAll(',', '.')));
     _scheduleAutoSave();
   }
 
