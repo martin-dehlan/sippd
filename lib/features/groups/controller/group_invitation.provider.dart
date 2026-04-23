@@ -1,4 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../auth/controller/auth.provider.dart';
 import '../../friends/controller/friends.provider.dart';
@@ -126,6 +127,26 @@ Future<List<GroupInvitationInboxItem>> myGroupInvitations(
   if (userId == null) return const [];
 
   final client = ref.read(supabaseClientProvider);
+
+  // Realtime: refetch when a new invitation arrives or its status changes
+  // (another device accepting/declining it).
+  final channel = client.channel('group_invitations_inbox_$userId');
+  channel
+      .onPostgresChanges(
+        event: PostgresChangeEvent.all,
+        schema: 'public',
+        table: 'group_invitations',
+        filter: PostgresChangeFilter(
+          type: PostgresChangeFilterType.eq,
+          column: 'invitee_id',
+          value: userId,
+        ),
+        callback: (_) => ref.invalidateSelf(),
+      )
+      .subscribe();
+  ref.onDispose(() {
+    client.removeChannel(channel);
+  });
 
   final rows = await client
       .from('group_invitations')

@@ -816,7 +816,7 @@ class _GroupWineShareMetaProviderElement
   String get wineId => (origin as GroupWineShareMetaProvider).wineId;
 }
 
-String _$groupControllerHash() => r'3e391fce7deacbb92919d6cb152faf8da6426b9c';
+String _$groupControllerHash() => r'7f2e0b4e031ba2ef0789256970071b17af5ab22a';
 
 /// See also [GroupController].
 @ProviderFor(GroupController)

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../common/utils/responsive.dart';
+import '../../../../common/widgets/app_snack.dart';
 import '../../controller/group_invitation.provider.dart';
 import '../../domain/entities/group_invitation.entity.dart';
 
@@ -160,14 +161,10 @@ class _InviteCard extends ConsumerWidget {
           .read(groupInvitationControllerProvider.notifier)
           .accept(item.invitation);
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Joined ${item.groupName}')),
-      );
+      AppSnack.success(context, 'Joined ${item.groupName}');
     } catch (e) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not accept: $e')),
-      );
+      AppSnack.error(context, 'Could not accept invitation');
     }
   }
 

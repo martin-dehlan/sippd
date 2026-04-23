@@ -1,4 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../auth/controller/auth.provider.dart';
 import '../../friends/data/models/friend_profile.model.dart';
 import '../../friends/domain/entities/friend_profile.entity.dart';
@@ -24,6 +25,28 @@ class GroupController extends _$GroupController {
     if (userId == null) return [];
 
     final client = ref.read(supabaseClientProvider);
+
+    // Realtime: when the user's membership row changes (join, leave, or
+    // cascade-delete from a group being deleted on another device), refetch.
+    // Using onPostgresChanges avoids the initial-snapshot emit that
+    // .stream() would cause — no rebuild loop.
+    final channel = client.channel('group_memberships_$userId');
+    channel
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'group_members',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'user_id',
+            value: userId,
+          ),
+          callback: (_) => ref.invalidateSelf(),
+        )
+        .subscribe();
+    ref.onDispose(() {
+      client.removeChannel(channel);
+    });
 
     // Get groups where user is a member
     final memberships = await client
