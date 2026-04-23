@@ -35,7 +35,8 @@ class FcmService {
   }
 
   /// Register the current device's FCM token for the logged-in user.
-  /// Safe to call repeatedly; upserts on (user_id, token).
+  /// Token is globally unique — if another account previously claimed it on
+  /// this device, ownership transfers to the current user.
   Future<void> register() async {
     final user = _client.auth.currentUser;
     if (user == null) return;
@@ -46,12 +47,10 @@ class FcmService {
     final token = await _currentToken();
     if (token == null) return;
 
-    await _client.from('user_devices').upsert({
-      'user_id': user.id,
-      'token': token,
-      'platform': _platform,
-      'updated_at': DateTime.now().toUtc().toIso8601String(),
-    });
+    await _client.rpc(
+      'register_user_device',
+      params: {'p_token': token, 'p_platform': _platform},
+    );
   }
 
   /// Listen for token refreshes and update the row.

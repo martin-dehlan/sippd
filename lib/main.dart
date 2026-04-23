@@ -130,6 +130,7 @@ String? _routeForPush(RemoteMessage msg) {
   final data = msg.data;
   switch (data['type']) {
     case 'friend_request':
+    case 'friend_request_accepted':
       return AppRoutes.friends;
     case 'tasting_created':
       final id = data['tasting_id'];
@@ -138,6 +139,7 @@ String? _routeForPush(RemoteMessage msg) {
       }
       return null;
     case 'group_joined':
+    case 'group_invitation':
       final id = data['group_id'];
       if (id is String && id.isNotEmpty) {
         return AppRoutes.groupDetailPath(id);

@@ -1,7 +1,7 @@
 // deno-lint-ignore-file no-explicit-any
 //
 // Deployed to: https://ungvhpffjhnojessifri.supabase.co/functions/v1/push
-// Called by Postgres triggers on friend_requests, group_tastings, group_members.
+// Called by Postgres triggers on friend_requests, group_tastings, group_members, group_invitations.
 // Required env (Supabase Edge Function secrets):
 //   FIREBASE_SERVICE_ACCOUNT — full service-account JSON as string
 //   PUSH_WEBHOOK_SECRET     — optional shared secret (also set as app.push_secret in Postgres)
@@ -30,6 +30,10 @@ const FCM_PROJECT_ID = Deno.env.get('FCM_PROJECT_ID') ?? 'sippd-6e06e';
 const WEBHOOK_SECRET = Deno.env.get('PUSH_WEBHOOK_SECRET');
 const FIREBASE_SERVICE_ACCOUNT = Deno.env.get('FIREBASE_SERVICE_ACCOUNT');
 
+if (!WEBHOOK_SECRET) {
+  throw new Error('PUSH_WEBHOOK_SECRET env var is required');
+}
+
 let cachedJwtClient: JWT | null = null;
 function getJwtClient(): JWT {
   if (cachedJwtClient) return cachedJwtClient;
@@ -50,6 +54,30 @@ async function resolvePush(
   payload: WebhookPayload,
 ): Promise<PushMessage | null> {
   const { table, type, record } = payload;
+
+  if (
+    table === 'friend_requests' &&
+    type === 'UPDATE' &&
+    record.status === 'accepted' &&
+    payload.old_record?.status !== 'accepted'
+  ) {
+    const { data: accepter } = await admin
+      .from('profiles')
+      .select('display_name, username')
+      .eq('id', record.receiver_id)
+      .maybeSingle();
+    const name = accepter?.display_name || accepter?.username || 'Someone';
+    return {
+      recipients: [record.sender_id],
+      title: 'Friend request accepted',
+      body: `${name} accepted your friend request`,
+      data: {
+        type: 'friend_request_accepted',
+        user_id: record.receiver_id,
+        request_id: record.id,
+      },
+    };
+  }
 
   if (type !== 'INSERT') return null;
 
@@ -106,6 +134,32 @@ async function resolvePush(
     };
   }
 
+  if (table === 'group_invitations' && record.status === 'pending') {
+    const [{ data: inviter }, { data: group }] = await Promise.all([
+      admin
+        .from('profiles')
+        .select('display_name, username')
+        .eq('id', record.inviter_id)
+        .maybeSingle(),
+      admin
+        .from('groups')
+        .select('name')
+        .eq('id', record.group_id)
+        .maybeSingle(),
+    ]);
+    const name = inviter?.display_name || inviter?.username || 'Someone';
+    return {
+      recipients: [record.invitee_id],
+      title: 'Group invitation',
+      body: `${name} invited you to ${group?.name ?? 'a group'}`,
+      data: {
+        type: 'group_invitation',
+        invitation_id: record.id,
+        group_id: record.group_id,
+      },
+    };
+  }
+
   return null;
 }
 
@@ -156,11 +210,9 @@ Deno.serve(async (req) => {
     return new Response('method not allowed', { status: 405 });
   }
 
-  if (WEBHOOK_SECRET) {
-    const got = req.headers.get('x-webhook-secret');
-    if (got !== WEBHOOK_SECRET) {
-      return new Response('unauthorized', { status: 401 });
-    }
+  const got = req.headers.get('x-webhook-secret');
+  if (got !== WEBHOOK_SECRET) {
+    return new Response('unauthorized', { status: 401 });
   }
 
   let payload: WebhookPayload;
