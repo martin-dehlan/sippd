@@ -935,11 +935,9 @@ class _WinesSection extends ConsumerWidget {
             if (wines.isEmpty) {
               return Padding(
                 padding: EdgeInsets.symmetric(
-                    horizontal: context.paddingH * 1.3),
-                child: Text('No wines lined up yet.',
-                    style: TextStyle(
-                        fontSize: context.captionFont,
-                        color: cs.onSurfaceVariant)),
+                    horizontal: context.paddingH * 1.3,
+                    vertical: context.m),
+                child: _WinesEmptyState(isOwner: isOwner),
               );
             }
             return ListView.separated(
@@ -963,6 +961,45 @@ class _WinesSection extends ConsumerWidget {
           error: (_, __) => const SizedBox.shrink(),
         ),
       ],
+    );
+  }
+}
+
+class _WinesEmptyState extends StatelessWidget {
+  final bool isOwner;
+  const _WinesEmptyState({required this.isOwner});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: context.w * 0.2,
+            height: context.w * 0.2,
+            decoration: BoxDecoration(
+                color: cs.primaryContainer, shape: BoxShape.circle),
+            child: Icon(Icons.wine_bar_outlined,
+                size: context.w * 0.1, color: cs.primary),
+          ),
+          SizedBox(height: context.m),
+          Text('No wines lined up yet',
+              style: TextStyle(
+                  fontSize: context.bodyFont, fontWeight: FontWeight.w600)),
+          SizedBox(height: context.xs),
+          Text(
+            isOwner
+                ? 'Tap “Add wines” to build the lineup'
+                : 'The host hasn’t added wines yet',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                fontSize: context.captionFont,
+                color: cs.onSurfaceVariant),
+          ),
+        ],
+      ),
     );
   }
 }
