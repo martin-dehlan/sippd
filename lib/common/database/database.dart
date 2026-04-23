@@ -18,22 +18,22 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 1;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
-        onCreate: (Migrator m) async {
-          await m.createAll();
-        },
-        onUpgrade: (Migrator m, int from, int to) async {
-          // Beta wipe-and-recreate: schema evolves quickly while pre-launch.
-          // Existing local data is discarded; Supabase re-sync repopulates.
-          for (final table in allTables) {
-            await m.deleteTable(table.actualTableName);
-          }
-          await m.createAll();
-        },
-      );
+    onCreate: (Migrator m) async {
+      await m.createAll();
+    },
+    onUpgrade: (Migrator m, int from, int to) async {
+      // Beta wipe-and-recreate: schema evolves quickly while pre-launch.
+      // Existing local data is discarded; Supabase re-sync repopulates.
+      for (final table in allTables) {
+        await m.deleteTable(table.actualTableName);
+      }
+      await m.createAll();
+    },
+  );
 
   static QueryExecutor _openConnection() {
     return driftDatabase(name: 'sippd_database');
