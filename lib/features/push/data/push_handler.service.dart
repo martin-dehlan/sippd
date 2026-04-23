@@ -80,7 +80,7 @@ class PushHandlerService {
           importance: Importance.high,
           priority: Priority.high,
           icon: 'ic_notification',
-          color: Color(0xFF8B1E3F),
+          color: Color(0xFF6B3A51),
         ),
         iOS: const DarwinNotificationDetails(),
       ),

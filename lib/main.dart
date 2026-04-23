@@ -12,7 +12,9 @@ import 'common/services/deep_link/deep_link.service.dart';
 import 'common/theme/app_theme.dart';
 import 'core/routes/app.routes.dart';
 import 'core/routes/route_config.dart';
+import 'features/friends/controller/friends.provider.dart';
 import 'features/groups/controller/group.provider.dart';
+import 'features/groups/controller/group_invitation.provider.dart';
 import 'features/onboarding/controller/onboarding.provider.dart';
 import 'features/push/controller/push.provider.dart';
 import 'features/push/data/push_handler.service.dart';
@@ -73,8 +75,18 @@ class _SippdAppState extends ConsumerState<SippdApp> {
       (_, next) {
         final msg = next.valueOrNull;
         if (msg == null) return;
+        // Invalidate the caches that feed whichever screen we're about to
+        // land on — the underlying providers are one-shot Futures, so
+        // without this the destination screen shows stale data until
+        // manual refresh / app restart.
+        _invalidateForPush(ref, msg);
         final route = _routeForPush(msg);
-        if (route != null) router.push(route);
+        if (route == null) return;
+        if (_isShellTab(route)) {
+          router.go(route);
+        } else {
+          router.push(route);
+        }
       },
     );
 
@@ -126,6 +138,29 @@ Future<void> _handleDeepLink(
   }
 }
 
+void _invalidateForPush(WidgetRef ref, RemoteMessage msg) {
+  switch (msg.data['type']) {
+    case 'friend_request':
+    case 'friend_request_accepted':
+      ref.invalidate(friendsListProvider);
+      ref.invalidate(incomingFriendRequestsProvider);
+      break;
+    case 'group_invitation':
+      ref.invalidate(myGroupInvitationsProvider);
+      break;
+    case 'group_joined':
+    case 'tasting_created':
+      ref.invalidate(groupControllerProvider);
+      break;
+  }
+}
+
+bool _isShellTab(String route) {
+  return route == AppRoutes.wines ||
+      route == AppRoutes.groups ||
+      route == AppRoutes.profile;
+}
+
 String? _routeForPush(RemoteMessage msg) {
   final data = msg.data;
   switch (data['type']) {
@@ -139,12 +174,16 @@ String? _routeForPush(RemoteMessage msg) {
       }
       return null;
     case 'group_joined':
-    case 'group_invitation':
       final id = data['group_id'];
       if (id is String && id.isNotEmpty) {
         return AppRoutes.groupDetailPath(id);
       }
       return null;
+    case 'group_invitation':
+      // User is not a member yet — group detail fetch would hit RLS and show
+      // "not found". Land them on the groups list where the invitations
+      // inbox accepts/declines the request.
+      return AppRoutes.groups;
   }
   return null;
 }

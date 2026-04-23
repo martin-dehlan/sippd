@@ -58,13 +58,22 @@ class FcmService {
 
   Future<void> unregisterCurrentDevice() async {
     final user = _client.auth.currentUser;
-    if (user == null) return;
     final token = await _currentToken();
-    if (token == null) return;
-    await _client
-        .from('user_devices')
-        .delete()
-        .eq('user_id', user.id)
-        .eq('token', token);
+    if (user != null && token != null) {
+      await _client
+          .from('user_devices')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('token', token);
+    }
+    // Nuke the client-side FCM token cache so the next sign-in gets a
+    // fresh one. Without this, a stale token from an earlier Firebase
+    // project (or another account) keeps being reused and FCM delivery
+    // fails silently.
+    try {
+      await _messaging.deleteToken();
+    } catch (e) {
+      debugPrint('FCM deleteToken failed: $e');
+    }
   }
 }
