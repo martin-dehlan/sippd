@@ -26,6 +26,19 @@ class FriendsApi {
     });
   }
 
+  /// Receiver IDs of all friend requests I've sent that are still pending.
+  /// UI uses this to mark search results as "already requested".
+  Stream<Set<String>> watchOutgoingPendingReceiverIds() {
+    return _client
+        .from('friend_requests')
+        .stream(primaryKey: ['id'])
+        .eq('sender_id', _uid)
+        .map((rows) => rows
+            .where((r) => r['status'] == 'pending')
+            .map((r) => r['receiver_id'] as String)
+            .toSet());
+  }
+
   Stream<List<FriendRequestModel>> watchIncomingRequests() {
     return _client
         .from('friend_requests')
@@ -73,6 +86,44 @@ class FriendsApi {
   }
 
   Future<void> sendRequest(String receiverId) async {
+    // Look up any prior request row from me to this user. Unique is on
+    // (sender_id, receiver_id), so only my-own direction can block insert.
+    final existing = await _client
+        .from('friend_requests')
+        .select('status')
+        .eq('sender_id', _uid)
+        .eq('receiver_id', receiverId)
+        .maybeSingle();
+
+    if (existing != null) {
+      final status = existing['status'] as String?;
+      if (status == 'pending') {
+        // Request already in flight — do nothing, no duplicate push.
+        return;
+      }
+      if (status == 'accepted') {
+        // Confirm friendship actually exists. A stranded 'accepted' row
+        // (friendship deleted but request not cleaned) would block re-add
+        // forever otherwise.
+        final friendship = await _client
+            .from('friendships')
+            .select('user_id')
+            .eq('user_id', _uid)
+            .eq('friend_id', receiverId)
+            .maybeSingle();
+        if (friendship != null) {
+          throw const FriendRequestExistsException();
+        }
+      }
+      // accepted-without-friendship OR declined → wipe and reinsert so the
+      // INSERT trigger fires and the receiver actually gets the push.
+      await _client
+          .from('friend_requests')
+          .delete()
+          .eq('sender_id', _uid)
+          .eq('receiver_id', receiverId);
+    }
+
     await _client.from('friend_requests').insert({
       'sender_id': _uid,
       'receiver_id': receiverId,
@@ -99,4 +150,10 @@ class FriendsApi {
         .eq('user_id', _uid)
         .eq('friend_id', friendId);
   }
+}
+
+class FriendRequestExistsException implements Exception {
+  const FriendRequestExistsException();
+  @override
+  String toString() => 'FriendRequestExistsException';
 }
