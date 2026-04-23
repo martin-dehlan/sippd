@@ -1,6 +1,7 @@
 import '../../domain/entities/wine.entity.dart';
 import '../../domain/repositories/wine.repository.dart';
 import '../../../../common/database/daos/wines.dao.dart';
+import '../../../../common/utils/name_normalizer.dart';
 import '../data_sources/wine_supabase.api.dart';
 import '../models/wine.mapper.dart';
 import '../models/wine.model.dart';
@@ -27,17 +28,20 @@ class WineRepositoryImpl implements WineRepository {
 
   @override
   Future<void> addWine(WineEntity wine) async {
-    // Local first
-    await _dao.insertWine(wine.toTableData());
-    // Sync to remote
-    _syncToRemote(wine);
+    final normalized = _withNameNorm(wine);
+    await _dao.insertWine(normalized.toTableData());
+    _syncToRemote(normalized);
   }
 
   @override
   Future<void> updateWine(WineEntity wine) async {
-    await _dao.updateWine(wine.toTableData());
-    _syncToRemote(wine);
+    final normalized = _withNameNorm(wine);
+    await _dao.updateWine(normalized.toTableData());
+    _syncToRemote(normalized);
   }
+
+  WineEntity _withNameNorm(WineEntity wine) =>
+      wine.copyWith(nameNorm: normalizeName(wine.name));
 
   @override
   Future<void> deleteWine(String id) async {
@@ -81,7 +85,7 @@ class WineRepositoryImpl implements WineRepository {
         // Get current user wines — userId comes from the API's RLS
         '', // RLS handles filtering by auth.uid()
       );
-      final tableData = models.map((m) => m.toModel().toTableData()).toList();
+      final tableData = models.map((m) => m.toEntity().toTableData()).toList();
       // Upsert doesn't exist on our DAO yet, so insert each
       for (final td in tableData) {
         await _dao.insertWine(td);
@@ -92,26 +96,3 @@ class WineRepositoryImpl implements WineRepository {
   }
 }
 
-extension _WineModelToTableData on WineModel {
-  WineEntity toModel() => WineEntity(
-        id: id,
-        name: name,
-        rating: rating,
-        type: WineType.values.firstWhere(
-          (t) => t.name == type,
-          orElse: () => WineType.red,
-        ),
-        price: price,
-        currency: currency,
-        country: country,
-        location: location,
-        notes: notes,
-        imageUrl: imageUrl,
-        localImagePath: localImagePath,
-        vintage: vintage,
-        grape: grape,
-        userId: userId,
-        createdAt: createdAt,
-        updatedAt: updatedAt,
-      );
-}

@@ -31,6 +31,7 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
         d.price != null ||
         d.vintage != null ||
         (d.grape?.isNotEmpty ?? false) ||
+        (d.winery?.isNotEmpty ?? false) ||
         (d.country?.isNotEmpty ?? false) ||
         d.location != null ||
         (d.notes?.isNotEmpty ?? false) ||
@@ -87,6 +88,7 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
       longitude: data.location?.lng,
       notes: data.notes,
       grape: data.grape,
+      winery: data.winery,
       vintage: data.vintage,
       imageUrl: data.imageUrl,
       localImagePath: data.localImagePath,

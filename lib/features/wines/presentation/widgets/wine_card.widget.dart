@@ -133,13 +133,13 @@ class WineCardWidget extends StatelessWidget {
 
 class WineCardImage extends StatelessWidget {
   final WineEntity wine;
-  final int rank;
+  final int? rank;
   final bool compact;
 
   const WineCardImage({
     super.key,
     required this.wine,
-    required this.rank,
+    this.rank,
     this.compact = false,
   });
 
@@ -185,29 +185,30 @@ class WineCardImage extends StatelessWidget {
                       ),
               ),
             ),
-            Positioned(
-              top: context.xs * 0.6,
-              left: context.xs * 0.6,
-              child: Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: context.w * 0.022,
-                  vertical: context.xs * 0.5,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.85),
-                  borderRadius: BorderRadius.circular(context.w * 0.02),
-                ),
-                child: Text(
-                  '#$rank',
-                  style: TextStyle(
-                    fontSize: context.captionFont * 0.8,
-                    fontWeight: FontWeight.w800,
-                    color: Colors.white,
-                    letterSpacing: -0.2,
+            if (rank != null)
+              Positioned(
+                top: context.xs * 0.6,
+                left: context.xs * 0.6,
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: context.w * 0.022,
+                    vertical: context.xs * 0.5,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.85),
+                    borderRadius: BorderRadius.circular(context.w * 0.02),
+                  ),
+                  child: Text(
+                    '#$rank',
+                    style: TextStyle(
+                      fontSize: context.captionFont * 0.8,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                      letterSpacing: -0.2,
+                    ),
                   ),
                 ),
               ),
-            ),
           ],
         ),
       ),

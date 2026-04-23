@@ -57,6 +57,44 @@ final wineRepositoryProvider = AutoDisposeProvider<WineRepository>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef WineRepositoryRef = AutoDisposeProviderRef<WineRepository>;
+String _$wineAliasSupabaseApiHash() =>
+    r'483b4ec800daa8ec1d476684d7df709f42e31eb2';
+
+/// See also [wineAliasSupabaseApi].
+@ProviderFor(wineAliasSupabaseApi)
+final wineAliasSupabaseApiProvider =
+    AutoDisposeProvider<WineAliasSupabaseApi?>.internal(
+      wineAliasSupabaseApi,
+      name: r'wineAliasSupabaseApiProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$wineAliasSupabaseApiHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef WineAliasSupabaseApiRef = AutoDisposeProviderRef<WineAliasSupabaseApi?>;
+String _$wineAliasRepositoryHash() =>
+    r'd6fc2ecd7242ddf8d12e1cf353243675aaee846b';
+
+/// See also [wineAliasRepository].
+@ProviderFor(wineAliasRepository)
+final wineAliasRepositoryProvider =
+    AutoDisposeProvider<WineAliasRepository>.internal(
+      wineAliasRepository,
+      name: r'wineAliasRepositoryProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$wineAliasRepositoryHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef WineAliasRepositoryRef = AutoDisposeProviderRef<WineAliasRepository>;
 String _$wineImageServiceHash() => r'263d5737d1742b3a280a87c42a0accafb3d1ec06';
 
 /// See also [wineImageService].

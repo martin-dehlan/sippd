@@ -114,10 +114,9 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         _IconCircleButton(
-                          icon: Icons.ios_share,
+                          icon: Icons.groups_outlined,
                           onTap: () => showShareWineSheet(
                             context: context,
-                            ref: ref,
                             wineId: widget.wine.id,
                           ),
                         ),
@@ -133,8 +132,13 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
                   ),
                 ],
               ),
-              SizedBox(height: context.m),
-              _TypeSubtitle(type: widget.wine.type),
+              SizedBox(height: context.s),
+              _MetaLine(
+                type: widget.wine.type,
+                winery: widget.wine.winery,
+                vintage: widget.wine.vintage,
+                grape: widget.wine.grape,
+              ),
               SizedBox(height: context.xl),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: context.paddingH),
@@ -152,6 +156,14 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
                   ),
                 ),
               ),
+              _MemoriesSection(wineId: widget.wine.id),
+              if (widget.wine.notes != null &&
+                  widget.wine.notes!.isNotEmpty) ...[
+                SizedBox(height: context.xl),
+                const _SectionHeader(label: 'NOTES'),
+                SizedBox(height: context.s),
+                _NotesBlock(notes: widget.wine.notes!),
+              ],
               SizedBox(height: context.xl),
               const _SectionHeader(label: 'PLACE'),
               SizedBox(height: context.s),
@@ -164,7 +176,6 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
                   hasCoords: hasCoords,
                 ),
               ),
-              _MemoriesSection(wineId: widget.wine.id),
               SizedBox(height: context.xxl * 1.5),
             ],
           ),
@@ -256,12 +267,12 @@ class _NameTitle extends StatelessWidget {
         right: context.paddingH * 1.3,
       ),
       child: Text(
-        name,
+        name.toUpperCase(),
         textAlign: TextAlign.left,
         maxLines: 2,
         overflow: TextOverflow.ellipsis,
         style: GoogleFonts.playfairDisplay(
-          fontSize: context.titleFont * 1.3,
+          fontSize: context.titleFont * 1.2,
           fontWeight: FontWeight.w800,
           letterSpacing: -0.5,
           height: 1.05,
@@ -441,12 +452,12 @@ class _StatItem extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        Text(label,
+        Text(label.toUpperCase(),
             style: TextStyle(
-              fontSize: context.captionFont,
-              fontWeight: FontWeight.w500,
-              color: cs.primary,
-              letterSpacing: 0.3,
+              fontSize: context.captionFont * 0.95,
+              fontWeight: FontWeight.w700,
+              color: cs.onSurface.withValues(alpha: 0.72),
+              letterSpacing: 1.2,
             )),
         SizedBox(height: context.xs * 0.3),
         if (isText)
@@ -484,56 +495,84 @@ class _StatItem extends StatelessWidget {
   }
 }
 
-class _TypeSubtitle extends StatelessWidget {
+class _MetaLine extends StatelessWidget {
   final WineType type;
-  const _TypeSubtitle({required this.type});
+  final String? winery;
+  final int? vintage;
+  final String? grape;
+
+  const _MetaLine({
+    required this.type,
+    required this.winery,
+    required this.vintage,
+    required this.grape,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(left: context.paddingH * 1.3),
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: _WineTypeChip(type: type),
-      ),
-    );
-  }
-}
-
-class _WineTypeChip extends StatelessWidget {
-  final WineType type;
-  const _WineTypeChip({required this.type});
-
-  @override
-  Widget build(BuildContext context) {
-    final label = switch (type) {
+    final cs = Theme.of(context).colorScheme;
+    final typeLabel = switch (type) {
       WineType.red => 'Red',
       WineType.white => 'White',
       WineType.rose => 'Rosé',
       WineType.sparkling => 'Sparkling',
     };
-    final color = switch (type) {
-      WineType.red => const Color(0xFFA84343),
-      WineType.white => const Color(0xFFD4C49A),
-      WineType.rose => const Color(0xFFD6889A),
-      WineType.sparkling => const Color(0xFFD4A84B),
-    };
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: context.w * 0.03,
-        vertical: context.xs + 1,
-      ),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(context.w * 0.05),
-      ),
-      child: Text(label,
+
+    final parts = <String>[
+      typeLabel,
+      if (winery != null && winery!.isNotEmpty) winery!,
+      if (vintage != null) vintage.toString(),
+      if (grape != null && grape!.isNotEmpty) grape!,
+    ];
+
+    final spans = <InlineSpan>[];
+    for (var i = 0; i < parts.length; i++) {
+      if (i > 0) {
+        spans.add(TextSpan(
+          text: '  ·  ',
+          style: TextStyle(color: cs.outline),
+        ));
+      }
+      spans.add(TextSpan(text: parts[i]));
+    }
+
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
+      child: Text.rich(
+        TextSpan(
           style: TextStyle(
-            fontSize: context.captionFont,
-            fontWeight: FontWeight.w600,
-            color: color,
-            letterSpacing: 0.2,
-          )),
+            fontSize: context.bodyFont * 0.95,
+            fontWeight: FontWeight.w500,
+            letterSpacing: 0.1,
+            height: 1.4,
+            color: cs.onSurfaceVariant,
+          ),
+          children: spans,
+        ),
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+      ),
+    );
+  }
+}
+
+class _NotesBlock extends StatelessWidget {
+  final String notes;
+  const _NotesBlock({required this.notes});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: context.paddingH),
+      child: Text(
+        notes,
+        style: TextStyle(
+          fontSize: context.bodyFont,
+          height: 1.5,
+          color: cs.onSurface,
+        ),
+      ),
     );
   }
 }
@@ -645,14 +684,14 @@ class _SectionHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: context.paddingH),
+      padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
       child: Text(
         label,
         style: TextStyle(
-          fontSize: context.captionFont,
+          fontSize: context.captionFont * 0.95,
           fontWeight: FontWeight.w700,
-          color: cs.primary,
-          letterSpacing: 0.5,
+          color: cs.onSurface.withValues(alpha: 0.72),
+          letterSpacing: 1.2,
         ),
       ),
     );
@@ -671,27 +710,20 @@ class _MemoriesSection extends ConsumerWidget {
 
     final size = context.w * 0.22;
     return Padding(
-      padding: EdgeInsets.only(top: context.xl),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const _SectionHeader(label: 'MEMORIES'),
-          SizedBox(height: context.s),
-          SizedBox(
-            height: size,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              padding: EdgeInsets.symmetric(horizontal: context.paddingH),
-              itemCount: memories.length,
-              separatorBuilder: (_, _) => SizedBox(width: context.w * 0.025),
-              itemBuilder: (_, i) => _MemoryThumb(
-                memory: memories[i],
-                size: size,
-                onTap: () => _openViewer(context, memories, i),
-              ),
-            ),
+      padding: EdgeInsets.only(top: context.m),
+      child: SizedBox(
+        height: size,
+        child: ListView.separated(
+          scrollDirection: Axis.horizontal,
+          padding: EdgeInsets.symmetric(horizontal: context.paddingH),
+          itemCount: memories.length,
+          separatorBuilder: (_, _) => SizedBox(width: context.w * 0.025),
+          itemBuilder: (_, i) => _MemoryThumb(
+            memory: memories[i],
+            size: size,
+            onTap: () => _openViewer(context, memories, i),
           ),
-        ],
+        ),
       ),
     );
   }

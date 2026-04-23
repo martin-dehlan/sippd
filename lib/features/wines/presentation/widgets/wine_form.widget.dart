@@ -25,6 +25,7 @@ class WineFormData {
   final double? price;
   final int? vintage;
   final String? grape;
+  final String? winery;
   final String? country;
   final LocationEntity? location;
   final String? notes;
@@ -39,6 +40,7 @@ class WineFormData {
     this.price,
     this.vintage,
     this.grape,
+    this.winery,
     this.country,
     this.location,
     this.notes,
@@ -83,6 +85,7 @@ class _WineFormState extends State<WineForm>
   double? _price;
   int? _vintage;
   String? _grape;
+  String? _winery;
   String? _country;
   LocationEntity? _location;
   String? _notes;
@@ -115,6 +118,7 @@ class _WineFormState extends State<WineForm>
       _price = init.price;
       _vintage = init.vintage;
       _grape = init.grape;
+      _winery = init.winery;
       _country = init.country;
       _location = init.location;
       _notes = init.notes;
@@ -150,6 +154,7 @@ class _WineFormState extends State<WineForm>
         price: _price,
         vintage: _vintage,
         grape: _grape,
+        winery: _winery,
         country: _country,
         location: _location,
         notes: _notes,
@@ -217,6 +222,18 @@ class _WineFormState extends State<WineForm>
     );
     if (result == null) return;
     setState(() => _grape = result.isEmpty ? null : result);
+    _scheduleAutoSave();
+  }
+
+  Future<void> _editWinery() async {
+    final result = await showTextInputSheet(
+      context: context,
+      title: 'Winery',
+      initial: _winery,
+      hint: 'e.g. Château Margaux',
+    );
+    if (result == null) return;
+    setState(() => _winery = result.isEmpty ? null : result);
     _scheduleAutoSave();
   }
 
@@ -330,9 +347,11 @@ class _WineFormState extends State<WineForm>
           grape: _grape,
           vintage: _vintage,
           notes: _notes,
+          winery: _winery,
           onGrapeTap: _editGrape,
           onVintageTap: _editVintage,
           onNotesTap: _editNotes,
+          onWineryTap: _editWinery,
         ),
         SizedBox(height: context.l),
         WineMemoriesEditor(
@@ -698,18 +717,22 @@ class WineFormChipsRow extends StatelessWidget {
   final String? grape;
   final int? vintage;
   final String? notes;
+  final String? winery;
   final VoidCallback onGrapeTap;
   final VoidCallback onVintageTap;
   final VoidCallback onNotesTap;
+  final VoidCallback onWineryTap;
 
   const WineFormChipsRow({
     super.key,
     required this.grape,
     required this.vintage,
     required this.notes,
+    required this.winery,
     required this.onGrapeTap,
     required this.onVintageTap,
     required this.onNotesTap,
+    required this.onWineryTap,
   });
 
   @override
@@ -720,6 +743,12 @@ class WineFormChipsRow extends StatelessWidget {
         spacing: context.w * 0.02,
         runSpacing: context.s,
         children: [
+          WineFormFieldChip(
+            icon: Icons.factory_outlined,
+            label: winery ?? 'Winery',
+            isEmpty: winery == null,
+            onTap: onWineryTap,
+          ),
           WineFormFieldChip(
             icon: Icons.grass_outlined,
             label: grape ?? 'Grape',

@@ -5,11 +5,14 @@ import '../../onboarding/controller/onboarding.provider.dart';
 import '../domain/entities/wine.entity.dart';
 import '../domain/entities/wine_memory.entity.dart';
 import '../domain/repositories/wine.repository.dart';
+import '../domain/repositories/wine_alias.repository.dart';
 import '../domain/repositories/wine_memory.repository.dart';
+import '../data/data_sources/wine_alias_supabase.api.dart';
 import '../data/data_sources/wine_image.service.dart';
 import '../data/data_sources/wine_memory_supabase.api.dart';
 import '../data/data_sources/wine_supabase.api.dart';
 import '../data/repositories/wine.repository.impl.dart';
+import '../data/repositories/wine_alias.repository.impl.dart';
 import '../data/repositories/wine_memory.repository.impl.dart';
 
 part 'wine.provider.g.dart';
@@ -36,6 +39,21 @@ WineRepository wineRepository(WineRepositoryRef ref) {
   final db = ref.read(appDatabaseProvider);
   final api = ref.watch(wineSupabaseApiProvider);
   return WineRepositoryImpl(db.winesDao, api);
+}
+
+@riverpod
+WineAliasSupabaseApi? wineAliasSupabaseApi(WineAliasSupabaseApiRef ref) {
+  final isAuth = ref.watch(isAuthenticatedProvider);
+  if (!isAuth) return null;
+  final client = ref.read(supabaseClientProvider);
+  return WineAliasSupabaseApi(client);
+}
+
+@riverpod
+WineAliasRepository wineAliasRepository(WineAliasRepositoryRef ref) {
+  final db = ref.read(appDatabaseProvider);
+  final api = ref.watch(wineAliasSupabaseApiProvider);
+  return WineAliasRepositoryImpl(db.wineAliasesDao, api);
 }
 
 @riverpod

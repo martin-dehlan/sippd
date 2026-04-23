@@ -32,6 +32,8 @@ mixin _$WineEntity {
   String? get localImagePath => throw _privateConstructorUsedError;
   int? get vintage => throw _privateConstructorUsedError;
   String? get grape => throw _privateConstructorUsedError;
+  String? get winery => throw _privateConstructorUsedError;
+  String? get nameNorm => throw _privateConstructorUsedError;
   String get userId => throw _privateConstructorUsedError;
   String get visibility => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
@@ -67,6 +69,8 @@ abstract class $WineEntityCopyWith<$Res> {
     String? localImagePath,
     int? vintage,
     String? grape,
+    String? winery,
+    String? nameNorm,
     String userId,
     String visibility,
     DateTime createdAt,
@@ -104,6 +108,8 @@ class _$WineEntityCopyWithImpl<$Res, $Val extends WineEntity>
     Object? localImagePath = freezed,
     Object? vintage = freezed,
     Object? grape = freezed,
+    Object? winery = freezed,
+    Object? nameNorm = freezed,
     Object? userId = null,
     Object? visibility = null,
     Object? createdAt = null,
@@ -171,6 +177,14 @@ class _$WineEntityCopyWithImpl<$Res, $Val extends WineEntity>
                 ? _value.grape
                 : grape // ignore: cast_nullable_to_non_nullable
                       as String?,
+            winery: freezed == winery
+                ? _value.winery
+                : winery // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            nameNorm: freezed == nameNorm
+                ? _value.nameNorm
+                : nameNorm // ignore: cast_nullable_to_non_nullable
+                      as String?,
             userId: null == userId
                 ? _value.userId
                 : userId // ignore: cast_nullable_to_non_nullable
@@ -218,6 +232,8 @@ abstract class _$$WineEntityImplCopyWith<$Res>
     String? localImagePath,
     int? vintage,
     String? grape,
+    String? winery,
+    String? nameNorm,
     String userId,
     String visibility,
     DateTime createdAt,
@@ -254,6 +270,8 @@ class __$$WineEntityImplCopyWithImpl<$Res>
     Object? localImagePath = freezed,
     Object? vintage = freezed,
     Object? grape = freezed,
+    Object? winery = freezed,
+    Object? nameNorm = freezed,
     Object? userId = null,
     Object? visibility = null,
     Object? createdAt = null,
@@ -321,6 +339,14 @@ class __$$WineEntityImplCopyWithImpl<$Res>
             ? _value.grape
             : grape // ignore: cast_nullable_to_non_nullable
                   as String?,
+        winery: freezed == winery
+            ? _value.winery
+            : winery // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        nameNorm: freezed == nameNorm
+            ? _value.nameNorm
+            : nameNorm // ignore: cast_nullable_to_non_nullable
+                  as String?,
         userId: null == userId
             ? _value.userId
             : userId // ignore: cast_nullable_to_non_nullable
@@ -361,6 +387,8 @@ class _$WineEntityImpl implements _WineEntity {
     this.localImagePath,
     this.vintage,
     this.grape,
+    this.winery,
+    this.nameNorm,
     required this.userId,
     this.visibility = 'friends',
     required this.createdAt,
@@ -399,6 +427,10 @@ class _$WineEntityImpl implements _WineEntity {
   @override
   final String? grape;
   @override
+  final String? winery;
+  @override
+  final String? nameNorm;
+  @override
   final String userId;
   @override
   @JsonKey()
@@ -410,7 +442,7 @@ class _$WineEntityImpl implements _WineEntity {
 
   @override
   String toString() {
-    return 'WineEntity(id: $id, name: $name, rating: $rating, type: $type, price: $price, currency: $currency, country: $country, location: $location, latitude: $latitude, longitude: $longitude, notes: $notes, imageUrl: $imageUrl, localImagePath: $localImagePath, vintage: $vintage, grape: $grape, userId: $userId, visibility: $visibility, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'WineEntity(id: $id, name: $name, rating: $rating, type: $type, price: $price, currency: $currency, country: $country, location: $location, latitude: $latitude, longitude: $longitude, notes: $notes, imageUrl: $imageUrl, localImagePath: $localImagePath, vintage: $vintage, grape: $grape, winery: $winery, nameNorm: $nameNorm, userId: $userId, visibility: $visibility, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -439,6 +471,9 @@ class _$WineEntityImpl implements _WineEntity {
                 other.localImagePath == localImagePath) &&
             (identical(other.vintage, vintage) || other.vintage == vintage) &&
             (identical(other.grape, grape) || other.grape == grape) &&
+            (identical(other.winery, winery) || other.winery == winery) &&
+            (identical(other.nameNorm, nameNorm) ||
+                other.nameNorm == nameNorm) &&
             (identical(other.userId, userId) || other.userId == userId) &&
             (identical(other.visibility, visibility) ||
                 other.visibility == visibility) &&
@@ -466,6 +501,8 @@ class _$WineEntityImpl implements _WineEntity {
     localImagePath,
     vintage,
     grape,
+    winery,
+    nameNorm,
     userId,
     visibility,
     createdAt,
@@ -498,6 +535,8 @@ abstract class _WineEntity implements WineEntity {
     final String? localImagePath,
     final int? vintage,
     final String? grape,
+    final String? winery,
+    final String? nameNorm,
     required final String userId,
     final String visibility,
     required final DateTime createdAt,
@@ -534,6 +573,10 @@ abstract class _WineEntity implements WineEntity {
   int? get vintage;
   @override
   String? get grape;
+  @override
+  String? get winery;
+  @override
+  String? get nameNorm;
   @override
   String get userId;
   @override

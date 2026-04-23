@@ -22,6 +22,8 @@ class WineEntity with _$WineEntity {
     String? localImagePath,
     int? vintage,
     String? grape,
+    String? winery,
+    String? nameNorm,
     required String userId,
     @Default('friends') String visibility,
     required DateTime createdAt,

@@ -43,6 +43,7 @@ class WineEditScreen extends ConsumerWidget {
                     longitude: data.location?.lng,
                     notes: data.notes,
                     grape: data.grape,
+                    winery: data.winery,
                     vintage: data.vintage,
                     imageUrl: data.imageUrl,
                     localImagePath: data.localImagePath,
@@ -80,6 +81,7 @@ class WineEditScreen extends ConsumerWidget {
       price: wine.price,
       vintage: wine.vintage,
       grape: wine.grape,
+      winery: wine.winery,
       country: wine.country,
       location: hasLocation
           ? LocationEntity(
