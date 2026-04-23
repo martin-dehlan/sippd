@@ -3,9 +3,11 @@ import '../../auth/controller/auth.provider.dart';
 import '../../friends/data/models/friend_profile.model.dart';
 import '../../friends/domain/entities/friend_profile.entity.dart';
 import '../../onboarding/controller/onboarding.provider.dart';
+import '../../../common/utils/name_normalizer.dart';
 import '../../wines/controller/wine.provider.dart';
 import '../../wines/data/models/wine.model.dart';
 import '../../wines/domain/entities/wine.entity.dart';
+import '../domain/entities/share_match_candidate.entity.dart';
 import '../data/data_sources/group_image.service.dart';
 import '../domain/entities/group.entity.dart';
 import '../domain/entities/group_wine_rating.entity.dart';
@@ -64,36 +66,23 @@ class GroupController extends _$GroupController {
 
     final client = ref.read(supabaseClientProvider);
 
-    // Find group by invite code
-    final groupData = await client
-        .from('groups')
-        .select()
-        .eq('invite_code', inviteCode)
-        .maybeSingle();
-
-    if (groupData == null) throw Exception('Group not found');
-
-    // Join as member
-    await client.from('group_members').insert({
-      'group_id': groupData['id'],
-      'user_id': userId,
-      'role': 'member',
-    });
+    await client.rpc(
+      'join_group_by_invite_code',
+      params: {'p_code': inviteCode},
+    );
 
     ref.invalidateSelf();
   }
 
+  /// Shares [wineId] into [groupId] as its own canonical wine.
+  /// Upserts the local wine to Supabase first so RLS + FK resolve.
   Future<void> shareWineToGroup(String groupId, String wineId) async {
     final userId = ref.read(currentUserIdProvider);
     if (userId == null) return;
 
     final client = ref.read(supabaseClientProvider);
 
-    // Ensure the wine exists in Supabase before creating the FK row.
-    // Local-first wines may not be synced yet (or may carry a legacy
-    // `local_user` user_id) — upsert with current uid so RLS + FK pass.
-    final wine =
-        await ref.read(wineRepositoryProvider).getWineById(wineId);
+    final wine = await ref.read(wineRepositoryProvider).getWineById(wineId);
     if (wine != null) {
       final model = wine
           .copyWith(userId: userId, updatedAt: DateTime.now())
@@ -108,10 +97,113 @@ class GroupController extends _$GroupController {
     });
   }
 
+  /// Shares [canonicalWineId] into [groupId]. No local upsert — the caller
+  /// guarantees the canonical wine already exists in Supabase (typical when
+  /// linking to another member's wine via [WineAliasRepository]).
+  Future<void> shareCanonicalToGroup({
+    required String groupId,
+    required String canonicalWineId,
+  }) async {
+    final userId = ref.read(currentUserIdProvider);
+    if (userId == null) return;
+    final client = ref.read(supabaseClientProvider);
+    await client.from('group_wines').upsert({
+      'group_id': groupId,
+      'wine_id': canonicalWineId,
+      'shared_by': userId,
+    });
+  }
+
+  /// Returns wines already shared in [groupId] whose normalized name matches
+  /// [localWine], excluding [localWine] itself. Each candidate includes the
+  /// original sharer's username for the dedup dialog.
+  Future<List<ShareMatchCandidate>> findShareMatchCandidates({
+    required String groupId,
+    required WineEntity localWine,
+  }) async {
+    final nameNorm = normalizeName(localWine.name);
+    if (nameNorm.isEmpty) return const [];
+
+    final client = ref.read(supabaseClientProvider);
+
+    final shareRows = (await client
+        .from('group_wines')
+        .select('wine_id, shared_by')
+        .eq('group_id', groupId)) as List;
+    if (shareRows.isEmpty) return const [];
+
+    final sharerByWine = <String, String>{};
+    for (final r in shareRows) {
+      final m = r as Map<String, dynamic>;
+      sharerByWine[m['wine_id'] as String] = m['shared_by'] as String;
+    }
+
+    final sharedWineIds = sharerByWine.keys
+        .where((id) => id != localWine.id)
+        .toList();
+    if (sharedWineIds.isEmpty) return const [];
+
+    final wineRows = (await client
+        .from('wines')
+        .select()
+        .inFilter('id', sharedWineIds)
+        .eq('name_norm', nameNorm)) as List;
+    if (wineRows.isEmpty) return const [];
+
+    final matches = wineRows
+        .map((r) => WineModel.fromJson(r as Map<String, dynamic>).toEntity())
+        .toList();
+
+    final sharerIds = matches
+        .map((w) => sharerByWine[w.id])
+        .whereType<String>()
+        .toSet()
+        .toList();
+    final usernameById = <String, String>{};
+    if (sharerIds.isNotEmpty) {
+      final profiles = (await client
+          .from('profiles')
+          .select('id, username')
+          .inFilter('id', sharerIds)) as List;
+      for (final p in profiles) {
+        final m = p as Map<String, dynamic>;
+        final uname = m['username'] as String?;
+        if (uname != null) usernameById[m['id'] as String] = uname;
+      }
+    }
+
+    return matches
+        .map((w) => ShareMatchCandidate(
+              wine: w,
+              sharedByUsername: usernameById[sharerByWine[w.id]],
+            ))
+        .toList();
+  }
+
   Future<void> deleteGroup(String groupId) async {
     final client = ref.read(supabaseClientProvider);
     await client.from('groups').delete().eq('id', groupId);
     ref.invalidateSelf();
+  }
+
+  /// Removes [wineId] from [groupId]. RLS restricts this to the original
+  /// sharer and the group owner; other members get a permission error.
+  Future<void> unshareWineFromGroup({
+    required String groupId,
+    required String wineId,
+  }) async {
+    final client = ref.read(supabaseClientProvider);
+    final rows = await client
+        .from('group_wines')
+        .delete()
+        .eq('group_id', groupId)
+        .eq('wine_id', wineId)
+        .select();
+    if (rows.isEmpty) {
+      throw Exception('You cannot remove this wine from the group.');
+    }
+    ref.invalidate(groupWinesProvider(groupId));
+    ref.invalidate(groupWineShareMetaProvider(groupId, wineId));
   }
 
   Future<void> updateGroup({
@@ -436,3 +528,20 @@ Future<List<WineEntity>> groupWines(
       .whereType<WineEntity>()
       .toList();
 }
+
+/// Lightweight metadata about how a wine was shared into a group.
+/// Used to decide who can unshare it (sharer + group owner).
+@riverpod
+Future<String?> groupWineShareMeta(
+    GroupWineShareMetaRef ref, String groupId, String wineId) async {
+  final client = ref.read(supabaseClientProvider);
+  final row = await client
+      .from('group_wines')
+      .select('shared_by')
+      .eq('group_id', groupId)
+      .eq('wine_id', wineId)
+      .maybeSingle();
+  return row?['shared_by'] as String?;
+}
+
+

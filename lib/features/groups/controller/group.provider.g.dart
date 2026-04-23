@@ -664,7 +664,159 @@ class _GroupWinesProviderElement
   String get groupId => (origin as GroupWinesProvider).groupId;
 }
 
-String _$groupControllerHash() => r'94ee2c05f87f92f51b1ccf4554918895c9bcd183';
+String _$groupWineShareMetaHash() =>
+    r'9212976093509b9a655fe0244a8eb75e505f9853';
+
+/// Lightweight metadata about how a wine was shared into a group.
+/// Used to decide who can unshare it (sharer + group owner).
+///
+/// Copied from [groupWineShareMeta].
+@ProviderFor(groupWineShareMeta)
+const groupWineShareMetaProvider = GroupWineShareMetaFamily();
+
+/// Lightweight metadata about how a wine was shared into a group.
+/// Used to decide who can unshare it (sharer + group owner).
+///
+/// Copied from [groupWineShareMeta].
+class GroupWineShareMetaFamily extends Family<AsyncValue<String?>> {
+  /// Lightweight metadata about how a wine was shared into a group.
+  /// Used to decide who can unshare it (sharer + group owner).
+  ///
+  /// Copied from [groupWineShareMeta].
+  const GroupWineShareMetaFamily();
+
+  /// Lightweight metadata about how a wine was shared into a group.
+  /// Used to decide who can unshare it (sharer + group owner).
+  ///
+  /// Copied from [groupWineShareMeta].
+  GroupWineShareMetaProvider call(String groupId, String wineId) {
+    return GroupWineShareMetaProvider(groupId, wineId);
+  }
+
+  @override
+  GroupWineShareMetaProvider getProviderOverride(
+    covariant GroupWineShareMetaProvider provider,
+  ) {
+    return call(provider.groupId, provider.wineId);
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'groupWineShareMetaProvider';
+}
+
+/// Lightweight metadata about how a wine was shared into a group.
+/// Used to decide who can unshare it (sharer + group owner).
+///
+/// Copied from [groupWineShareMeta].
+class GroupWineShareMetaProvider extends AutoDisposeFutureProvider<String?> {
+  /// Lightweight metadata about how a wine was shared into a group.
+  /// Used to decide who can unshare it (sharer + group owner).
+  ///
+  /// Copied from [groupWineShareMeta].
+  GroupWineShareMetaProvider(String groupId, String wineId)
+    : this._internal(
+        (ref) =>
+            groupWineShareMeta(ref as GroupWineShareMetaRef, groupId, wineId),
+        from: groupWineShareMetaProvider,
+        name: r'groupWineShareMetaProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$groupWineShareMetaHash,
+        dependencies: GroupWineShareMetaFamily._dependencies,
+        allTransitiveDependencies:
+            GroupWineShareMetaFamily._allTransitiveDependencies,
+        groupId: groupId,
+        wineId: wineId,
+      );
+
+  GroupWineShareMetaProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.groupId,
+    required this.wineId,
+  }) : super.internal();
+
+  final String groupId;
+  final String wineId;
+
+  @override
+  Override overrideWith(
+    FutureOr<String?> Function(GroupWineShareMetaRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: GroupWineShareMetaProvider._internal(
+        (ref) => create(ref as GroupWineShareMetaRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        groupId: groupId,
+        wineId: wineId,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<String?> createElement() {
+    return _GroupWineShareMetaProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is GroupWineShareMetaProvider &&
+        other.groupId == groupId &&
+        other.wineId == wineId;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, groupId.hashCode);
+    hash = _SystemHash.combine(hash, wineId.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin GroupWineShareMetaRef on AutoDisposeFutureProviderRef<String?> {
+  /// The parameter `groupId` of this provider.
+  String get groupId;
+
+  /// The parameter `wineId` of this provider.
+  String get wineId;
+}
+
+class _GroupWineShareMetaProviderElement
+    extends AutoDisposeFutureProviderElement<String?>
+    with GroupWineShareMetaRef {
+  _GroupWineShareMetaProviderElement(super.provider);
+
+  @override
+  String get groupId => (origin as GroupWineShareMetaProvider).groupId;
+  @override
+  String get wineId => (origin as GroupWineShareMetaProvider).wineId;
+}
+
+String _$groupControllerHash() => r'3e391fce7deacbb92919d6cb152faf8da6426b9c';
 
 /// See also [GroupController].
 @ProviderFor(GroupController)

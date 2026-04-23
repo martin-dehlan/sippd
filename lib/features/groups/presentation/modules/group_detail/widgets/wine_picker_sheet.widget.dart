@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../../common/utils/responsive.dart';
+import '../../../../../auth/controller/auth.provider.dart';
 import '../../../../../wines/controller/wine.provider.dart';
 import '../../../../../wines/domain/entities/wine.entity.dart';
+import '../../../../../wines/presentation/widgets/wine_card.widget.dart';
 import '../../../../controller/group.provider.dart';
+import 'group_wine_rating_sheet.widget.dart';
+import 'share_match_dialog.widget.dart';
 
 class WinePickerSheet extends ConsumerWidget {
   final String groupId;
@@ -67,61 +71,11 @@ class WinePickerSheet extends ConsumerWidget {
             SizedBox(height: context.s),
             Flexible(
               child: winesAsync.when(
-                data: (wines) {
-                  if (wines.isEmpty) {
-                    return Padding(
-                      padding: EdgeInsets.symmetric(vertical: context.l),
-                      child: Text(
-                        'You have no wines yet.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            fontSize: context.captionFont,
-                            color: cs.onSurfaceVariant),
-                      ),
-                    );
-                  }
-                  final sorted = List<WineEntity>.from(wines)..sort((a, b) {
-                    final aShared = sharedIds.contains(a.id) ? 1 : 0;
-                    final bShared = sharedIds.contains(b.id) ? 1 : 0;
-                    if (aShared != bShared) return aShared - bShared;
-                    return b.rating.compareTo(a.rating);
-                  });
-                  return ListView.separated(
-                    shrinkWrap: true,
-                    itemCount: sorted.length,
-                    separatorBuilder: (_, _) =>
-                        SizedBox(height: context.xs),
-                    itemBuilder: (_, i) {
-                      final wine = sorted[i];
-                      final isShared = sharedIds.contains(wine.id);
-                      return _WinePickerRow(
-                        wine: wine,
-                        isShared: isShared,
-                        onTap: isShared
-                            ? null
-                            : () async {
-                                await ref
-                                    .read(groupControllerProvider
-                                        .notifier)
-                                    .shareWineToGroup(
-                                        groupId, wine.id);
-                                ref.invalidate(
-                                    groupWinesProvider(groupId));
-                                if (context.mounted) {
-                                  Navigator.pop(context);
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(
-                                    SnackBar(
-                                      content:
-                                          Text('${wine.name} shared'),
-                                    ),
-                                  );
-                                }
-                              },
-                      );
-                    },
-                  );
-                },
+                data: (wines) => _PickerList(
+                  groupId: groupId,
+                  wines: wines,
+                  sharedIds: sharedIds,
+                ),
                 loading: () =>
                     const Center(child: CircularProgressIndicator()),
                 error: (e, _) => Text('Error: $e',
@@ -138,80 +92,266 @@ class WinePickerSheet extends ConsumerWidget {
   }
 }
 
+class _PickerList extends ConsumerStatefulWidget {
+  final String groupId;
+  final List<WineEntity> wines;
+  final Set<String> sharedIds;
+
+  const _PickerList({
+    required this.groupId,
+    required this.wines,
+    required this.sharedIds,
+  });
+
+  @override
+  ConsumerState<_PickerList> createState() => _PickerListState();
+}
+
+class _PickerListState extends ConsumerState<_PickerList> {
+  final _aliasByLocal = <String, String>{};
+  bool _aliasesLoaded = false;
+  String? _busyWineId;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAliases();
+  }
+
+  Future<void> _loadAliases() async {
+    final userId = ref.read(currentUserIdProvider);
+    if (userId == null) {
+      setState(() => _aliasesLoaded = true);
+      return;
+    }
+    final aliasRepo = ref.read(wineAliasRepositoryProvider);
+    for (final w in widget.wines) {
+      final canonical = await aliasRepo.resolveCanonical(
+        userId: userId,
+        localWineId: w.id,
+      );
+      if (canonical != w.id) {
+        _aliasByLocal[w.id] = canonical;
+      }
+    }
+    if (mounted) setState(() => _aliasesLoaded = true);
+  }
+
+  bool _isShared(WineEntity wine) {
+    final canonical = _aliasByLocal[wine.id] ?? wine.id;
+    return widget.sharedIds.contains(canonical);
+  }
+
+  Future<void> _onPick(WineEntity wine) async {
+    if (_busyWineId != null) return;
+    final userId = ref.read(currentUserIdProvider);
+    if (userId == null) return;
+    setState(() => _busyWineId = wine.id);
+    try {
+      final canonicalExisting = _aliasByLocal[wine.id];
+      if (canonicalExisting != null) {
+        await _shareCanonical(canonicalExisting);
+        return;
+      }
+
+      final groupCtrl = ref.read(groupControllerProvider.notifier);
+      final candidates = await groupCtrl.findShareMatchCandidates(
+        groupId: widget.groupId,
+        localWine: wine,
+      );
+
+      if (candidates.isEmpty) {
+        await _shareAsOwn(wine);
+        return;
+      }
+
+      if (!mounted) return;
+      final result = await showShareMatchDialog(
+        context: context,
+        mine: wine,
+        candidates: candidates,
+      );
+      if (!mounted || result == null) return;
+
+      switch (result.choice) {
+        case ShareMatchChoice.same:
+          final canonical = result.canonical;
+          if (canonical == null) return;
+          await ref.read(wineAliasRepositoryProvider).link(
+                userId: userId,
+                localWineId: wine.id,
+                canonicalWineId: canonical.id,
+              );
+          _aliasByLocal[wine.id] = canonical.id;
+          await _shareCanonical(canonical.id, openRatingFor: canonical);
+        case ShareMatchChoice.different:
+          await _shareAsOwn(wine);
+        case ShareMatchChoice.cancel:
+          return;
+      }
+    } finally {
+      if (mounted) setState(() => _busyWineId = null);
+    }
+  }
+
+  Future<void> _shareAsOwn(WineEntity wine) async {
+    await ref
+        .read(groupControllerProvider.notifier)
+        .shareWineToGroup(widget.groupId, wine.id);
+    ref.invalidate(groupWinesProvider(widget.groupId));
+    if (!mounted) return;
+    Navigator.pop(context);
+  }
+
+  Future<void> _shareCanonical(
+    String canonicalWineId, {
+    WineEntity? openRatingFor,
+  }) async {
+    await ref.read(groupControllerProvider.notifier).shareCanonicalToGroup(
+          groupId: widget.groupId,
+          canonicalWineId: canonicalWineId,
+        );
+    ref.invalidate(groupWinesProvider(widget.groupId));
+    if (!mounted) return;
+    Navigator.pop(context);
+    if (openRatingFor != null) {
+      await showGroupWineRatingSheet(
+        context: context,
+        groupId: widget.groupId,
+        wine: openRatingFor,
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    if (!_aliasesLoaded) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (widget.wines.isEmpty) {
+      return Padding(
+        padding: EdgeInsets.symmetric(vertical: context.l),
+        child: Text(
+          'You have no wines yet.',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+              fontSize: context.captionFont, color: cs.onSurfaceVariant),
+        ),
+      );
+    }
+
+    final sorted = List<WineEntity>.from(widget.wines)..sort((a, b) {
+      final aShared = _isShared(a) ? 1 : 0;
+      final bShared = _isShared(b) ? 1 : 0;
+      if (aShared != bShared) return aShared - bShared;
+      return b.rating.compareTo(a.rating);
+    });
+    return ListView.separated(
+      shrinkWrap: true,
+      itemCount: sorted.length,
+      separatorBuilder: (_, _) => SizedBox(height: context.xs),
+      itemBuilder: (_, i) {
+        final wine = sorted[i];
+        final isShared = _isShared(wine);
+        final isBusy = _busyWineId == wine.id;
+        return _WinePickerRow(
+          wine: wine,
+          isShared: isShared,
+          isBusy: isBusy,
+          onTap: (isShared || isBusy) ? null : () => _onPick(wine),
+        );
+      },
+    );
+  }
+}
+
 class _WinePickerRow extends StatelessWidget {
   final WineEntity wine;
   final VoidCallback? onTap;
   final bool isShared;
+  final bool isBusy;
 
   const _WinePickerRow({
     required this.wine,
     required this.onTap,
     this.isShared = false,
+    this.isBusy = false,
   });
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final typeColor = switch (wine.type) {
-      WineType.red => const Color(0xFFA84343),
-      WineType.white => const Color(0xFFD4C49A),
-      WineType.rose => const Color(0xFFD6889A),
-      WineType.sparkling => const Color(0xFFD4A84B),
-    };
     return Opacity(
       opacity: isShared ? 0.5 : 1,
-      child: InkWell(
-        onTap: onTap,
+      child: Material(
+        color: cs.surfaceContainer,
         borderRadius: BorderRadius.circular(context.w * 0.03),
-        child: Padding(
-          padding: EdgeInsets.symmetric(
-              horizontal: context.w * 0.02, vertical: context.s),
-          child: Row(
-            children: [
-              Container(
-                width: context.w * 0.02,
-                height: context.w * 0.1,
-                decoration: BoxDecoration(
-                  color: typeColor,
-                  borderRadius: BorderRadius.circular(context.w * 0.01),
-                ),
-              ),
-              SizedBox(width: context.w * 0.03),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(wine.name,
-                        style: TextStyle(
-                            fontSize: context.bodyFont,
-                            fontWeight: FontWeight.w700),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis),
-                    SizedBox(height: context.xs * 0.4),
-                    Text(
-                      [
-                        if (wine.vintage != null) wine.vintage.toString(),
-                        if (wine.country != null) wine.country,
-                      ].join(' · '),
-                      style: TextStyle(
-                          fontSize: context.captionFont,
-                          color: cs.onSurfaceVariant),
-                    ),
-                  ],
-                ),
-              ),
-              if (isShared)
-                _SharedChip()
-              else
-                Text(
-                  wine.rating.toStringAsFixed(1),
-                  style: TextStyle(
-                    fontSize: context.bodyFont * 1.1,
-                    fontWeight: FontWeight.bold,
-                    color: cs.onSurface,
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: EdgeInsets.only(right: context.w * 0.035),
+            child: Row(
+              children: [
+                WineCardImage(wine: wine, compact: true),
+                SizedBox(width: context.w * 0.01),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(wine.name,
+                          style: TextStyle(
+                              fontSize: context.bodyFont,
+                              fontWeight: FontWeight.w700,
+                              height: 1.2),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis),
+                      SizedBox(height: context.xs * 0.5),
+                      Row(
+                        children: [
+                          WineTypeDot(type: wine.type),
+                          SizedBox(width: context.w * 0.015),
+                          Flexible(
+                            child: Text(
+                              [
+                                if (wine.vintage != null)
+                                  wine.vintage.toString(),
+                                if (wine.country != null) wine.country,
+                              ].join(' · '),
+                              style: TextStyle(
+                                  fontSize: context.captionFont,
+                                  color: cs.onSurfaceVariant),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
-            ],
+                SizedBox(width: context.w * 0.02),
+                if (isBusy)
+                  SizedBox(
+                    width: context.w * 0.05,
+                    height: context.w * 0.05,
+                    child: const CircularProgressIndicator(strokeWidth: 2),
+                  )
+                else if (isShared)
+                  _SharedChip()
+                else
+                  Text(
+                    wine.rating.toStringAsFixed(1),
+                    style: TextStyle(
+                      fontSize: context.bodyFont * 1.1,
+                      fontWeight: FontWeight.bold,
+                      color: cs.onSurface,
+                    ),
+                  ),
+              ],
+            ),
           ),
         ),
       ),

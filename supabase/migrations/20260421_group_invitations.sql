@@ -4,13 +4,14 @@
 
 create table if not exists public.group_invitations (
   id            uuid primary key default gen_random_uuid(),
-  group_id      text not null references public.groups(id)    on delete cascade,
-  inviter_id    uuid not null references auth.users(id)       on delete cascade,
-  invitee_id    uuid not null references auth.users(id)       on delete cascade,
+  group_id      uuid not null references public.groups(id)      on delete cascade,
+  inviter_id    uuid not null references public.profiles(id)    on delete cascade,
+  invitee_id    uuid not null references public.profiles(id)    on delete cascade,
   status        text not null default 'pending'
                 check (status in ('pending','accepted','declined')),
   created_at    timestamptz not null default now(),
-  responded_at  timestamptz
+  responded_at  timestamptz,
+  check (inviter_id <> invitee_id)
 );
 
 -- Only one active pending invite per (group, invitee).
