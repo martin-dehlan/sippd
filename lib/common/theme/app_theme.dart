@@ -130,6 +130,22 @@ class AppTheme {
           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
       ),
+      snackBarTheme: SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: _darkCard,
+        contentTextStyle: textTheme.bodyMedium?.copyWith(
+          color: _textPrimary,
+          fontWeight: FontWeight.w500,
+        ),
+        actionTextColor: _nude,
+        closeIconColor: _textSecondary,
+        elevation: 0,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(14),
+          side: BorderSide(color: _darkBorder, width: 0.5),
+        ),
+      ),
     );
   }
 
