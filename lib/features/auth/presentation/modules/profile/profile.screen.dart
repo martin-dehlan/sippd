@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../../common/utils/responsive.dart';
+import '../../../../../common/widgets/stats_card.widget.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../../profile/controller/profile.provider.dart';
 import '../../../../profile/presentation/widgets/profile_avatar.widget.dart';
+import '../../../../push/controller/push.provider.dart';
 import '../../../../wines/controller/wine.provider.dart';
 import '../../../controller/auth.provider.dart';
+import '../email_confirmation/email_confirmation.screen.dart';
 
 const _privacyUrl = 'https://sippd.xyz/privacy';
 const _termsUrl = 'https://sippd.xyz/terms';
@@ -93,36 +97,19 @@ class ProfileScreen extends ConsumerWidget {
                     .map((w) => w.country)
                     .toSet()
                     .length;
-                return Row(
-                  children: [
-                    Expanded(
-                      child: _StatCard(
-                        label: 'Wines',
-                        value: wines.length.toString(),
-                      ),
-                    ),
-                    SizedBox(width: context.w * 0.03),
-                    Expanded(
-                      child: _StatCard(
-                        label: 'Avg Rating',
-                        value: wines.isEmpty
-                            ? '-'
-                            : (wines
-                                        .map((w) => w.rating)
-                                        .reduce((a, b) => a + b) /
-                                    wines.length)
-                                .toStringAsFixed(1),
-                      ),
-                    ),
-                    SizedBox(width: context.w * 0.03),
-                    Expanded(
-                      child: _StatCard(
-                        label: countries == 1 ? 'Country' : 'Countries',
-                        value: countries.toString(),
-                      ),
-                    ),
-                  ],
-                );
+                final avg = wines.isEmpty
+                    ? '—'
+                    : (wines.map((w) => w.rating).reduce((a, b) => a + b) /
+                            wines.length)
+                        .toStringAsFixed(1);
+                return StatsCard(stats: [
+                  (label: 'Wines', value: wines.length.toString()),
+                  (label: 'Avg', value: avg),
+                  (
+                    label: countries == 1 ? 'Country' : 'Countries',
+                    value: countries.toString(),
+                  ),
+                ]);
               },
               loading: () => const SizedBox.shrink(),
               error: (_, _) => const SizedBox.shrink(),
@@ -142,6 +129,12 @@ class ProfileScreen extends ConsumerWidget {
                 label: 'Friends',
                 onTap: () => context.push(AppRoutes.friends),
               ),
+              if (_isEmailUser(user))
+                _MenuItem(
+                  icon: Icons.lock_reset_outlined,
+                  label: 'Change password',
+                  onTap: () => _changePassword(context, ref, user.email!),
+                ),
               SizedBox(height: context.l),
             ],
 
@@ -185,6 +178,19 @@ class ProfileScreen extends ConsumerWidget {
                 icon: Icons.logout,
                 label: 'Sign Out',
                 onTap: () async {
+                  // Drop this device's FCM registration before the session
+                  // dies — otherwise pushes for this account continue to land
+                  // on a logged-out device.
+                  try {
+                    await ref
+                        .read(fcmServiceProvider)
+                        .unregisterCurrentDevice();
+                  } catch (_) {/* best-effort */}
+                  // Wipe cached wine/memory data so the next account on this
+                  // device can't briefly see the previous user's rows.
+                  try {
+                    await ref.read(appDatabaseProvider).clearAll();
+                  } catch (_) {/* best-effort */}
                   await ref.read(authControllerProvider.notifier).signOut();
                   if (context.mounted) context.go(AppRoutes.login);
                 },
@@ -212,20 +218,64 @@ class ProfileScreen extends ConsumerWidget {
                 onTap: () => context.go(AppRoutes.login),
               ),
 
-            SizedBox(height: context.xl),
-
-            // App info
-            Center(
-              child: Text(
-                'Sippd v1.0.0',
-                style: TextStyle(
-                    fontSize: context.captionFont * 0.8,
-                    color: cs.outline),
-              ),
-            ),
             SizedBox(height: context.l),
           ],
         ),
+      ),
+    );
+  }
+}
+
+bool _isEmailUser(User user) {
+  if (user.email == null) return false;
+  final identities = user.identities;
+  if (identities == null || identities.isEmpty) return true;
+  return identities.any((i) => i.provider == 'email');
+}
+
+Future<void> _changePassword(
+  BuildContext context,
+  WidgetRef ref,
+  String email,
+) async {
+  final confirmed = await showDialog<bool>(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      title: const Text('Change password?'),
+      content: Text(
+        'We\'ll send a password reset link to $email. '
+        'Tap it from your inbox to set a new password.',
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(ctx, false),
+          child: const Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: () => Navigator.pop(ctx, true),
+          child: const Text('Send link'),
+        ),
+      ],
+    ),
+  );
+  if (confirmed != true) return;
+
+  try {
+    await ref.read(authControllerProvider.notifier).resetPassword(email);
+    if (!context.mounted) return;
+    context.push(
+      AppRoutes.emailConfirmation,
+      extra: {
+        'email': email,
+        'purpose': EmailConfirmationPurpose.resetPassword,
+      },
+    );
+  } catch (e) {
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(e.toString()),
+        backgroundColor: Theme.of(context).colorScheme.error,
       ),
     );
   }
@@ -325,42 +375,6 @@ class _SectionLabel extends StatelessWidget {
           color: cs.onSurfaceVariant,
           letterSpacing: 1.2,
         ),
-      ),
-    );
-  }
-}
-
-class _StatCard extends StatelessWidget {
-  final String label;
-  final String value;
-
-  const _StatCard({required this.label, required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-
-    return Container(
-      padding: EdgeInsets.symmetric(
-          vertical: context.m, horizontal: context.w * 0.02),
-      decoration: BoxDecoration(
-        color: cs.surfaceContainer,
-        borderRadius: BorderRadius.circular(context.w * 0.03),
-        border: Border.all(color: cs.outlineVariant, width: 0.5),
-      ),
-      child: Column(
-        children: [
-          Text(value,
-              style: TextStyle(
-                  fontSize: context.headingFont,
-                  fontWeight: FontWeight.bold,
-                  color: cs.onSurface)),
-          SizedBox(height: context.xs),
-          Text(label,
-              style: TextStyle(
-                  fontSize: context.captionFont * 0.85,
-                  color: cs.onSurfaceVariant)),
-        ],
       ),
     );
   }

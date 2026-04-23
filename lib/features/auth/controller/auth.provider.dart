@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -17,10 +19,10 @@ class AuthController extends _$AuthController {
     final client = ref.watch(supabaseClientProvider);
     final user = client.auth.currentUser;
 
-    // Listen to auth state changes
-    client.auth.onAuthStateChange.listen((data) {
+    final StreamSubscription sub = client.auth.onAuthStateChange.listen((data) {
       state = AsyncValue.data(data.session?.user);
     });
+    ref.onDispose(sub.cancel);
 
     return AsyncValue.data(user);
   }
@@ -80,6 +82,28 @@ class AuthController extends _$AuthController {
     await client.auth.signOut();
     state = const AsyncValue.data(null);
   }
+
+  Future<void> resendConfirmation(String email) async {
+    final client = ref.read(supabaseClientProvider);
+    await client.auth.resend(
+      type: OtpType.signup,
+      email: email,
+      emailRedirectTo: 'io.sippd://login-callback/',
+    );
+  }
+
+  Future<void> resetPassword(String email) async {
+    final client = ref.read(supabaseClientProvider);
+    await client.auth.resetPasswordForEmail(
+      email,
+      redirectTo: 'io.sippd://login-callback/',
+    );
+  }
+
+  Future<void> updatePassword(String newPassword) async {
+    final client = ref.read(supabaseClientProvider);
+    await client.auth.updateUser(UserAttributes(password: newPassword));
+  }
 }
 
 @riverpod
@@ -92,4 +116,21 @@ bool isAuthenticated(IsAuthenticatedRef ref) {
 String? currentUserId(CurrentUserIdRef ref) {
   final authState = ref.watch(authControllerProvider);
   return authState.valueOrNull?.id;
+}
+
+@riverpod
+class PasswordRecoveryController extends _$PasswordRecoveryController {
+  @override
+  bool build() {
+    final client = ref.watch(supabaseClientProvider);
+    final StreamSubscription sub = client.auth.onAuthStateChange.listen((data) {
+      if (data.event == AuthChangeEvent.passwordRecovery) {
+        state = true;
+      }
+    });
+    ref.onDispose(sub.cancel);
+    return false;
+  }
+
+  void clear() => state = false;
 }

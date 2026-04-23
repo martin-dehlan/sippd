@@ -7,6 +7,8 @@ class AppRoutes {
   static const String login = '/login';
   static const String onboarding = '/onboarding';
   static const String chooseUsername = '/onboarding/username';
+  static const String emailConfirmation = '/email-confirmation';
+  static const String passwordRecovery = '/password-recovery';
 
   // Main tabs
   static const String wines = '/wines';

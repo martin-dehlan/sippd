@@ -7,6 +7,7 @@ import '../../../../../core/routes/app.routes.dart';
 import '../../../controller/auth.provider.dart';
 import '../../widgets/google_sign_in_button.widget.dart';
 import '../../widgets/or_divider.widget.dart';
+import '../email_confirmation/email_confirmation.screen.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -54,15 +55,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (!mounted) return;
 
     if (signUpOutcome == SignUpOutcome.confirmationRequired) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text(
-              'Check your email to confirm your account, then sign in.'),
-          backgroundColor: Theme.of(context).colorScheme.primary,
-          duration: const Duration(seconds: 6),
-        ),
+      context.go(
+        AppRoutes.emailConfirmation,
+        extra: {
+          'email': _emailController.text.trim(),
+          'purpose': EmailConfirmationPurpose.confirmSignup,
+        },
       );
-      setState(() => _isSignUp = false);
       return;
     }
 
@@ -71,6 +70,40 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(state.error.toString()),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
+    }
+  }
+
+  Future<void> _forgotPassword() async {
+    final email = _emailController.text.trim();
+    if (email.isEmpty || !email.contains('@')) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Enter your email above first.'),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
+      return;
+    }
+    try {
+      await ref
+          .read(authControllerProvider.notifier)
+          .resetPassword(email);
+      if (!mounted) return;
+      context.go(
+        AppRoutes.emailConfirmation,
+        extra: {
+          'email': email,
+          'purpose': EmailConfirmationPurpose.resetPassword,
+        },
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
@@ -155,7 +188,23 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       return null;
                     },
                   ),
-                  SizedBox(height: context.xl),
+
+                  // Forgot password (sign-in only)
+                  if (!_isSignUp)
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton(
+                        onPressed: _forgotPassword,
+                        child: Text(
+                          'Forgot password?',
+                          style: TextStyle(
+                            fontSize: context.captionFont,
+                            color: cs.outline,
+                          ),
+                        ),
+                      ),
+                    ),
+                  SizedBox(height: _isSignUp ? context.xl : context.s),
 
                   // Submit
                   SizedBox(

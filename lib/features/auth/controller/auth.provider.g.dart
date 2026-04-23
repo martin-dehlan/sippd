@@ -57,7 +57,7 @@ final currentUserIdProvider = AutoDisposeProvider<String?>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef CurrentUserIdRef = AutoDisposeProviderRef<String?>;
-String _$authControllerHash() => r'96b0e6fe2a2d3e0a1f54162b5fb01eaa0acb86be';
+String _$authControllerHash() => r'50dce7fc5b85e87efb767f26c7824f9b3078c27c';
 
 /// See also [AuthController].
 @ProviderFor(AuthController)
@@ -73,5 +73,22 @@ final authControllerProvider =
     );
 
 typedef _$AuthController = AutoDisposeNotifier<AsyncValue<User?>>;
+String _$passwordRecoveryControllerHash() =>
+    r'442298104af6391567cd4ea85c83315e1df4f76c';
+
+/// See also [PasswordRecoveryController].
+@ProviderFor(PasswordRecoveryController)
+final passwordRecoveryControllerProvider =
+    AutoDisposeNotifierProvider<PasswordRecoveryController, bool>.internal(
+      PasswordRecoveryController.new,
+      name: r'passwordRecoveryControllerProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$passwordRecoveryControllerHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+typedef _$PasswordRecoveryController = AutoDisposeNotifier<bool>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
