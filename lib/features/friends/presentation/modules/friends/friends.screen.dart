@@ -4,13 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
 
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../core/routes/app.routes.dart';
-import '../../../../wines/domain/entities/wine.entity.dart';
 import '../../../controller/friends.provider.dart';
-import '../../../domain/entities/activity_item.entity.dart';
 import '../../../domain/entities/friend_profile.entity.dart';
 import '../../../domain/entities/friend_request.entity.dart';
 import '../../widgets/friend_avatar.widget.dart';
@@ -24,6 +21,7 @@ class FriendsScreen extends ConsumerStatefulWidget {
 
 class _FriendsScreenState extends ConsumerState<FriendsScreen> {
   final _searchController = TextEditingController();
+  final _searchFocus = FocusNode();
   Timer? _debounce;
   String _query = '';
 
@@ -31,6 +29,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
   void dispose() {
     _debounce?.cancel();
     _searchController.dispose();
+    _searchFocus.dispose();
     super.dispose();
   }
 
@@ -47,16 +46,22 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
     });
   }
 
+  void _focusSearch() => _searchFocus.requestFocus();
+
   @override
   Widget build(BuildContext context) {
     final padH = context.paddingH * 1.3;
     final searchMode = _query.isNotEmpty;
+    final friends =
+        ref.watch(friendsListProvider).valueOrNull ?? const [];
+    final requests =
+        ref.watch(incomingFriendRequestsProvider).valueOrNull ?? const [];
+    final showEmpty = !searchMode && friends.isEmpty && requests.isEmpty;
 
     return Scaffold(
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: () async {
-            ref.invalidate(activityFeedProvider);
             ref.invalidate(friendsListProvider);
             ref.invalidate(incomingFriendRequestsProvider);
           },
@@ -92,16 +97,18 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
                 padding: EdgeInsets.symmetric(horizontal: padH),
                 child: _SearchField(
                   controller: _searchController,
+                  focusNode: _searchFocus,
                   onChanged: _onSearchChanged,
                 ),
               ),
               SizedBox(height: context.m),
               if (searchMode)
                 const _SearchResultsSection()
+              else if (showEmpty)
+                _EmptyFriendsState(onFindFriends: _focusSearch)
               else ...[
                 const _RequestsSection(),
                 const _FriendsSection(),
-                const _ActivitySection(),
               ],
               SizedBox(height: context.xl * 2),
             ],
@@ -139,14 +146,20 @@ class _FloatingBackButton extends StatelessWidget {
 
 class _SearchField extends StatelessWidget {
   final TextEditingController controller;
+  final FocusNode? focusNode;
   final ValueChanged<String> onChanged;
-  const _SearchField({required this.controller, required this.onChanged});
+  const _SearchField({
+    required this.controller,
+    required this.onChanged,
+    this.focusNode,
+  });
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     return TextField(
       controller: controller,
+      focusNode: focusNode,
       onChanged: onChanged,
       decoration: InputDecoration(
         hintText: 'Search by username or name',
@@ -278,6 +291,10 @@ class _FriendsSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
     final friendsAsync = ref.watch(friendsListProvider);
+    final friends = friendsAsync.valueOrNull ?? const [];
+    if (friends.isEmpty && !friendsAsync.isLoading && !friendsAsync.hasError) {
+      return const SizedBox.shrink();
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -286,19 +303,7 @@ class _FriendsSection extends ConsumerWidget {
         SizedBox(height: context.s),
         friendsAsync.when(
           data: (friends) {
-            if (friends.isEmpty) {
-              return Padding(
-                padding: EdgeInsets.symmetric(
-                    horizontal: context.paddingH * 1.3,
-                    vertical: context.s),
-                child: Text(
-                  'No friends yet. Use the search above to add some.',
-                  style: TextStyle(
-                      fontSize: context.captionFont,
-                      color: cs.onSurfaceVariant),
-                ),
-              );
-            }
+            if (friends.isEmpty) return const SizedBox.shrink();
             return Column(
               children: [
                 for (final f in friends)
@@ -309,64 +314,6 @@ class _FriendsSection extends ConsumerWidget {
                         context.paddingH * 1.3,
                         context.s),
                     child: _FriendRow(friend: f),
-                  ),
-              ],
-            );
-          },
-          loading: () => Padding(
-            padding: EdgeInsets.all(context.l),
-            child: const Center(child: CircularProgressIndicator()),
-          ),
-          error: (e, _) => Padding(
-            padding: EdgeInsets.all(context.l),
-            child: Text('Error: $e',
-                style:
-                    TextStyle(color: cs.error, fontSize: context.bodyFont)),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _ActivitySection extends ConsumerWidget {
-  const _ActivitySection();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final cs = Theme.of(context).colorScheme;
-    final feedAsync = ref.watch(activityFeedProvider);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(height: context.l),
-        _SectionHeader(label: 'Recent activity'),
-        SizedBox(height: context.s),
-        feedAsync.when(
-          data: (items) {
-            if (items.isEmpty) {
-              return Padding(
-                padding: EdgeInsets.symmetric(
-                    horizontal: context.paddingH * 1.3,
-                    vertical: context.s),
-                child: Text(
-                  'No activity yet. Friends’ ratings will show up here.',
-                  style: TextStyle(
-                      fontSize: context.captionFont,
-                      color: cs.onSurfaceVariant),
-                ),
-              );
-            }
-            return Column(
-              children: [
-                for (final item in items)
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(
-                        context.paddingH * 1.3,
-                        0,
-                        context.paddingH * 1.3,
-                        context.s),
-                    child: _ActivityCard(item: item),
                   ),
               ],
             );
@@ -617,142 +564,89 @@ class _SearchResultRowState extends ConsumerState<_SearchResultRow> {
   }
 }
 
-class _ActivityCard extends StatelessWidget {
-  final ActivityItemEntity item;
-  const _ActivityCard({required this.item});
+class _EmptyFriendsState extends StatelessWidget {
+  final VoidCallback onFindFriends;
+  const _EmptyFriendsState({required this.onFindFriends});
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final typeColor = switch (item.wine.type) {
-      WineType.red => const Color(0xFFA84343),
-      WineType.white => const Color(0xFFD4C49A),
-      WineType.rose => const Color(0xFFD6889A),
-      WineType.sparkling => const Color(0xFFD4A84B),
-    };
-
-    return GestureDetector(
-      onTap: () => context.push(AppRoutes.friendProfilePath(item.friend.id)),
+    final padH = context.paddingH * 1.3;
+    return Padding(
+      padding: EdgeInsets.fromLTRB(padH, context.l, padH, context.m),
       child: Container(
-        padding: EdgeInsets.all(context.w * 0.04),
+        width: double.infinity,
+        padding: EdgeInsets.symmetric(
+          horizontal: context.w * 0.06,
+          vertical: context.xl,
+        ),
         decoration: BoxDecoration(
           color: cs.surfaceContainer,
-          borderRadius: BorderRadius.circular(context.w * 0.04),
+          borderRadius: BorderRadius.circular(context.w * 0.05),
         ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            _ActivityHeader(
-                friend: item.friend, createdAt: item.wine.createdAt),
+            Container(
+              width: context.w * 0.18,
+              height: context.w * 0.18,
+              decoration: BoxDecoration(
+                color: cs.primary.withValues(alpha: 0.08),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.groups_outlined,
+                size: context.w * 0.09,
+                color: cs.primary,
+              ),
+            ),
             SizedBox(height: context.m),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Container(
-                  width: context.w * 0.025,
-                  height: context.w * 0.12,
-                  decoration: BoxDecoration(
-                    color: typeColor,
-                    borderRadius: BorderRadius.circular(context.w * 0.01),
-                  ),
+            Text(
+              'No friends yet',
+              style: TextStyle(
+                fontSize: context.headingFont,
+                fontWeight: FontWeight.w700,
+                letterSpacing: -0.3,
+                color: cs.onSurface,
+              ),
+            ),
+            SizedBox(height: context.xs),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: context.w * 0.04),
+              child: Text(
+                'Search by username to add people you taste wine with.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: context.captionFont,
+                  color: cs.onSurfaceVariant,
+                  height: 1.4,
                 ),
-                SizedBox(width: context.w * 0.04),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        item.wine.name.toUpperCase(),
-                        style: TextStyle(
-                          fontSize: context.bodyFont * 1.05,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: -0.2,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      SizedBox(height: context.xs * 0.4),
-                      Text(
-                        [
-                          if (item.wine.vintage != null)
-                            item.wine.vintage.toString(),
-                          if (item.wine.country != null) item.wine.country,
-                        ].join(' · '),
-                        style: TextStyle(
-                          fontSize: context.captionFont,
-                          color: cs.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
-                  ),
+              ),
+            ),
+            SizedBox(height: context.l),
+            FilledButton.tonalIcon(
+              onPressed: onFindFriends,
+              icon: Icon(Icons.search, size: context.w * 0.045),
+              label: Text(
+                'Find friends',
+                style: TextStyle(
+                  fontSize: context.captionFont,
+                  fontWeight: FontWeight.w600,
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(item.wine.rating.toStringAsFixed(1),
-                        style: TextStyle(
-                          fontSize: context.headingFont * 1.2,
-                          fontWeight: FontWeight.bold,
-                          color: cs.primary,
-                        )),
-                    Text('/ 10',
-                        style: TextStyle(
-                            fontSize: context.captionFont * 0.9,
-                            color: cs.onSurfaceVariant)),
-                  ],
+              ),
+              style: FilledButton.styleFrom(
+                padding: EdgeInsets.symmetric(
+                  horizontal: context.w * 0.06,
+                  vertical: context.s * 1.4,
                 ),
-              ],
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(context.w * 0.1),
+                ),
+              ),
             ),
           ],
         ),
       ),
     );
-  }
-}
-
-class _ActivityHeader extends StatelessWidget {
-  final FriendProfileEntity friend;
-  final DateTime createdAt;
-  const _ActivityHeader({required this.friend, required this.createdAt});
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    final name = friend.displayName ?? friend.username ?? 'Friend';
-    return Row(
-      children: [
-        FriendAvatar(profile: friend, size: context.w * 0.08),
-        SizedBox(width: context.w * 0.03),
-        Expanded(
-          child: Row(
-            children: [
-              Flexible(
-                child: Text(name,
-                    style: TextStyle(
-                        fontSize: context.bodyFont,
-                        fontWeight: FontWeight.w600),
-                    overflow: TextOverflow.ellipsis),
-              ),
-              SizedBox(width: context.w * 0.015),
-              Text('rated a wine',
-                  style: TextStyle(
-                      fontSize: context.captionFont,
-                      color: cs.onSurfaceVariant)),
-            ],
-          ),
-        ),
-        Text(_timeAgo(createdAt),
-            style: TextStyle(
-                fontSize: context.captionFont * 0.9, color: cs.outline)),
-      ],
-    );
-  }
-
-  String _timeAgo(DateTime t) {
-    final d = DateTime.now().difference(t);
-    if (d.inMinutes < 60) return '${d.inMinutes}m';
-    if (d.inHours < 24) return '${d.inHours}h';
-    if (d.inDays < 7) return '${d.inDays}d';
-    return DateFormat.yMMMd().format(t);
   }
 }

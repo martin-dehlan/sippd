@@ -665,7 +665,7 @@ class _GroupWinesProviderElement
 }
 
 String _$groupWineShareMetaHash() =>
-    r'9212976093509b9a655fe0244a8eb75e505f9853';
+    r'f4be4b6f088b89d3cf8de39b97855fe822241a3c';
 
 /// Lightweight metadata about how a wine was shared into a group.
 /// Used to decide who can unshare it (sharer + group owner).
