@@ -38,4 +38,14 @@ class AppDatabase extends _$AppDatabase {
   static QueryExecutor _openConnection() {
     return driftDatabase(name: 'sippd_database');
   }
+
+  /// Wipes all rows across every table. Used on sign-out to prevent the next
+  /// user on this device from seeing the previous session's cached data.
+  Future<void> clearAll() async {
+    await transaction(() async {
+      for (final table in allTables) {
+        await delete(table).go();
+      }
+    });
+  }
 }
