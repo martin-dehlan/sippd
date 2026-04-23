@@ -512,7 +512,7 @@ class _WineImageArea extends StatelessWidget {
                   wine.imageUrl!,
                   width: size,
                   height: size,
-                  fit: BoxFit.contain,
+                  fit: BoxFit.cover,
                   errorBuilder: (_, _, _) => Icon(
                     Icons.wine_bar,
                     size: size * 0.55,
