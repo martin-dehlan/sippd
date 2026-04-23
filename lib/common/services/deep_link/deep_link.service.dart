@@ -53,34 +53,54 @@ class DeepLinkService {
   }
 
   DeepLinkTarget? _parse(Uri uri) {
-    if (uri.scheme != 'io.sippd') return null;
     // Auth callback is handled by supabase_flutter. Skip.
-    if (uri.host == 'login-callback') return null;
+    if (uri.scheme == 'io.sippd' && uri.host == 'login-callback') return null;
 
-    final first = uri.host;
-    final segments = uri.pathSegments;
+    final String kind;
+    final List<String> segments;
 
-    // Accept both `io.sippd://group/{code}` and `io.sippd://group?code=...`
+    if (uri.scheme == 'io.sippd') {
+      // io.sippd://tasting/<id>  →  host = 'tasting', path = '/<id>'
+      kind = uri.host;
+      segments = uri.pathSegments;
+    } else if ((uri.scheme == 'https' || uri.scheme == 'http') &&
+        uri.host == 'sippd.app') {
+      // https://sippd.app/tasting/<id>  →  segments = ['tasting', '<id>']
+      if (uri.pathSegments.isEmpty) return null;
+      kind = uri.pathSegments.first;
+      segments = uri.pathSegments.skip(1).toList();
+    } else {
+      return null;
+    }
+
     String? at(int i) => segments.length > i ? segments[i] : null;
 
-    switch (first) {
+    switch (kind) {
       case 'group':
         final code = at(0) ?? uri.queryParameters['code'];
-        if (code != null && code.isNotEmpty) {
-          return DeepLinkGroupInvite(code);
-        }
+        if (_isValidInviteCode(code)) return DeepLinkGroupInvite(code!);
         return null;
       case 'tasting':
         final id = at(0) ?? uri.queryParameters['id'];
-        if (id != null && id.isNotEmpty) return DeepLinkTasting(id);
+        if (_isValidUuid(id)) return DeepLinkTasting(id!);
         return null;
       case 'friend':
         final id = at(0) ?? uri.queryParameters['id'];
-        if (id != null && id.isNotEmpty) return DeepLinkFriend(id);
+        if (_isValidUuid(id)) return DeepLinkFriend(id!);
         return null;
     }
     return null;
   }
+
+  static final _uuidRe = RegExp(
+    r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-'
+    r'[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',
+  );
+  static final _inviteCodeRe = RegExp(r'^[A-Za-z0-9_-]{1,32}$');
+
+  bool _isValidUuid(String? s) => s != null && _uuidRe.hasMatch(s);
+  bool _isValidInviteCode(String? s) =>
+      s != null && _inviteCodeRe.hasMatch(s);
 
   Future<void> dispose() async {
     await _sub?.cancel();
@@ -91,4 +111,13 @@ class DeepLinkService {
   static String groupInviteUri(String code) => 'io.sippd://group/$code';
   static String tastingUri(String id) => 'io.sippd://tasting/$id';
   static String friendUri(String id) => 'io.sippd://friend/$id';
+
+  // HTTPS shareable URLs — chat apps (WhatsApp, iMessage) linkify these,
+  // custom schemes they don't. Landing page on sippd.app redirects into app.
+  static String tastingHttpsUri(String id) =>
+      'https://sippd.app/tasting/$id';
+  static String groupInviteHttpsUri(String code) =>
+      'https://sippd.app/group/$code';
+  static String friendHttpsUri(String id) =>
+      'https://sippd.app/friend/$id';
 }
