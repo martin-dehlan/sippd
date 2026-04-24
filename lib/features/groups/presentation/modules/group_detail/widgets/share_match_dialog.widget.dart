@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../../../common/utils/responsive.dart';
 import '../../../../../wines/domain/entities/wine.entity.dart';
@@ -203,7 +204,7 @@ class ShareMatchCandidateCard extends StatelessWidget {
               ),
             ),
             SizedBox(width: context.m),
-            Icon(Icons.link_rounded, color: cs.primary),
+            Icon(PhosphorIconsRegular.link, color: cs.primary),
           ],
         ),
       ),

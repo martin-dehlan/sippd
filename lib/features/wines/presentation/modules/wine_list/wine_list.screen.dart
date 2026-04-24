@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -72,9 +73,9 @@ class WineListScreen extends ConsumerWidget {
                           padding: EdgeInsets.all(context.w * 0.02),
                           child: Icon(
                             switch (sortMode) {
-                              WineSortMode.rating => Icons.sort_rounded,
-                              WineSortMode.recent => Icons.schedule_rounded,
-                              WineSortMode.name => Icons.sort_by_alpha_rounded,
+                              WineSortMode.rating => PhosphorIconsRegular.sortAscending,
+                              WineSortMode.recent => PhosphorIconsRegular.clock,
+                              WineSortMode.name => PhosphorIconsRegular.sortAscending,
                             },
                             size: context.w * 0.055,
                             color: cs.onSurfaceVariant,
@@ -84,7 +85,7 @@ class WineListScreen extends ConsumerWidget {
                     ),
                     SizedBox(width: context.w * 0.01),
                     _HeaderIconButton(
-                      icon: Icons.add,
+                      icon: PhosphorIconsRegular.plus,
                       onTap: () => context.push(AppRoutes.wineAdd),
                       tooltip: 'Add wine',
                     ),
@@ -287,7 +288,7 @@ class WineEmptyState extends StatelessWidget {
               shape: BoxShape.circle,
             ),
             child: Icon(
-              Icons.wine_bar_outlined,
+              PhosphorIconsRegular.wine,
               size: context.w * 0.1,
               color: cs.primary,
             ),
@@ -313,7 +314,7 @@ class WineEmptyState extends StatelessWidget {
             SizedBox(height: context.l),
             FilledButton.icon(
               onPressed: () => context.push(AppRoutes.wineAdd),
-              icon: const Icon(Icons.add),
+              icon: const Icon(PhosphorIconsRegular.plus),
               label: const Text('Add wine'),
             ),
           ],

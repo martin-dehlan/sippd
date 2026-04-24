@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class ProfileAvatar extends StatelessWidget {
   final String? avatarUrl;
@@ -77,7 +78,7 @@ class ProfileAvatar extends StatelessWidget {
                       ),
                     ),
                     child: Icon(
-                      Icons.edit,
+                      PhosphorIconsRegular.pencilSimple,
                       size: badgeSize * 0.5,
                       color: cs.onPrimary,
                     ),

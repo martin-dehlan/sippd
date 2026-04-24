@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -62,7 +63,7 @@ class _BackFab extends StatelessWidget {
         elevation: 2,
         shape: const CircleBorder(),
         onPressed: () => context.pop(),
-        child: Icon(Icons.arrow_back_ios_new, size: context.w * 0.06),
+        child: Icon(PhosphorIconsRegular.arrowLeft, size: context.w * 0.06),
       ),
     );
   }
@@ -236,7 +237,7 @@ class _EmptyWinesState extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
-              Icons.wine_bar_outlined,
+              PhosphorIconsRegular.wine,
               size: context.w * 0.08,
               color: cs.onSurfaceVariant,
             ),
@@ -390,7 +391,7 @@ class _TypePlaceholder extends StatelessWidget {
       color: typeColor.withValues(alpha: 0.18),
       alignment: Alignment.center,
       child: Icon(
-        Icons.wine_bar_outlined,
+        PhosphorIconsRegular.wine,
         size: size * 0.45,
         color: typeColor,
       ),

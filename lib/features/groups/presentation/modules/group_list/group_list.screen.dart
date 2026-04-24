@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -62,8 +63,8 @@ class GroupListScreen extends ConsumerWidget {
                         padding: EdgeInsets.all(context.w * 0.02),
                         child: Icon(
                           sortMode == GroupSortMode.recent
-                              ? Icons.schedule_rounded
-                              : Icons.sort_by_alpha_rounded,
+                              ? PhosphorIconsRegular.clock
+                              : PhosphorIconsRegular.sortAscending,
                           size: context.w * 0.055,
                           color: cs.onSurfaceVariant,
                         ),
@@ -121,7 +122,7 @@ class GroupListScreen extends ConsumerWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.error_outline,
+                        Icon(PhosphorIconsRegular.warningCircle,
                             color: cs.error, size: context.w * 0.1),
                         SizedBox(height: context.m),
                         Text('Could not load groups',
@@ -138,7 +139,7 @@ class GroupListScreen extends ConsumerWidget {
                         FilledButton.icon(
                           onPressed: () =>
                               ref.invalidate(groupControllerProvider),
-                          icon: const Icon(Icons.refresh),
+                          icon: const Icon(PhosphorIconsRegular.arrowClockwise),
                           label: const Text('Retry'),
                         ),
                       ],
@@ -228,7 +229,7 @@ class _HeaderAddButton extends StatelessWidget {
           child: SizedBox(
             width: size,
             height: size,
-            child: Icon(Icons.add,
+            child: Icon(PhosphorIconsRegular.plus,
                 color: cs.onSurface, size: context.w * 0.055),
           ),
         ),
@@ -255,7 +256,7 @@ class _JoinCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(Icons.link, color: cs.primary, size: context.w * 0.05),
+            Icon(PhosphorIconsRegular.link, color: cs.primary, size: context.w * 0.05),
             SizedBox(width: context.w * 0.03),
             Expanded(
               child: Column(
@@ -274,7 +275,7 @@ class _JoinCard extends StatelessWidget {
                 ],
               ),
             ),
-            Icon(Icons.arrow_forward_ios,
+            Icon(PhosphorIconsRegular.caretRight,
                 size: context.w * 0.04,
                 color: cs.onPrimaryContainer),
           ],
@@ -317,7 +318,7 @@ class _GroupCard extends StatelessWidget {
                     : null,
               ),
               child: group.imageUrl == null
-                  ? Icon(Icons.wine_bar,
+                  ? Icon(PhosphorIconsRegular.wine,
                       color: cs.primary, size: context.w * 0.06)
                   : null,
             ),
@@ -331,7 +332,7 @@ class _GroupCard extends StatelessWidget {
                       fontWeight: FontWeight.w700,
                       letterSpacing: -0.2)),
             ),
-            Icon(Icons.arrow_forward_ios,
+            Icon(PhosphorIconsRegular.caretRight,
                 size: context.w * 0.035, color: cs.outline),
           ],
         ),
@@ -356,7 +357,7 @@ class _GroupEmptyState extends StatelessWidget {
             height: context.w * 0.2,
             decoration: BoxDecoration(
                 color: cs.primaryContainer, shape: BoxShape.circle),
-            child: Icon(Icons.group_outlined,
+            child: Icon(PhosphorIconsRegular.users,
                 size: context.w * 0.1, color: cs.primary),
           ),
           SizedBox(height: context.m),

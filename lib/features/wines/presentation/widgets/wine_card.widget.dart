@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:intl/intl.dart';
 import '../../../../common/utils/responsive.dart';
 import '../../domain/entities/wine.entity.dart';
@@ -96,7 +97,7 @@ class WineCardWidget extends StatelessWidget {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(Icons.star_rounded,
+                              Icon(PhosphorIconsRegular.star,
                                   size: context.w * 0.04,
                                   color: const Color(0xFFD4A84B)),
                               SizedBox(width: context.w * 0.008),
@@ -178,7 +179,7 @@ class WineCardImage extends StatelessWidget {
                       )
                     : Center(
                         child: Icon(
-                          Icons.wine_bar_outlined,
+                          PhosphorIconsRegular.wine,
                           size: size * 0.4,
                           color: cs.onSurface.withValues(alpha: 0.35),
                         ),

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../common/utils/responsive.dart';
@@ -111,11 +112,11 @@ class _LocationSearchWidgetState extends ConsumerState<LocationSearchWidget> {
           style: TextStyle(fontSize: context.bodyFont),
           decoration: InputDecoration(
             hintText: 'Search location...',
-            prefixIcon: Icon(Icons.location_on_outlined,
+            prefixIcon: Icon(PhosphorIconsRegular.mapPin,
                 color: cs.primary, size: context.w * 0.05),
             suffixIcon: _controller.text.isNotEmpty
                 ? IconButton(
-                    icon: Icon(Icons.clear,
+                    icon: Icon(PhosphorIconsRegular.x,
                         size: context.w * 0.05,
                         color: cs.onSurfaceVariant),
                     onPressed: () {
@@ -165,7 +166,7 @@ class _LocationSearchWidgetState extends ConsumerState<LocationSearchWidget> {
                         final loc = results[index];
                         return ListTile(
                           dense: true,
-                          leading: Icon(Icons.place,
+                          leading: Icon(PhosphorIconsRegular.mapPin,
                               color: cs.primary, size: context.w * 0.05),
                           title: Text(loc.displayName,
                               style: TextStyle(
@@ -234,7 +235,7 @@ class _UseMyLocationButton extends StatelessWidget {
                 child: busy
                     ? CircularProgressIndicator(
                         strokeWidth: 2, color: cs.primary)
-                    : Icon(Icons.my_location,
+                    : Icon(PhosphorIconsRegular.crosshairSimple,
                         size: context.w * 0.05, color: cs.primary),
               ),
               SizedBox(width: context.w * 0.03),
@@ -248,7 +249,7 @@ class _UseMyLocationButton extends StatelessWidget {
                   ),
                 ),
               ),
-              Icon(Icons.chevron_right,
+              Icon(PhosphorIconsRegular.caretRight,
                   size: context.w * 0.05, color: cs.onSurfaceVariant),
             ],
           ),

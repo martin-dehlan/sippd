@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../common/utils/responsive.dart';
 import '../../../wines/controller/wine.provider.dart';
@@ -242,7 +243,7 @@ class _WinePickerRow extends StatelessWidget {
                   _AddedChip()
                 else
                   Icon(
-                    selected ? Icons.check_circle : Icons.circle_outlined,
+                    selected ? PhosphorIconsRegular.checkCircle : PhosphorIconsRegular.circle,
                     color: selected ? cs.primary : cs.outline,
                     size: context.w * 0.06,
                   ),
@@ -269,7 +270,7 @@ class _AddedChip extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.check_rounded,
+          Icon(PhosphorIconsRegular.check,
               size: context.w * 0.035, color: cs.onSurfaceVariant),
           SizedBox(width: context.xs),
           Text(

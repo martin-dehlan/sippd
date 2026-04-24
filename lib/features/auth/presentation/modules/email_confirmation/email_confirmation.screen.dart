@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -124,7 +125,7 @@ class _EmailConfirmationScreenState
               Align(
                 alignment: Alignment.centerLeft,
                 child: IconButton(
-                  icon: const Icon(Icons.arrow_back),
+                  icon: const Icon(PhosphorIconsRegular.arrowLeft),
                   onPressed: _backToLogin,
                 ),
               ),
@@ -155,7 +156,7 @@ class _EmailConfirmationScreenState
                       height: context.h * 0.06,
                       child: ElevatedButton.icon(
                         onPressed: _openMailApp,
-                        icon: const Icon(Icons.mail_outline),
+                        icon: const Icon(PhosphorIconsRegular.envelope),
                         label: Text(
                           'Open mail app',
                           style: TextStyle(
@@ -221,8 +222,8 @@ class _MailIcon extends StatelessWidget {
         ),
         child: Icon(
           isReset
-              ? Icons.lock_reset_outlined
-              : Icons.mark_email_unread_outlined,
+              ? PhosphorIconsRegular.lockKey
+              : PhosphorIconsRegular.envelopeOpen,
           size: size * 0.5,
           color: cs.primary,
         ),

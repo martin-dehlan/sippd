@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../common/utils/responsive.dart';
@@ -83,7 +84,7 @@ class _InviteCard extends ConsumerWidget {
                       : null,
                 ),
                 child: item.groupImageUrl == null
-                    ? Icon(Icons.wine_bar,
+                    ? Icon(PhosphorIconsRegular.wine,
                         color: cs.primary, size: size * 0.5)
                     : null,
               ),

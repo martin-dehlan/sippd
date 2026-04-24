@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -111,18 +112,18 @@ class _EditGroupSheetState extends ConsumerState<EditGroupSheet> {
           children: [
             SizedBox(height: context.s),
             ListTile(
-              leading: const Icon(Icons.photo_camera_outlined),
+              leading: const Icon(PhosphorIconsRegular.camera),
               title: const Text('Camera'),
               onTap: () => Navigator.pop(ctx, ImageSource.camera),
             ),
             ListTile(
-              leading: const Icon(Icons.photo_library_outlined),
+              leading: const Icon(PhosphorIconsRegular.images),
               title: const Text('Gallery'),
               onTap: () => Navigator.pop(ctx, ImageSource.gallery),
             ),
             if (_imageUrl != null)
               ListTile(
-                leading: Icon(Icons.delete_outline, color: cs.error),
+                leading: Icon(PhosphorIconsRegular.trash, color: cs.error),
                 title: Text('Remove photo',
                     style: TextStyle(color: cs.error)),
                 onTap: () {
@@ -222,7 +223,7 @@ class _EditGroupSheetState extends ConsumerState<EditGroupSheet> {
                           : null,
                     ),
                     child: _imageUrl == null
-                        ? Icon(Icons.groups_outlined,
+                        ? Icon(PhosphorIconsRegular.usersThree,
                             size: avatarSize * 0.45,
                             color: cs.onSurfaceVariant)
                         : null,
@@ -237,7 +238,7 @@ class _EditGroupSheetState extends ConsumerState<EditGroupSheet> {
                         shape: BoxShape.circle,
                         border: Border.all(color: cs.surface, width: 2),
                       ),
-                      child: Icon(Icons.camera_alt,
+                      child: Icon(PhosphorIconsRegular.camera,
                           size: context.w * 0.04, color: cs.onPrimary),
                     ),
                   ),

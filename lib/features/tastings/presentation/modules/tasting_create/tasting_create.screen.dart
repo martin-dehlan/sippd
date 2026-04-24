@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -217,7 +218,7 @@ class _BackFab extends StatelessWidget {
         elevation: 2,
         shape: const CircleBorder(),
         onPressed: () => context.pop(),
-        child: Icon(Icons.arrow_back_ios_new, size: context.w * 0.06),
+        child: Icon(PhosphorIconsRegular.arrowLeft, size: context.w * 0.06),
       ),
     );
   }
@@ -268,7 +269,7 @@ class _Row extends StatelessWidget {
               ),
             ),
             SizedBox(width: context.w * 0.02),
-            Icon(Icons.chevron_right,
+            Icon(PhosphorIconsRegular.caretRight,
                 size: context.w * 0.045, color: cs.outline),
           ],
         ),

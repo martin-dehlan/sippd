@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -208,7 +209,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         backgroundColor: Colors.transparent,
         leading: IconButton(
           icon: Icon(
-            Icons.arrow_back_ios_new,
+            PhosphorIconsRegular.arrowLeft,
             size: context.w * 0.05,
             color: cs.onSurface,
           ),
@@ -442,7 +443,7 @@ Widget? _usernameSuffix(BuildContext context, _UsernameState status) {
       ),
     ),
     _UsernameState.available => Icon(
-      Icons.check_circle,
+      PhosphorIconsRegular.checkCircle,
       color: cs.primary,
       size: context.w * 0.05,
     ),
@@ -522,7 +523,7 @@ class _AvatarEditor extends StatelessWidget {
                 border: Border.all(color: cs.surface, width: 2),
               ),
               child: Icon(
-                Icons.camera_alt,
+                PhosphorIconsRegular.camera,
                 color: cs.onPrimary,
                 size: context.w * 0.04,
               ),
@@ -549,7 +550,7 @@ Future<_AvatarAction?> _showSourceSheet(
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
-                leading: Icon(Icons.camera_alt_outlined, color: cs.primary),
+                leading: Icon(PhosphorIconsRegular.camera, color: cs.primary),
                 title: Text(
                   'Take photo',
                   style: TextStyle(fontSize: ctx.bodyFont),
@@ -557,7 +558,7 @@ Future<_AvatarAction?> _showSourceSheet(
                 onTap: () => Navigator.pop(ctx, _AvatarAction.camera),
               ),
               ListTile(
-                leading: Icon(Icons.photo_library_outlined, color: cs.primary),
+                leading: Icon(PhosphorIconsRegular.images, color: cs.primary),
                 title: Text(
                   'Choose from gallery',
                   style: TextStyle(fontSize: ctx.bodyFont),
@@ -573,7 +574,7 @@ Future<_AvatarAction?> _showSourceSheet(
                   endIndent: ctx.paddingH,
                 ),
                 ListTile(
-                  leading: Icon(Icons.delete_outline, color: cs.error),
+                  leading: Icon(PhosphorIconsRegular.trash, color: cs.error),
                   title: Text(
                     'Remove photo',
                     style: TextStyle(fontSize: ctx.bodyFont, color: cs.error),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../../common/utils/responsive.dart';
@@ -190,7 +191,7 @@ class _AvatarStack extends StatelessWidget {
                     ),
                     alignment: Alignment.center,
                     child: Icon(
-                      Icons.person_add_alt_1_rounded,
+                      PhosphorIconsRegular.userPlus,
                       color: cs.onSurface,
                       size: inner * 0.5,
                     ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../../common/utils/responsive.dart';
@@ -153,7 +154,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       controller: _displayNameController,
                       decoration: const InputDecoration(
                         labelText: 'Display Name',
-                        prefixIcon: Icon(Icons.person_outline),
+                        prefixIcon: Icon(PhosphorIconsRegular.user),
                       ),
                     ),
                     SizedBox(height: context.m),
@@ -166,7 +167,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     autocorrect: false,
                     decoration: const InputDecoration(
                       labelText: 'Email',
-                      prefixIcon: Icon(Icons.email_outlined),
+                      prefixIcon: Icon(PhosphorIconsRegular.envelope),
                     ),
                     validator: (v) {
                       if (v == null || !v.contains('@')) return 'Valid email required';
@@ -181,7 +182,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     obscureText: true,
                     decoration: const InputDecoration(
                       labelText: 'Password',
-                      prefixIcon: Icon(Icons.lock_outline),
+                      prefixIcon: Icon(PhosphorIconsRegular.lockSimple),
                     ),
                     validator: (v) {
                       if (v == null || v.length < 6) return 'Min 6 characters';

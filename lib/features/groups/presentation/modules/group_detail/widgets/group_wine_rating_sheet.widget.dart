@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -831,7 +832,7 @@ class _UnshareMenu extends ConsumerWidget {
 
     final cs = Theme.of(context).colorScheme;
     return PopupMenuButton<void>(
-      icon: Icon(Icons.more_horiz, size: context.w * 0.055, color: cs.outline),
+      icon: Icon(PhosphorIconsRegular.dotsThree, size: context.w * 0.055, color: cs.outline),
       tooltip: 'More',
       padding: EdgeInsets.zero,
       color: cs.surfaceContainerHigh,
@@ -845,7 +846,7 @@ class _UnshareMenu extends ConsumerWidget {
           enabled: onRemove != null,
           child: Row(
             children: [
-              Icon(Icons.remove_circle_outline,
+              Icon(PhosphorIconsRegular.minusCircle,
                   size: context.w * 0.045, color: cs.error),
               SizedBox(width: context.s),
               Text('Remove from group', style: TextStyle(color: cs.error)),

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -145,7 +146,7 @@ class _FloatingBackButton extends StatelessWidget {
         elevation: 2,
         shape: const CircleBorder(),
         onPressed: () => context.pop(),
-        child: Icon(Icons.arrow_back_ios_new, size: context.w * 0.06),
+        child: Icon(PhosphorIconsRegular.arrowLeft, size: context.w * 0.06),
       ),
     );
   }
@@ -170,11 +171,11 @@ class _SearchField extends StatelessWidget {
       onChanged: onChanged,
       decoration: InputDecoration(
         hintText: 'Search by username or name',
-        prefixIcon: Icon(Icons.search, color: cs.primary),
+        prefixIcon: Icon(PhosphorIconsRegular.magnifyingGlass, color: cs.primary),
         suffixIcon: controller.text.isEmpty
             ? null
             : IconButton(
-                icon: Icon(Icons.close, size: context.w * 0.05),
+                icon: Icon(PhosphorIconsRegular.x, size: context.w * 0.05),
                 onPressed: () {
                   controller.clear();
                   onChanged('');
@@ -340,7 +341,7 @@ class _OutgoingRequestRow extends ConsumerWidget {
           if (profile != null)
             FriendAvatar(profile: profile, size: context.w * 0.12)
           else
-            Icon(Icons.person, size: context.w * 0.12, color: cs.outline),
+            Icon(PhosphorIconsRegular.user, size: context.w * 0.12, color: cs.outline),
           SizedBox(width: context.w * 0.04),
           Expanded(
             child: Column(
@@ -354,7 +355,7 @@ class _OutgoingRequestRow extends ConsumerWidget {
                 SizedBox(height: context.xs * 0.5),
                 Row(
                   children: [
-                    Icon(Icons.schedule,
+                    Icon(PhosphorIconsRegular.clock,
                         size: context.captionFont * 1.1,
                         color: cs.primary),
                     SizedBox(width: context.w * 0.015),
@@ -506,7 +507,7 @@ class _FriendRow extends ConsumerWidget {
               ),
             ),
             IconButton(
-              icon: Icon(Icons.person_remove_outlined,
+              icon: Icon(PhosphorIconsRegular.userMinus,
                   color: cs.outline, size: context.w * 0.05),
               onPressed: () => _confirmRemove(context, ref),
             ),
@@ -559,7 +560,7 @@ class _RequestRow extends ConsumerWidget {
           if (profile != null)
             FriendAvatar(profile: profile, size: context.w * 0.12)
           else
-            Icon(Icons.person, size: context.w * 0.12, color: cs.outline),
+            Icon(PhosphorIconsRegular.user, size: context.w * 0.12, color: cs.outline),
           SizedBox(width: context.w * 0.04),
           Expanded(
             child: Column(
@@ -578,14 +579,14 @@ class _RequestRow extends ConsumerWidget {
             ),
           ),
           IconButton(
-            icon: Icon(Icons.check_circle,
+            icon: Icon(PhosphorIconsRegular.checkCircle,
                 color: cs.primary, size: context.w * 0.07),
             onPressed: () => ref
                 .read(friendsControllerProvider.notifier)
                 .acceptRequest(request.id),
           ),
           IconButton(
-            icon: Icon(Icons.cancel_outlined,
+            icon: Icon(PhosphorIconsRegular.xCircle,
                 color: cs.outline, size: context.w * 0.07),
             onPressed: () => ref
                 .read(friendsControllerProvider.notifier)
@@ -715,14 +716,14 @@ class _SearchResultTrailing extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
     if (alreadyFriend) {
       return _StatusChip(
-        icon: Icons.check_circle,
+        icon: PhosphorIconsRegular.checkCircle,
         label: 'Friend',
         color: cs.primary,
       );
     }
     if (alreadyPending || optimisticallySent) {
       return _StatusChip(
-        icon: Icons.schedule,
+        icon: PhosphorIconsRegular.clock,
         label: 'Pending',
         color: cs.onSurfaceVariant,
       );
@@ -804,7 +805,7 @@ class _EmptyFriendsState extends StatelessWidget {
                 shape: BoxShape.circle,
               ),
               child: Icon(
-                Icons.groups_outlined,
+                PhosphorIconsRegular.usersThree,
                 size: context.w * 0.09,
                 color: cs.primary,
               ),
@@ -835,7 +836,7 @@ class _EmptyFriendsState extends StatelessWidget {
             SizedBox(height: context.l),
             FilledButton.tonalIcon(
               onPressed: onFindFriends,
-              icon: Icon(Icons.search, size: context.w * 0.045),
+              icon: Icon(PhosphorIconsRegular.magnifyingGlass, size: context.w * 0.045),
               label: Text(
                 'Find friends',
                 style: TextStyle(

@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../common/utils/responsive.dart';
@@ -125,13 +126,13 @@ Future<ImageSource?> _showSourceSheet(BuildContext context) {
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
-                leading: Icon(Icons.camera_alt_outlined, color: cs.primary),
+                leading: Icon(PhosphorIconsRegular.camera, color: cs.primary),
                 title: Text('Take photo',
                     style: TextStyle(fontSize: ctx.bodyFont)),
                 onTap: () => Navigator.pop(ctx, ImageSource.camera),
               ),
               ListTile(
-                leading: Icon(Icons.photo_library_outlined, color: cs.primary),
+                leading: Icon(PhosphorIconsRegular.images, color: cs.primary),
                 title: Text('Choose from gallery',
                     style: TextStyle(fontSize: ctx.bodyFont)),
                 onTap: () => Navigator.pop(ctx, ImageSource.gallery),
@@ -197,7 +198,7 @@ class _ClearButton extends StatelessWidget {
           color: Colors.black.withValues(alpha: 0.6),
           shape: BoxShape.circle,
         ),
-        child: Icon(Icons.close,
+        child: Icon(PhosphorIconsRegular.x,
             color: Colors.white, size: context.w * 0.05),
       ),
     );

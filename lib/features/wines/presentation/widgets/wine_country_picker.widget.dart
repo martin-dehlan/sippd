@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../../../common/utils/responsive.dart';
 
 const _topWineCountries = [
@@ -119,7 +120,7 @@ void showWineCountryPicker({
                     style: TextStyle(fontSize: context.bodyFont),
                     decoration: InputDecoration(
                       hintText: 'Search country...',
-                      prefixIcon: Icon(Icons.search, color: cs.primary),
+                      prefixIcon: Icon(PhosphorIconsRegular.magnifyingGlass, color: cs.primary),
                       isDense: true,
                     ),
                     onChanged: (v) => setModalState(() => filter = v),
@@ -204,7 +205,7 @@ class _CountryTile extends StatelessWidget {
             color: isSelected ? cs.primary : cs.onSurface,
           )),
       trailing: isSelected
-          ? Icon(Icons.check_circle, color: cs.primary, size: context.w * 0.05)
+          ? Icon(PhosphorIconsRegular.checkCircle, color: cs.primary, size: context.w * 0.05)
           : null,
       onTap: onTap,
     );

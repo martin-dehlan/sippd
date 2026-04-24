@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../common/utils/responsive.dart';
 import '../../../auth/controller/auth.provider.dart';
@@ -230,7 +231,7 @@ class _GroupRow extends ConsumerWidget {
                       : null,
                 ),
                 child: group.imageUrl == null
-                    ? Icon(Icons.wine_bar,
+                    ? Icon(PhosphorIconsRegular.wine,
                         color: cs.primary, size: context.w * 0.06)
                     : null,
               ),
@@ -268,10 +269,10 @@ class _GroupRow extends ConsumerWidget {
               else
                 membersAsync.maybeWhen(
                   data: (members) => members.isEmpty
-                      ? Icon(Icons.arrow_forward_ios,
+                      ? Icon(PhosphorIconsRegular.caretRight,
                           size: context.w * 0.035, color: cs.outline)
                       : _AvatarCluster(members: members),
-                  orElse: () => Icon(Icons.arrow_forward_ios,
+                  orElse: () => Icon(PhosphorIconsRegular.caretRight,
                       size: context.w * 0.035, color: cs.outline),
                 ),
             ],

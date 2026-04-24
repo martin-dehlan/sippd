@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -114,7 +115,7 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         _IconCircleButton(
-                          icon: Icons.groups_outlined,
+                          icon: PhosphorIconsRegular.usersThree,
                           onTap: () => showShareWineSheet(
                             context: context,
                             wineId: widget.wine.id,
@@ -249,7 +250,7 @@ class _FloatingBackButton extends StatelessWidget {
         elevation: 2,
         shape: const CircleBorder(),
         onPressed: () => Navigator.pop(context),
-        child: Icon(Icons.arrow_back_ios_new, size: context.w * 0.06),
+        child: Icon(PhosphorIconsRegular.arrowLeft, size: context.w * 0.06),
       ),
     );
   }
@@ -301,7 +302,7 @@ class _WineOverflowMenu extends StatelessWidget {
         border: Border.all(color: cs.outlineVariant, width: 0.5),
       ),
       child: PopupMenuButton<_WineMenuAction>(
-        icon: Icon(Icons.more_vert,
+        icon: Icon(PhosphorIconsRegular.dotsThreeVertical,
             size: context.w * 0.05, color: cs.onSurface),
         tooltip: 'Mehr',
         padding: EdgeInsets.zero,
@@ -322,7 +323,7 @@ class _WineOverflowMenu extends StatelessWidget {
             value: _WineMenuAction.edit,
             child: Row(
               children: [
-                Icon(Icons.edit_outlined,
+                Icon(PhosphorIconsRegular.pencilSimple,
                     size: context.w * 0.045, color: cs.onSurface),
                 SizedBox(width: context.s),
                 const Text('Edit wine'),
@@ -333,7 +334,7 @@ class _WineOverflowMenu extends StatelessWidget {
             value: _WineMenuAction.delete,
             child: Row(
               children: [
-                Icon(Icons.delete_outline,
+                Icon(PhosphorIconsRegular.trash,
                     size: context.w * 0.045, color: cs.error),
                 SizedBox(width: context.s),
                 Text('Delete wine', style: TextStyle(color: cs.error)),
@@ -390,7 +391,7 @@ class _WineImage extends StatelessWidget {
                 ),
               )
             : Icon(
-                Icons.wine_bar,
+                PhosphorIconsRegular.wine,
                 size: context.w * 0.25,
                 color: typeColor.withValues(alpha: 0.6),
               ),
@@ -630,7 +631,7 @@ class _PlaceSection extends StatelessWidget {
                     width: context.w * 0.1,
                     height: context.w * 0.1,
                     child: Icon(
-                      Icons.place,
+                      PhosphorIconsRegular.mapPin,
                       size: context.w * 0.1,
                       color: cs.primary,
                     ),
@@ -653,7 +654,7 @@ class _PlaceSection extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.place,
+                    Icon(PhosphorIconsRegular.mapPin,
                         size: context.w * 0.045, color: cs.primary),
                     SizedBox(width: context.w * 0.02),
                     Expanded(
@@ -783,7 +784,7 @@ class _MemoryThumb extends StatelessWidget {
     if (m.imageUrl != null) {
       return Image.network(m.imageUrl!, fit: BoxFit.cover);
     }
-    return Icon(Icons.broken_image_outlined, color: cs.outline);
+    return Icon(PhosphorIconsRegular.imageBroken, color: cs.outline);
   }
 }
 
@@ -842,7 +843,7 @@ class _MemoryViewerState extends State<_MemoryViewer> {
                     color: Colors.black.withValues(alpha: 0.5),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(Icons.close,
+                  child: Icon(PhosphorIconsRegular.x,
                       color: Colors.white, size: context.w * 0.06),
                 ),
               ),
@@ -884,7 +885,7 @@ class _MemoryViewerState extends State<_MemoryViewer> {
     if (m.imageUrl != null) {
       return Image.network(m.imageUrl!, fit: BoxFit.contain);
     }
-    return const Icon(Icons.broken_image_outlined,
+    return const Icon(PhosphorIconsRegular.imageBroken,
         color: Colors.white, size: 80);
   }
 }
@@ -906,7 +907,7 @@ class _EmptyPlace extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.map_outlined,
+            Icon(PhosphorIconsRegular.mapTrifold,
                 size: context.w * 0.12, color: cs.outline),
             SizedBox(height: context.s),
             Text(

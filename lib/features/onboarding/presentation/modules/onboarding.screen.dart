@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -238,7 +239,7 @@ class _Header extends StatelessWidget {
                 ? const SizedBox.shrink()
                 : IconButton(
                     onPressed: onBack,
-                    icon: Icon(Icons.arrow_back_ios_new,
+                    icon: Icon(PhosphorIconsRegular.arrowLeft,
                         size: context.w * 0.05, color: cs.onSurface),
                   ),
           ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../common/utils/responsive.dart';
@@ -66,7 +67,7 @@ class _Sheet extends StatelessWidget {
             ),
             SizedBox(height: context.m),
             _ActionTile(
-              icon: Icons.group_add_outlined,
+              icon: PhosphorIconsRegular.userPlus,
               label: 'Invite to a group',
               onTap: () {
                 Navigator.pop(context);
@@ -140,7 +141,7 @@ class _ActionTile extends StatelessWidget {
                   ),
                 ),
               ),
-              Icon(Icons.chevron_right,
+              Icon(PhosphorIconsRegular.caretRight,
                   size: context.w * 0.05, color: cs.outline),
             ],
           ),
@@ -298,7 +299,7 @@ class _GroupRow extends StatelessWidget {
                       : null,
                 ),
                 child: group.imageUrl == null
-                    ? Icon(Icons.wine_bar,
+                    ? Icon(PhosphorIconsRegular.wine,
                         color: cs.primary, size: size * 0.5)
                     : null,
               ),
@@ -313,7 +314,7 @@ class _GroupRow extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              Icon(Icons.send_outlined,
+              Icon(PhosphorIconsRegular.paperPlaneRight,
                   size: context.w * 0.045, color: cs.primary),
             ],
           ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -98,10 +99,10 @@ class _PasswordRecoveryScreenState
                   obscureText: _obscure,
                   decoration: InputDecoration(
                     labelText: 'New password',
-                    prefixIcon: const Icon(Icons.lock_outline),
+                    prefixIcon: const Icon(PhosphorIconsRegular.lockSimple),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _obscure ? Icons.visibility_off : Icons.visibility,
+                        _obscure ? PhosphorIconsRegular.eyeSlash : PhosphorIconsRegular.eye,
                       ),
                       onPressed: () =>
                           setState(() => _obscure = !_obscure),
@@ -118,7 +119,7 @@ class _PasswordRecoveryScreenState
                   obscureText: _obscure,
                   decoration: const InputDecoration(
                     labelText: 'Confirm password',
-                    prefixIcon: Icon(Icons.lock_outline),
+                    prefixIcon: Icon(PhosphorIconsRegular.lockSimple),
                   ),
                   validator: (v) {
                     if (v != _passwordController.text) {
@@ -173,7 +174,7 @@ class _LockIcon extends StatelessWidget {
           shape: BoxShape.circle,
         ),
         child: Icon(
-          Icons.lock_reset_outlined,
+          PhosphorIconsRegular.lockKey,
           size: size * 0.5,
           color: cs.primary,
         ),

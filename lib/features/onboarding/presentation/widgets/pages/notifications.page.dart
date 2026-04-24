@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../common/utils/responsive.dart';
@@ -59,7 +60,7 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
             ),
             child: Row(
               children: [
-                Icon(Icons.notifications_active,
+                Icon(PhosphorIconsRegular.bellRinging,
                     color: cs.primary, size: context.w * 0.08),
                 SizedBox(width: context.w * 0.04),
                 Expanded(

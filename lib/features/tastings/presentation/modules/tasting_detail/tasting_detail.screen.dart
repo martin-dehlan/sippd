@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -53,7 +54,7 @@ class _CalendarIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => _CircleIcon(
-        icon: Icons.event_outlined,
+        icon: PhosphorIconsRegular.calendarBlank,
         onTap: onTap,
       );
 }
@@ -64,7 +65,7 @@ class _ShareIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => _CircleIcon(
-        icon: Icons.ios_share,
+        icon: PhosphorIconsRegular.shareNetwork,
         onTap: onTap,
       );
 }
@@ -114,7 +115,7 @@ class _OverflowMenu extends StatelessWidget {
         border: Border.all(color: cs.outlineVariant, width: 0.5),
       ),
       child: PopupMenuButton<_TastingMenuAction>(
-        icon: Icon(Icons.more_vert,
+        icon: Icon(PhosphorIconsRegular.dotsThreeVertical,
             size: context.w * 0.05, color: cs.onSurface),
         tooltip: 'More',
         padding: EdgeInsets.zero,
@@ -135,7 +136,7 @@ class _OverflowMenu extends StatelessWidget {
             value: _TastingMenuAction.edit,
             child: Row(
               children: [
-                Icon(Icons.edit_outlined,
+                Icon(PhosphorIconsRegular.pencilSimple,
                     size: context.w * 0.045, color: cs.onSurface),
                 SizedBox(width: context.s),
                 const Text('Edit tasting'),
@@ -146,7 +147,7 @@ class _OverflowMenu extends StatelessWidget {
             value: _TastingMenuAction.cancel,
             child: Row(
               children: [
-                Icon(Icons.event_busy_outlined,
+                Icon(PhosphorIconsRegular.calendarX,
                     size: context.w * 0.045, color: cs.error),
                 SizedBox(width: context.s),
                 Text('Cancel tasting',
@@ -169,7 +170,7 @@ class _WhenRow extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
     return Row(
       children: [
-        Icon(Icons.event,
+        Icon(PhosphorIconsRegular.calendarBlank,
             size: context.w * 0.04, color: cs.onSurfaceVariant),
         SizedBox(width: context.xs),
         Text(
@@ -181,7 +182,7 @@ class _WhenRow extends StatelessWidget {
           ),
         ),
         SizedBox(width: context.m),
-        Icon(Icons.access_time,
+        Icon(PhosphorIconsRegular.clock,
             size: context.w * 0.04, color: cs.onSurfaceVariant),
         SizedBox(width: context.xs),
         Text(
@@ -214,7 +215,7 @@ class _BackFab extends StatelessWidget {
         elevation: 2,
         shape: const CircleBorder(),
         onPressed: () => context.pop(),
-        child: Icon(Icons.arrow_back_ios_new, size: context.w * 0.06),
+        child: Icon(PhosphorIconsRegular.arrowLeft, size: context.w * 0.06),
       ),
     );
   }
@@ -494,7 +495,7 @@ class _PlaceCard extends StatelessWidget {
                             point: LatLng(latitude!, longitude!),
                             width: context.w * 0.1,
                             height: context.w * 0.1,
-                            child: Icon(Icons.place,
+                            child: Icon(PhosphorIconsRegular.mapPin,
                                 size: context.w * 0.1, color: cs.primary),
                           ),
                         ]),
@@ -514,7 +515,7 @@ class _PlaceCard extends StatelessWidget {
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.place,
+                          Icon(PhosphorIconsRegular.mapPin,
                               size: context.w * 0.045, color: cs.primary),
                           SizedBox(width: context.w * 0.02),
                           Expanded(
@@ -914,7 +915,7 @@ class _WinesSection extends ConsumerWidget {
                   },
                   child: Row(
                     children: [
-                      Icon(Icons.add,
+                      Icon(PhosphorIconsRegular.plus,
                           size: context.w * 0.04, color: cs.primary),
                       SizedBox(width: context.w * 0.01),
                       Text('Add wines',
@@ -981,7 +982,7 @@ class _WinesEmptyState extends StatelessWidget {
             height: context.w * 0.2,
             decoration: BoxDecoration(
                 color: cs.primaryContainer, shape: BoxShape.circle),
-            child: Icon(Icons.wine_bar_outlined,
+            child: Icon(PhosphorIconsRegular.wine,
                 size: context.w * 0.1, color: cs.primary),
           ),
           SizedBox(height: context.m),
@@ -1040,7 +1041,7 @@ class _WineLineupCard extends StatelessWidget {
                   color: cs.surface.withValues(alpha: 0.85),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.close,
+                child: Icon(PhosphorIconsRegular.x,
                     size: context.w * 0.04, color: cs.onSurfaceVariant),
               ),
             ),

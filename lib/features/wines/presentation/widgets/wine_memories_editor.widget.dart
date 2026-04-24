@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
@@ -156,7 +157,7 @@ class _MemoriesHeader extends StatelessWidget {
     return Row(
       children: [
         Icon(
-          Icons.photo_library_outlined,
+          PhosphorIconsRegular.images,
           size: context.w * 0.045,
           color: cs.onSurfaceVariant,
         ),
@@ -203,7 +204,7 @@ class _MemoryThumb extends StatelessWidget {
             else if (memory.imageUrl != null)
               Image.network(memory.imageUrl!, fit: BoxFit.cover)
             else
-              Icon(Icons.broken_image_outlined,
+              Icon(PhosphorIconsRegular.imageBroken,
                   color: cs.outline, size: size * 0.4),
             Positioned(
               top: context.xs,
@@ -215,7 +216,7 @@ class _MemoryThumb extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
-                  Icons.close,
+                  PhosphorIconsRegular.x,
                   size: context.w * 0.035,
                   color: Colors.white,
                 ),
@@ -261,7 +262,7 @@ class _AddTile extends StatelessWidget {
             : Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.add_a_photo_outlined,
+                  Icon(PhosphorIconsRegular.cameraPlus,
                       size: context.w * 0.07, color: cs.outline),
                   SizedBox(height: context.xs),
                   Text(
@@ -291,14 +292,14 @@ Future<ImageSource?> _showSourceSheet(BuildContext context) {
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
-                leading: Icon(Icons.camera_alt_outlined, color: cs.primary),
+                leading: Icon(PhosphorIconsRegular.camera, color: cs.primary),
                 title: Text('Take photo',
                     style: TextStyle(fontSize: ctx.bodyFont)),
                 onTap: () => Navigator.pop(ctx, ImageSource.camera),
               ),
               ListTile(
                 leading:
-                    Icon(Icons.photo_library_outlined, color: cs.primary),
+                    Icon(PhosphorIconsRegular.images, color: cs.primary),
                 title: Text('Choose from gallery',
                     style: TextStyle(fontSize: ctx.bodyFont)),
                 onTap: () => Navigator.pop(ctx, ImageSource.gallery),

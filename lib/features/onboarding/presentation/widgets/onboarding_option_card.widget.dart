@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../common/utils/responsive.dart';
 
@@ -84,7 +85,7 @@ class OnboardingOptionCard extends StatelessWidget {
                 AnimatedOpacity(
                   opacity: selected ? 1 : 0,
                   duration: const Duration(milliseconds: 150),
-                  child: Icon(Icons.check_circle,
+                  child: Icon(PhosphorIconsRegular.checkCircle,
                       color: cs.primary, size: context.w * 0.06),
                 ),
               ],

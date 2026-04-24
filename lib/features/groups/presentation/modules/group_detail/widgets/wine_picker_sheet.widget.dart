@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../../common/utils/responsive.dart';
@@ -373,7 +374,7 @@ class _SharedChip extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.check_rounded,
+          Icon(PhosphorIconsRegular.check,
               size: context.w * 0.035, color: cs.onSurfaceVariant),
           SizedBox(width: context.xs),
           Text(

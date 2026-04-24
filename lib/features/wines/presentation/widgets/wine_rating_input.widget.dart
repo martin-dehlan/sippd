@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../../../common/utils/responsive.dart';
 
 class WineRatingInput extends StatelessWidget {
@@ -20,7 +21,7 @@ class WineRatingInput extends StatelessWidget {
       children: [
         Row(
           children: [
-            Icon(Icons.star_rounded,
+            Icon(PhosphorIconsRegular.star,
                 color: cs.primary, size: context.w * 0.06),
             SizedBox(width: context.w * 0.02),
             Text(

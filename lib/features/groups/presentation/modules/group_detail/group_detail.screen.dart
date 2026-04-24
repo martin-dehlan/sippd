@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -59,7 +60,7 @@ class _FloatingBackButton extends StatelessWidget {
         elevation: 2,
         shape: const CircleBorder(),
         onPressed: () => context.pop(),
-        child: Icon(Icons.arrow_back_ios_new, size: context.w * 0.06),
+        child: Icon(PhosphorIconsRegular.arrowLeft, size: context.w * 0.06),
       ),
     );
   }
@@ -128,7 +129,7 @@ class _Body extends ConsumerWidget {
         _SectionHeader(
           label: 'Shared wines',
           action: _SectionAction(
-            icon: Icons.add,
+            icon: PhosphorIconsRegular.plus,
             label: 'Share',
             onTap: () =>
                 WinePickerSheet.show(context, groupId: group.id),
@@ -140,7 +141,7 @@ class _Body extends ConsumerWidget {
         _SectionHeader(
           label: 'Tastings',
           action: _SectionAction(
-            icon: Icons.add,
+            icon: PhosphorIconsRegular.plus,
             label: 'Plan',
             onTap: () =>
                 context.push(AppRoutes.tastingCreatePath(group.id)),
@@ -230,7 +231,7 @@ class _GroupMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     return PopupMenuButton<_MenuAction>(
-      icon: Icon(Icons.more_vert,
+      icon: Icon(PhosphorIconsRegular.dotsThreeVertical,
           size: context.w * 0.06, color: cs.onSurfaceVariant),
       tooltip: 'More',
       color: cs.surfaceContainerHigh,
@@ -253,7 +254,7 @@ class _GroupMenu extends StatelessWidget {
             value: _MenuAction.edit,
             child: Row(
               children: [
-                Icon(Icons.edit_outlined,
+                Icon(PhosphorIconsRegular.pencilSimple,
                     size: context.w * 0.045, color: cs.onSurface),
                 SizedBox(width: context.s),
                 const Text('Edit group'),
@@ -264,7 +265,7 @@ class _GroupMenu extends StatelessWidget {
             value: _MenuAction.delete,
             child: Row(
               children: [
-                Icon(Icons.delete_outline,
+                Icon(PhosphorIconsRegular.trash,
                     size: context.w * 0.045, color: cs.error),
                 SizedBox(width: context.s),
                 Text('Delete group', style: TextStyle(color: cs.error)),
@@ -276,7 +277,7 @@ class _GroupMenu extends StatelessWidget {
             value: _MenuAction.leave,
             child: Row(
               children: [
-                Icon(Icons.logout,
+                Icon(PhosphorIconsRegular.signOut,
                     size: context.w * 0.045, color: cs.error),
                 SizedBox(width: context.s),
                 Text('Leave group', style: TextStyle(color: cs.error)),

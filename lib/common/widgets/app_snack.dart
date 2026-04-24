@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../utils/responsive.dart';
 
@@ -23,9 +24,9 @@ class AppSnack {
   ) {
     final cs = Theme.of(context).colorScheme;
     final (IconData icon, Color accent) = switch (kind) {
-      _SnackKind.success => (Icons.check_circle_rounded, cs.secondary),
-      _SnackKind.error => (Icons.error_outline_rounded, cs.error),
-      _SnackKind.info => (Icons.info_outline_rounded, cs.primary),
+      _SnackKind.success => (PhosphorIconsRegular.checkCircle, cs.secondary),
+      _SnackKind.error => (PhosphorIconsRegular.warningCircle, cs.error),
+      _SnackKind.info => (PhosphorIconsRegular.info, cs.primary),
     };
 
     ScaffoldMessenger.of(context)

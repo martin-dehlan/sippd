@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -141,7 +142,7 @@ class _TastingTile extends StatelessWidget {
                     SizedBox(height: context.xs * 0.5),
                     Row(
                       children: [
-                        Icon(Icons.access_time,
+                        Icon(PhosphorIconsRegular.clock,
                             size: context.w * 0.035,
                             color: cs.onSurfaceVariant),
                         SizedBox(width: context.xs * 0.8),
@@ -160,7 +161,7 @@ class _TastingTile extends StatelessWidget {
                               color: cs.outline,
                             ),
                           ),
-                          Icon(Icons.place_outlined,
+                          Icon(PhosphorIconsRegular.mapPin,
                               size: context.w * 0.035,
                               color: cs.onSurfaceVariant),
                           SizedBox(width: context.xs * 0.8),
@@ -181,7 +182,7 @@ class _TastingTile extends StatelessWidget {
                   ],
                 ),
               ),
-              Icon(Icons.chevron_right,
+              Icon(PhosphorIconsRegular.caretRight,
                   size: context.w * 0.045, color: cs.outline),
             ],
           ),
@@ -260,7 +261,7 @@ class _PastToggle extends StatelessWidget {
       child: Row(
         children: [
           Icon(
-            open ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_right,
+            open ? PhosphorIconsRegular.caretDown : PhosphorIconsRegular.caretRight,
             size: context.w * 0.045,
             color: cs.onSurfaceVariant,
           ),
@@ -310,7 +311,7 @@ class _EmptyTastings extends StatelessWidget {
               color: cs.surfaceContainerHighest,
             ),
             alignment: Alignment.center,
-            child: Icon(Icons.event_outlined,
+            child: Icon(PhosphorIconsRegular.calendarBlank,
                 size: context.w * 0.07, color: cs.onSurfaceVariant),
           ),
           SizedBox(height: context.m),
@@ -348,7 +349,7 @@ class _EmptyTastings extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.add_rounded,
+                    Icon(PhosphorIconsRegular.plus,
                         size: context.w * 0.045, color: cs.onPrimary),
                     SizedBox(width: context.w * 0.015),
                     Text(

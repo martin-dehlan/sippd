@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
@@ -344,7 +345,7 @@ class MainShell extends ConsumerWidget {
                 selectedIndex: navigationShell.currentIndex,
                 onTabChange: _onTap,
                 tabs: [
-                  const GButton(icon: Icons.wine_bar, text: 'Wines'),
+                  const GButton(icon: PhosphorIconsRegular.wine, text: 'Wines'),
                   GButton(
                     icon: Icons.groups,
                     text: 'Groups',
@@ -360,7 +361,7 @@ class MainShell extends ConsumerWidget {
                           )
                         : null,
                   ),
-                  const GButton(icon: Icons.person, text: 'Profile'),
+                  const GButton(icon: PhosphorIconsRegular.user, text: 'Profile'),
                 ],
               ),
             ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -91,7 +92,7 @@ class _DetailsButton extends StatelessWidget {
               ),
               SizedBox(width: context.xs * 0.6),
               Icon(
-                Icons.arrow_forward_rounded,
+                PhosphorIconsRegular.arrowRight,
                 size: context.captionFont,
                 color: cs.onSurfaceVariant,
               ),
@@ -186,11 +187,11 @@ class _EmptyShared extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _EmptyStateCard(
-      icon: Icons.wine_bar_outlined,
+      icon: PhosphorIconsRegular.wine,
       title: 'No wines shared yet',
       subtitle: 'Pick one from your cellar to kick off the list.',
       buttonLabel: 'Share a wine',
-      buttonIcon: Icons.add_rounded,
+      buttonIcon: PhosphorIconsRegular.plus,
       onTap: onShare,
     );
   }
@@ -514,14 +515,14 @@ class _WineImageArea extends StatelessWidget {
                   height: size,
                   fit: BoxFit.cover,
                   errorBuilder: (_, _, _) => Icon(
-                    Icons.wine_bar,
+                    PhosphorIconsRegular.wine,
                     size: size * 0.55,
                     color: typeColor.withValues(alpha: 0.6),
                   ),
                 ),
               )
             : Icon(
-                Icons.wine_bar,
+                PhosphorIconsRegular.wine,
                 size: size * 0.55,
                 color: typeColor.withValues(alpha: 0.6),
               ),

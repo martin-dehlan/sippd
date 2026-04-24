@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -66,7 +67,7 @@ class ProfileScreen extends ConsumerWidget {
                               width: context.w * 0.26 * 0.025,
                             ),
                           ),
-                          child: Icon(Icons.person,
+                          child: Icon(PhosphorIconsRegular.user,
                               size: context.w * 0.1, color: cs.primary),
                         ),
                   SizedBox(height: context.m),
@@ -116,18 +117,18 @@ class ProfileScreen extends ConsumerWidget {
             if (user != null) ...[
               const _SectionLabel('Account'),
               _MenuItem(
-                icon: Icons.edit_outlined,
+                icon: PhosphorIconsRegular.pencilSimple,
                 label: 'Edit profile',
                 onTap: () => context.push(AppRoutes.profileEdit),
               ),
               _MenuItem(
-                icon: Icons.people_outline,
+                icon: PhosphorIconsRegular.users,
                 label: 'Friends',
                 onTap: () => context.push(AppRoutes.friends),
               ),
               if (_isEmailUser(user))
                 _MenuItem(
-                  icon: Icons.lock_reset_outlined,
+                  icon: PhosphorIconsRegular.lockKey,
                   label: 'Change password',
                   onTap: () => _changePassword(context, ref, user.email!),
                 ),
@@ -137,7 +138,7 @@ class ProfileScreen extends ConsumerWidget {
             // SUPPORT
             const _SectionLabel('Support'),
             _MenuItem(
-              icon: Icons.mail_outline,
+              icon: PhosphorIconsRegular.envelope,
               label: 'Contact us',
               onTap: () => _launch(
                 context,
@@ -145,7 +146,7 @@ class ProfileScreen extends ConsumerWidget {
               ),
             ),
             _MenuItem(
-              icon: Icons.star_border,
+              icon: PhosphorIconsRegular.star,
               label: 'Rate Sippd',
               onTap: () => _launch(
                 context,
@@ -157,12 +158,12 @@ class ProfileScreen extends ConsumerWidget {
             // LEGAL
             const _SectionLabel('Legal'),
             _MenuItem(
-              icon: Icons.privacy_tip_outlined,
+              icon: PhosphorIconsRegular.shieldCheck,
               label: 'Privacy Policy',
               onTap: () => _launch(context, _privacyUrl),
             ),
             _MenuItem(
-              icon: Icons.description_outlined,
+              icon: PhosphorIconsRegular.fileText,
               label: 'Terms of Service',
               onTap: () => _launch(context, _termsUrl),
             ),
@@ -171,7 +172,7 @@ class ProfileScreen extends ConsumerWidget {
             // DANGER ZONE / auth actions
             if (user != null) ...[
               _DangerButton(
-                icon: Icons.logout,
+                icon: PhosphorIconsRegular.signOut,
                 label: 'Sign Out',
                 onTap: () async {
                   // Drop this device's FCM registration before the session
@@ -209,7 +210,7 @@ class ProfileScreen extends ConsumerWidget {
               ),
             ] else
               _MenuItem(
-                icon: Icons.login,
+                icon: PhosphorIconsRegular.signIn,
                 label: 'Sign In',
                 onTap: () => context.go(AppRoutes.login),
               ),
@@ -412,7 +413,7 @@ class _MenuItem extends StatelessWidget {
                       fontWeight: FontWeight.w500,
                       color: cs.onSurface)),
             ),
-            Icon(Icons.chevron_right,
+            Icon(PhosphorIconsRegular.caretRight,
                 size: context.w * 0.05, color: cs.outline),
           ],
         ),

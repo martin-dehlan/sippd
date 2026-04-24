@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -295,7 +296,7 @@ class _WineFormState extends State<WineForm>
                   height: context.h * 0.28,
                   child: WinePhotoPicker(
                     label: 'Photo',
-                    placeholderIcon: Icons.wine_bar_outlined,
+                    placeholderIcon: PhosphorIconsRegular.wine,
                     imageUrl: _imageUrl,
                     localPath: _localImagePath,
                     onChanged: (v) {
@@ -380,7 +381,7 @@ class _WineFormState extends State<WineForm>
               height: context.h * 0.065,
               child: FilledButton.icon(
                 onPressed: _submit,
-                icon: const Icon(Icons.check),
+                icon: const Icon(PhosphorIconsRegular.check),
                 label: Text(
                   widget.submitLabel,
                   style: TextStyle(
@@ -746,25 +747,25 @@ class WineFormChipsRow extends StatelessWidget {
         runSpacing: context.s,
         children: [
           WineFormFieldChip(
-            icon: Icons.factory_outlined,
+            icon: PhosphorIconsRegular.factory,
             label: winery ?? 'Winery',
             isEmpty: winery == null,
             onTap: onWineryTap,
           ),
           WineFormFieldChip(
-            icon: Icons.grass_outlined,
+            icon: PhosphorIconsRegular.plant,
             label: grape ?? 'Grape',
             isEmpty: grape == null,
             onTap: onGrapeTap,
           ),
           WineFormFieldChip(
-            icon: Icons.calendar_today_outlined,
+            icon: PhosphorIconsRegular.calendarBlank,
             label: vintage?.toString() ?? 'Year',
             isEmpty: vintage == null,
             onTap: onVintageTap,
           ),
           WineFormFieldChip(
-            icon: Icons.notes_outlined,
+            icon: PhosphorIconsRegular.notePencil,
             label: notes != null && notes!.isNotEmpty ? 'Notes ✓' : 'Notes',
             isEmpty: notes == null || notes!.isEmpty,
             onTap: onNotesTap,
@@ -857,7 +858,7 @@ class WineFormPlaceMap extends StatelessWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.add_location_alt_outlined,
+                      Icon(PhosphorIconsRegular.mapPinPlus,
                           size: context.w * 0.12, color: cs.outline),
                       SizedBox(height: context.s),
                       Text('Tap to add place',
@@ -908,7 +909,7 @@ class WineFormMapContent extends StatelessWidget {
                     point: point,
                     width: context.w * 0.1,
                     height: context.w * 0.1,
-                    child: Icon(Icons.place,
+                    child: Icon(PhosphorIconsRegular.mapPin,
                         size: context.w * 0.1, color: cs.primary),
                   ),
                 ],
@@ -929,7 +930,7 @@ class WineFormMapContent extends StatelessWidget {
             ),
             child: Row(
               children: [
-                Icon(Icons.place,
+                Icon(PhosphorIconsRegular.mapPin,
                     size: context.w * 0.045, color: cs.primary),
                 SizedBox(width: context.w * 0.02),
                 Expanded(

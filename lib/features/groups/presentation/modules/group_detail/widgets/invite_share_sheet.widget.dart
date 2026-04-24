@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
@@ -150,7 +151,7 @@ class _CodeBlock extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.vpn_key_outlined,
+          Icon(PhosphorIconsRegular.key,
               color: cs.primary, size: context.w * 0.05),
           SizedBox(width: context.w * 0.025),
           Text(
@@ -180,7 +181,7 @@ class _ActionRow extends StatelessWidget {
       children: [
         Expanded(
           child: _Action(
-            icon: Icons.copy_rounded,
+            icon: PhosphorIconsRegular.copy,
             label: 'Copy code',
             onTap: onCopy,
           ),
@@ -188,7 +189,7 @@ class _ActionRow extends StatelessWidget {
         SizedBox(width: context.s),
         Expanded(
           child: _Action(
-            icon: Icons.ios_share_rounded,
+            icon: PhosphorIconsRegular.shareNetwork,
             label: 'Share link',
             onTap: onShare,
             filled: true,
@@ -363,7 +364,7 @@ class _FriendRow extends StatelessWidget {
                   ],
                 ),
               ),
-              Icon(Icons.send_outlined,
+              Icon(PhosphorIconsRegular.paperPlaneRight,
                   color: cs.primary, size: context.w * 0.045),
             ],
           ),
