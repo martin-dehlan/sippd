@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../common/utils/responsive.dart';
 import '../../../wines/controller/wine.provider.dart';
 import '../../../wines/domain/entities/wine.entity.dart';
+import '../../../wines/presentation/widgets/wine_card.widget.dart';
 
 Future<List<String>?> showWinePickerSheet({
   required BuildContext context,
@@ -41,11 +42,13 @@ class _SheetState extends ConsumerState<_Sheet> {
       child: SizedBox(
         height: sheetHeight,
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: context.paddingH),
+          padding: EdgeInsets.symmetric(
+            horizontal: context.paddingH,
+            vertical: context.m,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              SizedBox(height: context.m),
               Center(
                 child: Container(
                   width: context.w * 0.1,
@@ -57,22 +60,22 @@ class _SheetState extends ConsumerState<_Sheet> {
                 ),
               ),
               SizedBox(height: context.m),
-              Text('Add wines to lineup',
-                  style: TextStyle(
-                      fontSize: context.bodyFont,
-                      fontWeight: FontWeight.w600,
-                      color: cs.onSurfaceVariant)),
-              SizedBox(height: context.m),
+              Text(
+                'Add wines to lineup',
+                style: TextStyle(
+                  fontSize: context.bodyFont * 1.1,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              SizedBox(height: context.s),
               Expanded(
                 child: winesAsync.when(
                   data: (wines) {
-                    final pickable = wines
-                        .where((w) => !widget.alreadyInLineup.contains(w.id))
-                        .toList();
-                    if (pickable.isEmpty) {
-                      return Center(
+                    if (wines.isEmpty) {
+                      return Padding(
+                        padding: EdgeInsets.symmetric(vertical: context.l),
                         child: Text(
-                          'All your wines are already in the lineup.',
+                          'You have no wines yet.',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                               fontSize: context.captionFont,
@@ -80,23 +83,40 @@ class _SheetState extends ConsumerState<_Sheet> {
                         ),
                       );
                     }
+                    final sorted = List<WineEntity>.from(wines)
+                      ..sort((a, b) {
+                        final aIn =
+                            widget.alreadyInLineup.contains(a.id) ? 1 : 0;
+                        final bIn =
+                            widget.alreadyInLineup.contains(b.id) ? 1 : 0;
+                        if (aIn != bIn) return aIn - bIn;
+                        return b.rating.compareTo(a.rating);
+                      });
                     return ListView.separated(
-                      itemCount: pickable.length,
-                      separatorBuilder: (_, __) => SizedBox(height: context.s),
-                      itemBuilder: (_, i) => _WineRow(
-                        wine: pickable[i],
-                        selected: _selected.contains(pickable[i].id),
-                        onToggle: () {
-                          setState(() {
-                            final id = pickable[i].id;
-                            if (_selected.contains(id)) {
-                              _selected.remove(id);
-                            } else {
-                              _selected.add(id);
-                            }
-                          });
-                        },
-                      ),
+                      itemCount: sorted.length,
+                      separatorBuilder: (_, _) =>
+                          SizedBox(height: context.xs),
+                      itemBuilder: (_, i) {
+                        final wine = sorted[i];
+                        final inLineup =
+                            widget.alreadyInLineup.contains(wine.id);
+                        return _WinePickerRow(
+                          wine: wine,
+                          inLineup: inLineup,
+                          selected: _selected.contains(wine.id),
+                          onTap: inLineup
+                              ? null
+                              : () {
+                                  setState(() {
+                                    if (_selected.contains(wine.id)) {
+                                      _selected.remove(wine.id);
+                                    } else {
+                                      _selected.add(wine.id);
+                                    }
+                                  });
+                                },
+                        );
+                      },
                     );
                   },
                   loading: () =>
@@ -142,83 +162,126 @@ class _SheetState extends ConsumerState<_Sheet> {
   }
 }
 
-class _WineRow extends StatelessWidget {
+class _WinePickerRow extends StatelessWidget {
   final WineEntity wine;
+  final bool inLineup;
   final bool selected;
-  final VoidCallback onToggle;
+  final VoidCallback? onTap;
 
-  const _WineRow({
+  const _WinePickerRow({
     required this.wine,
+    required this.inLineup,
     required this.selected,
-    required this.onToggle,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final typeColor = switch (wine.type) {
-      WineType.red => const Color(0xFFA84343),
-      WineType.white => const Color(0xFFD4C49A),
-      WineType.rose => const Color(0xFFD6889A),
-      WineType.sparkling => const Color(0xFFD4A84B),
-    };
-    return GestureDetector(
-      onTap: onToggle,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 120),
-        padding: EdgeInsets.all(context.w * 0.04),
-        decoration: BoxDecoration(
-          color: selected
-              ? cs.primary.withValues(alpha: 0.12)
-              : cs.surfaceContainer,
-          borderRadius: BorderRadius.circular(context.w * 0.03),
-          border: Border.all(
-            color: selected ? cs.primary : Colors.transparent,
-            width: 1,
+    return Opacity(
+      opacity: inLineup ? 0.5 : 1,
+      child: Material(
+        color: selected
+            ? cs.primary.withValues(alpha: 0.12)
+            : cs.surfaceContainer,
+        borderRadius: BorderRadius.circular(context.w * 0.03),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(context.w * 0.03),
+              border: Border.all(
+                color: selected ? cs.primary : Colors.transparent,
+                width: 1,
+              ),
+            ),
+            padding: EdgeInsets.only(right: context.w * 0.035),
+            child: Row(
+              children: [
+                WineCardImage(wine: wine, compact: true),
+                SizedBox(width: context.w * 0.01),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(wine.name,
+                          style: TextStyle(
+                              fontSize: context.bodyFont,
+                              fontWeight: FontWeight.w700,
+                              height: 1.2),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis),
+                      SizedBox(height: context.xs * 0.5),
+                      Row(
+                        children: [
+                          WineTypeDot(type: wine.type),
+                          SizedBox(width: context.w * 0.015),
+                          Flexible(
+                            child: Text(
+                              [
+                                if (wine.vintage != null)
+                                  wine.vintage.toString(),
+                                if (wine.country != null) wine.country,
+                              ].join(' · '),
+                              style: TextStyle(
+                                  fontSize: context.captionFont,
+                                  color: cs.onSurfaceVariant),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(width: context.w * 0.02),
+                if (inLineup)
+                  _AddedChip()
+                else
+                  Icon(
+                    selected ? Icons.check_circle : Icons.circle_outlined,
+                    color: selected ? cs.primary : cs.outline,
+                    size: context.w * 0.06,
+                  ),
+              ],
+            ),
           ),
         ),
-        child: Row(
-          children: [
-            Container(
-              width: context.w * 0.025,
-              height: context.w * 0.1,
-              decoration: BoxDecoration(
-                color: typeColor,
-                borderRadius: BorderRadius.circular(context.w * 0.01),
-              ),
+      ),
+    );
+  }
+}
+
+class _AddedChip extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Container(
+      padding: EdgeInsets.symmetric(
+          horizontal: context.w * 0.025, vertical: context.xs),
+      decoration: BoxDecoration(
+        color: cs.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(context.w * 0.02),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.check_rounded,
+              size: context.w * 0.035, color: cs.onSurfaceVariant),
+          SizedBox(width: context.xs),
+          Text(
+            'Added',
+            style: TextStyle(
+              fontSize: context.captionFont * 0.9,
+              fontWeight: FontWeight.w600,
+              color: cs.onSurfaceVariant,
+              letterSpacing: 0.3,
             ),
-            SizedBox(width: context.w * 0.04),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(wine.name.toUpperCase(),
-                      style: TextStyle(
-                          fontSize: context.bodyFont,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: -0.2),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis),
-                  SizedBox(height: context.xs * 0.4),
-                  Text(
-                    [
-                      if (wine.vintage != null) wine.vintage.toString(),
-                      if (wine.country != null) wine.country,
-                    ].join(' · '),
-                    style: TextStyle(
-                        fontSize: context.captionFont,
-                        color: cs.onSurfaceVariant),
-                  ),
-                ],
-              ),
-            ),
-            Icon(
-              selected ? Icons.check_circle : Icons.circle_outlined,
-              color: selected ? cs.primary : cs.outline,
-              size: context.w * 0.06,
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

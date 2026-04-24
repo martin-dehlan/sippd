@@ -1,12 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../common/utils/responsive.dart';
-import '../../../../common/widgets/app_logo.widget.dart';
 import '../../../../core/routes/app.routes.dart';
 import '../../controller/onboarding.provider.dart';
+import '../../domain/onboarding_answers.dart';
+import '../widgets/pages/frequency.page.dart';
+import '../widgets/pages/goals.page.dart';
+import '../widgets/pages/level.page.dart';
+import '../widgets/pages/loader.page.dart';
+import '../widgets/pages/name.page.dart';
+import '../widgets/pages/notifications.page.dart';
+import '../widgets/pages/results.page.dart';
+import '../widgets/pages/styles.page.dart';
+import '../widgets/pages/welcome.page.dart';
+import '../widgets/pages/why.page.dart';
+
+enum _Step {
+  welcome,
+  level,
+  goals,
+  styles,
+  frequency,
+  why,
+  notifications,
+  name,
+  loader,
+  results,
+}
 
 class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
@@ -16,152 +38,170 @@ class OnboardingScreen extends ConsumerStatefulWidget {
 }
 
 class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
-  final _controller = PageController();
+  final _pageCtrl = PageController();
   int _index = 0;
 
-  static const _pages = <_PageData>[
-    _PageData(
-      icon: Icons.wine_bar_rounded,
-      title: 'Track every bottle',
-      body:
-          'Rate, photograph and remember every wine you try. Your notes '
-          'stay on your phone — sync when you sign in.',
-    ),
-    _PageData(
-      icon: Icons.groups_2_rounded,
-      title: 'Taste together',
-      body:
-          'Create groups with friends, share ratings, plan tastings. '
-          'Requires an account — groups run on the cloud.',
-    ),
-  ];
+  List<_Step> get _steps => _Step.values;
 
   @override
   void dispose() {
-    _controller.dispose();
+    _pageCtrl.dispose();
     super.dispose();
   }
 
-  Future<void> _skipToLogin() async {
+  bool _canAdvance(OnboardingAnswers a) {
+    switch (_steps[_index]) {
+      case _Step.welcome:
+      case _Step.why:
+      case _Step.loader:
+      case _Step.results:
+        return true;
+      case _Step.level:
+        return a.tasteLevel != null;
+      case _Step.goals:
+        return a.goals.isNotEmpty;
+      case _Step.styles:
+        return a.styles.isNotEmpty;
+      case _Step.frequency:
+        return a.frequency != null;
+      case _Step.notifications:
+        return a.notificationsAsked;
+      case _Step.name:
+        return (a.displayName ?? '').trim().isNotEmpty;
+    }
+  }
+
+  void _goTo(int i) {
+    if (i < 0 || i >= _steps.length) return;
+    _pageCtrl.animateToPage(
+      i,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOut,
+    );
+  }
+
+  Future<void> _finish() async {
+    final answers = ref.read(onboardingAnswersControllerProvider);
+    final notifier = ref.read(onboardingAnswersControllerProvider.notifier);
+    if ((answers.displayName ?? '').isNotEmpty) {
+      await notifier.markProfileSeedPending();
+    }
     await ref.read(onboardingControllerProvider.notifier).markSeen();
     if (!mounted) return;
     context.go(AppRoutes.login);
   }
 
-  Future<void> _skipAsGuest() async {
-    await ref.read(onboardingControllerProvider.notifier).enterGuest();
-    if (!mounted) return;
-    context.go(AppRoutes.wines);
-  }
-
   void _next() {
-    if (_index < _pages.length - 1) {
-      _controller.nextPage(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-      );
+    if (_index == _steps.length - 1) {
+      _finish();
     } else {
-      _skipToLogin();
+      _goTo(_index + 1);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final isLast = _index == _pages.length - 1;
+    final answers = ref.watch(onboardingAnswersControllerProvider);
+    final step = _steps[_index];
+    final canAdvance = _canAdvance(answers);
+    final showChrome = step != _Step.loader;
 
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
-            Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: context.paddingH,
-                vertical: context.s,
+            if (showChrome)
+              _Header(
+                index: _index,
+                total: _steps.length,
+                onBack: _index == 0 ? null : () => _goTo(_index - 1),
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Expanded(
+              child: PageView(
+                controller: _pageCtrl,
+                physics: const NeverScrollableScrollPhysics(),
+                onPageChanged: (i) => setState(() => _index = i),
                 children: [
-                  Row(
-                    children: [
-                      AppLogo(size: context.w * 0.09),
-                      SizedBox(width: context.w * 0.02),
-                      Text(
-                        'Sippd',
-                        style: TextStyle(
-                          fontSize: context.bodyFont * 1.05,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: -0.3,
-                          color: cs.onSurface,
-                        ),
-                      ),
-                    ],
-                  ),
-                  TextButton(
-                    onPressed: _skipToLogin,
-                    child: Text(
-                      'Skip',
-                      style: TextStyle(
-                        fontSize: context.bodyFont * 0.95,
-                        color: cs.onSurfaceVariant,
-                      ),
-                    ),
-                  ),
+                  const WelcomePage(),
+                  const LevelPage(),
+                  const GoalsPage(),
+                  const StylesPage(),
+                  const FrequencyPage(),
+                  const WhyPage(),
+                  const NotificationsPage(),
+                  const NamePage(),
+                  LoaderPage(onDone: () => _goTo(_index + 1)),
+                  const ResultsPage(),
                 ],
               ),
             ),
-            Expanded(
-              child: PageView.builder(
-                controller: _controller,
-                onPageChanged: (i) => setState(() => _index = i),
-                itemCount: _pages.length,
-                itemBuilder: (_, i) => _Page(data: _pages[i]),
-              ),
-            ),
-            _Dots(count: _pages.length, index: _index),
-            SizedBox(height: context.l),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: context.paddingH),
-              child: SizedBox(
-                width: double.infinity,
-                height: context.h * 0.065,
-                child: FilledButton(
-                  onPressed: _next,
-                  style: FilledButton.styleFrom(
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(context.w * 0.04),
+            if (showChrome && step != _Step.notifications)
+              Padding(
+                padding: EdgeInsets.fromLTRB(
+                  context.paddingH,
+                  context.s,
+                  context.paddingH,
+                  context.xl,
+                ),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: context.h * 0.065,
+                  child: FilledButton(
+                    onPressed: canAdvance ? _next : null,
+                    style: FilledButton.styleFrom(
+                      elevation: 0,
+                      disabledBackgroundColor:
+                          cs.surfaceContainer,
+                      disabledForegroundColor: cs.outline,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(context.w * 0.04),
+                      ),
                     ),
-                  ),
-                  child: Text(
-                    isLast ? 'Sign in or sign up' : 'Next',
-                    style: TextStyle(
-                      fontSize: context.bodyFont * 1.05,
-                      fontWeight: FontWeight.w700,
+                    child: Text(
+                      step == _Step.results
+                          ? 'Sign in to save it'
+                          : step == _Step.welcome
+                              ? 'Get started'
+                              : 'Continue',
+                      style: TextStyle(
+                        fontSize: context.bodyFont * 1.05,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-            SizedBox(height: context.s),
-            Visibility(
-              visible: isLast,
-              maintainSize: true,
-              maintainAnimation: true,
-              maintainState: true,
-              child: TextButton(
-                onPressed: _skipAsGuest,
-                child: Text(
-                  'Skip for now — try without signing in',
-                  style: TextStyle(
-                    fontSize: context.captionFont,
-                    color: cs.onSurfaceVariant,
+            if (step == _Step.notifications)
+              Padding(
+                padding: EdgeInsets.fromLTRB(
+                  context.paddingH,
+                  context.s,
+                  context.paddingH,
+                  context.xl,
+                ),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: context.h * 0.065,
+                  child: OutlinedButton(
+                    onPressed: canAdvance ? _next : null,
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(color: cs.outlineVariant),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(context.w * 0.04),
+                      ),
+                    ),
+                    child: Text(
+                      'Continue',
+                      style: TextStyle(
+                        fontSize: context.bodyFont * 1.05,
+                        fontWeight: FontWeight.w600,
+                        color: canAdvance ? cs.onSurface : cs.outline,
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
-            SizedBox(height: context.m),
           ],
         ),
       ),
@@ -169,92 +209,66 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   }
 }
 
-class _PageData {
-  final IconData icon;
-  final String title;
-  final String body;
-  const _PageData({
-    required this.icon,
-    required this.title,
-    required this.body,
+class _Header extends StatelessWidget {
+  final int index;
+  final int total;
+  final VoidCallback? onBack;
+  const _Header({
+    required this.index,
+    required this.total,
+    required this.onBack,
   });
-}
-
-class _Page extends StatelessWidget {
-  final _PageData data;
-  const _Page({required this.data});
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final progress = (index + 1) / total;
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
+      padding: EdgeInsets.fromLTRB(
+        context.paddingH,
+        context.s,
+        context.paddingH,
+        context.s,
+      ),
+      child: Row(
         children: [
-          Container(
-            width: context.w * 0.22,
-            height: context.w * 0.22,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: cs.primaryContainer,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              data.icon,
-              size: context.w * 0.12,
-              color: cs.primary,
+          SizedBox(
+            width: context.w * 0.1,
+            child: onBack == null
+                ? const SizedBox.shrink()
+                : IconButton(
+                    onPressed: onBack,
+                    icon: Icon(Icons.arrow_back_ios_new,
+                        size: context.w * 0.05, color: cs.onSurface),
+                  ),
+          ),
+          SizedBox(width: context.w * 0.02),
+          Expanded(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(context.w * 0.01),
+              child: LinearProgressIndicator(
+                value: progress,
+                minHeight: context.w * 0.015,
+                backgroundColor: cs.outlineVariant,
+                valueColor: AlwaysStoppedAnimation(cs.primary),
+              ),
             ),
           ),
-          SizedBox(height: context.xl),
-          Text(
-            data.title.toUpperCase(),
-            style: GoogleFonts.playfairDisplay(
-              fontSize: context.titleFont * 1.15,
-              fontWeight: FontWeight.w800,
-              letterSpacing: -0.5,
-              height: 1.1,
-            ),
-          ),
-          SizedBox(height: context.m),
-          Text(
-            data.body,
-            style: TextStyle(
-              fontSize: context.bodyFont,
-              height: 1.4,
-              color: cs.onSurfaceVariant,
+          SizedBox(width: context.w * 0.02),
+          SizedBox(
+            width: context.w * 0.1,
+            child: Text(
+              '${index + 1}/$total',
+              textAlign: TextAlign.right,
+              style: TextStyle(
+                fontSize: context.captionFont * 0.9,
+                color: cs.onSurfaceVariant,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ],
       ),
-    );
-  }
-}
-
-class _Dots extends StatelessWidget {
-  final int count;
-  final int index;
-  const _Dots({required this.count, required this.index});
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        for (int i = 0; i < count; i++)
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            margin: EdgeInsets.symmetric(horizontal: context.w * 0.01),
-            width: i == index ? context.w * 0.06 : context.w * 0.02,
-            height: context.w * 0.02,
-            decoration: BoxDecoration(
-              color: i == index ? cs.primary : cs.outlineVariant,
-              borderRadius: BorderRadius.circular(context.w * 0.01),
-            ),
-          ),
-      ],
     );
   }
 }

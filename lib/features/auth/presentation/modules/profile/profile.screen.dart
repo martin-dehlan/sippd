@@ -8,6 +8,7 @@ import '../../../../../common/widgets/stats_card.widget.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../../profile/controller/profile.provider.dart';
 import '../../../../profile/presentation/widgets/profile_avatar.widget.dart';
+import '../../../../profile/presentation/widgets/taste_profile_card.widget.dart';
 import '../../../../push/controller/push.provider.dart';
 import '../../../../wines/controller/wine.provider.dart';
 import '../../../controller/auth.provider.dart';
@@ -77,13 +78,8 @@ class ProfileScreen extends ConsumerWidget {
                         fontSize: context.headingFont,
                         fontWeight: FontWeight.bold),
                   ),
-                  if (user?.email != null) ...[
-                    SizedBox(height: context.xs),
-                    Text(user!.email!,
-                        style: TextStyle(
-                            fontSize: context.captionFont,
-                            color: cs.onSurfaceVariant)),
-                  ],
+                  SizedBox(height: context.m),
+                  const TasteMetaLine(),
                 ],
               ),
             ),

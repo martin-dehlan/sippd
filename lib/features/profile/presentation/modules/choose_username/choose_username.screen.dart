@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../common/utils/responsive.dart';
+import '../../../../onboarding/controller/onboarding.provider.dart';
 import '../../../controller/profile.provider.dart';
 
 enum _UsernameState { idle, checking, available, taken, invalid, tooShort }
@@ -66,9 +67,23 @@ class _ChooseUsernameScreenState extends ConsumerState<ChooseUsernameScreen> {
 
     setState(() => _saving = true);
     try {
-      await ref
-          .read(profileControllerProvider.notifier)
-          .setUsername(value);
+      final notifier = ref.read(profileControllerProvider.notifier);
+      await notifier.setUsername(value);
+      // Seed displayName from onboarding once per account.
+      if (ref.read(profileSeedPendingProvider)) {
+        final pending = ref
+            .read(onboardingAnswersControllerProvider)
+            .displayName
+            ?.trim();
+        if (pending != null && pending.isNotEmpty) {
+          try {
+            await notifier.setDisplayName(pending);
+          } catch (_) {/* non-fatal */}
+        }
+        await ref
+            .read(onboardingAnswersControllerProvider.notifier)
+            .clearProfileSeedPending();
+      }
       // Router redirect handles navigation once the profile stream emits.
     } catch (e) {
       if (!mounted) return;

@@ -10,6 +10,7 @@ import '../../../../../common/utils/responsive.dart';
 import '../../../../auth/controller/auth.provider.dart';
 import '../../../controller/profile.provider.dart';
 import '../../widgets/profile_avatar.widget.dart';
+import '../../widgets/taste_profile_editor.widget.dart';
 
 enum _UsernameState {
   idle,
@@ -20,6 +21,8 @@ enum _UsernameState {
   tooShort,
   unchanged,
 }
+
+enum _AvatarAction { camera, gallery, remove }
 
 class EditProfileScreen extends ConsumerStatefulWidget {
   const EditProfileScreen({super.key});
@@ -79,14 +82,29 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       if (!mounted || _usernameController.text.trim().toLowerCase() != value) {
         return;
       }
-      setState(() => _usernameStatus =
-          available ? _UsernameState.available : _UsernameState.taken);
+      setState(
+        () => _usernameStatus = available
+            ? _UsernameState.available
+            : _UsernameState.taken,
+      );
     });
   }
 
   Future<void> _pickAvatar() async {
-    final source = await _showSourceSheet(context);
-    if (source == null || !mounted) return;
+    final action = await _showSourceSheet(
+      context,
+      hasAvatar: _avatarUrl != null,
+    );
+    if (action == null || !mounted) return;
+
+    if (action == _AvatarAction.remove) {
+      await _removeAvatar();
+      return;
+    }
+
+    final source = action == _AvatarAction.camera
+        ? ImageSource.camera
+        : ImageSource.gallery;
 
     final service = ref.read(profileImageServiceProvider);
     final userId = ref.read(currentUserIdProvider);
@@ -104,9 +122,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Upload failed: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Upload failed: $e')));
       }
     } finally {
       if (mounted) setState(() => _uploadingAvatar = false);
@@ -124,9 +142,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       if (mounted) setState(() => _avatarUrl = null);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed: $e')));
       }
     } finally {
       if (mounted) setState(() => _uploadingAvatar = false);
@@ -145,7 +163,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     final currentUsername = profile?.username ?? '';
 
     final nameChanged = typedName != currentName;
-    final usernameChanged = typedUsername != currentUsername &&
+    final usernameChanged =
+        typedUsername != currentUsername &&
         _usernameStatus == _UsernameState.available;
 
     if (!nameChanged && !usernameChanged) {
@@ -161,9 +180,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       if (mounted) context.pop();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Save failed: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Save failed: $e')));
       }
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -183,21 +202,34 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     }
 
     return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        backgroundColor: Colors.transparent,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios_new,
+            size: context.w * 0.05,
+            color: cs.onSurface,
+          ),
+          onPressed: _saveAndPop,
+        ),
+        centerTitle: true,
+        title: Text(
+          'Edit profile',
+          style: TextStyle(
+            fontSize: context.bodyFont * 1.1,
+            fontWeight: FontWeight.w700,
+            color: cs.onSurface,
+          ),
+        ),
+      ),
       body: SafeArea(
+        top: false,
         child: ListView(
           padding: EdgeInsets.symmetric(horizontal: context.paddingH),
           children: [
-            SizedBox(height: context.xl),
-            Center(
-              child: Text(
-                'Edit profile',
-                style: TextStyle(
-                  fontSize: context.headingFont,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            SizedBox(height: context.l),
+            SizedBox(height: context.s),
             Center(
               child: _AvatarEditor(
                 avatarUrl: _avatarUrl,
@@ -206,34 +238,10 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 onTap: _pickAvatar,
               ),
             ),
+            SizedBox(height: context.xl),
+            _SectionHeader(text: 'Profile'),
             SizedBox(height: context.m),
-            Center(
-              child: TextButton(
-                onPressed: _uploadingAvatar ? null : _pickAvatar,
-                child: Text(
-                  _avatarUrl == null ? 'Add photo' : 'Change photo',
-                  style: TextStyle(
-                      fontSize: context.bodyFont,
-                      color: cs.primary,
-                      fontWeight: FontWeight.w600),
-                ),
-              ),
-            ),
-            if (_avatarUrl != null)
-              Center(
-                child: TextButton(
-                  onPressed: _uploadingAvatar ? null : _removeAvatar,
-                  child: Text('Remove photo',
-                      style: TextStyle(
-                          fontSize: context.captionFont, color: cs.error)),
-                ),
-              ),
-            SizedBox(height: context.l),
-            Text('Username',
-                style: TextStyle(
-                    fontSize: context.captionFont,
-                    fontWeight: FontWeight.w600,
-                    color: cs.onSurfaceVariant)),
+            _FieldLabel(text: 'Username'),
             SizedBox(height: context.s),
             _UsernameField(
               controller: _usernameController,
@@ -243,19 +251,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             SizedBox(height: context.xs),
             _UsernameStatusLine(status: _usernameStatus),
             SizedBox(height: context.l),
-            Row(
-              children: [
-                Text('Display name',
-                    style: TextStyle(
-                        fontSize: context.captionFont,
-                        fontWeight: FontWeight.w600,
-                        color: cs.onSurfaceVariant)),
-                SizedBox(width: context.xs),
-                Text('(optional)',
-                    style: TextStyle(
-                        fontSize: context.captionFont, color: cs.outline)),
-              ],
-            ),
+            _FieldLabel(text: 'Display name', optional: true),
             SizedBox(height: context.s),
             TextField(
               controller: _displayNameController,
@@ -276,16 +272,90 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             ),
             SizedBox(height: context.xs),
             Text(
-              'Shown in groups and tastings. Leave empty to use your username.',
+              'Shown in groups and tastings. Leave empty to use your '
+              'username.',
               style: TextStyle(
-                  fontSize: context.captionFont * 0.9, color: cs.outline),
+                fontSize: context.captionFont * 0.9,
+                color: cs.outline,
+              ),
             ),
+            SizedBox(height: context.xl * 1.2),
+            _SectionHeader(
+              text: 'Your taste',
+              subtitle: 'Tune what Sippd learns about you. Change anytime.',
+            ),
+            SizedBox(height: context.m),
+            const TasteProfileEditor(),
             SizedBox(height: context.xxl),
           ],
         ),
       ),
-      floatingActionButton: _FloatingBackButton(onPressed: _saveAndPop),
-      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
+    );
+  }
+}
+
+class _SectionHeader extends StatelessWidget {
+  final String text;
+  final String? subtitle;
+  const _SectionHeader({required this.text, this.subtitle});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          text,
+          style: TextStyle(
+            fontSize: context.headingFont * 0.85,
+            fontWeight: FontWeight.w800,
+            color: cs.onSurface,
+            letterSpacing: -0.3,
+          ),
+        ),
+        if (subtitle != null) ...[
+          SizedBox(height: context.xs),
+          Text(
+            subtitle!,
+            style: TextStyle(
+              fontSize: context.captionFont,
+              color: cs.onSurfaceVariant,
+              height: 1.3,
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+class _FieldLabel extends StatelessWidget {
+  final String text;
+  final bool optional;
+  const _FieldLabel({required this.text, this.optional = false});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Row(
+      children: [
+        Text(
+          text,
+          style: TextStyle(
+            fontSize: context.captionFont,
+            fontWeight: FontWeight.w600,
+            color: cs.onSurfaceVariant,
+          ),
+        ),
+        if (optional) ...[
+          SizedBox(width: context.xs),
+          Text(
+            '(optional)',
+            style: TextStyle(fontSize: context.captionFont, color: cs.outline),
+          ),
+        ],
+      ],
     );
   }
 }
@@ -304,7 +374,8 @@ class _UsernameField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final hasError = status == _UsernameState.taken ||
+    final hasError =
+        status == _UsernameState.taken ||
         status == _UsernameState.invalid ||
         status == _UsernameState.tooShort;
 
@@ -360,16 +431,21 @@ Widget? _usernameSuffix(BuildContext context, _UsernameState status) {
   final cs = Theme.of(context).colorScheme;
   return switch (status) {
     _UsernameState.checking => Padding(
-        padding: EdgeInsets.all(context.w * 0.035),
-        child: SizedBox(
-          width: context.w * 0.04,
-          height: context.w * 0.04,
-          child: CircularProgressIndicator(
-              strokeWidth: 2, color: cs.onSurfaceVariant),
+      padding: EdgeInsets.all(context.w * 0.035),
+      child: SizedBox(
+        width: context.w * 0.04,
+        height: context.w * 0.04,
+        child: CircularProgressIndicator(
+          strokeWidth: 2,
+          color: cs.onSurfaceVariant,
         ),
       ),
-    _UsernameState.available =>
-      Icon(Icons.check_circle, color: cs.primary, size: context.w * 0.05),
+    ),
+    _UsernameState.available => Icon(
+      Icons.check_circle,
+      color: cs.primary,
+      size: context.w * 0.05,
+    ),
     _ => null,
   };
 }
@@ -383,8 +459,7 @@ class _UsernameStatusLine extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
     final (text, color) = switch (status) {
       _UsernameState.tooShort => ('At least 3 characters', cs.error),
-      _UsernameState.invalid =>
-        ('Only letters, numbers, . and _', cs.error),
+      _UsernameState.invalid => ('Only letters, numbers, . and _', cs.error),
       _UsernameState.taken => ('Already taken', cs.error),
       _ => ('', cs.outline),
     };
@@ -394,30 +469,6 @@ class _UsernameStatusLine extends StatelessWidget {
       child: Text(
         text,
         style: TextStyle(fontSize: context.captionFont * 0.9, color: color),
-      ),
-    );
-  }
-}
-
-class _FloatingBackButton extends StatelessWidget {
-  final VoidCallback onPressed;
-  const _FloatingBackButton({required this.onPressed});
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    final size = context.w * 0.16;
-    return SizedBox(
-      width: size,
-      height: size,
-      child: FloatingActionButton(
-        heroTag: 'edit-profile-back',
-        backgroundColor: cs.surfaceContainer,
-        foregroundColor: cs.onSurface,
-        elevation: 2,
-        shape: const CircleBorder(),
-        onPressed: onPressed,
-        child: Icon(Icons.arrow_back_ios_new, size: context.w * 0.06),
       ),
     );
   }
@@ -470,8 +521,11 @@ class _AvatarEditor extends StatelessWidget {
                 shape: BoxShape.circle,
                 border: Border.all(color: cs.surface, width: 2),
               ),
-              child: Icon(Icons.camera_alt,
-                  color: cs.onPrimary, size: context.w * 0.04),
+              child: Icon(
+                Icons.camera_alt,
+                color: cs.onPrimary,
+                size: context.w * 0.04,
+              ),
             ),
           ),
         ],
@@ -480,8 +534,11 @@ class _AvatarEditor extends StatelessWidget {
   }
 }
 
-Future<ImageSource?> _showSourceSheet(BuildContext context) {
-  return showModalBottomSheet<ImageSource>(
+Future<_AvatarAction?> _showSourceSheet(
+  BuildContext context, {
+  required bool hasAvatar,
+}) {
+  return showModalBottomSheet<_AvatarAction>(
     context: context,
     builder: (ctx) {
       final cs = Theme.of(ctx).colorScheme;
@@ -493,16 +550,37 @@ Future<ImageSource?> _showSourceSheet(BuildContext context) {
             children: [
               ListTile(
                 leading: Icon(Icons.camera_alt_outlined, color: cs.primary),
-                title: Text('Take photo',
-                    style: TextStyle(fontSize: ctx.bodyFont)),
-                onTap: () => Navigator.pop(ctx, ImageSource.camera),
+                title: Text(
+                  'Take photo',
+                  style: TextStyle(fontSize: ctx.bodyFont),
+                ),
+                onTap: () => Navigator.pop(ctx, _AvatarAction.camera),
               ),
               ListTile(
                 leading: Icon(Icons.photo_library_outlined, color: cs.primary),
-                title: Text('Choose from gallery',
-                    style: TextStyle(fontSize: ctx.bodyFont)),
-                onTap: () => Navigator.pop(ctx, ImageSource.gallery),
+                title: Text(
+                  'Choose from gallery',
+                  style: TextStyle(fontSize: ctx.bodyFont),
+                ),
+                onTap: () => Navigator.pop(ctx, _AvatarAction.gallery),
               ),
+              if (hasAvatar) ...[
+                Divider(
+                  height: 1,
+                  thickness: 0.5,
+                  color: cs.outlineVariant,
+                  indent: ctx.paddingH,
+                  endIndent: ctx.paddingH,
+                ),
+                ListTile(
+                  leading: Icon(Icons.delete_outline, color: cs.error),
+                  title: Text(
+                    'Remove photo',
+                    style: TextStyle(fontSize: ctx.bodyFont, color: cs.error),
+                  ),
+                  onTap: () => Navigator.pop(ctx, _AvatarAction.remove),
+                ),
+              ],
             ],
           ),
         ),

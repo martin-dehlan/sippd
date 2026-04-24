@@ -60,6 +60,24 @@ final onboardingSeenProvider = AutoDisposeProvider<bool>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef OnboardingSeenRef = AutoDisposeProviderRef<bool>;
+String _$profileSeedPendingHash() =>
+    r'96928f22f791f43832d762806f6841c1f87663c3';
+
+/// See also [profileSeedPending].
+@ProviderFor(profileSeedPending)
+final profileSeedPendingProvider = AutoDisposeProvider<bool>.internal(
+  profileSeedPending,
+  name: r'profileSeedPendingProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$profileSeedPendingHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef ProfileSeedPendingRef = AutoDisposeProviderRef<bool>;
 String _$onboardingControllerHash() =>
     r'6420b5b435bc8e291cc80aebf4f72ca747234c89';
 
@@ -80,5 +98,28 @@ final onboardingControllerProvider =
     );
 
 typedef _$OnboardingController = AutoDisposeNotifier<({bool seen, bool guest})>;
+String _$onboardingAnswersControllerHash() =>
+    r'4b9e57ca80c20bd6b125e90614833e994d6b030f';
+
+/// Stores quiz answers from onboarding. Also used later from edit_profile
+/// so users can adjust level / styles / frequency / goals.
+///
+/// Copied from [OnboardingAnswersController].
+@ProviderFor(OnboardingAnswersController)
+final onboardingAnswersControllerProvider =
+    AutoDisposeNotifierProvider<
+      OnboardingAnswersController,
+      OnboardingAnswers
+    >.internal(
+      OnboardingAnswersController.new,
+      name: r'onboardingAnswersControllerProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$onboardingAnswersControllerHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+typedef _$OnboardingAnswersController = AutoDisposeNotifier<OnboardingAnswers>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

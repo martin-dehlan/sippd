@@ -190,7 +190,7 @@ class _TastingCreateScreenState extends ConsumerState<TastingCreateScreen> {
                 ),
               ),
             ),
-            SizedBox(height: context.xl * 2),
+            SizedBox(height: context.xl * 3),
           ],
         ),
       ),

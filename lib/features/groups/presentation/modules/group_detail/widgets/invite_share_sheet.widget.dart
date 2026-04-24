@@ -44,7 +44,7 @@ class InviteShareSheet extends ConsumerWidget {
     );
   }
 
-  String get _inviteUri => DeepLinkService.groupInviteUri(code);
+  String get _inviteUri => DeepLinkService.groupInviteHttpsUri(code);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -125,7 +125,7 @@ class InviteShareSheet extends ConsumerWidget {
 
   Future<void> _share(BuildContext context) async {
     await Share.share(
-      'Join "$groupName" on Sippd: $_inviteUri',
+      'Join "$groupName" on Sippd 🍷\n\n$_inviteUri\n\nOr enter code: $code',
       subject: 'Join $groupName on Sippd',
     );
   }

@@ -64,8 +64,8 @@ class DeepLinkService {
       kind = uri.host;
       segments = uri.pathSegments;
     } else if ((uri.scheme == 'https' || uri.scheme == 'http') &&
-        uri.host == 'sippd.app') {
-      // https://sippd.app/tasting/<id>  →  segments = ['tasting', '<id>']
+        (uri.host == 'sippd.xyz' || uri.host == 'sippd.app')) {
+      // https://sippd.xyz/tasting/<id>  →  segments = ['tasting', '<id>']
       if (uri.pathSegments.isEmpty) return null;
       kind = uri.pathSegments.first;
       segments = uri.pathSegments.skip(1).toList();
@@ -113,11 +113,11 @@ class DeepLinkService {
   static String friendUri(String id) => 'io.sippd://friend/$id';
 
   // HTTPS shareable URLs — chat apps (WhatsApp, iMessage) linkify these,
-  // custom schemes they don't. Landing page on sippd.app redirects into app.
+  // custom schemes they don't. Landing page on sippd.xyz redirects into app.
   static String tastingHttpsUri(String id) =>
-      'https://sippd.app/tasting/$id';
+      'https://sippd.xyz/tasting/$id';
   static String groupInviteHttpsUri(String code) =>
-      'https://sippd.app/group/$code';
+      'https://sippd.xyz/group/$code';
   static String friendHttpsUri(String id) =>
-      'https://sippd.app/friend/$id';
+      'https://sippd.xyz/friend/$id';
 }
