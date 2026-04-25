@@ -61,8 +61,14 @@ GoRouter goRouter(GoRouterRef ref) {
       // Email confirmation screen is reachable without auth.
       if (loc == AppRoutes.emailConfirmation) return null;
 
-      // Gate 0: authed but profile not yet emitted → keep splash.
-      if (authed && !profileAsync.hasValue) {
+      // Gate 0: authed but profile stream still loading the new query →
+      // hold splash. We check `isLoading` (not `!hasValue`) because
+      // Riverpod preserves the previous value across rebuilds, so
+      // `hasValue` stays true with a stale null carried over from the
+      // unauthed branch — which would otherwise let Gate 2 below
+      // redirect to /choose-username for a returning user before their
+      // real profile row arrives.
+      if (authed && profileAsync.isLoading) {
         return loc == AppRoutes.splash ? null : AppRoutes.splash;
       }
 
@@ -271,8 +277,13 @@ GoRouter goRouter(GoRouterRef ref) {
   // Avoid refresh on every displayName/avatar edit — causes Navigator
   // duplicate page key assertions during mid-pop edits.
   ref.listen(currentProfileProvider, (prev, next) {
-    final wasLoading = prev == null || !prev.hasValue;
-    final nowLoaded = next.hasValue;
+    // Use `isLoading` (not `hasValue`) — Riverpod preserves the previous
+    // value across rebuilds, so `hasValue` stays true through the
+    // unauthed→authed transition. Without this we'd never refresh the
+    // router when the new stream finally emits and the user would be
+    // stranded on splash.
+    final wasLoading = prev == null || prev.isLoading;
+    final nowLoaded = !next.isLoading;
     if (wasLoading && nowLoaded) {
       router.refresh();
       return;
