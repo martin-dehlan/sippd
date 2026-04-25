@@ -631,7 +631,7 @@ class _PlaceSection extends StatelessWidget {
                     width: context.w * 0.1,
                     height: context.w * 0.1,
                     child: Icon(
-                      PhosphorIconsRegular.mapPin,
+                      PhosphorIconsFill.mapPin,
                       size: context.w * 0.1,
                       color: cs.primary,
                     ),

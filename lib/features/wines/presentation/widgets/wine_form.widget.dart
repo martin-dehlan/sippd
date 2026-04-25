@@ -909,7 +909,7 @@ class WineFormMapContent extends StatelessWidget {
                     point: point,
                     width: context.w * 0.1,
                     height: context.w * 0.1,
-                    child: Icon(PhosphorIconsRegular.mapPin,
+                    child: Icon(PhosphorIconsFill.mapPin,
                         size: context.w * 0.1, color: cs.primary),
                   ),
                 ],
