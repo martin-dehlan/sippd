@@ -208,7 +208,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 }).toList(),
               ),
             ),
-            if (step != _Step.loader && step != _Step.notifications)
+            if (step != _Step.loader)
               Padding(
                 padding: EdgeInsets.fromLTRB(
                   context.paddingH,
