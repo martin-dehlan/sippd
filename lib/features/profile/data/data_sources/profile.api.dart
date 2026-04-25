@@ -59,6 +59,50 @@ class ProfileApi {
   }
 
   Future<void> deleteMyAccount() async {
+    await _wipeUserStorage();
     await _client.rpc('delete_my_account');
+  }
+
+  Future<void> _wipeUserStorage() async {
+    await _removeFolder('wine-images', _uid);
+    await _removeFolder('avatars', _uid);
+
+    final ownedGroups = await _client
+        .from('groups')
+        .select('id, group_members(user_id)')
+        .eq('created_by', _uid);
+
+    final soloGroupIds = (ownedGroups as List)
+        .where((g) {
+          final members = (g['group_members'] as List);
+          return members.every((m) => m['user_id'] == _uid);
+        })
+        .map((g) => g['id'] as String)
+        .toList();
+
+    for (final groupId in soloGroupIds) {
+      await _removeFolder('group-images', groupId);
+    }
+  }
+
+  Future<void> _removeFolder(String bucket, String folder) async {
+    const pageSize = 100;
+    var offset = 0;
+    final paths = <String>[];
+
+    while (true) {
+      final files = await _client.storage.from(bucket).list(
+            path: folder,
+            searchOptions: SearchOptions(limit: pageSize, offset: offset),
+          );
+      if (files.isEmpty) break;
+      paths.addAll(files.map((f) => '$folder/${f.name}'));
+      if (files.length < pageSize) break;
+      offset += pageSize;
+    }
+
+    if (paths.isNotEmpty) {
+      await _client.storage.from(bucket).remove(paths);
+    }
   }
 }

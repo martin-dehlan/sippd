@@ -289,66 +289,82 @@ Future<void> _launch(BuildContext context, String url) async {
 }
 
 Future<void> _confirmDelete(BuildContext context, WidgetRef ref) async {
-  final cs = Theme.of(context).colorScheme;
-  final confirmController = TextEditingController();
   final confirmed = await showDialog<bool>(
     context: context,
-    builder: (ctx) {
-      return StatefulBuilder(
-        builder: (ctx, setState) => AlertDialog(
-          title: const Text('Delete account?'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'This permanently deletes your profile, wines, ratings, '
-                'tastings, group memberships and friends. Cannot be undone.',
-              ),
-              SizedBox(height: ctx.m),
-              const Text('Type DELETE to confirm:'),
-              SizedBox(height: ctx.s),
-              TextField(
-                controller: confirmController,
-                autofocus: true,
-                textCapitalization: TextCapitalization.characters,
-                onChanged: (_) => setState(() {}),
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'DELETE',
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: confirmController.text.trim() == 'DELETE'
-                  ? () => Navigator.pop(ctx, true)
-                  : null,
-              style: TextButton.styleFrom(foregroundColor: cs.error),
-              child: const Text('Delete'),
-            ),
-          ],
-        ),
-      );
-    },
+    builder: (ctx) => const _ConfirmDeleteDialog(),
   );
-  confirmController.dispose();
   if (confirmed != true) return;
 
   try {
     await ref.read(profileControllerProvider.notifier).deleteAccount();
-    if (context.mounted) context.go(AppRoutes.login);
+    // Router auto-redirects to /login on auth state change; no manual go().
   } catch (e) {
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Delete failed: $e')),
       );
     }
+  }
+}
+
+class _ConfirmDeleteDialog extends StatefulWidget {
+  const _ConfirmDeleteDialog();
+
+  @override
+  State<_ConfirmDeleteDialog> createState() => _ConfirmDeleteDialogState();
+}
+
+class _ConfirmDeleteDialogState extends State<_ConfirmDeleteDialog> {
+  final _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final canDelete = _controller.text.trim() == 'DELETE';
+    return AlertDialog(
+      title: const Text('Delete account?'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'This permanently deletes your profile, wines, ratings, '
+            'tastings, group memberships and friends. Cannot be undone.',
+          ),
+          SizedBox(height: context.m),
+          const Text('Type DELETE to confirm:'),
+          SizedBox(height: context.s),
+          TextField(
+            controller: _controller,
+            autofocus: true,
+            textCapitalization: TextCapitalization.characters,
+            onChanged: (_) => setState(() {}),
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              hintText: 'DELETE',
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context, false),
+          child: const Text('Cancel'),
+        ),
+        TextButton(
+          onPressed:
+              canDelete ? () => Navigator.pop(context, true) : null,
+          style: TextButton.styleFrom(foregroundColor: cs.error),
+          child: const Text('Delete'),
+        ),
+      ],
+    );
   }
 }
 
