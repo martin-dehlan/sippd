@@ -1,7 +1,10 @@
 import 'dart:async';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../../onboarding/data/onboarding_storage_keys.dart';
 
 part 'auth.provider.g.dart';
 
@@ -80,6 +83,14 @@ class AuthController extends _$AuthController {
   Future<void> signOut() async {
     final client = ref.read(supabaseClientProvider);
     await client.auth.signOut();
+    // Wipe the pre-auth onboarding buffer so the next user on this device
+    // can't see the previous user's taste answers during the auth ->
+    // profile-load latency window. `onboarding_seen` stays — that flag is
+    // device-scoped, not account-scoped, so we don't replay the welcome
+    // funnel for someone who already saw it.
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(onboardingAnswersKey);
+    await prefs.remove(onboardingProfileSeedPendingKey);
     state = const AsyncValue.data(null);
   }
 

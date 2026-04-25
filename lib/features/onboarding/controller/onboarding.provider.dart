@@ -7,13 +7,10 @@ import '../../auth/controller/auth.provider.dart';
 import '../../profile/controller/profile.provider.dart';
 import '../../profile/domain/entities/profile.entity.dart';
 import '../../wines/domain/entities/wine.entity.dart';
+import '../data/onboarding_storage_keys.dart';
 import '../domain/onboarding_answers.dart';
 
 part 'onboarding.provider.g.dart';
-
-const _onboardingSeenKey = 'onboarding_seen';
-const _onboardingAnswersKey = 'onboarding_answers';
-const _profileSeedPendingKey = 'onboarding_profile_seed_pending';
 
 /// Injected in `main.dart` via a ProviderScope override after
 /// SharedPreferences.getInstance() resolves.
@@ -26,12 +23,12 @@ class OnboardingController extends _$OnboardingController {
   @override
   bool build() {
     final prefs = ref.watch(sharedPreferencesProvider);
-    return prefs.getBool(_onboardingSeenKey) ?? false;
+    return prefs.getBool(onboardingSeenKey) ?? false;
   }
 
   Future<void> markSeen() async {
     final prefs = ref.read(sharedPreferencesProvider);
-    await prefs.setBool(_onboardingSeenKey, true);
+    await prefs.setBool(onboardingSeenKey, true);
     state = true;
   }
 }
@@ -64,7 +61,7 @@ class OnboardingAnswersController extends _$OnboardingAnswersController {
 
   OnboardingAnswers _readPrefs() {
     final prefs = ref.read(sharedPreferencesProvider);
-    final raw = prefs.getString(_onboardingAnswersKey);
+    final raw = prefs.getString(onboardingAnswersKey);
     if (raw == null) return const OnboardingAnswers();
     try {
       return OnboardingAnswers.fromJson(
@@ -77,7 +74,7 @@ class OnboardingAnswersController extends _$OnboardingAnswersController {
 
   Future<void> _persist(OnboardingAnswers next) async {
     final prefs = ref.read(sharedPreferencesProvider);
-    await prefs.setString(_onboardingAnswersKey, jsonEncode(next.toJson()));
+    await prefs.setString(onboardingAnswersKey, jsonEncode(next.toJson()));
     state = next;
   }
 
@@ -145,17 +142,17 @@ class OnboardingAnswersController extends _$OnboardingAnswersController {
   /// choose_username clears this flag after applying.
   Future<void> markProfileSeedPending() async {
     final prefs = ref.read(sharedPreferencesProvider);
-    await prefs.setBool(_profileSeedPendingKey, true);
+    await prefs.setBool(onboardingProfileSeedPendingKey, true);
   }
 
   Future<void> clearProfileSeedPending() async {
     final prefs = ref.read(sharedPreferencesProvider);
-    await prefs.setBool(_profileSeedPendingKey, false);
+    await prefs.setBool(onboardingProfileSeedPendingKey, false);
   }
 }
 
 @riverpod
 bool profileSeedPending(ProfileSeedPendingRef ref) {
   final prefs = ref.watch(sharedPreferencesProvider);
-  return prefs.getBool(_profileSeedPendingKey) ?? false;
+  return prefs.getBool(onboardingProfileSeedPendingKey) ?? false;
 }

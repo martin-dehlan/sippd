@@ -44,7 +44,7 @@ final onboardingSeenProvider = AutoDisposeProvider<bool>.internal(
 // ignore: unused_element
 typedef OnboardingSeenRef = AutoDisposeProviderRef<bool>;
 String _$profileSeedPendingHash() =>
-    r'96928f22f791f43832d762806f6841c1f87663c3';
+    r'821aee08eec36c47487372bb9530d480de3593f8';
 
 /// See also [profileSeedPending].
 @ProviderFor(profileSeedPending)
@@ -62,7 +62,7 @@ final profileSeedPendingProvider = AutoDisposeProvider<bool>.internal(
 // ignore: unused_element
 typedef ProfileSeedPendingRef = AutoDisposeProviderRef<bool>;
 String _$onboardingControllerHash() =>
-    r'ef76686fed6feb2a6358d2b105cfb2a3338fef22';
+    r'89ed816732fd755703ae4a4beec6128f2e8d438f';
 
 /// See also [OnboardingController].
 @ProviderFor(OnboardingController)
@@ -79,7 +79,7 @@ final onboardingControllerProvider =
 
 typedef _$OnboardingController = AutoDisposeNotifier<bool>;
 String _$onboardingAnswersControllerHash() =>
-    r'9e51557c02b6860a9c8129e00a41c5e0d899c582';
+    r'7ca13f06f995ad79a861ed15fdaa2edb34d5e8a5';
 
 /// Stores quiz answers from onboarding. Also used later from edit_profile
 /// so users can adjust level / styles / frequency / goals.

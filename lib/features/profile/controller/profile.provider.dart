@@ -87,9 +87,11 @@ class ProfileController extends _$ProfileController {
   }
 
   Future<void> deleteAccount() async {
-    final client = ref.read(supabaseClientProvider);
     await ref.read(profileApiProvider).deleteMyAccount();
-    // Server cascade wiped data. Clear local session.
-    await client.auth.signOut();
+    // Server cascade wiped data. Route sign-out through AuthController so
+    // the onboarding SharedPreferences buffer is cleared too — otherwise
+    // a deleted account's taste answers would leak to the next user on
+    // this device.
+    await ref.read(authControllerProvider.notifier).signOut();
   }
 }
