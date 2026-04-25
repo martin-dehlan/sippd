@@ -115,9 +115,11 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       final answers = ref.read(onboardingAnswersControllerProvider);
       final notifier = ref.read(onboardingAnswersControllerProvider.notifier);
       if (authed) {
-        // Account already exists — write displayName + completion flag
-        // straight to the profile and let the router redirect to wines.
+        // Account already exists — write taste fields + displayName +
+        // completion flag in one shot. Router redirects to wines after the
+        // profile stream emits.
         final profileCtrl = ref.read(profileControllerProvider.notifier);
+        await profileCtrl.updateTasteProfile(answers);
         final pending = (answers.displayName ?? '').trim();
         if (pending.isNotEmpty) {
           try {
@@ -127,11 +129,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         await profileCtrl.markOnboardingCompleted();
         await ref.read(onboardingControllerProvider.notifier).markSeen();
       } else {
-        // Pre-auth flow: keep displayName for the post-signup seeder and
-        // route to login.
-        if ((answers.displayName ?? '').isNotEmpty) {
-          await notifier.markProfileSeedPending();
-        }
+        // Pre-auth flow: answers stay in SharedPreferences. choose_username
+        // reads them and runs a single atomic UPDATE on the profile.
+        await notifier.markProfileSeedPending();
         await ref.read(onboardingControllerProvider.notifier).markSeen();
       }
     } catch (_) {

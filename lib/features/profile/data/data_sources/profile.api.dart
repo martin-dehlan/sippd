@@ -1,4 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../onboarding/domain/onboarding_answers.dart';
 import '../models/profile.model.dart';
 
 class ProfileApi {
@@ -63,6 +64,37 @@ class ProfileApi {
         .from('profiles')
         .update({'onboarding_completed': true})
         .eq('id', _uid);
+  }
+
+  /// Single atomic UPDATE writing every field that comes out of the
+  /// pre-auth onboarding funnel. Avoids the multi-write flicker where the
+  /// router would briefly redirect to /onboarding between calls.
+  Future<void> seedProfileFromOnboarding({
+    required String username,
+    String? displayName,
+    required OnboardingAnswers answers,
+  }) async {
+    await _client.from('profiles').update({
+      'username': username.toLowerCase(),
+      'display_name': displayName,
+      'onboarding_completed': true,
+      'taste_level': answers.tasteLevel?.name,
+      'goals': answers.goals.map((g) => g.name).toList(),
+      'styles': answers.styles.map((s) => s.name).toList(),
+      'drink_frequency': answers.frequency?.name,
+      'taste_emoji': answers.emoji,
+    }).eq('id', _uid);
+  }
+
+  /// Used by edit-profile when the user adjusts taste fields after signup.
+  Future<void> updateTasteProfile(OnboardingAnswers answers) async {
+    await _client.from('profiles').update({
+      'taste_level': answers.tasteLevel?.name,
+      'goals': answers.goals.map((g) => g.name).toList(),
+      'styles': answers.styles.map((s) => s.name).toList(),
+      'drink_frequency': answers.frequency?.name,
+      'taste_emoji': answers.emoji,
+    }).eq('id', _uid);
   }
 
   Future<void> deleteMyAccount() async {

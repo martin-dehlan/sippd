@@ -60,7 +60,7 @@ final currentProfileProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef CurrentProfileRef = AutoDisposeStreamProviderRef<ProfileEntity?>;
-String _$profileControllerHash() => r'ca1f12a55064b50f35147251886a0a9fa23819d3';
+String _$profileControllerHash() => r'6c9ccdf3ff77e9bc7c4928c7203dcba5ebd1bff9';
 
 /// See also [ProfileController].
 @ProviderFor(ProfileController)

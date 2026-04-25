@@ -79,10 +79,16 @@ final onboardingControllerProvider =
 
 typedef _$OnboardingController = AutoDisposeNotifier<bool>;
 String _$onboardingAnswersControllerHash() =>
-    r'4b9e57ca80c20bd6b125e90614833e994d6b030f';
+    r'9e51557c02b6860a9c8129e00a41c5e0d899c582';
 
 /// Stores quiz answers from onboarding. Also used later from edit_profile
 /// so users can adjust level / styles / frequency / goals.
+///
+/// Source of truth:
+///  - Pre-auth: SharedPreferences buffer.
+///  - Post-auth: Supabase profile row. The buffer is bypassed so taste
+///    answers survive reinstalls (cross-device) and don't leak between
+///    accounts on the same device.
 ///
 /// Copied from [OnboardingAnswersController].
 @ProviderFor(OnboardingAnswersController)

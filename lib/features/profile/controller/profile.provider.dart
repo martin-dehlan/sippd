@@ -1,5 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../auth/controller/auth.provider.dart';
+import '../../onboarding/domain/onboarding_answers.dart';
 import '../data/data_sources/profile.api.dart';
 import '../data/data_sources/profile_image.service.dart';
 import '../data/models/profile.model.dart';
@@ -60,6 +61,28 @@ class ProfileController extends _$ProfileController {
 
   Future<void> markOnboardingCompleted() async {
     await ref.read(profileApiProvider).markOnboardingCompleted();
+    ref.invalidate(currentProfileProvider);
+  }
+
+  /// Atomic write of all onboarding outputs. Single invalidate at the end so
+  /// the router only refreshes once with the final consistent profile state
+  /// (username + onboarding_completed both true), preventing the Gate-2b
+  /// flicker that would briefly redirect to /onboarding.
+  Future<void> seedFromOnboarding({
+    required String username,
+    String? displayName,
+    required OnboardingAnswers answers,
+  }) async {
+    await ref.read(profileApiProvider).seedProfileFromOnboarding(
+          username: username,
+          displayName: displayName,
+          answers: answers,
+        );
+    ref.invalidate(currentProfileProvider);
+  }
+
+  Future<void> updateTasteProfile(OnboardingAnswers answers) async {
+    await ref.read(profileApiProvider).updateTasteProfile(answers);
     ref.invalidate(currentProfileProvider);
   }
 

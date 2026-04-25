@@ -22,6 +22,11 @@ mixin _$ProfileEntity {
   String? get displayName => throw _privateConstructorUsedError;
   String? get avatarUrl => throw _privateConstructorUsedError;
   bool get onboardingCompleted => throw _privateConstructorUsedError;
+  TasteLevel? get tasteLevel => throw _privateConstructorUsedError;
+  Set<OnboardingGoal> get goals => throw _privateConstructorUsedError;
+  Set<WineType> get styles => throw _privateConstructorUsedError;
+  DrinkFrequency? get drinkFrequency => throw _privateConstructorUsedError;
+  String? get tasteEmoji => throw _privateConstructorUsedError;
 
   /// Create a copy of ProfileEntity
   /// with the given fields replaced by the non-null parameter values.
@@ -43,6 +48,11 @@ abstract class $ProfileEntityCopyWith<$Res> {
     String? displayName,
     String? avatarUrl,
     bool onboardingCompleted,
+    TasteLevel? tasteLevel,
+    Set<OnboardingGoal> goals,
+    Set<WineType> styles,
+    DrinkFrequency? drinkFrequency,
+    String? tasteEmoji,
   });
 }
 
@@ -66,6 +76,11 @@ class _$ProfileEntityCopyWithImpl<$Res, $Val extends ProfileEntity>
     Object? displayName = freezed,
     Object? avatarUrl = freezed,
     Object? onboardingCompleted = null,
+    Object? tasteLevel = freezed,
+    Object? goals = null,
+    Object? styles = null,
+    Object? drinkFrequency = freezed,
+    Object? tasteEmoji = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -89,6 +104,26 @@ class _$ProfileEntityCopyWithImpl<$Res, $Val extends ProfileEntity>
                 ? _value.onboardingCompleted
                 : onboardingCompleted // ignore: cast_nullable_to_non_nullable
                       as bool,
+            tasteLevel: freezed == tasteLevel
+                ? _value.tasteLevel
+                : tasteLevel // ignore: cast_nullable_to_non_nullable
+                      as TasteLevel?,
+            goals: null == goals
+                ? _value.goals
+                : goals // ignore: cast_nullable_to_non_nullable
+                      as Set<OnboardingGoal>,
+            styles: null == styles
+                ? _value.styles
+                : styles // ignore: cast_nullable_to_non_nullable
+                      as Set<WineType>,
+            drinkFrequency: freezed == drinkFrequency
+                ? _value.drinkFrequency
+                : drinkFrequency // ignore: cast_nullable_to_non_nullable
+                      as DrinkFrequency?,
+            tasteEmoji: freezed == tasteEmoji
+                ? _value.tasteEmoji
+                : tasteEmoji // ignore: cast_nullable_to_non_nullable
+                      as String?,
           )
           as $Val,
     );
@@ -110,6 +145,11 @@ abstract class _$$ProfileEntityImplCopyWith<$Res>
     String? displayName,
     String? avatarUrl,
     bool onboardingCompleted,
+    TasteLevel? tasteLevel,
+    Set<OnboardingGoal> goals,
+    Set<WineType> styles,
+    DrinkFrequency? drinkFrequency,
+    String? tasteEmoji,
   });
 }
 
@@ -132,6 +172,11 @@ class __$$ProfileEntityImplCopyWithImpl<$Res>
     Object? displayName = freezed,
     Object? avatarUrl = freezed,
     Object? onboardingCompleted = null,
+    Object? tasteLevel = freezed,
+    Object? goals = null,
+    Object? styles = null,
+    Object? drinkFrequency = freezed,
+    Object? tasteEmoji = freezed,
   }) {
     return _then(
       _$ProfileEntityImpl(
@@ -155,6 +200,26 @@ class __$$ProfileEntityImplCopyWithImpl<$Res>
             ? _value.onboardingCompleted
             : onboardingCompleted // ignore: cast_nullable_to_non_nullable
                   as bool,
+        tasteLevel: freezed == tasteLevel
+            ? _value.tasteLevel
+            : tasteLevel // ignore: cast_nullable_to_non_nullable
+                  as TasteLevel?,
+        goals: null == goals
+            ? _value._goals
+            : goals // ignore: cast_nullable_to_non_nullable
+                  as Set<OnboardingGoal>,
+        styles: null == styles
+            ? _value._styles
+            : styles // ignore: cast_nullable_to_non_nullable
+                  as Set<WineType>,
+        drinkFrequency: freezed == drinkFrequency
+            ? _value.drinkFrequency
+            : drinkFrequency // ignore: cast_nullable_to_non_nullable
+                  as DrinkFrequency?,
+        tasteEmoji: freezed == tasteEmoji
+            ? _value.tasteEmoji
+            : tasteEmoji // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -169,7 +234,13 @@ class _$ProfileEntityImpl implements _ProfileEntity {
     this.displayName,
     this.avatarUrl,
     this.onboardingCompleted = false,
-  });
+    this.tasteLevel,
+    final Set<OnboardingGoal> goals = const <OnboardingGoal>{},
+    final Set<WineType> styles = const <WineType>{},
+    this.drinkFrequency,
+    this.tasteEmoji,
+  }) : _goals = goals,
+       _styles = styles;
 
   @override
   final String id;
@@ -182,10 +253,34 @@ class _$ProfileEntityImpl implements _ProfileEntity {
   @override
   @JsonKey()
   final bool onboardingCompleted;
+  @override
+  final TasteLevel? tasteLevel;
+  final Set<OnboardingGoal> _goals;
+  @override
+  @JsonKey()
+  Set<OnboardingGoal> get goals {
+    if (_goals is EqualUnmodifiableSetView) return _goals;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableSetView(_goals);
+  }
+
+  final Set<WineType> _styles;
+  @override
+  @JsonKey()
+  Set<WineType> get styles {
+    if (_styles is EqualUnmodifiableSetView) return _styles;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableSetView(_styles);
+  }
+
+  @override
+  final DrinkFrequency? drinkFrequency;
+  @override
+  final String? tasteEmoji;
 
   @override
   String toString() {
-    return 'ProfileEntity(id: $id, username: $username, displayName: $displayName, avatarUrl: $avatarUrl, onboardingCompleted: $onboardingCompleted)';
+    return 'ProfileEntity(id: $id, username: $username, displayName: $displayName, avatarUrl: $avatarUrl, onboardingCompleted: $onboardingCompleted, tasteLevel: $tasteLevel, goals: $goals, styles: $styles, drinkFrequency: $drinkFrequency, tasteEmoji: $tasteEmoji)';
   }
 
   @override
@@ -201,7 +296,15 @@ class _$ProfileEntityImpl implements _ProfileEntity {
             (identical(other.avatarUrl, avatarUrl) ||
                 other.avatarUrl == avatarUrl) &&
             (identical(other.onboardingCompleted, onboardingCompleted) ||
-                other.onboardingCompleted == onboardingCompleted));
+                other.onboardingCompleted == onboardingCompleted) &&
+            (identical(other.tasteLevel, tasteLevel) ||
+                other.tasteLevel == tasteLevel) &&
+            const DeepCollectionEquality().equals(other._goals, _goals) &&
+            const DeepCollectionEquality().equals(other._styles, _styles) &&
+            (identical(other.drinkFrequency, drinkFrequency) ||
+                other.drinkFrequency == drinkFrequency) &&
+            (identical(other.tasteEmoji, tasteEmoji) ||
+                other.tasteEmoji == tasteEmoji));
   }
 
   @override
@@ -212,6 +315,11 @@ class _$ProfileEntityImpl implements _ProfileEntity {
     displayName,
     avatarUrl,
     onboardingCompleted,
+    tasteLevel,
+    const DeepCollectionEquality().hash(_goals),
+    const DeepCollectionEquality().hash(_styles),
+    drinkFrequency,
+    tasteEmoji,
   );
 
   /// Create a copy of ProfileEntity
@@ -230,6 +338,11 @@ abstract class _ProfileEntity implements ProfileEntity {
     final String? displayName,
     final String? avatarUrl,
     final bool onboardingCompleted,
+    final TasteLevel? tasteLevel,
+    final Set<OnboardingGoal> goals,
+    final Set<WineType> styles,
+    final DrinkFrequency? drinkFrequency,
+    final String? tasteEmoji,
   }) = _$ProfileEntityImpl;
 
   @override
@@ -242,6 +355,16 @@ abstract class _ProfileEntity implements ProfileEntity {
   String? get avatarUrl;
   @override
   bool get onboardingCompleted;
+  @override
+  TasteLevel? get tasteLevel;
+  @override
+  Set<OnboardingGoal> get goals;
+  @override
+  Set<WineType> get styles;
+  @override
+  DrinkFrequency? get drinkFrequency;
+  @override
+  String? get tasteEmoji;
 
   /// Create a copy of ProfileEntity
   /// with the given fields replaced by the non-null parameter values.

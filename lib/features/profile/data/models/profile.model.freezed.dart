@@ -29,6 +29,14 @@ mixin _$ProfileModel {
   String? get avatarUrl => throw _privateConstructorUsedError;
   @JsonKey(name: 'onboarding_completed')
   bool get onboardingCompleted => throw _privateConstructorUsedError;
+  @JsonKey(name: 'taste_level')
+  String? get tasteLevel => throw _privateConstructorUsedError;
+  List<String> get goals => throw _privateConstructorUsedError;
+  List<String> get styles => throw _privateConstructorUsedError;
+  @JsonKey(name: 'drink_frequency')
+  String? get drinkFrequency => throw _privateConstructorUsedError;
+  @JsonKey(name: 'taste_emoji')
+  String? get tasteEmoji => throw _privateConstructorUsedError;
 
   /// Serializes this ProfileModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -53,6 +61,11 @@ abstract class $ProfileModelCopyWith<$Res> {
     @JsonKey(name: 'display_name') String? displayName,
     @JsonKey(name: 'avatar_url') String? avatarUrl,
     @JsonKey(name: 'onboarding_completed') bool onboardingCompleted,
+    @JsonKey(name: 'taste_level') String? tasteLevel,
+    List<String> goals,
+    List<String> styles,
+    @JsonKey(name: 'drink_frequency') String? drinkFrequency,
+    @JsonKey(name: 'taste_emoji') String? tasteEmoji,
   });
 }
 
@@ -76,6 +89,11 @@ class _$ProfileModelCopyWithImpl<$Res, $Val extends ProfileModel>
     Object? displayName = freezed,
     Object? avatarUrl = freezed,
     Object? onboardingCompleted = null,
+    Object? tasteLevel = freezed,
+    Object? goals = null,
+    Object? styles = null,
+    Object? drinkFrequency = freezed,
+    Object? tasteEmoji = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -99,6 +117,26 @@ class _$ProfileModelCopyWithImpl<$Res, $Val extends ProfileModel>
                 ? _value.onboardingCompleted
                 : onboardingCompleted // ignore: cast_nullable_to_non_nullable
                       as bool,
+            tasteLevel: freezed == tasteLevel
+                ? _value.tasteLevel
+                : tasteLevel // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            goals: null == goals
+                ? _value.goals
+                : goals // ignore: cast_nullable_to_non_nullable
+                      as List<String>,
+            styles: null == styles
+                ? _value.styles
+                : styles // ignore: cast_nullable_to_non_nullable
+                      as List<String>,
+            drinkFrequency: freezed == drinkFrequency
+                ? _value.drinkFrequency
+                : drinkFrequency // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            tasteEmoji: freezed == tasteEmoji
+                ? _value.tasteEmoji
+                : tasteEmoji // ignore: cast_nullable_to_non_nullable
+                      as String?,
           )
           as $Val,
     );
@@ -120,6 +158,11 @@ abstract class _$$ProfileModelImplCopyWith<$Res>
     @JsonKey(name: 'display_name') String? displayName,
     @JsonKey(name: 'avatar_url') String? avatarUrl,
     @JsonKey(name: 'onboarding_completed') bool onboardingCompleted,
+    @JsonKey(name: 'taste_level') String? tasteLevel,
+    List<String> goals,
+    List<String> styles,
+    @JsonKey(name: 'drink_frequency') String? drinkFrequency,
+    @JsonKey(name: 'taste_emoji') String? tasteEmoji,
   });
 }
 
@@ -142,6 +185,11 @@ class __$$ProfileModelImplCopyWithImpl<$Res>
     Object? displayName = freezed,
     Object? avatarUrl = freezed,
     Object? onboardingCompleted = null,
+    Object? tasteLevel = freezed,
+    Object? goals = null,
+    Object? styles = null,
+    Object? drinkFrequency = freezed,
+    Object? tasteEmoji = freezed,
   }) {
     return _then(
       _$ProfileModelImpl(
@@ -165,6 +213,26 @@ class __$$ProfileModelImplCopyWithImpl<$Res>
             ? _value.onboardingCompleted
             : onboardingCompleted // ignore: cast_nullable_to_non_nullable
                   as bool,
+        tasteLevel: freezed == tasteLevel
+            ? _value.tasteLevel
+            : tasteLevel // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        goals: null == goals
+            ? _value._goals
+            : goals // ignore: cast_nullable_to_non_nullable
+                  as List<String>,
+        styles: null == styles
+            ? _value._styles
+            : styles // ignore: cast_nullable_to_non_nullable
+                  as List<String>,
+        drinkFrequency: freezed == drinkFrequency
+            ? _value.drinkFrequency
+            : drinkFrequency // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        tasteEmoji: freezed == tasteEmoji
+            ? _value.tasteEmoji
+            : tasteEmoji // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -179,7 +247,13 @@ class _$ProfileModelImpl implements _ProfileModel {
     @JsonKey(name: 'display_name') this.displayName,
     @JsonKey(name: 'avatar_url') this.avatarUrl,
     @JsonKey(name: 'onboarding_completed') this.onboardingCompleted = false,
-  });
+    @JsonKey(name: 'taste_level') this.tasteLevel,
+    final List<String> goals = const <String>[],
+    final List<String> styles = const <String>[],
+    @JsonKey(name: 'drink_frequency') this.drinkFrequency,
+    @JsonKey(name: 'taste_emoji') this.tasteEmoji,
+  }) : _goals = goals,
+       _styles = styles;
 
   factory _$ProfileModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$ProfileModelImplFromJson(json);
@@ -197,10 +271,37 @@ class _$ProfileModelImpl implements _ProfileModel {
   @override
   @JsonKey(name: 'onboarding_completed')
   final bool onboardingCompleted;
+  @override
+  @JsonKey(name: 'taste_level')
+  final String? tasteLevel;
+  final List<String> _goals;
+  @override
+  @JsonKey()
+  List<String> get goals {
+    if (_goals is EqualUnmodifiableListView) return _goals;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_goals);
+  }
+
+  final List<String> _styles;
+  @override
+  @JsonKey()
+  List<String> get styles {
+    if (_styles is EqualUnmodifiableListView) return _styles;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_styles);
+  }
+
+  @override
+  @JsonKey(name: 'drink_frequency')
+  final String? drinkFrequency;
+  @override
+  @JsonKey(name: 'taste_emoji')
+  final String? tasteEmoji;
 
   @override
   String toString() {
-    return 'ProfileModel(id: $id, username: $username, displayName: $displayName, avatarUrl: $avatarUrl, onboardingCompleted: $onboardingCompleted)';
+    return 'ProfileModel(id: $id, username: $username, displayName: $displayName, avatarUrl: $avatarUrl, onboardingCompleted: $onboardingCompleted, tasteLevel: $tasteLevel, goals: $goals, styles: $styles, drinkFrequency: $drinkFrequency, tasteEmoji: $tasteEmoji)';
   }
 
   @override
@@ -216,7 +317,15 @@ class _$ProfileModelImpl implements _ProfileModel {
             (identical(other.avatarUrl, avatarUrl) ||
                 other.avatarUrl == avatarUrl) &&
             (identical(other.onboardingCompleted, onboardingCompleted) ||
-                other.onboardingCompleted == onboardingCompleted));
+                other.onboardingCompleted == onboardingCompleted) &&
+            (identical(other.tasteLevel, tasteLevel) ||
+                other.tasteLevel == tasteLevel) &&
+            const DeepCollectionEquality().equals(other._goals, _goals) &&
+            const DeepCollectionEquality().equals(other._styles, _styles) &&
+            (identical(other.drinkFrequency, drinkFrequency) ||
+                other.drinkFrequency == drinkFrequency) &&
+            (identical(other.tasteEmoji, tasteEmoji) ||
+                other.tasteEmoji == tasteEmoji));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -228,6 +337,11 @@ class _$ProfileModelImpl implements _ProfileModel {
     displayName,
     avatarUrl,
     onboardingCompleted,
+    tasteLevel,
+    const DeepCollectionEquality().hash(_goals),
+    const DeepCollectionEquality().hash(_styles),
+    drinkFrequency,
+    tasteEmoji,
   );
 
   /// Create a copy of ProfileModel
@@ -251,6 +365,11 @@ abstract class _ProfileModel implements ProfileModel {
     @JsonKey(name: 'display_name') final String? displayName,
     @JsonKey(name: 'avatar_url') final String? avatarUrl,
     @JsonKey(name: 'onboarding_completed') final bool onboardingCompleted,
+    @JsonKey(name: 'taste_level') final String? tasteLevel,
+    final List<String> goals,
+    final List<String> styles,
+    @JsonKey(name: 'drink_frequency') final String? drinkFrequency,
+    @JsonKey(name: 'taste_emoji') final String? tasteEmoji,
   }) = _$ProfileModelImpl;
 
   factory _ProfileModel.fromJson(Map<String, dynamic> json) =
@@ -269,6 +388,19 @@ abstract class _ProfileModel implements ProfileModel {
   @override
   @JsonKey(name: 'onboarding_completed')
   bool get onboardingCompleted;
+  @override
+  @JsonKey(name: 'taste_level')
+  String? get tasteLevel;
+  @override
+  List<String> get goals;
+  @override
+  List<String> get styles;
+  @override
+  @JsonKey(name: 'drink_frequency')
+  String? get drinkFrequency;
+  @override
+  @JsonKey(name: 'taste_emoji')
+  String? get tasteEmoji;
 
   /// Create a copy of ProfileModel
   /// with the given fields replaced by the non-null parameter values.

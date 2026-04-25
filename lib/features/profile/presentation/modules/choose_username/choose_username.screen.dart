@@ -68,25 +68,24 @@ class _ChooseUsernameScreenState extends ConsumerState<ChooseUsernameScreen> {
     setState(() => _saving = true);
     try {
       final notifier = ref.read(profileControllerProvider.notifier);
-      await notifier.setUsername(value);
-      // Seed displayName from pre-auth onboarding once per account, and
-      // mark onboarding as completed since the quiz already ran.
+      // Pre-auth funnel users get a single atomic write that includes
+      // username + display name + taste answers + onboarding_completed.
+      // Without this, three separate UPDATEs would each invalidate the
+      // profile stream and the router would briefly redirect to
+      // /onboarding between them.
       if (ref.read(profileSeedPendingProvider)) {
-        final pending = ref
-            .read(onboardingAnswersControllerProvider)
-            .displayName
-            ?.trim();
-        if (pending != null && pending.isNotEmpty) {
-          try {
-            await notifier.setDisplayName(pending);
-          } catch (_) {/* non-fatal */}
-        }
-        try {
-          await notifier.markOnboardingCompleted();
-        } catch (_) {/* non-fatal */}
+        final answers = ref.read(onboardingAnswersControllerProvider);
+        final pending = answers.displayName?.trim();
+        await notifier.seedFromOnboarding(
+          username: value,
+          displayName: pending == null || pending.isEmpty ? null : pending,
+          answers: answers,
+        );
         await ref
             .read(onboardingAnswersControllerProvider.notifier)
             .clearProfileSeedPending();
+      } else {
+        await notifier.setUsername(value);
       }
       // Router redirect handles navigation once the profile stream emits.
     } catch (e) {

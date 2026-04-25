@@ -3,6 +3,9 @@ import 'dart:convert';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../auth/controller/auth.provider.dart';
+import '../../profile/controller/profile.provider.dart';
+import '../../profile/domain/entities/profile.entity.dart';
 import '../../wines/domain/entities/wine.entity.dart';
 import '../domain/onboarding_answers.dart';
 
@@ -39,11 +42,28 @@ bool onboardingSeen(OnboardingSeenRef ref) =>
 
 /// Stores quiz answers from onboarding. Also used later from edit_profile
 /// so users can adjust level / styles / frequency / goals.
+///
+/// Source of truth:
+///  - Pre-auth: SharedPreferences buffer.
+///  - Post-auth: Supabase profile row. The buffer is bypassed so taste
+///    answers survive reinstalls (cross-device) and don't leak between
+///    accounts on the same device.
 @riverpod
 class OnboardingAnswersController extends _$OnboardingAnswersController {
   @override
   OnboardingAnswers build() {
-    final prefs = ref.watch(sharedPreferencesProvider);
+    final authed = ref.watch(isAuthenticatedProvider);
+    if (authed) {
+      final profile = ref.watch(currentProfileProvider).valueOrNull;
+      if (profile != null && profile.hasTasteData) {
+        return profile.toOnboardingAnswers();
+      }
+    }
+    return _readPrefs();
+  }
+
+  OnboardingAnswers _readPrefs() {
+    final prefs = ref.read(sharedPreferencesProvider);
     final raw = prefs.getString(_onboardingAnswersKey);
     if (raw == null) return const OnboardingAnswers();
     try {
@@ -61,30 +81,55 @@ class OnboardingAnswersController extends _$OnboardingAnswersController {
     state = next;
   }
 
+  /// When authed, writes flow through the profile API; profile stream
+  /// re-emits and `build()` returns the new server state. Pre-auth, writes
+  /// stay in the SharedPreferences buffer.
+  Future<void> _save(OnboardingAnswers next) async {
+    if (ref.read(isAuthenticatedProvider)) {
+      // Optimistic UI: update state immediately so editors don't lag the
+      // network round-trip. The profile stream will re-emit shortly with
+      // the canonical server values.
+      state = next;
+      try {
+        await ref
+            .read(profileControllerProvider.notifier)
+            .updateTasteProfile(next);
+      } catch (_) {
+        // On failure leave optimistic state in place; the next profile
+        // stream tick will reconcile.
+      }
+    } else {
+      await _persist(next);
+    }
+  }
+
   Future<void> setTasteLevel(TasteLevel level) =>
-      _persist(state.copyWith(tasteLevel: level));
+      _save(state.copyWith(tasteLevel: level));
 
   Future<void> setFrequency(DrinkFrequency f) =>
-      _persist(state.copyWith(frequency: f));
+      _save(state.copyWith(frequency: f));
 
   Future<void> toggleGoal(OnboardingGoal g) {
     final next = {...state.goals};
     next.contains(g) ? next.remove(g) : next.add(g);
-    return _persist(state.copyWith(goals: next));
+    return _save(state.copyWith(goals: next));
   }
 
   Future<void> setGoals(Set<OnboardingGoal> goals) =>
-      _persist(state.copyWith(goals: goals));
+      _save(state.copyWith(goals: goals));
 
   Future<void> toggleStyle(WineType t) {
     final next = {...state.styles};
     next.contains(t) ? next.remove(t) : next.add(t);
-    return _persist(state.copyWith(styles: next));
+    return _save(state.copyWith(styles: next));
   }
 
   Future<void> setStyles(Set<WineType> styles) =>
-      _persist(state.copyWith(styles: styles));
+      _save(state.copyWith(styles: styles));
 
+  /// Display name + emoji are only edited inside the funnel; post-auth
+  /// edits use the dedicated edit-profile screen. Always written to the
+  /// SharedPreferences buffer so the post-signup seed picks them up.
   Future<void> setName({String? displayName, String? emoji}) => _persist(
     state.copyWith(
       displayName: displayName ?? state.displayName,
@@ -95,8 +140,9 @@ class OnboardingAnswersController extends _$OnboardingAnswersController {
   Future<void> markNotificationsAsked() =>
       _persist(state.copyWith(notificationsAsked: true));
 
-  /// Mark displayName/emoji as needing to seed the Supabase profile on next
-  /// authenticated run. The seeder clears this flag after applying.
+  /// Marks the SharedPreferences buffer as needing to be flushed into the
+  /// new account's profile on next authenticated run. The seeder in
+  /// choose_username clears this flag after applying.
   Future<void> markProfileSeedPending() async {
     final prefs = ref.read(sharedPreferencesProvider);
     await prefs.setBool(_profileSeedPendingKey, true);
