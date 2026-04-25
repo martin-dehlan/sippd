@@ -83,7 +83,12 @@ class ProfileController extends _$ProfileController {
 
   Future<void> updateTasteProfile(OnboardingAnswers answers) async {
     await ref.read(profileApiProvider).updateTasteProfile(answers);
-    ref.invalidate(currentProfileProvider);
+    // No explicit invalidate: the realtime stream echoes the UPDATE on
+    // its own. Invalidating here disposes the stream and during the
+    // loading window Riverpod hands callers the *previous* AsyncValue,
+    // which would briefly clobber the optimistic state set in
+    // `OnboardingAnswersController._save` and produce a snap-back
+    // flicker on every taste-toggle button.
   }
 
   Future<void> deleteAccount() async {

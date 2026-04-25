@@ -142,6 +142,11 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   }
 
   void _next() {
+    // Drop the keyboard when leaving any text-input step (currently just
+    // the name page) so it doesn't sit open over the next page — the
+    // loader page has nothing to focus and the open keyboard hides half
+    // of its content.
+    FocusManager.instance.primaryFocus?.unfocus();
     if (_index == _steps.length - 1) {
       _finish();
     } else {
