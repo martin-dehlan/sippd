@@ -67,9 +67,16 @@ GoRouter goRouter(GoRouterRef ref) {
         return loc == AppRoutes.splash ? null : AppRoutes.splash;
       }
 
-      // Gate 1: first-run onboarding.
+      // Gate 1: first-run onboarding. Allow /login + /password-recovery so
+      // the welcome page's "Already have an account? Sign in" shortcut
+      // doesn't bounce back into the funnel.
       if (!seen && !authed) {
-        return loc == AppRoutes.onboarding ? null : AppRoutes.onboarding;
+        if (loc == AppRoutes.onboarding ||
+            loc == AppRoutes.login ||
+            loc == AppRoutes.passwordRecovery) {
+          return null;
+        }
+        return AppRoutes.onboarding;
       }
 
       // Gate 2: authed → existing username flow.
@@ -85,7 +92,12 @@ GoRouter goRouter(GoRouterRef ref) {
         if (needsUsername && loc != AppRoutes.chooseUsername) {
           return AppRoutes.chooseUsername;
         }
-        if (!needsUsername &&
+        if (needsUsername) return null;
+        // Gate 2b: post-username, account has not completed onboarding quiz.
+        if (!profile.onboardingCompleted && loc != AppRoutes.onboarding) {
+          return AppRoutes.onboarding;
+        }
+        if (profile.onboardingCompleted &&
             (loc == AppRoutes.chooseUsername ||
              loc == AppRoutes.login ||
              loc == AppRoutes.onboarding ||
@@ -254,7 +266,19 @@ GoRouter goRouter(GoRouterRef ref) {
     ),
   );
 
-  ref.listen(authControllerProvider, (_, _) => router.refresh());
+  ref.listen(authControllerProvider, (prev, next) {
+    // Any successful auth (sign-in or sign-up) means the device has
+    // committed — mark onboarding seen so a later sign-out doesn't bounce
+    // the user back into the funnel.
+    final wasSignedIn = prev?.valueOrNull != null;
+    final nowSignedIn = next.valueOrNull != null;
+    if (!wasSignedIn && nowSignedIn) {
+      Future.microtask(
+        () => ref.read(onboardingControllerProvider.notifier).markSeen(),
+      );
+    }
+    router.refresh();
+  });
   ref.listen(onboardingControllerProvider, (_, _) => router.refresh());
   ref.listen(passwordRecoveryControllerProvider, (_, _) => router.refresh());
   // Refresh on:
@@ -273,7 +297,13 @@ GoRouter goRouter(GoRouterRef ref) {
         (prev?.valueOrNull?.username ?? '').isNotEmpty;
     final nextHas =
         (next.valueOrNull?.username ?? '').isNotEmpty;
-    if (prevHas != nextHas) router.refresh();
+    if (prevHas != nextHas) {
+      router.refresh();
+      return;
+    }
+    final prevDone = prev?.valueOrNull?.onboardingCompleted ?? false;
+    final nextDone = next.valueOrNull?.onboardingCompleted ?? false;
+    if (prevDone != nextDone) router.refresh();
   });
 
   return router;

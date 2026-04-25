@@ -69,7 +69,8 @@ class _ChooseUsernameScreenState extends ConsumerState<ChooseUsernameScreen> {
     try {
       final notifier = ref.read(profileControllerProvider.notifier);
       await notifier.setUsername(value);
-      // Seed displayName from onboarding once per account.
+      // Seed displayName from pre-auth onboarding once per account, and
+      // mark onboarding as completed since the quiz already ran.
       if (ref.read(profileSeedPendingProvider)) {
         final pending = ref
             .read(onboardingAnswersControllerProvider)
@@ -80,6 +81,9 @@ class _ChooseUsernameScreenState extends ConsumerState<ChooseUsernameScreen> {
             await notifier.setDisplayName(pending);
           } catch (_) {/* non-fatal */}
         }
+        try {
+          await notifier.markOnboardingCompleted();
+        } catch (_) {/* non-fatal */}
         await ref
             .read(onboardingAnswersControllerProvider.notifier)
             .clearProfileSeedPending();

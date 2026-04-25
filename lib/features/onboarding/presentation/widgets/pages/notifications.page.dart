@@ -8,7 +8,8 @@ import '../../../controller/onboarding.provider.dart';
 import '../onboarding_page_shell.widget.dart';
 
 class NotificationsPage extends ConsumerStatefulWidget {
-  const NotificationsPage({super.key});
+  final VoidCallback? onDone;
+  const NotificationsPage({super.key, this.onDone});
 
   @override
   ConsumerState<NotificationsPage> createState() =>
@@ -28,12 +29,14 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
         .read(onboardingAnswersControllerProvider.notifier)
         .markNotificationsAsked();
     if (mounted) setState(() => _requesting = false);
+    widget.onDone?.call();
   }
 
   Future<void> _skip() async {
     await ref
         .read(onboardingAnswersControllerProvider.notifier)
         .markNotificationsAsked();
+    widget.onDone?.call();
   }
 
   @override

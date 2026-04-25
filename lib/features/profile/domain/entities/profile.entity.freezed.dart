@@ -21,6 +21,7 @@ mixin _$ProfileEntity {
   String? get username => throw _privateConstructorUsedError;
   String? get displayName => throw _privateConstructorUsedError;
   String? get avatarUrl => throw _privateConstructorUsedError;
+  bool get onboardingCompleted => throw _privateConstructorUsedError;
 
   /// Create a copy of ProfileEntity
   /// with the given fields replaced by the non-null parameter values.
@@ -41,6 +42,7 @@ abstract class $ProfileEntityCopyWith<$Res> {
     String? username,
     String? displayName,
     String? avatarUrl,
+    bool onboardingCompleted,
   });
 }
 
@@ -63,6 +65,7 @@ class _$ProfileEntityCopyWithImpl<$Res, $Val extends ProfileEntity>
     Object? username = freezed,
     Object? displayName = freezed,
     Object? avatarUrl = freezed,
+    Object? onboardingCompleted = null,
   }) {
     return _then(
       _value.copyWith(
@@ -82,6 +85,10 @@ class _$ProfileEntityCopyWithImpl<$Res, $Val extends ProfileEntity>
                 ? _value.avatarUrl
                 : avatarUrl // ignore: cast_nullable_to_non_nullable
                       as String?,
+            onboardingCompleted: null == onboardingCompleted
+                ? _value.onboardingCompleted
+                : onboardingCompleted // ignore: cast_nullable_to_non_nullable
+                      as bool,
           )
           as $Val,
     );
@@ -102,6 +109,7 @@ abstract class _$$ProfileEntityImplCopyWith<$Res>
     String? username,
     String? displayName,
     String? avatarUrl,
+    bool onboardingCompleted,
   });
 }
 
@@ -123,6 +131,7 @@ class __$$ProfileEntityImplCopyWithImpl<$Res>
     Object? username = freezed,
     Object? displayName = freezed,
     Object? avatarUrl = freezed,
+    Object? onboardingCompleted = null,
   }) {
     return _then(
       _$ProfileEntityImpl(
@@ -142,6 +151,10 @@ class __$$ProfileEntityImplCopyWithImpl<$Res>
             ? _value.avatarUrl
             : avatarUrl // ignore: cast_nullable_to_non_nullable
                   as String?,
+        onboardingCompleted: null == onboardingCompleted
+            ? _value.onboardingCompleted
+            : onboardingCompleted // ignore: cast_nullable_to_non_nullable
+                  as bool,
       ),
     );
   }
@@ -155,6 +168,7 @@ class _$ProfileEntityImpl implements _ProfileEntity {
     this.username,
     this.displayName,
     this.avatarUrl,
+    this.onboardingCompleted = false,
   });
 
   @override
@@ -165,10 +179,13 @@ class _$ProfileEntityImpl implements _ProfileEntity {
   final String? displayName;
   @override
   final String? avatarUrl;
+  @override
+  @JsonKey()
+  final bool onboardingCompleted;
 
   @override
   String toString() {
-    return 'ProfileEntity(id: $id, username: $username, displayName: $displayName, avatarUrl: $avatarUrl)';
+    return 'ProfileEntity(id: $id, username: $username, displayName: $displayName, avatarUrl: $avatarUrl, onboardingCompleted: $onboardingCompleted)';
   }
 
   @override
@@ -182,12 +199,20 @@ class _$ProfileEntityImpl implements _ProfileEntity {
             (identical(other.displayName, displayName) ||
                 other.displayName == displayName) &&
             (identical(other.avatarUrl, avatarUrl) ||
-                other.avatarUrl == avatarUrl));
+                other.avatarUrl == avatarUrl) &&
+            (identical(other.onboardingCompleted, onboardingCompleted) ||
+                other.onboardingCompleted == onboardingCompleted));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, id, username, displayName, avatarUrl);
+  int get hashCode => Object.hash(
+    runtimeType,
+    id,
+    username,
+    displayName,
+    avatarUrl,
+    onboardingCompleted,
+  );
 
   /// Create a copy of ProfileEntity
   /// with the given fields replaced by the non-null parameter values.
@@ -204,6 +229,7 @@ abstract class _ProfileEntity implements ProfileEntity {
     final String? username,
     final String? displayName,
     final String? avatarUrl,
+    final bool onboardingCompleted,
   }) = _$ProfileEntityImpl;
 
   @override
@@ -214,6 +240,8 @@ abstract class _ProfileEntity implements ProfileEntity {
   String? get displayName;
   @override
   String? get avatarUrl;
+  @override
+  bool get onboardingCompleted;
 
   /// Create a copy of ProfileEntity
   /// with the given fields replaced by the non-null parameter values.

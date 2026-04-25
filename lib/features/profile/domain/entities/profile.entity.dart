@@ -9,5 +9,6 @@ class ProfileEntity with _$ProfileEntity {
     String? username,
     String? displayName,
     String? avatarUrl,
+    @Default(false) bool onboardingCompleted,
   }) = _ProfileEntity;
 }

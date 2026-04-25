@@ -12,6 +12,7 @@ _$ProfileModelImpl _$$ProfileModelImplFromJson(Map<String, dynamic> json) =>
       username: json['username'] as String?,
       displayName: json['display_name'] as String?,
       avatarUrl: json['avatar_url'] as String?,
+      onboardingCompleted: json['onboarding_completed'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$$ProfileModelImplToJson(_$ProfileModelImpl instance) =>
@@ -20,4 +21,5 @@ Map<String, dynamic> _$$ProfileModelImplToJson(_$ProfileModelImpl instance) =>
       'username': instance.username,
       'display_name': instance.displayName,
       'avatar_url': instance.avatarUrl,
+      'onboarding_completed': instance.onboardingCompleted,
     };

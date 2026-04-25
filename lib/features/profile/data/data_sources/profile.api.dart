@@ -58,6 +58,13 @@ class ProfileApi {
         .eq('id', _uid);
   }
 
+  Future<void> markOnboardingCompleted() async {
+    await _client
+        .from('profiles')
+        .update({'onboarding_completed': true})
+        .eq('id', _uid);
+  }
+
   Future<void> deleteMyAccount() async {
     await _wipeUserStorage();
     await _client.rpc('delete_my_account');

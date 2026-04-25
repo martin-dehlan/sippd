@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../common/utils/responsive.dart';
 import '../../../../core/routes/app.routes.dart';
+import '../../../auth/controller/auth.provider.dart';
+import '../../../profile/controller/profile.provider.dart';
 import '../../controller/onboarding.provider.dart';
 import '../../domain/onboarding_answers.dart';
 import '../widgets/pages/frequency.page.dart';
@@ -18,6 +20,9 @@ import '../widgets/pages/styles.page.dart';
 import '../widgets/pages/welcome.page.dart';
 import '../widgets/pages/why.page.dart';
 
+// Funnel order: pure value first (quiz → archetype reveal), commitment last
+// (notifications → auth). Sets up clean insertion point for a paywall step
+// between notifications and the auth handoff later.
 enum _Step {
   welcome,
   level,
@@ -25,10 +30,10 @@ enum _Step {
   styles,
   frequency,
   why,
-  notifications,
   name,
   loader,
   results,
+  notifications,
 }
 
 class OnboardingScreen extends ConsumerStatefulWidget {
@@ -39,10 +44,22 @@ class OnboardingScreen extends ConsumerStatefulWidget {
 }
 
 class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
-  final _pageCtrl = PageController();
-  int _index = 0;
+  late final PageController _pageCtrl;
+  late int _index;
+  late final List<_Step> _steps;
 
-  List<_Step> get _steps => _Step.values;
+  @override
+  void initState() {
+    super.initState();
+    // Authed users (signing up a second account on this device) skip the
+    // pre-auth welcome page — they're already past the marketing pitch.
+    final authed = ref.read(isAuthenticatedProvider);
+    _steps = authed
+        ? _Step.values.where((s) => s != _Step.welcome).toList()
+        : _Step.values;
+    _index = 0;
+    _pageCtrl = PageController(initialPage: 0);
+  }
 
   @override
   void dispose() {
@@ -74,22 +91,54 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   void _goTo(int i) {
     if (i < 0 || i >= _steps.length) return;
-    _pageCtrl.animateToPage(
-      i,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeOut,
-    );
+    setState(() => _index = i);
+    // Force controller sync after the frame — protects against hot-reload
+    // or any state where `_pageCtrl.page` drifted from `_index`, which
+    // otherwise makes PageView render the wrong child.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_pageCtrl.hasClients) return;
+      if ((_pageCtrl.page ?? _pageCtrl.initialPage.toDouble()).round() != i) {
+        _pageCtrl.jumpToPage(i);
+      } else {
+        _pageCtrl.animateToPage(
+          i,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
   }
 
   Future<void> _finish() async {
-    final answers = ref.read(onboardingAnswersControllerProvider);
-    final notifier = ref.read(onboardingAnswersControllerProvider.notifier);
-    if ((answers.displayName ?? '').isNotEmpty) {
-      await notifier.markProfileSeedPending();
+    final authed = ref.read(isAuthenticatedProvider);
+    try {
+      final answers = ref.read(onboardingAnswersControllerProvider);
+      final notifier = ref.read(onboardingAnswersControllerProvider.notifier);
+      if (authed) {
+        // Account already exists — write displayName + completion flag
+        // straight to the profile and let the router redirect to wines.
+        final profileCtrl = ref.read(profileControllerProvider.notifier);
+        final pending = (answers.displayName ?? '').trim();
+        if (pending.isNotEmpty) {
+          try {
+            await profileCtrl.setDisplayName(pending);
+          } catch (_) {/* non-fatal */}
+        }
+        await profileCtrl.markOnboardingCompleted();
+        await ref.read(onboardingControllerProvider.notifier).markSeen();
+      } else {
+        // Pre-auth flow: keep displayName for the post-signup seeder and
+        // route to login.
+        if ((answers.displayName ?? '').isNotEmpty) {
+          await notifier.markProfileSeedPending();
+        }
+        await ref.read(onboardingControllerProvider.notifier).markSeen();
+      }
+    } catch (_) {
+      // write failed — still exit the flow so the user isn't trapped.
     }
-    await ref.read(onboardingControllerProvider.notifier).markSeen();
     if (!mounted) return;
-    context.go(AppRoutes.login);
+    context.go(authed ? AppRoutes.wines : AppRoutes.login);
   }
 
   void _next() {
@@ -100,44 +149,66 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     }
   }
 
+  String _ctaLabel(_Step step) {
+    final isLast = _index == _steps.length - 1;
+    if (isLast) {
+      return ref.read(isAuthenticatedProvider)
+          ? 'Save and continue'
+          : 'Sign in to save it';
+    }
+    if (step == _Step.welcome) return 'Get started';
+    return 'Continue';
+  }
+
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final answers = ref.watch(onboardingAnswersControllerProvider);
     final step = _steps[_index];
     final canAdvance = _canAdvance(answers);
-    final showChrome = step != _Step.loader;
-
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
-            if (showChrome)
-              _Header(
-                index: _index,
-                total: _steps.length,
-                onBack: _index == 0 ? null : () => _goTo(_index - 1),
-              ),
+            _Header(
+              index: _index,
+              total: _steps.length,
+              onBack: _index == 0 || step == _Step.loader
+                  ? null
+                  : () => _goTo(_index - 1),
+            ),
             Expanded(
               child: PageView(
                 controller: _pageCtrl,
                 physics: const NeverScrollableScrollPhysics(),
                 onPageChanged: (i) => setState(() => _index = i),
-                children: [
-                  const WelcomePage(),
-                  const LevelPage(),
-                  const GoalsPage(),
-                  const StylesPage(),
-                  const FrequencyPage(),
-                  const WhyPage(),
-                  const NotificationsPage(),
-                  const NamePage(),
-                  LoaderPage(onDone: () => _goTo(_index + 1)),
-                  const ResultsPage(),
-                ],
+                children: _steps.map((s) {
+                  switch (s) {
+                    case _Step.welcome:
+                      return WelcomePage(onTap: _next);
+                    case _Step.level:
+                      return const LevelPage();
+                    case _Step.goals:
+                      return const GoalsPage();
+                    case _Step.styles:
+                      return const StylesPage();
+                    case _Step.frequency:
+                      return const FrequencyPage();
+                    case _Step.why:
+                      return const WhyPage();
+                    case _Step.notifications:
+                      return NotificationsPage(onDone: _next);
+                    case _Step.name:
+                      return const NamePage();
+                    case _Step.loader:
+                      return LoaderPage(onDone: () => _goTo(_index + 1));
+                    case _Step.results:
+                      return const ResultsPage();
+                  }
+                }).toList(),
               ),
             ),
-            if (showChrome && step != _Step.notifications)
+            if (step != _Step.loader && step != _Step.notifications)
               Padding(
                 padding: EdgeInsets.fromLTRB(
                   context.paddingH,
@@ -152,52 +223,17 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     onPressed: canAdvance ? _next : null,
                     style: FilledButton.styleFrom(
                       elevation: 0,
-                      disabledBackgroundColor:
-                          cs.surfaceContainer,
+                      disabledBackgroundColor: cs.surfaceContainer,
                       disabledForegroundColor: cs.outline,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(context.w * 0.04),
                       ),
                     ),
                     child: Text(
-                      step == _Step.results
-                          ? 'Sign in to save it'
-                          : step == _Step.welcome
-                              ? 'Get started'
-                              : 'Continue',
+                      _ctaLabel(step),
                       style: TextStyle(
                         fontSize: context.bodyFont * 1.05,
                         fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            if (step == _Step.notifications)
-              Padding(
-                padding: EdgeInsets.fromLTRB(
-                  context.paddingH,
-                  context.s,
-                  context.paddingH,
-                  context.xl,
-                ),
-                child: SizedBox(
-                  width: double.infinity,
-                  height: context.h * 0.065,
-                  child: OutlinedButton(
-                    onPressed: canAdvance ? _next : null,
-                    style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: cs.outlineVariant),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(context.w * 0.04),
-                      ),
-                    ),
-                    child: Text(
-                      'Continue',
-                      style: TextStyle(
-                        fontSize: context.bodyFont * 1.05,
-                        fontWeight: FontWeight.w600,
-                        color: canAdvance ? cs.onSurface : cs.outline,
                       ),
                     ),
                   ),

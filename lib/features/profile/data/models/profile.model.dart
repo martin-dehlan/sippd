@@ -11,6 +11,9 @@ class ProfileModel with _$ProfileModel {
     String? username,
     @JsonKey(name: 'display_name') String? displayName,
     @JsonKey(name: 'avatar_url') String? avatarUrl,
+    @JsonKey(name: 'onboarding_completed')
+    @Default(false)
+    bool onboardingCompleted,
   }) = _ProfileModel;
 
   factory ProfileModel.fromJson(Map<String, dynamic> json) =>
@@ -23,5 +26,6 @@ extension ProfileModelX on ProfileModel {
         username: username,
         displayName: displayName,
         avatarUrl: avatarUrl,
+        onboardingCompleted: onboardingCompleted,
       );
 }

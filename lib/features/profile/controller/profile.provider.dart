@@ -58,6 +58,11 @@ class ProfileController extends _$ProfileController {
     ref.invalidate(currentProfileProvider);
   }
 
+  Future<void> markOnboardingCompleted() async {
+    await ref.read(profileApiProvider).markOnboardingCompleted();
+    ref.invalidate(currentProfileProvider);
+  }
+
   Future<void> deleteAccount() async {
     final client = ref.read(supabaseClientProvider);
     await ref.read(profileApiProvider).deleteMyAccount();
