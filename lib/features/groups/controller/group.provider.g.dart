@@ -816,7 +816,7 @@ class _GroupWineShareMetaProviderElement
   String get wineId => (origin as GroupWineShareMetaProvider).wineId;
 }
 
-String _$groupControllerHash() => r'7f2e0b4e031ba2ef0789256970071b17af5ab22a';
+String _$groupControllerHash() => r'a9fef0a6e5768958ee7b63b8c33ad81299aadd98';
 
 /// See also [GroupController].
 @ProviderFor(GroupController)
@@ -852,7 +852,7 @@ final groupSortProvider =
 
 typedef _$GroupSort = AutoDisposeNotifier<GroupSortMode>;
 String _$groupWineRatingControllerHash() =>
-    r'931e274401fa058f6d4b6fade8954ccb2a1b665b';
+    r'5ecf9a2829f935828df7ed437edd994f7e6cfd33';
 
 /// See also [GroupWineRatingController].
 @ProviderFor(GroupWineRatingController)

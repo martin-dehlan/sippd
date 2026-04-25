@@ -1,6 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../common/services/analytics/analytics.provider.dart';
 import '../../auth/controller/auth.provider.dart';
 import '../../friends/controller/friends.provider.dart';
 import '../../friends/domain/entities/friend_profile.entity.dart';
@@ -221,6 +222,7 @@ class GroupInvitationController extends _$GroupInvitationController {
       'invitee_id': inviteeId,
     });
 
+    ref.read(analyticsProvider).capture('group_invite_sent');
     ref.invalidate(invitableGroupsForFriendProvider(inviteeId));
     ref.invalidate(invitableFriendsForGroupProvider(groupId));
   }
@@ -247,6 +249,10 @@ class GroupInvitationController extends _$GroupInvitationController {
         })
         .eq('id', invitation.id);
 
+    ref.read(analyticsProvider).capture(
+      'group_joined',
+      properties: const {'via': 'invitation'},
+    );
     ref.invalidate(myGroupInvitationsProvider);
     ref.invalidate(groupControllerProvider);
   }
@@ -260,6 +266,7 @@ class GroupInvitationController extends _$GroupInvitationController {
           'responded_at': DateTime.now().toIso8601String(),
         })
         .eq('id', invitation.id);
+    ref.read(analyticsProvider).capture('group_invite_declined');
     ref.invalidate(myGroupInvitationsProvider);
   }
 }

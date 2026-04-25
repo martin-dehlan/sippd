@@ -1,4 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import '../../../common/services/analytics/analytics.provider.dart';
 import '../../auth/controller/auth.provider.dart';
 import '../../friends/data/models/friend_profile.model.dart';
 import '../../wines/data/models/wine.model.dart';
@@ -91,6 +92,14 @@ class TastingsController extends _$TastingsController {
     if (wineIds.isNotEmpty) {
       await api.addWines(model.id, wineIds);
     }
+    ref.read(analyticsProvider).capture(
+      'tasting_created',
+      properties: {
+        'wine_count': wineIds.length,
+        'has_description': (description ?? '').isNotEmpty,
+        'has_location': latitude != null && longitude != null,
+      },
+    );
     ref.invalidate(groupTastingsProvider(groupId));
     return model.toEntity();
   }
@@ -99,6 +108,10 @@ class TastingsController extends _$TastingsController {
     final api = ref.read(tastingsApiProvider);
     if (api == null || wineIds.isEmpty) return;
     await api.addWines(tastingId, wineIds);
+    ref.read(analyticsProvider).capture(
+      'tasting_wines_added',
+      properties: {'count': wineIds.length},
+    );
     ref.invalidate(tastingWinesProvider(tastingId));
   }
 
@@ -113,6 +126,10 @@ class TastingsController extends _$TastingsController {
     final api = ref.read(tastingsApiProvider);
     if (api == null) return;
     await api.setMyRsvp(tastingId: tastingId, status: status.wire);
+    ref.read(analyticsProvider).capture(
+      'tasting_rsvp_set',
+      properties: {'status': status.wire},
+    );
     ref.invalidate(tastingAttendeesProvider(tastingId));
   }
 
@@ -120,6 +137,7 @@ class TastingsController extends _$TastingsController {
     final api = ref.read(tastingsApiProvider);
     if (api == null) return;
     await api.deleteTasting(tastingId);
+    ref.read(analyticsProvider).capture('tasting_deleted');
     if (groupId != null) ref.invalidate(groupTastingsProvider(groupId));
   }
 

@@ -1,4 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import '../../../common/services/analytics/analytics.provider.dart';
 import '../../auth/controller/auth.provider.dart';
 import '../../wines/domain/entities/wine.entity.dart';
 import '../data/data_sources/activity.api.dart';
@@ -122,29 +123,35 @@ class FriendsController extends _$FriendsController {
     final repo = ref.read(friendsRepositoryProvider);
     if (repo == null) throw StateError('Sign in required');
     await repo.sendRequest(receiverId);
+    ref.read(analyticsProvider).capture('friend_request_sent');
   }
 
   Future<void> acceptRequest(String requestId) async {
     final repo = ref.read(friendsRepositoryProvider);
     if (repo == null) throw StateError('Sign in required');
     await repo.acceptRequest(requestId);
+    ref.read(analyticsProvider).capture('friend_request_accepted');
   }
 
   Future<void> declineRequest(String requestId) async {
     final repo = ref.read(friendsRepositoryProvider);
     if (repo == null) throw StateError('Sign in required');
     await repo.declineRequest(requestId);
+    ref.read(analyticsProvider).capture('friend_request_declined');
   }
 
   Future<void> removeFriend(String friendId) async {
     final repo = ref.read(friendsRepositoryProvider);
     if (repo == null) throw StateError('Sign in required');
     await repo.removeFriend(friendId);
+    ref.read(analyticsProvider).capture('friend_removed');
   }
 
   Future<void> cancelRequest(String requestId) async {
     final repo = ref.read(friendsRepositoryProvider);
     if (repo == null) throw StateError('Sign in required');
     await repo.cancelRequest(requestId);
+    ref.read(analyticsProvider).capture('friend_request_cancelled');
+    ref.invalidate(outgoingFriendRequestsProvider);
   }
 }

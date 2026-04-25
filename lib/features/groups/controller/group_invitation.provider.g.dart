@@ -376,7 +376,7 @@ final myGroupInvitationsProvider =
 typedef MyGroupInvitationsRef =
     AutoDisposeFutureProviderRef<List<GroupInvitationInboxItem>>;
 String _$groupInvitationControllerHash() =>
-    r'153d54f18de534f42ff1b955de40d10a9257c382';
+    r'15875b323e3ee1934ff69fc75e3cddc01df9dc67';
 
 /// See also [GroupInvitationController].
 @ProviderFor(GroupInvitationController)

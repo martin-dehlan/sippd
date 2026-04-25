@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../common/services/analytics/analytics.provider.dart';
 import '../../common/widgets/splash.screen.dart';
 import '../../features/auth/controller/auth.provider.dart';
 import '../../features/groups/controller/group_invitation.provider.dart';
@@ -255,6 +256,14 @@ GoRouter goRouter(GoRouterRef ref) {
     errorBuilder: (context, state) =>
         Scaffold(body: Center(child: Text('Page not found: ${state.uri}'))),
   );
+
+  String? lastTrackedLocation;
+  router.routerDelegate.addListener(() {
+    final loc = router.routerDelegate.currentConfiguration.uri.path;
+    if (loc.isEmpty || loc == lastTrackedLocation) return;
+    lastTrackedLocation = loc;
+    ref.read(analyticsProvider).screen(loc);
+  });
 
   ref.listen(authControllerProvider, (prev, next) {
     // Any successful auth (sign-in or sign-up) means the device has
