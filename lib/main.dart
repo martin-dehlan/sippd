@@ -7,12 +7,15 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'common/services/analytics/analytics.provider.dart';
+import 'common/services/analytics/analytics.service.dart';
 import 'common/services/deep_link/deep_link.provider.dart';
 import 'common/services/deep_link/deep_link.service.dart';
 import 'common/services/secure_pkce_storage.dart';
 import 'common/theme/app_theme.dart';
 import 'core/routes/app.routes.dart';
 import 'core/routes/route_config.dart';
+import 'features/auth/controller/auth.provider.dart';
 import 'features/friends/controller/friends.provider.dart';
 import 'features/groups/controller/group.provider.dart';
 import 'features/groups/controller/group_invitation.provider.dart';
@@ -44,10 +47,17 @@ void main() async {
 
   final prefs = await SharedPreferences.getInstance();
 
+  final analytics = AnalyticsService();
+  await analytics.init(
+    apiKey: dotenv.env['POSTHOG_API_KEY'] ?? '',
+    host: dotenv.env['POSTHOG_HOST'] ?? 'https://eu.i.posthog.com',
+  );
+
   runApp(
     ProviderScope(
       overrides: [
         sharedPreferencesProvider.overrideWithValue(prefs),
+        analyticsProvider.overrideWithValue(analytics),
       ],
       child: const SippdApp(),
     ),
@@ -75,6 +85,24 @@ class _SippdAppState extends ConsumerState<SippdApp> {
     final router = ref.watch(goRouterProvider);
     // Kick off FCM registration lifecycle.
     ref.watch(pushRegistrationProvider);
+
+    // Identify the PostHog user when auth flips, reset on sign-out.
+    ref.listen<AsyncValue<User?>>(authControllerProvider, (prev, next) {
+      final prevUser = prev?.valueOrNull;
+      final nextUser = next.valueOrNull;
+      final analytics = ref.read(analyticsProvider);
+      if (prevUser?.id == nextUser?.id) return;
+      if (nextUser != null) {
+        analytics.identify(
+          nextUser.id,
+          userProperties: {
+            if (nextUser.email != null) 'email': nextUser.email!,
+          },
+        );
+      } else if (prevUser != null) {
+        analytics.reset();
+      }
+    });
 
     // Route the app when a push is tapped.
     ref.listen<AsyncValue<RemoteMessage>>(
