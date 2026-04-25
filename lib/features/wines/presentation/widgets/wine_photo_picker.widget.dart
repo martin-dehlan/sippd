@@ -4,6 +4,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../common/utils/responsive.dart';
+import '../../../../common/widgets/photo_error.dart';
 import '../../../auth/controller/auth.provider.dart';
 import '../../controller/wine.provider.dart';
 
@@ -58,11 +59,7 @@ class _WinePhotoPickerState extends ConsumerState<WinePhotoPicker> {
         widget.onChanged((imageUrl: null, localPath: photo.path));
       }
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Photo failed: $e')),
-        );
-      }
+      if (mounted) await PhotoErrorHandler.handle(context, e);
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
