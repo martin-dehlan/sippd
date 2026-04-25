@@ -89,9 +89,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       return;
     }
     try {
-      await ref
-          .read(authControllerProvider.notifier)
-          .resetPassword(email);
+      await ref.read(authControllerProvider.notifier).resetPassword(email);
       if (!mounted) return;
       context.go(
         AppRoutes.emailConfirmation,
@@ -170,7 +168,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       prefixIcon: Icon(PhosphorIconsRegular.envelope),
                     ),
                     validator: (v) {
-                      if (v == null || !v.contains('@')) return 'Valid email required';
+                      if (v == null || !v.contains('@'))
+                        return 'Valid email required';
                       return null;
                     },
                   ),
@@ -218,13 +217,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               width: 20,
                               height: 20,
                               child: CircularProgressIndicator(
-                                  strokeWidth: 2, color: cs.onPrimary),
+                                strokeWidth: 2,
+                                color: cs.onPrimary,
+                              ),
                             )
                           : Text(
                               _isSignUp ? 'Create Account' : 'Sign In',
                               style: TextStyle(
-                                  fontSize: context.bodyFont,
-                                  fontWeight: FontWeight.w600),
+                                fontSize: context.bodyFont,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                     ),
                   ),
@@ -243,18 +245,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           ? 'Already have an account? Sign In'
                           : 'Don\'t have an account? Sign Up',
                       style: TextStyle(fontSize: context.captionFont),
-                    ),
-                  ),
-
-                  // Skip (continue without account)
-                  SizedBox(height: context.s),
-                  TextButton(
-                    onPressed: () => context.go(AppRoutes.wines),
-                    child: Text(
-                      'Continue without account',
-                      style: TextStyle(
-                          fontSize: context.captionFont,
-                          color: cs.outline),
                     ),
                   ),
                 ],

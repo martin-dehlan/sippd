@@ -50,7 +50,6 @@ GoRouter goRouter(GoRouterRef ref) {
       final loc = state.matchedLocation;
       final authed = ref.read(isAuthenticatedProvider);
       final seen = ref.read(onboardingSeenProvider);
-      final guest = ref.read(isGuestProvider);
       final profileAsync = ref.read(currentProfileProvider);
       final inRecovery = ref.read(passwordRecoveryControllerProvider);
 
@@ -99,29 +98,15 @@ GoRouter goRouter(GoRouterRef ref) {
         }
         if (profile.onboardingCompleted &&
             (loc == AppRoutes.chooseUsername ||
-             loc == AppRoutes.login ||
-             loc == AppRoutes.onboarding ||
-             loc == AppRoutes.splash)) {
+                loc == AppRoutes.login ||
+                loc == AppRoutes.onboarding ||
+                loc == AppRoutes.splash)) {
           return AppRoutes.wines;
         }
         return null;
       }
 
-      // Gate 3: not authed, onboarding done.
-      // Guest: allowed on wines. Cloud features bounce to login.
-      if (guest) {
-        if (loc == AppRoutes.splash) return AppRoutes.wines;
-        const cloudPrefixes = [
-          AppRoutes.groups,
-          AppRoutes.friends,
-          AppRoutes.profile,
-        ];
-        final needsAuth = cloudPrefixes.any(loc.startsWith);
-        if (needsAuth) return AppRoutes.login;
-        return null;
-      }
-
-      // Gate 4: not authed, not guest → send to login unless already there.
+      // Gate 3: not authed → send to login unless on an allowed pre-auth screen.
       if (loc != AppRoutes.login &&
           loc != AppRoutes.onboarding &&
           loc != AppRoutes.splash) {
@@ -155,7 +140,7 @@ GoRouter goRouter(GoRouterRef ref) {
           final email = extra['email'] as String? ?? '';
           final purpose =
               extra['purpose'] as EmailConfirmationPurpose? ??
-                  EmailConfirmationPurpose.confirmSignup;
+              EmailConfirmationPurpose.confirmSignup;
           return EmailConfirmationScreen(email: email, purpose: purpose);
         },
       ),
@@ -226,8 +211,8 @@ GoRouter goRouter(GoRouterRef ref) {
       // Tasting create
       GoRoute(
         path: AppRoutes.tastingCreate,
-        builder: (context, state) => TastingCreateScreen(
-            groupId: state.pathParameters['groupId']!),
+        builder: (context, state) =>
+            TastingCreateScreen(groupId: state.pathParameters['groupId']!),
       ),
 
       // Tasting detail
@@ -261,9 +246,8 @@ GoRouter goRouter(GoRouterRef ref) {
             FriendProfileScreen(friendId: state.pathParameters['id']!),
       ),
     ],
-    errorBuilder: (context, state) => Scaffold(
-      body: Center(child: Text('Page not found: ${state.uri}')),
-    ),
+    errorBuilder: (context, state) =>
+        Scaffold(body: Center(child: Text('Page not found: ${state.uri}'))),
   );
 
   ref.listen(authControllerProvider, (prev, next) {
@@ -293,10 +277,8 @@ GoRouter goRouter(GoRouterRef ref) {
       router.refresh();
       return;
     }
-    final prevHas =
-        (prev?.valueOrNull?.username ?? '').isNotEmpty;
-    final nextHas =
-        (next.valueOrNull?.username ?? '').isNotEmpty;
+    final prevHas = (prev?.valueOrNull?.username ?? '').isNotEmpty;
+    final nextHas = (next.valueOrNull?.username ?? '').isNotEmpty;
     if (prevHas != nextHas) {
       router.refresh();
       return;
@@ -327,12 +309,7 @@ class MainShell extends ConsumerWidget {
       bottomNavigationBar: SafeArea(
         top: false,
         child: Padding(
-          padding: EdgeInsets.fromLTRB(
-            w * 0.05,
-            0,
-            w * 0.05,
-            h * 0.012,
-          ),
+          padding: EdgeInsets.fromLTRB(w * 0.05, 0, w * 0.05, h * 0.012),
           child: Container(
             clipBehavior: Clip.antiAlias,
             decoration: BoxDecoration(
@@ -391,7 +368,10 @@ class MainShell extends ConsumerWidget {
                           )
                         : null,
                   ),
-                  const GButton(icon: PhosphorIconsRegular.user, text: 'Profile'),
+                  const GButton(
+                    icon: PhosphorIconsRegular.user,
+                    text: 'Profile',
+                  ),
                 ],
               ),
             ),

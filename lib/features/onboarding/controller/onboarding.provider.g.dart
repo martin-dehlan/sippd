@@ -26,24 +26,7 @@ final sharedPreferencesProvider = Provider<SharedPreferences>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef SharedPreferencesRef = ProviderRef<SharedPreferences>;
-String _$isGuestHash() => r'af6e04aac8290facdbd9f072fb79651a20f068c1';
-
-/// See also [isGuest].
-@ProviderFor(isGuest)
-final isGuestProvider = AutoDisposeProvider<bool>.internal(
-  isGuest,
-  name: r'isGuestProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$isGuestHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef IsGuestRef = AutoDisposeProviderRef<bool>;
-String _$onboardingSeenHash() => r'befa05251634dc2a96afd7db35e10125267cb05d';
+String _$onboardingSeenHash() => r'82ec9407cfc4aa057e24e48c9684335d6aa76df0';
 
 /// See also [onboardingSeen].
 @ProviderFor(onboardingSeen)
@@ -79,15 +62,12 @@ final profileSeedPendingProvider = AutoDisposeProvider<bool>.internal(
 // ignore: unused_element
 typedef ProfileSeedPendingRef = AutoDisposeProviderRef<bool>;
 String _$onboardingControllerHash() =>
-    r'6420b5b435bc8e291cc80aebf4f72ca747234c89';
+    r'ef76686fed6feb2a6358d2b105cfb2a3338fef22';
 
 /// See also [OnboardingController].
 @ProviderFor(OnboardingController)
 final onboardingControllerProvider =
-    AutoDisposeNotifierProvider<
-      OnboardingController,
-      ({bool seen, bool guest})
-    >.internal(
+    AutoDisposeNotifierProvider<OnboardingController, bool>.internal(
       OnboardingController.new,
       name: r'onboardingControllerProvider',
       debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -97,7 +77,7 @@ final onboardingControllerProvider =
       allTransitiveDependencies: null,
     );
 
-typedef _$OnboardingController = AutoDisposeNotifier<({bool seen, bool guest})>;
+typedef _$OnboardingController = AutoDisposeNotifier<bool>;
 String _$onboardingAnswersControllerHash() =>
     r'4b9e57ca80c20bd6b125e90614833e994d6b030f';
 

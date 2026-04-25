@@ -59,10 +59,7 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
             ),
             TextButton(
               onPressed: () => Navigator.pop(ctx, true),
-              child: Text(
-                'Discard',
-                style: TextStyle(color: cs.error),
-              ),
+              child: Text('Discard', style: TextStyle(color: cs.error)),
             ),
           ],
         );
@@ -75,7 +72,8 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
     final data = _current;
     if (data == null) return;
 
-    final userId = ref.read(currentUserIdProvider) ?? 'local_user';
+    final userId = ref.read(currentUserIdProvider);
+    if (userId == null) return;
     final wineId = const Uuid().v4();
     final wine = WineEntity(
       id: wineId,

@@ -8,8 +8,7 @@ import '../domain/onboarding_answers.dart';
 
 part 'onboarding.provider.g.dart';
 
-const _onboardingSeenKey    = 'onboarding_seen';
-const _guestModeKey         = 'guest_mode';
+const _onboardingSeenKey = 'onboarding_seen';
 const _onboardingAnswersKey = 'onboarding_answers';
 const _profileSeedPendingKey = 'onboarding_profile_seed_pending';
 
@@ -22,41 +21,21 @@ SharedPreferences sharedPreferences(SharedPreferencesRef ref) =>
 @riverpod
 class OnboardingController extends _$OnboardingController {
   @override
-  ({bool seen, bool guest}) build() {
+  bool build() {
     final prefs = ref.watch(sharedPreferencesProvider);
-    return (
-      seen: prefs.getBool(_onboardingSeenKey) ?? false,
-      guest: prefs.getBool(_guestModeKey) ?? false,
-    );
+    return prefs.getBool(_onboardingSeenKey) ?? false;
   }
 
   Future<void> markSeen() async {
     final prefs = ref.read(sharedPreferencesProvider);
     await prefs.setBool(_onboardingSeenKey, true);
-    state = (seen: true, guest: state.guest);
-  }
-
-  Future<void> enterGuest() async {
-    final prefs = ref.read(sharedPreferencesProvider);
-    await prefs.setBool(_onboardingSeenKey, true);
-    await prefs.setBool(_guestModeKey, true);
-    state = (seen: true, guest: true);
-  }
-
-  Future<void> exitGuest() async {
-    final prefs = ref.read(sharedPreferencesProvider);
-    await prefs.setBool(_guestModeKey, false);
-    state = (seen: state.seen, guest: false);
+    state = true;
   }
 }
 
 @riverpod
-bool isGuest(IsGuestRef ref) =>
-    ref.watch(onboardingControllerProvider).guest;
-
-@riverpod
 bool onboardingSeen(OnboardingSeenRef ref) =>
-    ref.watch(onboardingControllerProvider).seen;
+    ref.watch(onboardingControllerProvider);
 
 /// Stores quiz answers from onboarding. Also used later from edit_profile
 /// so users can adjust level / styles / frequency / goals.
@@ -78,10 +57,7 @@ class OnboardingAnswersController extends _$OnboardingAnswersController {
 
   Future<void> _persist(OnboardingAnswers next) async {
     final prefs = ref.read(sharedPreferencesProvider);
-    await prefs.setString(
-      _onboardingAnswersKey,
-      jsonEncode(next.toJson()),
-    );
+    await prefs.setString(_onboardingAnswersKey, jsonEncode(next.toJson()));
     state = next;
   }
 
@@ -109,11 +85,12 @@ class OnboardingAnswersController extends _$OnboardingAnswersController {
   Future<void> setStyles(Set<WineType> styles) =>
       _persist(state.copyWith(styles: styles));
 
-  Future<void> setName({String? displayName, String? emoji}) =>
-      _persist(state.copyWith(
-        displayName: displayName ?? state.displayName,
-        emoji: emoji ?? state.emoji,
-      ));
+  Future<void> setName({String? displayName, String? emoji}) => _persist(
+    state.copyWith(
+      displayName: displayName ?? state.displayName,
+      emoji: emoji ?? state.emoji,
+    ),
+  );
 
   Future<void> markNotificationsAsked() =>
       _persist(state.copyWith(notificationsAsked: true));
