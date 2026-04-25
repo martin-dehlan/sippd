@@ -25,6 +25,7 @@ class LevelPage extends ConsumerWidget {
               (l) => OnboardingOptionCard(
                 label: l.label,
                 subtitle: l.subtitle,
+                icon: l.icon,
                 selected: answers.tasteLevel == l,
                 onTap: () => notifier.setTasteLevel(l),
               ),

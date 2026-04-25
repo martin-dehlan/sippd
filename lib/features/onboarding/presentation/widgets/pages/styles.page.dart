@@ -24,7 +24,8 @@ class StylesPage extends ConsumerWidget {
             .map(
               (t) => OnboardingOptionCard(
                 label: t.onboardingLabel,
-                emoji: t.onboardingEmoji,
+                icon: t.onboardingIcon,
+                iconColor: t.onboardingIconTint,
                 selected: answers.styles.contains(t),
                 onTap: () => notifier.toggleStyle(t),
               ),

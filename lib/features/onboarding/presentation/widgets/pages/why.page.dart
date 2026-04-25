@@ -56,57 +56,67 @@ class _Principle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final badgeSize = context.w * 0.13;
+
     return Padding(
-      padding: EdgeInsets.only(bottom: context.xl * 1.2),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      padding: EdgeInsets.only(bottom: context.xl * 1.1),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                number,
-                style: TextStyle(
-                  fontSize: context.captionFont * 0.95,
-                  fontWeight: FontWeight.w700,
-                  color: cs.primary,
-                  letterSpacing: 1.4,
-                  fontFeatures: const [FontFeature.tabularFigures()],
-                ),
+          Container(
+            width: badgeSize,
+            height: badgeSize,
+            decoration: BoxDecoration(
+              color: cs.surfaceContainer,
+              borderRadius: BorderRadius.circular(context.w * 0.035),
+              border: Border.all(
+                color: cs.outlineVariant.withValues(alpha: 0.6),
+                width: 0.5,
               ),
-              SizedBox(width: context.w * 0.025),
-              Expanded(
-                child: Container(
-                  height: 1,
-                  color: cs.outlineVariant.withValues(alpha: 0.5),
-                ),
-              ),
-              SizedBox(width: context.w * 0.03),
-              Icon(
-                icon,
-                size: context.w * 0.07,
-                color: cs.primary,
-              ),
-            ],
-          ),
-          SizedBox(height: context.m),
-          Text(
-            headline,
-            style: GoogleFonts.playfairDisplay(
-              fontSize: context.titleFont * 0.72,
-              fontWeight: FontWeight.w700,
-              letterSpacing: -0.3,
-              height: 1.1,
-              color: cs.onSurface,
+            ),
+            alignment: Alignment.center,
+            child: Icon(
+              icon,
+              size: badgeSize * 0.55,
+              color: cs.onSurface.withValues(alpha: 0.85),
             ),
           ),
-          SizedBox(height: context.xs),
-          Text(
-            line,
-            style: TextStyle(
-              fontSize: context.bodyFont * 0.92,
-              height: 1.35,
-              color: cs.onSurfaceVariant,
+          SizedBox(width: context.w * 0.035),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  number,
+                  style: TextStyle(
+                    fontSize: context.captionFont * 0.85,
+                    fontWeight: FontWeight.w700,
+                    color: cs.onSurfaceVariant,
+                    letterSpacing: 1.4,
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                  ),
+                ),
+                SizedBox(height: context.xs * 0.6),
+                Text(
+                  headline,
+                  style: GoogleFonts.playfairDisplay(
+                    fontSize: context.titleFont * 0.68,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: -0.3,
+                    height: 1.1,
+                    color: cs.onSurface,
+                  ),
+                ),
+                SizedBox(height: context.xs),
+                Text(
+                  line,
+                  style: TextStyle(
+                    fontSize: context.bodyFont * 0.9,
+                    height: 1.35,
+                    color: cs.onSurfaceVariant,
+                  ),
+                ),
+              ],
             ),
           ),
         ],

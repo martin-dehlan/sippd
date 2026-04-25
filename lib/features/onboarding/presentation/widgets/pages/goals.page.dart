@@ -23,7 +23,7 @@ class GoalsPage extends ConsumerWidget {
             .map(
               (g) => OnboardingOptionCard(
                 label: g.label,
-                emoji: g.emoji,
+                icon: g.icon,
                 selected: answers.goals.contains(g),
                 onTap: () => notifier.toggleGoal(g),
               ),

@@ -1,11 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../../common/utils/responsive.dart';
 import '../../../controller/onboarding.provider.dart';
 import '../onboarding_page_shell.widget.dart';
 
-const _emojiOptions = ['🍷', '🥂', '🍇', '🌸', '🍾', '🧀', '🔥', '🎉'];
+const avatarIconOptions = <(String, IconData)>[
+  ('wine', PhosphorIconsRegular.wine),
+  ('champagne', PhosphorIconsRegular.champagne),
+  ('martini', PhosphorIconsRegular.martini),
+  ('sparkle', PhosphorIconsRegular.sparkle),
+  ('heart', PhosphorIconsRegular.heart),
+  ('star', PhosphorIconsRegular.star),
+  ('fire', PhosphorIconsRegular.fire),
+  ('confetti', PhosphorIconsRegular.confetti),
+];
 
 class NamePage extends ConsumerStatefulWidget {
   const NamePage({super.key});
@@ -44,7 +54,7 @@ class _NamePageState extends ConsumerState<NamePage> {
     return OnboardingPageShell(
       eyebrow: 'Almost there',
       title: 'What should we\ncall you?',
-      subtitle: 'First name, nickname — whatever fits. Pick an emoji too.',
+      subtitle: 'First name, nickname — whatever fits. Pick an icon too.',
       child: ListView(
         children: [
           TextField(
@@ -73,7 +83,7 @@ class _NamePageState extends ConsumerState<NamePage> {
           ),
           SizedBox(height: context.l),
           Text(
-            'Pick an emoji',
+            'Pick an icon',
             style: TextStyle(
               fontSize: context.captionFont,
               fontWeight: FontWeight.w600,
@@ -84,10 +94,11 @@ class _NamePageState extends ConsumerState<NamePage> {
           Wrap(
             spacing: context.w * 0.03,
             runSpacing: context.w * 0.03,
-            children: _emojiOptions.map((e) {
-              final selected = answers.emoji == e;
+            children: avatarIconOptions.map((entry) {
+              final (key, iconData) = entry;
+              final selected = answers.emoji == key;
               return GestureDetector(
-                onTap: () => notifier.setName(emoji: e),
+                onTap: () => notifier.setName(emoji: key),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 150),
                   width: context.w * 0.14,
@@ -103,8 +114,11 @@ class _NamePageState extends ConsumerState<NamePage> {
                       width: selected ? 1.5 : 0.5,
                     ),
                   ),
-                  child: Text(e,
-                      style: TextStyle(fontSize: context.w * 0.07)),
+                  child: Icon(
+                    iconData,
+                    size: context.w * 0.065,
+                    color: selected ? cs.primary : cs.onSurfaceVariant,
+                  ),
                 ),
               );
             }).toList(),

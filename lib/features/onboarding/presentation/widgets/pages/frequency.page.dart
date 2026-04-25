@@ -22,6 +22,7 @@ class FrequencyPage extends ConsumerWidget {
             .map(
               (f) => OnboardingOptionCard(
                 label: f.label,
+                icon: f.icon,
                 selected: answers.frequency == f,
                 onTap: () => notifier.setFrequency(f),
               ),

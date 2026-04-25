@@ -8,6 +8,7 @@ class OnboardingOptionCard extends StatelessWidget {
   final String? subtitle;
   final String? emoji;
   final IconData? icon;
+  final Color? iconColor;
   final bool selected;
   final VoidCallback onTap;
 
@@ -19,6 +20,7 @@ class OnboardingOptionCard extends StatelessWidget {
     this.subtitle,
     this.emoji,
     this.icon,
+    this.iconColor,
   });
 
   @override
@@ -54,7 +56,8 @@ class OnboardingOptionCard extends StatelessWidget {
                 if (icon != null)
                   Icon(icon,
                       size: context.w * 0.06,
-                      color: selected ? cs.primary : cs.onSurfaceVariant),
+                      color: iconColor ??
+                          (selected ? cs.primary : cs.onSurfaceVariant)),
                 SizedBox(width: context.w * 0.03),
                 Expanded(
                   child: Column(

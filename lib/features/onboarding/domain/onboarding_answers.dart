@@ -1,3 +1,6 @@
+import 'package:flutter/widgets.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+
 import '../../wines/domain/entities/wine.entity.dart';
 
 enum TasteLevel { beginner, curious, enthusiast, pro }
@@ -95,6 +98,13 @@ extension TasteLevelX on TasteLevel {
         TasteLevel.enthusiast => 'I know what I like',
         TasteLevel.pro => 'Somm-level',
       };
+
+  IconData get icon => switch (this) {
+        TasteLevel.beginner => PhosphorIconsRegular.plant,
+        TasteLevel.curious => PhosphorIconsRegular.compass,
+        TasteLevel.enthusiast => PhosphorIconsRegular.wine,
+        TasteLevel.pro => PhosphorIconsRegular.medal,
+      };
 }
 
 extension DrinkFrequencyX on DrinkFrequency {
@@ -102,6 +112,12 @@ extension DrinkFrequencyX on DrinkFrequency {
         DrinkFrequency.weekly => 'Weekly',
         DrinkFrequency.monthly => 'A few times a month',
         DrinkFrequency.rare => 'Now and then',
+      };
+
+  IconData get icon => switch (this) {
+        DrinkFrequency.weekly => PhosphorIconsRegular.calendarCheck,
+        DrinkFrequency.monthly => PhosphorIconsRegular.calendar,
+        DrinkFrequency.rare => PhosphorIconsRegular.hourglass,
       };
 }
 
@@ -119,6 +135,13 @@ extension OnboardingGoalX on OnboardingGoal {
         OnboardingGoal.social => '🥂',
         OnboardingGoal.value => '💶',
       };
+
+  IconData get icon => switch (this) {
+        OnboardingGoal.remember => PhosphorIconsRegular.bookmark,
+        OnboardingGoal.discover => PhosphorIconsRegular.compass,
+        OnboardingGoal.social => PhosphorIconsRegular.usersThree,
+        OnboardingGoal.value => PhosphorIconsRegular.coins,
+      };
 }
 
 extension WineTypeOnboardingX on WineType {
@@ -134,5 +157,19 @@ extension WineTypeOnboardingX on WineType {
         WineType.white => '🥂',
         WineType.rose => '🌸',
         WineType.sparkling => '🍾',
+      };
+
+  IconData get onboardingIcon => switch (this) {
+        WineType.red => PhosphorIconsRegular.wine,
+        WineType.white => PhosphorIconsRegular.wine,
+        WineType.rose => PhosphorIconsRegular.wine,
+        WineType.sparkling => PhosphorIconsRegular.champagne,
+      };
+
+  Color get onboardingIconTint => switch (this) {
+        WineType.red => const Color(0xFFB06573),
+        WineType.white => const Color(0xFFD9C17E),
+        WineType.rose => const Color(0xFFD89AA8),
+        WineType.sparkling => const Color(0xFFC7A955),
       };
 }
