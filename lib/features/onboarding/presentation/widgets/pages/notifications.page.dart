@@ -80,46 +80,68 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
             ),
           ),
           const Spacer(),
-          SizedBox(
-            height: context.h * 0.065,
-            child: FilledButton(
-              onPressed: asked ? null : _ask,
-              style: FilledButton.styleFrom(
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(context.w * 0.04),
-                ),
-              ),
-              child: _requesting
-                  ? SizedBox(
-                      height: context.w * 0.05,
-                      width: context.w * 0.05,
-                      child: const CircularProgressIndicator(
-                          strokeWidth: 2, color: Colors.white),
-                    )
-                  : Text(
-                      asked ? 'Thanks!' : 'Turn on notifications',
-                      style: TextStyle(
-                        fontSize: context.bodyFont * 1.05,
-                        fontWeight: FontWeight.w700,
-                      ),
+          if (asked)
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: context.m),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(PhosphorIconsRegular.check,
+                      size: context.w * 0.045, color: cs.primary),
+                  SizedBox(width: context.w * 0.02),
+                  Text(
+                    'You\'re set',
+                    style: TextStyle(
+                      fontSize: context.bodyFont * 0.95,
+                      fontWeight: FontWeight.w600,
+                      color: cs.onSurfaceVariant,
                     ),
+                  ),
+                ],
+              ),
+            )
+          else ...[
+            SizedBox(
+              height: context.h * 0.065,
+              child: FilledButton(
+                onPressed: _ask,
+                style: FilledButton.styleFrom(
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(context.w * 0.04),
+                  ),
+                ),
+                child: _requesting
+                    ? SizedBox(
+                        height: context.w * 0.05,
+                        width: context.w * 0.05,
+                        child: const CircularProgressIndicator(
+                            strokeWidth: 2, color: Colors.white),
+                      )
+                    : Text(
+                        'Turn on notifications',
+                        style: TextStyle(
+                          fontSize: context.bodyFont * 1.05,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+              ),
             ),
-          ),
-          SizedBox(height: context.s),
-          Center(
-            child: TextButton(
-              onPressed: asked ? null : _skip,
-              child: Text(
-                asked ? '' : 'Not now',
-                style: TextStyle(
-                  fontSize: context.captionFont,
-                  color: cs.onSurfaceVariant,
+            SizedBox(height: context.s),
+            Center(
+              child: TextButton(
+                onPressed: _skip,
+                child: Text(
+                  'Not now',
+                  style: TextStyle(
+                    fontSize: context.captionFont,
+                    color: cs.onSurfaceVariant,
+                  ),
                 ),
               ),
             ),
-          ),
-          SizedBox(height: context.s),
+            SizedBox(height: context.s),
+          ],
         ],
       ),
     );
