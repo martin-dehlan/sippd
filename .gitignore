@@ -71,6 +71,7 @@ firebase.json
 *.key
 *.keystore
 *.jks
+android/key.properties
 **/service-account*.json
 **/serviceAccount*.json
 **/*-service-account.json
