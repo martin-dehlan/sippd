@@ -23,6 +23,7 @@ Domain (pure) → Data (API/DB) → Application → Controller (Riverpod) → Pr
 6. **Centralized providers**: ALL in `controller/feature.provider.dart`
 7. **Lean UI**: NO gradients, glassmorphism, heavy shadows
 8. **Widget extraction**: NO `_build*()` methods → separate classes
+9. **Commits**: Conventional Commits (`feat(scope):`, `fix(scope):`); feature work on `feat/<name>` branches with PR
 
 ---
 
@@ -103,6 +104,7 @@ dart format . && flutter analyze
 | **Navigation** | `RULES/08_navigation_structure.md` |
 | **Testing** | `RULES/10_testing_rules.md` |
 | **Naming** | `RULES/02_file_naming_conventions.md` |
+| **Versioning / Commits** | `RULES/11_versioning_commits.md` |
 
 ---
 
