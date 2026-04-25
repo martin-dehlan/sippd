@@ -292,7 +292,7 @@ class _WineDetailProviderElement
   String get wineId => (origin as WineDetailProvider).wineId;
 }
 
-String _$wineControllerHash() => r'9dbc95be1de884c3d2d189d3ae56bf1fb2f7ab76';
+String _$wineControllerHash() => r'4d35f9c044446e4054756e8cf05997649e8df3af';
 
 /// See also [WineController].
 @ProviderFor(WineController)
@@ -312,7 +312,7 @@ final wineControllerProvider =
 
 typedef _$WineController = AutoDisposeStreamNotifier<List<WineEntity>>;
 String _$wineMemoriesControllerHash() =>
-    r'0ef78da4e923322e3c2eac93fafb47e465f10b42';
+    r'709bf5d83d26706f48858644d590195863c24c71';
 
 abstract class _$WineMemoriesController
     extends BuildlessAutoDisposeStreamNotifier<List<WineMemoryEntity>> {

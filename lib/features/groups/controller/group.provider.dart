@@ -1,5 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../common/services/analytics/analytics.provider.dart';
 import '../../auth/controller/auth.provider.dart';
 import '../../friends/data/models/friend_profile.model.dart';
 import '../../friends/domain/entities/friend_profile.entity.dart';
@@ -80,6 +81,7 @@ class GroupController extends _$GroupController {
       'created_by': userId,
     });
 
+    ref.read(analyticsProvider).capture('group_created');
     ref.invalidateSelf();
   }
 
@@ -94,6 +96,10 @@ class GroupController extends _$GroupController {
       params: {'p_code': inviteCode},
     );
 
+    ref.read(analyticsProvider).capture(
+      'group_joined',
+      properties: const {'via': 'invite_code'},
+    );
     ref.invalidateSelf();
   }
 
@@ -118,6 +124,10 @@ class GroupController extends _$GroupController {
       'wine_id': wineId,
       'shared_by': userId,
     });
+    ref.read(analyticsProvider).capture(
+      'wine_shared_to_group',
+      properties: const {'mode': 'local'},
+    );
   }
 
   /// Shares [canonicalWineId] into [groupId]. No local upsert — the caller
@@ -135,6 +145,10 @@ class GroupController extends _$GroupController {
       'wine_id': canonicalWineId,
       'shared_by': userId,
     });
+    ref.read(analyticsProvider).capture(
+      'wine_shared_to_group',
+      properties: const {'mode': 'canonical'},
+    );
   }
 
   /// Returns wines already shared in [groupId] whose normalized name matches
@@ -206,6 +220,7 @@ class GroupController extends _$GroupController {
   Future<void> deleteGroup(String groupId) async {
     final client = ref.read(supabaseClientProvider);
     await client.from('groups').delete().eq('id', groupId);
+    ref.read(analyticsProvider).capture('group_deleted');
     ref.invalidateSelf();
   }
 
@@ -268,6 +283,7 @@ class GroupController extends _$GroupController {
         .eq('group_id', groupId)
         .eq('user_id', userId);
 
+    ref.read(analyticsProvider).capture('group_left');
     ref.invalidateSelf();
   }
 }
@@ -439,6 +455,13 @@ class GroupWineRatingController extends _$GroupWineRatingController {
       'notes': notes,
       'updated_at': DateTime.now().toIso8601String(),
     });
+    ref.read(analyticsProvider).capture(
+      'group_rating_submitted',
+      properties: {
+        'rating': rating,
+        'has_notes': (notes ?? '').isNotEmpty,
+      },
+    );
     ref.invalidate(groupWineRatingsProvider(groupId, wineId));
     ref.invalidate(groupWineRanksProvider(groupId));
   }

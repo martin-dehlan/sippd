@@ -418,7 +418,7 @@ final friendSearchControllerProvider =
 
 typedef _$FriendSearchController =
     AutoDisposeAsyncNotifier<List<FriendProfileEntity>>;
-String _$friendsControllerHash() => r'f6c5613d8dffbb7e4a9e288b3c9634ac5e410dde';
+String _$friendsControllerHash() => r'da95ecad091a8df7a99583bf095f556f550a9b9d';
 
 /// See also [FriendsController].
 @ProviderFor(FriendsController)

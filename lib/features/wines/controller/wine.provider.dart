@@ -1,5 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../common/database/database.dart';
+import '../../../common/services/analytics/analytics.provider.dart';
 import '../../auth/controller/auth.provider.dart';
 import '../../onboarding/controller/onboarding.provider.dart';
 import '../domain/entities/wine.entity.dart';
@@ -92,15 +93,32 @@ class WineController extends _$WineController {
 
   Future<void> addWine(WineEntity wine) async {
     await ref.read(wineRepositoryProvider).addWine(wine);
+    ref.read(analyticsProvider).capture(
+      'wine_added',
+      properties: {
+        'rating': wine.rating,
+        'type': wine.type.name,
+        'has_notes': (wine.notes ?? '').isNotEmpty,
+        'has_photo':
+            (wine.imageUrl ?? wine.localImagePath ?? '').isNotEmpty,
+        'has_location': wine.latitude != null && wine.longitude != null,
+        'visibility': wine.visibility,
+      },
+    );
   }
 
   Future<void> updateWine(WineEntity wine) async {
     await ref.read(wineRepositoryProvider).updateWine(wine);
+    ref.read(analyticsProvider).capture(
+      'wine_updated',
+      properties: {'rating': wine.rating, 'type': wine.type.name},
+    );
   }
 
   Future<void> deleteWine(String id) async {
     await ref.read(wineMemoryRepositoryProvider).deleteByWine(id);
     await ref.read(wineRepositoryProvider).deleteWine(id);
+    ref.read(analyticsProvider).capture('wine_deleted');
   }
 }
 
@@ -122,10 +140,12 @@ class WineMemoriesController extends _$WineMemoriesController {
 
   Future<void> addMemory(WineMemoryEntity memory) async {
     await ref.read(wineMemoryRepositoryProvider).addMemory(memory);
+    ref.read(analyticsProvider).capture('wine_memory_added');
   }
 
   Future<void> deleteMemory(String id) async {
     await ref.read(wineMemoryRepositoryProvider).deleteMemory(id);
+    ref.read(analyticsProvider).capture('wine_memory_deleted');
   }
 }
 
