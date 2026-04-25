@@ -10,6 +10,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'common/services/analytics/analytics.provider.dart';
 import 'common/services/analytics/analytics.service.dart';
 import 'common/services/deep_link/deep_link.provider.dart';
+import 'features/paywall/controller/paywall.provider.dart';
+import 'features/paywall/data/services/paywall.service.dart';
 import 'common/services/deep_link/deep_link.service.dart';
 import 'common/services/secure_pkce_storage.dart';
 import 'common/theme/app_theme.dart';
@@ -53,11 +55,19 @@ void main() async {
     host: dotenv.env['POSTHOG_HOST'] ?? 'https://eu.i.posthog.com',
   );
 
+  final paywall = PaywallService();
+  final rcUnified = dotenv.env['REVENUECAT_API_KEY'] ?? '';
+  await paywall.init(
+    iosApiKey: dotenv.env['REVENUECAT_API_KEY_IOS'] ?? rcUnified,
+    androidApiKey: dotenv.env['REVENUECAT_API_KEY_ANDROID'] ?? rcUnified,
+  );
+
   runApp(
     ProviderScope(
       overrides: [
         sharedPreferencesProvider.overrideWithValue(prefs),
         analyticsProvider.overrideWithValue(analytics),
+        paywallProvider.overrideWithValue(paywall),
       ],
       child: const SippdApp(),
     ),
@@ -86,11 +96,12 @@ class _SippdAppState extends ConsumerState<SippdApp> {
     // Kick off FCM registration lifecycle.
     ref.watch(pushRegistrationProvider);
 
-    // Identify the PostHog user when auth flips, reset on sign-out.
+    // Identify PostHog + RevenueCat when auth flips, reset on sign-out.
     ref.listen<AsyncValue<User?>>(authControllerProvider, (prev, next) {
       final prevUser = prev?.valueOrNull;
       final nextUser = next.valueOrNull;
       final analytics = ref.read(analyticsProvider);
+      final paywall = ref.read(paywallProvider);
       if (prevUser?.id == nextUser?.id) return;
       if (nextUser != null) {
         analytics.identify(
@@ -99,8 +110,10 @@ class _SippdAppState extends ConsumerState<SippdApp> {
             if (nextUser.email != null) 'email': nextUser.email!,
           },
         );
+        paywall.identify(nextUser.id);
       } else if (prevUser != null) {
         analytics.reset();
+        paywall.logout();
       }
     });
 

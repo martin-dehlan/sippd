@@ -15,6 +15,7 @@ import '../../features/auth/presentation/modules/password_recovery/password_reco
 import '../../features/auth/presentation/modules/profile/profile.screen.dart';
 import '../../features/onboarding/controller/onboarding.provider.dart';
 import '../../features/onboarding/presentation/modules/onboarding.screen.dart';
+import '../../features/paywall/presentation/modules/paywall/paywall.screen.dart';
 import '../../features/profile/controller/profile.provider.dart';
 import '../../features/profile/presentation/modules/choose_username/choose_username.screen.dart';
 import '../../features/profile/presentation/modules/edit_profile/edit_profile.screen.dart';
@@ -240,6 +241,15 @@ GoRouter goRouter(GoRouterRef ref) {
       GoRoute(
         path: AppRoutes.profileEdit,
         builder: (context, state) => const EditProfileScreen(),
+      ),
+
+      // Paywall (shown as a fullscreen page; trigger source passed via extra)
+      GoRoute(
+        path: AppRoutes.paywall,
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>? ?? const {};
+          return PaywallScreen(triggerSource: extra['source'] as String?);
+        },
       ),
 
       // Friends
