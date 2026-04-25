@@ -88,6 +88,20 @@ class _SippdAppState extends ConsumerState<SippdApp> {
     // Initialise the local-notification plugin + FCM listeners once.
     ref.read(pushHandlerProvider).init();
     ref.read(deepLinkProvider).init();
+
+    // ref.listen below only fires on auth state *changes*, so a user who
+    // was already signed in before the app restarted would never get
+    // identified to PostHog or RevenueCat. Catch that case here.
+    final bootUser = ref.read(authControllerProvider).valueOrNull;
+    if (bootUser != null) {
+      ref.read(analyticsProvider).identify(
+        bootUser.id,
+        userProperties: {
+          if (bootUser.email != null) 'email': bootUser.email!,
+        },
+      );
+      ref.read(paywallProvider).identify(bootUser.id);
+    }
   }
 
   @override
