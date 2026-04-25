@@ -9,6 +9,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'common/services/deep_link/deep_link.provider.dart';
 import 'common/services/deep_link/deep_link.service.dart';
+import 'common/services/secure_pkce_storage.dart';
 import 'common/theme/app_theme.dart';
 import 'core/routes/app.routes.dart';
 import 'core/routes/route_config.dart';
@@ -33,6 +34,12 @@ void main() async {
   await Supabase.initialize(
     url: dotenv.env['SUPABASE_URL']!,
     anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
+    authOptions: FlutterAuthClientOptions(
+      // Persist the PKCE code verifier in Keystore/Keychain so Google
+      // sign-in survives Android killing the app process while the
+      // Custom Tab is foregrounded.
+      pkceAsyncStorage: SecurePkceStorage(),
+    ),
   );
 
   final prefs = await SharedPreferences.getInstance();
