@@ -37,12 +37,14 @@ class FcmService {
   /// Register the current device's FCM token for the logged-in user.
   /// Token is globally unique — if another account previously claimed it on
   /// this device, ownership transfers to the current user.
+  ///
+  /// We do NOT gate this on notification permission. On Android the token
+  /// is valid regardless; if the user later grants permission, deliveries
+  /// just start displaying. On iOS getToken returns null without
+  /// permission, so this no-ops gracefully.
   Future<void> register() async {
     final user = _client.auth.currentUser;
     if (user == null) return;
-
-    final settings = await requestPermission();
-    if (settings.authorizationStatus == AuthorizationStatus.denied) return;
 
     final token = await _currentToken();
     if (token == null) return;
