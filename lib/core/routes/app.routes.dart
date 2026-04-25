@@ -32,6 +32,9 @@ class AppRoutes {
   static const String friendProfile = '/friends/:id';
   static String friendProfilePath(String id) => '/friends/$id';
 
+  // Paywall
+  static const String paywall = '/paywall';
+
   // Tastings
   static const String tastingCreate = '/groups/:groupId/tastings/new';
   static String tastingCreatePath(String groupId) =>
