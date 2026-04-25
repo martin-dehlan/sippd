@@ -56,9 +56,10 @@ void main() async {
   );
 
   final paywall = PaywallService();
+  final rcUnified = dotenv.env['REVENUECAT_API_KEY'] ?? '';
   await paywall.init(
-    iosApiKey: dotenv.env['REVENUECAT_API_KEY_IOS'] ?? '',
-    androidApiKey: dotenv.env['REVENUECAT_API_KEY_ANDROID'] ?? '',
+    iosApiKey: dotenv.env['REVENUECAT_API_KEY_IOS'] ?? rcUnified,
+    androidApiKey: dotenv.env['REVENUECAT_API_KEY_ANDROID'] ?? rcUnified,
   );
 
   runApp(
