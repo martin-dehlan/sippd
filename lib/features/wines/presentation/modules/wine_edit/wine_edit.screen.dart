@@ -39,6 +39,7 @@ class WineEditScreen extends ConsumerWidget {
                     type: data.type,
                     price: data.price,
                     country: data.country,
+                    region: data.region,
                     location: data.location?.shortDisplay,
                     latitude: data.location?.lat,
                     longitude: data.location?.lng,
@@ -84,6 +85,7 @@ class WineEditScreen extends ConsumerWidget {
       grape: wine.grape,
       winery: wine.winery,
       country: wine.country,
+      region: wine.region,
       location: hasLocation
           ? LocationEntity(
               lat: wine.latitude,

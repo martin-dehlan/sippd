@@ -14,6 +14,7 @@ class WineEntity with _$WineEntity {
     double? price,
     @Default('EUR') String currency,
     String? country,
+    String? region,
     String? location,
     double? latitude,
     double? longitude,

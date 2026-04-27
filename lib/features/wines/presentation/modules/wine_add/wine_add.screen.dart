@@ -20,6 +20,7 @@ class WineAddScreen extends ConsumerStatefulWidget {
 }
 
 class _WineAddScreenState extends ConsumerState<WineAddScreen> {
+  final GlobalKey<WineFormState> _formKey = GlobalKey<WineFormState>();
   WineFormData? _current;
   bool _allowPop = false;
 
@@ -82,6 +83,7 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
       type: data.type,
       price: data.price,
       country: data.country,
+      region: data.region,
       location: data.location?.shortDisplay,
       latitude: data.location?.lat,
       longitude: data.location?.lng,
@@ -126,10 +128,23 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
       },
       child: Scaffold(
         body: SafeArea(
-          child: WineForm(
-            submitLabel: 'Save wine',
-            onChanged: (data) => setState(() => _current = data),
-            onSubmit: (_) => _save(),
+          child: Stack(
+            children: [
+              WineForm(
+                key: _formKey,
+                submitLabel: 'Save wine',
+                showInlineSubmit: false,
+                onChanged: (data) => setState(() => _current = data),
+                onSubmit: (_) => _save(),
+              ),
+              Positioned(
+                right: context.paddingH,
+                bottom: context.m,
+                child: _SaveWineFab(
+                  onPressed: () => _formKey.currentState?.submit(),
+                ),
+              ),
+            ],
           ),
         ),
         floatingActionButton: _FloatingBackButton(
@@ -166,6 +181,42 @@ class _FloatingBackButton extends StatelessWidget {
         shape: const CircleBorder(),
         onPressed: onPressed,
         child: Icon(PhosphorIconsRegular.arrowLeft, size: context.w * 0.06),
+      ),
+    );
+  }
+}
+
+class _SaveWineFab extends StatelessWidget {
+  final VoidCallback onPressed;
+  const _SaveWineFab({required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final height = context.w * 0.16;
+    return SizedBox(
+      height: height,
+      child: FloatingActionButton.extended(
+        heroTag: 'wine-add-save',
+        onPressed: onPressed,
+        backgroundColor: cs.primary,
+        foregroundColor: cs.onPrimary,
+        elevation: 4,
+        extendedIconLabelSpacing: context.w * 0.025,
+        extendedPadding: EdgeInsets.symmetric(horizontal: context.w * 0.06),
+        shape: const StadiumBorder(),
+        icon: Icon(
+          PhosphorIconsBold.check,
+          size: context.w * 0.05,
+        ),
+        label: Text(
+          'Save wine',
+          style: TextStyle(
+            fontSize: context.bodyFont * 1.02,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0.2,
+          ),
+        ),
       ),
     );
   }
