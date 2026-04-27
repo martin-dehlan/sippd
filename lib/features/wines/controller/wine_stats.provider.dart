@@ -120,6 +120,68 @@ List<WineEntity> statsWinesWithLocation(StatsWinesWithLocationRef ref) {
       .toList();
 }
 
+class StatsSpending {
+  final double total;
+  final double avg;
+  final String currency;
+  final WineEntity? mostExpensive;
+  final WineEntity? bestValue;
+  final int pricedCount;
+
+  const StatsSpending({
+    required this.total,
+    required this.avg,
+    required this.currency,
+    required this.mostExpensive,
+    required this.bestValue,
+    required this.pricedCount,
+  });
+}
+
+@riverpod
+StatsSpending statsSpending(StatsSpendingRef ref) {
+  final wines = ref.watch(_wineListProvider);
+  final priced = wines.where((w) => (w.price ?? 0) > 0).toList();
+  if (priced.isEmpty) {
+    return const StatsSpending(
+      total: 0,
+      avg: 0,
+      currency: 'EUR',
+      mostExpensive: null,
+      bestValue: null,
+      pricedCount: 0,
+    );
+  }
+  // Most-common currency among priced wines wins. Wines on a different
+  // currency are excluded from total / avg so the headline isn't a
+  // mixed-currency lie.
+  final byCurrency = <String, int>{};
+  for (final w in priced) {
+    byCurrency[w.currency] = (byCurrency[w.currency] ?? 0) + 1;
+  }
+  final currency = byCurrency.entries
+      .reduce((a, b) => a.value >= b.value ? a : b)
+      .key;
+  final sameCcy = priced.where((w) => w.currency == currency).toList();
+  final total = sameCcy.fold<double>(0, (acc, w) => acc + (w.price ?? 0));
+  final avg = sameCcy.isEmpty ? 0.0 : total / sameCcy.length;
+  final mostExpensive = sameCcy
+      .reduce((a, b) => (a.price ?? 0) >= (b.price ?? 0) ? a : b);
+  final bestValue = sameCcy.reduce((a, b) {
+    final ra = (a.price ?? 0) == 0 ? 0.0 : a.rating / a.price!;
+    final rb = (b.price ?? 0) == 0 ? 0.0 : b.rating / b.price!;
+    return ra >= rb ? a : b;
+  });
+  return StatsSpending(
+    total: total,
+    avg: avg,
+    currency: currency,
+    mostExpensive: mostExpensive,
+    bestValue: bestValue,
+    pricedCount: sameCcy.length,
+  );
+}
+
 @riverpod
 List<TypeBreakdown> statsTypeBreakdown(StatsTypeBreakdownRef ref) {
   final wines = ref.watch(_wineListProvider);

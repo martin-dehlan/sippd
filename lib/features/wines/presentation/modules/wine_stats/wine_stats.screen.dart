@@ -7,6 +7,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../../common/utils/responsive.dart';
 import '../../../controller/wine_stats.provider.dart';
+import 'widgets/spending_section.widget.dart';
 import 'widgets/stats_hero.widget.dart';
 import 'widgets/tally_bars.widget.dart';
 import 'widgets/top_wines_list.widget.dart';
@@ -61,6 +62,14 @@ class WineStatsScreen extends ConsumerWidget {
                   subtitle: 'How your taste splits across the four styles.',
                   delay: 100,
                   child: WineTypeBreakdown(data: breakdown),
+                ),
+                SliverToBoxAdapter(child: SizedBox(height: context.m)),
+
+                _SliverSection(
+                  title: 'Spend & value',
+                  subtitle: 'What your wines cost — and where the deals hide.',
+                  delay: 150,
+                  child: const SpendingSection(),
                 ),
                 SliverToBoxAdapter(child: SizedBox(height: context.m)),
 

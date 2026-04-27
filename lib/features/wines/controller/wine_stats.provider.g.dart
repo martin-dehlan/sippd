@@ -110,6 +110,23 @@ final statsWinesWithLocationProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef StatsWinesWithLocationRef = AutoDisposeProviderRef<List<WineEntity>>;
+String _$statsSpendingHash() => r'0761a11eb996cb3d749464feaf9e61ef05dac3ec';
+
+/// See also [statsSpending].
+@ProviderFor(statsSpending)
+final statsSpendingProvider = AutoDisposeProvider<StatsSpending>.internal(
+  statsSpending,
+  name: r'statsSpendingProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$statsSpendingHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef StatsSpendingRef = AutoDisposeProviderRef<StatsSpending>;
 String _$statsTypeBreakdownHash() =>
     r'a2f7455c30b3feeb8a4f7a18599c6aac27711cbb';
 
