@@ -22,10 +22,12 @@ import '../widgets/pages/styles.page.dart';
 import '../widgets/pages/welcome.page.dart';
 import '../widgets/pages/why.page.dart';
 
-// Funnel order: pure value first (quiz → archetype reveal), commitment last
-// (notifications → paywall → auth). Paywall sits at the end so the user has
-// already seen their archetype and felt the value before being asked to
-// upgrade.
+// Funnel order: pure value first (quiz → archetype reveal → Pro pitch),
+// then the low-stakes asks (notifications). The paywall sits *immediately*
+// after the archetype reveal — that's the peak engagement moment, while
+// the user is still riding the "the app gets me" feeling. Asking later
+// (e.g. after notifications) pushes it past the dopamine window and
+// stacks two asks back-to-back.
 enum _Step {
   welcome,
   responsibility,
@@ -37,8 +39,8 @@ enum _Step {
   name,
   loader,
   results,
-  notifications,
   paywall,
+  notifications,
 }
 
 class OnboardingScreen extends ConsumerStatefulWidget {
