@@ -1,20 +1,24 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../../../common/data/avatar_icons.dart';
 import '../../../../../common/utils/responsive.dart';
+import '../../../controller/onboarding.provider.dart';
 
-class LoaderPage extends StatefulWidget {
+class LoaderPage extends ConsumerStatefulWidget {
   final VoidCallback onDone;
   const LoaderPage({super.key, required this.onDone});
 
   @override
-  State<LoaderPage> createState() => _LoaderPageState();
+  ConsumerState<LoaderPage> createState() => _LoaderPageState();
 }
 
-class _LoaderPageState extends State<LoaderPage> with TickerProviderStateMixin {
+class _LoaderPageState extends ConsumerState<LoaderPage>
+    with TickerProviderStateMixin {
   static const _steps = [
     'Matching your taste',
     'Curating your styles',
@@ -66,6 +70,9 @@ class _LoaderPageState extends State<LoaderPage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final pickedIconKey =
+        ref.watch(onboardingAnswersControllerProvider).emoji;
+    final pickedIcon = avatarIconForKey(pickedIconKey);
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: context.paddingH),
       child: Column(
@@ -80,6 +87,7 @@ class _LoaderPageState extends State<LoaderPage> with TickerProviderStateMixin {
                   ringCtrl: _ringCtrl,
                   pulseCtrl: _pulseCtrl,
                   finished: _finished,
+                  centerIcon: pickedIcon ?? PhosphorIconsRegular.wine,
                 ),
                 SizedBox(height: context.xl * 1.2),
                 Text(
@@ -152,10 +160,12 @@ class _LoaderRing extends StatelessWidget {
   final AnimationController ringCtrl;
   final AnimationController pulseCtrl;
   final bool finished;
+  final IconData centerIcon;
   const _LoaderRing({
     required this.ringCtrl,
     required this.pulseCtrl,
     required this.finished,
+    required this.centerIcon,
   });
 
   @override
@@ -206,7 +216,7 @@ class _LoaderRing extends StatelessWidget {
             ),
             alignment: Alignment.center,
             child: Icon(
-              finished ? PhosphorIconsFill.check : PhosphorIconsRegular.wine,
+              finished ? PhosphorIconsFill.check : centerIcon,
               size: size * 0.25,
               color: cs.primary,
             ),
