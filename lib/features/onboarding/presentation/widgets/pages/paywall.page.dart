@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../../common/utils/responsive.dart';
 import '../../../../paywall/presentation/widgets/paywall_body.widget.dart';
+import '../../../../paywall/presentation/widgets/paywall_pitch.dart';
 
 /// Onboarding-flow paywall step. Renders the same PaywallBody as the
 /// standalone paywall screen (animated wine-glass hero, eyebrow,
@@ -30,28 +30,10 @@ class OnboardingPaywallPage extends StatelessWidget {
       child: PaywallBody(
         triggerSource: 'onboarding',
         showHero: true,
-        eyebrow: 'Sippd Pro',
-        headline: 'See how you\nreally taste.',
-        subhead:
-            'Map every bottle, leaderboard with your friends, '
-            'and share cards that actually look good.',
-        benefits: const [
-          (
-            icon: PhosphorIconsRegular.usersThree,
-            title: 'Unlimited groups & members',
-            subtitle: 'Bring your whole tasting circle.',
-          ),
-          (
-            icon: PhosphorIconsRegular.chartLineUp,
-            title: 'Deep stats & taste insights',
-            subtitle: 'Map · prices · top regions · podium.',
-          ),
-          (
-            icon: PhosphorIconsRegular.shareNetwork,
-            title: 'Premium share-cards & themes',
-            subtitle: 'Stand out everywhere you post.',
-          ),
-        ],
+        eyebrow: kProPitchEyebrow,
+        headline: kProPitchHeadline,
+        subhead: kProPitchSubhead,
+        benefits: kProPitchBenefits,
         primaryLabel: 'Start 7-day free trial',
         dismissLabel: 'Maybe later',
         onSuccess: onFinish,

@@ -4,6 +4,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../../common/utils/responsive.dart';
 import '../../widgets/paywall_body.widget.dart';
+import '../../widgets/paywall_pitch.dart';
 
 /// Stand-alone paywall screen — used for entry points that don't have a
 /// natural surface to embed into (deep-links, manual upgrade taps from
@@ -40,28 +41,10 @@ class PaywallScreen extends ConsumerWidget {
           child: PaywallBody(
             triggerSource: triggerSource ?? 'standalone',
             showHero: true,
-            eyebrow: 'Sippd Pro',
-            headline: 'See how you\nreally taste.',
-            subhead:
-                'Map every bottle, leaderboard with your friends, '
-                'and share cards that actually look good.',
-            benefits: const [
-              (
-                icon: PhosphorIconsRegular.usersThree,
-                title: 'Unlimited groups & members',
-                subtitle: 'Bring your whole tasting circle.',
-              ),
-              (
-                icon: PhosphorIconsRegular.chartLineUp,
-                title: 'Deep stats & taste insights',
-                subtitle: 'Map · prices · top regions · podium.',
-              ),
-              (
-                icon: PhosphorIconsRegular.shareNetwork,
-                title: 'Premium share-cards & themes',
-                subtitle: 'Stand out everywhere you post.',
-              ),
-            ],
+            eyebrow: kProPitchEyebrow,
+            headline: kProPitchHeadline,
+            subhead: kProPitchSubhead,
+            benefits: kProPitchBenefits,
             primaryLabel: 'Continue',
             onSuccess: () => Navigator.of(context).pop(true),
           ),
