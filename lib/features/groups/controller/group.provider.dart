@@ -70,19 +70,24 @@ class GroupController extends _$GroupController {
     return groups;
   }
 
-  Future<void> createGroup(String name) async {
+  /// Creates a group and returns the inserted row so the caller can chain
+  /// the invite-share sheet without re-fetching. Returns null only if the
+  /// user is unauthenticated (caller skips the post-create UI).
+  Future<GroupEntity?> createGroup(String name) async {
     final userId = ref.read(currentUserIdProvider);
-    if (userId == null) return;
+    if (userId == null) return null;
 
     final client = ref.read(supabaseClientProvider);
 
-    await client.from('groups').insert({
-      'name': name,
-      'created_by': userId,
-    });
+    final inserted = await client
+        .from('groups')
+        .insert({'name': name, 'created_by': userId})
+        .select()
+        .single();
 
     ref.read(analyticsProvider).capture('group_created');
     ref.invalidateSelf();
+    return GroupModel.fromJson(inserted).toEntity();
   }
 
   Future<void> joinGroup(String inviteCode) async {
