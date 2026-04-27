@@ -816,6 +816,152 @@ class _GroupWineShareMetaProviderElement
   String get wineId => (origin as GroupWineShareMetaProvider).wineId;
 }
 
+String _$groupsContainingWineHash() =>
+    r'950777d4847098805ff9cdc9843139d941bb87a8';
+
+/// Set of group IDs that already contain [wineId] (or its canonical
+/// counterpart resolved through the alias system). Used by the share
+/// sheet to mark groups that have already received this wine.
+///
+/// Copied from [groupsContainingWine].
+@ProviderFor(groupsContainingWine)
+const groupsContainingWineProvider = GroupsContainingWineFamily();
+
+/// Set of group IDs that already contain [wineId] (or its canonical
+/// counterpart resolved through the alias system). Used by the share
+/// sheet to mark groups that have already received this wine.
+///
+/// Copied from [groupsContainingWine].
+class GroupsContainingWineFamily extends Family<AsyncValue<Set<String>>> {
+  /// Set of group IDs that already contain [wineId] (or its canonical
+  /// counterpart resolved through the alias system). Used by the share
+  /// sheet to mark groups that have already received this wine.
+  ///
+  /// Copied from [groupsContainingWine].
+  const GroupsContainingWineFamily();
+
+  /// Set of group IDs that already contain [wineId] (or its canonical
+  /// counterpart resolved through the alias system). Used by the share
+  /// sheet to mark groups that have already received this wine.
+  ///
+  /// Copied from [groupsContainingWine].
+  GroupsContainingWineProvider call(String wineId) {
+    return GroupsContainingWineProvider(wineId);
+  }
+
+  @override
+  GroupsContainingWineProvider getProviderOverride(
+    covariant GroupsContainingWineProvider provider,
+  ) {
+    return call(provider.wineId);
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'groupsContainingWineProvider';
+}
+
+/// Set of group IDs that already contain [wineId] (or its canonical
+/// counterpart resolved through the alias system). Used by the share
+/// sheet to mark groups that have already received this wine.
+///
+/// Copied from [groupsContainingWine].
+class GroupsContainingWineProvider
+    extends AutoDisposeFutureProvider<Set<String>> {
+  /// Set of group IDs that already contain [wineId] (or its canonical
+  /// counterpart resolved through the alias system). Used by the share
+  /// sheet to mark groups that have already received this wine.
+  ///
+  /// Copied from [groupsContainingWine].
+  GroupsContainingWineProvider(String wineId)
+    : this._internal(
+        (ref) => groupsContainingWine(ref as GroupsContainingWineRef, wineId),
+        from: groupsContainingWineProvider,
+        name: r'groupsContainingWineProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$groupsContainingWineHash,
+        dependencies: GroupsContainingWineFamily._dependencies,
+        allTransitiveDependencies:
+            GroupsContainingWineFamily._allTransitiveDependencies,
+        wineId: wineId,
+      );
+
+  GroupsContainingWineProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.wineId,
+  }) : super.internal();
+
+  final String wineId;
+
+  @override
+  Override overrideWith(
+    FutureOr<Set<String>> Function(GroupsContainingWineRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: GroupsContainingWineProvider._internal(
+        (ref) => create(ref as GroupsContainingWineRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        wineId: wineId,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<Set<String>> createElement() {
+    return _GroupsContainingWineProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is GroupsContainingWineProvider && other.wineId == wineId;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, wineId.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin GroupsContainingWineRef on AutoDisposeFutureProviderRef<Set<String>> {
+  /// The parameter `wineId` of this provider.
+  String get wineId;
+}
+
+class _GroupsContainingWineProviderElement
+    extends AutoDisposeFutureProviderElement<Set<String>>
+    with GroupsContainingWineRef {
+  _GroupsContainingWineProviderElement(super.provider);
+
+  @override
+  String get wineId => (origin as GroupsContainingWineProvider).wineId;
+}
+
 String _$groupControllerHash() => r'a9fef0a6e5768958ee7b63b8c33ad81299aadd98';
 
 /// See also [GroupController].
