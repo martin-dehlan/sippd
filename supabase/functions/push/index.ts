@@ -135,6 +135,55 @@ async function resolvePush(
     };
   }
 
+  if (table === 'group_wines') {
+    // Notify the rest of the group when someone shares a wine. Sharer is
+    // excluded so they don't ping their own device.
+    const { data: members } = await admin
+      .from('group_members')
+      .select('user_id')
+      .eq('group_id', record.group_id);
+    const recipients = (members ?? [])
+      .map((m: any) => m.user_id as string)
+      .filter((id: string) => id !== record.shared_by);
+    if (recipients.length === 0) return null;
+    const [{ data: wine }, { data: group }, { data: sharer }] = await Promise.all([
+      admin
+        .from('wines')
+        .select('name, winery')
+        .eq('id', record.wine_id)
+        .maybeSingle(),
+      admin
+        .from('groups')
+        .select('name')
+        .eq('id', record.group_id)
+        .maybeSingle(),
+      admin
+        .from('profiles')
+        .select('display_name, username')
+        .eq('id', record.shared_by)
+        .maybeSingle(),
+    ]);
+    const sharerName =
+      (sharer as any)?.display_name || (sharer as any)?.username || 'Someone';
+    const wineName = (wine as any)?.name ?? 'a wine';
+    const winery = (wine as any)?.winery as string | null | undefined;
+    const groupName = (group as any)?.name ?? 'your group';
+    return {
+      recipients,
+      title: `${sharerName} shared a wine`,
+      body: winery
+        ? `${wineName} · ${winery} — ${groupName}`
+        : `${wineName} — ${groupName}`,
+      data: {
+        type: 'group_wine_shared',
+        group_id: record.group_id as string,
+        wine_id: record.wine_id as string,
+      },
+      tag: `group_wine:${record.group_id}:${record.wine_id}`,
+      threadId: `group:${record.group_id}`,
+    };
+  }
+
   if (table === 'group_members') {
     // Creator is auto-inserted as 'owner' on group create. Only notify real joins.
     if (record.role === 'owner') return null;

@@ -212,6 +212,7 @@ void _invalidateForPush(WidgetRef ref, RemoteMessage msg) {
       break;
     case 'group_joined':
     case 'tasting_created':
+    case 'group_wine_shared':
       ref.invalidate(groupControllerProvider);
       break;
   }
@@ -236,6 +237,7 @@ String? _routeForPush(RemoteMessage msg) {
       }
       return null;
     case 'group_joined':
+    case 'group_wine_shared':
       final id = data['group_id'];
       if (id is String && id.isNotEmpty) {
         return AppRoutes.groupDetailPath(id);
