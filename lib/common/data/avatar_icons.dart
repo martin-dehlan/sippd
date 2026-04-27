@@ -13,6 +13,8 @@ const List<({String key, IconData icon})> avatarIconOptions = [
   (key: 'star', icon: PhosphorIconsRegular.star),
   (key: 'fire', icon: PhosphorIconsRegular.fire),
   (key: 'confetti', icon: PhosphorIconsRegular.confetti),
+  (key: 'crown', icon: PhosphorIconsRegular.crown),
+  (key: 'flower', icon: PhosphorIconsRegular.flower),
 ];
 
 IconData? avatarIconForKey(String? key) {
