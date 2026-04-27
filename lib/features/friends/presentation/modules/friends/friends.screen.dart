@@ -5,9 +5,13 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:share_plus/share_plus.dart';
 
+import '../../../../../common/services/analytics/analytics.provider.dart';
+import '../../../../../common/services/deep_link/deep_link.service.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../core/routes/app.routes.dart';
+import '../../../../auth/controller/auth.provider.dart';
 import '../../../controller/friends.provider.dart';
 import '../../../data/data_sources/friends.api.dart' show FriendRequestExistsException;
 import '../../../domain/entities/friend_profile.entity.dart';
@@ -774,12 +778,26 @@ class _StatusChip extends StatelessWidget {
   }
 }
 
-class _EmptyFriendsState extends StatelessWidget {
+class _EmptyFriendsState extends ConsumerWidget {
   final VoidCallback onFindFriends;
   const _EmptyFriendsState({required this.onFindFriends});
 
+  Future<void> _shareInvite(BuildContext context, WidgetRef ref) async {
+    final userId = ref.read(currentUserIdProvider);
+    if (userId == null) return;
+    ref.read(analyticsProvider).capture(
+      'friend_invite_share',
+      properties: const {'source': 'empty_state'},
+    );
+    final url = DeepLinkService.friendHttpsUri(userId);
+    await Share.share(
+      'Add me on Sippd 🍷 — we rate, taste, and share wines together.\n\n$url',
+      subject: 'Add me on Sippd',
+    );
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
     final padH = context.paddingH * 1.3;
     return Padding(
@@ -812,7 +830,7 @@ class _EmptyFriendsState extends StatelessWidget {
             ),
             SizedBox(height: context.m),
             Text(
-              'No friends yet',
+              'Bring your tasting circle',
               style: TextStyle(
                 fontSize: context.headingFont,
                 fontWeight: FontWeight.w700,
@@ -824,7 +842,7 @@ class _EmptyFriendsState extends StatelessWidget {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: context.w * 0.04),
               child: Text(
-                'Search by username to add people you taste wine with.',
+                'Sippd gets better with friends. Send an invite — they land straight on your profile.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: context.captionFont,
@@ -834,23 +852,36 @@ class _EmptyFriendsState extends StatelessWidget {
               ),
             ),
             SizedBox(height: context.l),
-            FilledButton.tonalIcon(
-              onPressed: onFindFriends,
-              icon: Icon(PhosphorIconsRegular.magnifyingGlass, size: context.w * 0.045),
+            FilledButton.icon(
+              onPressed: () => _shareInvite(context, ref),
+              icon: Icon(PhosphorIconsRegular.paperPlaneTilt, size: context.w * 0.045),
               label: Text(
-                'Find friends',
+                'Invite friends',
                 style: TextStyle(
                   fontSize: context.captionFont,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
               style: FilledButton.styleFrom(
                 padding: EdgeInsets.symmetric(
-                  horizontal: context.w * 0.06,
+                  horizontal: context.w * 0.08,
                   vertical: context.s * 1.4,
                 ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(context.w * 0.1),
+                ),
+              ),
+            ),
+            SizedBox(height: context.s),
+            TextButton.icon(
+              onPressed: onFindFriends,
+              icon: Icon(PhosphorIconsRegular.magnifyingGlass, size: context.w * 0.04),
+              label: Text(
+                'Find by username',
+                style: TextStyle(
+                  fontSize: context.captionFont,
+                  fontWeight: FontWeight.w600,
+                  color: cs.onSurfaceVariant,
                 ),
               ),
             ),
