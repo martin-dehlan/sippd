@@ -80,22 +80,7 @@ class _PhotoLayout extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(80, 70, 80, 30),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const ShareCardWordmark(color: _onBg, size: 52),
-                if (byLine != null)
-                  Text(
-                    byLine,
-                    style: TextStyle(
-                      fontSize: 28,
-                      color: _onBgMuted,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 0.3,
-                    ),
-                  ),
-              ],
-            ),
+            child: _Header(byLine: byLine),
           ),
           SizedBox(
             height: 980,
@@ -123,7 +108,7 @@ class _PhotoLayout extends StatelessWidget {
                     const SizedBox(height: 14),
                     _OriginRow(origin: origin),
                   ],
-                  const Spacer(),
+                  const SizedBox(height: 60),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -203,22 +188,7 @@ class _TypographicLayout extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const ShareCardWordmark(color: _onBg, size: 56),
-              if (byLine != null)
-                Text(
-                  byLine,
-                  style: TextStyle(
-                    fontSize: 28,
-                    color: _onBgMuted,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 0.3,
-                  ),
-                ),
-            ],
-          ),
+          _Header(byLine: byLine),
           const Spacer(flex: 1),
           Text(
             'RATED · ${_formatRated(wine.createdAt)}',
@@ -291,7 +261,7 @@ class _TypographicLayout extends StatelessWidget {
   }
 }
 
-/// Wine name (Playfair big) + winery (italic) + vintage badge if set.
+/// Wine name (Playfair big) + vintage badge inline + winery (italic).
 class _NameBlock extends StatelessWidget {
   final WineEntity wine;
   final int maxLines;
@@ -312,9 +282,9 @@ class _NameBlock extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Expanded(
+            Flexible(
               child: Text(
                 wine.name,
                 maxLines: maxLines,
@@ -329,24 +299,27 @@ class _NameBlock extends StatelessWidget {
               ),
             ),
             if (wine.vintage != null) ...[
-              const SizedBox(width: 18),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 10,
-                ),
-                decoration: BoxDecoration(
-                  color: _primary.withValues(alpha: 0.18),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  wine.vintage.toString(),
-                  style: TextStyle(
-                    fontSize: 36,
-                    fontWeight: FontWeight.w800,
-                    color: _onBg,
-                    letterSpacing: -0.5,
-                    height: 1,
+              const SizedBox(width: 24),
+              Padding(
+                padding: EdgeInsets.only(bottom: fontSize * 0.12),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 18,
+                    vertical: 10,
+                  ),
+                  decoration: BoxDecoration(
+                    color: _primary.withValues(alpha: 0.22),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    wine.vintage.toString(),
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.w800,
+                      color: _onBg,
+                      letterSpacing: -0.3,
+                      height: 1,
+                    ),
                   ),
                 ),
               ),
@@ -368,6 +341,42 @@ class _NameBlock extends StatelessWidget {
           ),
         ],
       ],
+    );
+  }
+}
+
+/// Header strip — username on the right, or a compact wordmark fallback
+/// when the user is anonymous. The bottom footer carries the brand, so
+/// the top doesn't need to repeat it.
+class _Header extends StatelessWidget {
+  final String? byLine;
+  const _Header({required this.byLine});
+
+  @override
+  Widget build(BuildContext context) {
+    if (byLine == null) {
+      return const SizedBox(
+        height: 56,
+        child: Align(
+          alignment: Alignment.centerRight,
+          child: ShareCardWordmark(color: _onBgMuted, size: 36),
+        ),
+      );
+    }
+    return SizedBox(
+      height: 56,
+      child: Align(
+        alignment: Alignment.centerRight,
+        child: Text(
+          byLine!,
+          style: TextStyle(
+            fontSize: 32,
+            color: _onBgMuted,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.3,
+          ),
+        ),
+      ),
     );
   }
 }
@@ -410,7 +419,8 @@ class _Footer extends StatelessWidget {
         const SizedBox(height: 28),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.baseline,
+          textBaseline: TextBaseline.alphabetic,
           children: [
             Text(
               'SIPPD',
@@ -422,34 +432,13 @@ class _Footer extends StatelessWidget {
                 height: 1,
               ),
             ),
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 22,
-                vertical: 14,
-              ),
-              decoration: BoxDecoration(
-                color: _primary,
-                borderRadius: BorderRadius.circular(36),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'rate yours at sippd.xyz',
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.w800,
-                      color: _onBg,
-                      letterSpacing: 0.3,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Icon(
-                    PhosphorIconsBold.arrowRight,
-                    color: _onBg,
-                    size: 28,
-                  ),
-                ],
+            Text(
+              'rate yours at sippd.xyz',
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.w600,
+                color: _onBgMuted,
+                letterSpacing: 0.4,
               ),
             ),
           ],
