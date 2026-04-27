@@ -3,11 +3,18 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../../../common/services/analytics/analytics.provider.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../core/routes/app.routes.dart';
+import '../../../../paywall/controller/paywall.provider.dart';
+import '../../../../paywall/presentation/widgets/paywall_sheet.widget.dart';
 import '../../../controller/group.provider.dart';
 import '../../../domain/entities/group.entity.dart';
 import '../../widgets/group_invitations_inbox.widget.dart';
+
+/// Free users can create up to this many groups before the paywall sheet
+/// gates further group creation. Confirmed in monetization plan.
+const int kFreeGroupLimit = 3;
 
 class GroupListScreen extends ConsumerWidget {
   const GroupListScreen({super.key});
@@ -73,7 +80,7 @@ class GroupListScreen extends ConsumerWidget {
                   ),
                   SizedBox(width: context.w * 0.01),
                   _HeaderAddButton(
-                    onTap: () => _showCreateSheet(context, ref),
+                    onTap: () => _onCreateTap(context, ref),
                     tooltip: 'Create group',
                   ),
                 ],
@@ -93,7 +100,7 @@ class GroupListScreen extends ConsumerWidget {
                 data: (groups) {
                   if (groups.isEmpty) {
                     return _GroupEmptyState(
-                      onCreate: () => _showCreateSheet(context, ref),
+                      onCreate: () => _onCreateTap(context, ref),
                     );
                   }
                   final sorted = List<GroupEntity>.from(groups)
@@ -152,6 +159,28 @@ class GroupListScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  /// Gate: free users get [kFreeGroupLimit] groups. The 4th create attempt
+  /// shows the paywall sheet; on successful purchase we drop straight into
+  /// the create sheet so the user finishes the action they started.
+  Future<void> _onCreateTap(BuildContext context, WidgetRef ref) async {
+    final groups = ref.read(groupControllerProvider).valueOrNull ?? const [];
+    final isPro = ref.read(isProProvider);
+    if (!isPro && groups.length >= kFreeGroupLimit) {
+      ref.read(analyticsProvider).capture(
+        'group_gate_hit',
+        properties: {'count': groups.length},
+      );
+      final purchased = await showGroupLimitPaywall(
+        context,
+        currentGroupCount: groups.length,
+      );
+      if (!context.mounted || !purchased) return;
+      _showCreateSheet(context, ref);
+      return;
+    }
+    _showCreateSheet(context, ref);
   }
 
   void _showCreateSheet(BuildContext context, WidgetRef ref) {
