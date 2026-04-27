@@ -27,3 +27,13 @@ bool isPro(IsProRef ref) {
 Future<Offerings?> paywallOfferings(PaywallOfferingsRef ref) {
   return ref.watch(paywallProvider).getOfferings();
 }
+
+/// Latest CustomerInfo, preferring stream values for liveness but
+/// falling back to the service's cached snapshot so screens that
+/// mount after the broadcast stream's initial emit still get a value.
+@riverpod
+CustomerInfo? currentCustomerInfo(CurrentCustomerInfoRef ref) {
+  final fromStream = ref.watch(customerInfoStreamProvider).valueOrNull;
+  if (fromStream != null) return fromStream;
+  return ref.watch(paywallProvider).currentInfo;
+}

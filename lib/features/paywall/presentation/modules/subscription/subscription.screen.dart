@@ -21,7 +21,11 @@ class SubscriptionScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
-    final infoAsync = ref.watch(customerInfoStreamProvider);
+    // Read CustomerInfo without blocking on a stream that may have
+    // already emitted before this screen mounted. currentCustomerInfo
+    // falls back to the service's cached value, so the screen renders
+    // immediately as either Pro or Free.
+    final info = ref.watch(currentCustomerInfoProvider);
 
     return Scaffold(
       backgroundColor: cs.surface,
@@ -42,19 +46,7 @@ class SubscriptionScreen extends ConsumerWidget {
       ),
       body: SafeArea(
         top: false,
-        child: infoAsync.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (_, _) => Center(
-            child: Padding(
-              padding: EdgeInsets.all(context.paddingH),
-              child: Text(
-                'Could not load subscription info.',
-                style: TextStyle(color: cs.onSurfaceVariant),
-              ),
-            ),
-          ),
-          data: (info) => _SubscriptionContent(info: info),
-        ),
+        child: _SubscriptionContent(info: info),
       ),
     );
   }
@@ -63,11 +55,11 @@ class SubscriptionScreen extends ConsumerWidget {
 class _SubscriptionContent extends ConsumerWidget {
   const _SubscriptionContent({required this.info});
 
-  final CustomerInfo info;
+  final CustomerInfo? info;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final entitlement = info.entitlements.active[proEntitlementId];
+    final entitlement = info?.entitlements.active[proEntitlementId];
     final isPro = entitlement != null;
 
     return ListView(
@@ -84,7 +76,7 @@ class _SubscriptionContent extends ConsumerWidget {
             icon: PhosphorIconsRegular.arrowSquareOut,
             label: 'Manage subscription',
             subtitle: 'Opens in the App Store or Play Store',
-            onTap: () => _openManagement(context, info),
+            onTap: () => _openManagement(context, info!),
           ),
           _MenuTile(
             icon: PhosphorIconsRegular.clockCounterClockwise,
