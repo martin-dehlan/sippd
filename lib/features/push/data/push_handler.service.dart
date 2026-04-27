@@ -4,6 +4,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/data/latest_all.dart' as tz_data;
+import 'package:timezone/timezone.dart' as tz;
 
 /// Background isolate entry point. Must be top-level.
 @pragma('vm:entry-point')
@@ -25,6 +27,11 @@ class PushHandlerService {
   StreamSubscription<RemoteMessage>? _openedSub;
 
   Future<void> init() async {
+    // Required for zonedSchedule — registers the IANA timezone database so
+    // we can convert wall-clock DateTimes into TZDateTime values that the
+    // OS scheduler honours across DST transitions.
+    tz_data.initializeTimeZones();
+
     const androidInit =
         AndroidInitializationSettings('ic_notification');
     const iosInit = DarwinInitializationSettings(
@@ -91,6 +98,56 @@ class PushHandlerService {
   RemoteMessage _fakeRemoteMessage(Map<String, dynamic> data) {
     return RemoteMessage(data: data.map((k, v) => MapEntry(k, v.toString())));
   }
+
+  /// Schedules a local notification 1h before [scheduledAt]. No-op when the
+  /// reminder window has already passed (tasting starts in <1h or is in the
+  /// past) — at that point the notification would be more annoyance than
+  /// utility. Reuses the deterministic int derived from the tasting id so
+  /// re-scheduling on edit replaces the old reminder cleanly.
+  Future<void> scheduleTastingReminder({
+    required String tastingId,
+    required String tastingTitle,
+    required DateTime scheduledAt,
+  }) async {
+    final reminderTime = scheduledAt.subtract(const Duration(hours: 1));
+    if (!reminderTime.isAfter(DateTime.now())) return;
+
+    final id = _idForTastingReminder(tastingId);
+    final tzTime = tz.TZDateTime.from(reminderTime, tz.local);
+    await _local.zonedSchedule(
+      id,
+      'Tasting in 1 hour',
+      tastingTitle,
+      tzTime,
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'sippd_default',
+          'Sippd notifications',
+          importance: Importance.high,
+          priority: Priority.high,
+          icon: 'ic_notification',
+          color: Color(0xFF6B3A51),
+        ),
+        iOS: DarwinNotificationDetails(),
+      ),
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+      payload: jsonEncode({
+        'type': 'tasting_reminder',
+        'tasting_id': tastingId,
+      }),
+    );
+  }
+
+  Future<void> cancelTastingReminder(String tastingId) async {
+    await _local.cancel(_idForTastingReminder(tastingId));
+  }
+
+  /// Maps a tasting UUID to a stable 31-bit int that fits the plugin's
+  /// notification id contract on every platform.
+  int _idForTastingReminder(String tastingId) =>
+      tastingId.hashCode & 0x7FFFFFFF;
 
   Future<void> dispose() async {
     await _foregroundSub?.cancel();
