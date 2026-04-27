@@ -64,20 +64,16 @@ class WineTypeBreakdown extends StatelessWidget {
           ),
         ),
         SizedBox(height: context.l),
-        Row(
-          children: [
-            for (int i = 0; i < data.length; i++) ...[
-              if (i > 0) SizedBox(width: context.s),
-              Expanded(
-                child: _TypeCard(
-                  data: data[i],
-                  color: _colorFor(data[i].type, cs),
-                  delay: 80 * i,
-                ),
-              ),
-            ],
-          ],
-        ),
+        for (int i = 0; i < data.length; i++) ...[
+          if (i > 0) SizedBox(height: context.s),
+          _TypeRow(
+            data: data[i],
+            color: _colorFor(data[i].type, cs),
+            label: _label(data[i].type),
+            total: total,
+            delay: 80 * i,
+          ),
+        ],
       ],
     );
   }
@@ -193,14 +189,18 @@ class _Donut extends StatelessWidget {
   }
 }
 
-class _TypeCard extends StatelessWidget {
+class _TypeRow extends StatelessWidget {
   final TypeBreakdown data;
   final Color color;
+  final String label;
+  final int total;
   final int delay;
 
-  const _TypeCard({
+  const _TypeRow({
     required this.data,
     required this.color,
+    required this.label,
+    required this.total,
     required this.delay,
   });
 
@@ -208,6 +208,7 @@ class _TypeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final empty = data.count == 0;
+    final ratio = total == 0 ? 0.0 : data.count / total;
     return Animate(
       effects: [
         FadeEffect(
@@ -215,83 +216,108 @@ class _TypeCard extends StatelessWidget {
           delay: Duration(milliseconds: 180 + delay),
         ),
         SlideEffect(
-          begin: const Offset(0, 0.25),
+          begin: const Offset(0, 0.15),
           end: Offset.zero,
           duration: 360.ms,
           delay: Duration(milliseconds: 180 + delay),
           curve: Curves.easeOut,
         ),
       ],
-      child: Container(
-        padding: EdgeInsets.symmetric(
-          horizontal: context.w * 0.025,
-          vertical: context.s,
-        ),
-        decoration: BoxDecoration(
-          color: cs.surface,
-          borderRadius: BorderRadius.circular(context.w * 0.03),
-          border: Border.all(
-            color: empty ? cs.outlineVariant : color.withValues(alpha: 0.5),
-            width: empty ? 0.5 : 1,
+      child: Row(
+        children: [
+          // Label column — fixed width so bars line up.
+          SizedBox(
+            width: context.w * 0.18,
+            child: Row(
+              children: [
+                Container(
+                  width: context.w * 0.022,
+                  height: context.w * 0.022,
+                  decoration: BoxDecoration(
+                    color: empty ? cs.outlineVariant : color,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                SizedBox(width: context.xs),
+                Flexible(
+                  child: Text(
+                    label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: context.captionFont * 1.05,
+                      color: empty ? cs.onSurfaceVariant : cs.onSurface,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: -0.1,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: context.w * 0.025,
-              height: context.w * 0.025,
-              decoration: BoxDecoration(
-                color: empty ? cs.outlineVariant : color,
-                shape: BoxShape.circle,
+          SizedBox(width: context.s),
+          // Bar.
+          Expanded(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(context.w * 0.012),
+              child: Stack(
+                children: [
+                  Container(
+                    height: context.w * 0.022,
+                    color: cs.outlineVariant.withValues(alpha: 0.3),
+                  ),
+                  TweenAnimationBuilder<double>(
+                    tween: Tween(
+                      begin: 0,
+                      end: empty ? 0.0 : ratio.clamp(0.04, 1.0),
+                    ),
+                    duration: Duration(milliseconds: 700 + delay),
+                    curve: Curves.easeOutCubic,
+                    builder: (_, v, _) => FractionallySizedBox(
+                      widthFactor: v,
+                      child: Container(
+                        height: context.w * 0.022,
+                        color: empty
+                            ? Colors.transparent
+                            : color,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-            SizedBox(height: context.xs),
-            Text(
-              _label(data.type),
-              style: TextStyle(
-                fontSize: context.captionFont,
-                color: cs.onSurfaceVariant,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 0.2,
-              ),
+          ),
+          SizedBox(width: context.s),
+          // Count + avg.
+          SizedBox(
+            width: context.w * 0.16,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text(
+                  data.count.toString(),
+                  style: TextStyle(
+                    fontSize: context.bodyFont,
+                    fontWeight: FontWeight.w800,
+                    color: empty ? cs.outline : cs.onSurface,
+                    letterSpacing: -0.2,
+                  ),
+                ),
+                SizedBox(width: context.xs),
+                Text(
+                  empty ? '—' : data.avgRating.toStringAsFixed(1),
+                  style: TextStyle(
+                    fontSize: context.captionFont,
+                    color: cs.onSurfaceVariant,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
             ),
-            SizedBox(height: context.xs * 0.5),
-            Text(
-              data.count.toString(),
-              style: TextStyle(
-                fontSize: context.headingFont * 0.85,
-                fontWeight: FontWeight.w800,
-                color: empty ? cs.outline : cs.onSurface,
-                letterSpacing: -0.4,
-                height: 1,
-              ),
-            ),
-            SizedBox(height: context.xs * 0.5),
-            Text(
-              empty ? '—' : '${data.avgRating.toStringAsFixed(1)} avg',
-              style: TextStyle(
-                fontSize: context.captionFont * 0.9,
-                color: cs.onSurfaceVariant,
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
-  }
-
-  String _label(WineType type) {
-    switch (type) {
-      case WineType.red:
-        return 'Red';
-      case WineType.white:
-        return 'White';
-      case WineType.rose:
-        return 'Rosé';
-      case WineType.sparkling:
-        return 'Sparkling';
-    }
   }
 }
 
