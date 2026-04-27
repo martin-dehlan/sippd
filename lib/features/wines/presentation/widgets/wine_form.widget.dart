@@ -77,6 +77,7 @@ class WineForm extends StatefulWidget {
 
 class _WineFormState extends State<WineForm>
     with SingleTickerProviderStateMixin {
+
   final _nameController = TextEditingController();
   final _nameFocus = FocusNode();
   final _nameFieldKey = GlobalKey();
@@ -724,6 +725,7 @@ class WineFormCountryStat extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    // Region replaces country when set — single field, no extra row.
     final headline = region ?? country;
     final hasValue = headline != null;
     return GestureDetector(
@@ -745,19 +747,6 @@ class WineFormCountryStat extends StatelessWidget {
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
-          if (region != null && country != null) ...[
-            SizedBox(height: context.xs * 0.3),
-            Text(
-              country!,
-              textAlign: TextAlign.right,
-              style: TextStyle(
-                fontSize: context.captionFont,
-                color: cs.onSurfaceVariant,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
         ],
       ),
     );
