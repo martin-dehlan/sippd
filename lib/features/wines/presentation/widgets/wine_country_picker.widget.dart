@@ -116,7 +116,7 @@ void showWineCountryPicker({
                   padding: EdgeInsets.all(context.paddingH),
                   child: TextField(
                     controller: searchController,
-                    autofocus: true,
+                    autofocus: false,
                     style: TextStyle(fontSize: context.bodyFont),
                     decoration: InputDecoration(
                       hintText: 'Search country...',
