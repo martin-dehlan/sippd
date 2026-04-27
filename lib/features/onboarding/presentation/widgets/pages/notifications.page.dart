@@ -86,30 +86,7 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
             ),
           ),
           const Spacer(),
-          if (asked)
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: context.m),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    PhosphorIconsRegular.check,
-                    size: context.w * 0.045,
-                    color: cs.primary,
-                  ),
-                  SizedBox(width: context.w * 0.02),
-                  Text(
-                    'You\'re set',
-                    style: TextStyle(
-                      fontSize: context.bodyFont * 0.95,
-                      fontWeight: FontWeight.w600,
-                      color: cs.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              ),
-            )
-          else ...[
+          if (!asked) ...[
             SizedBox(
               height: context.h * 0.065,
               child: FilledButton(
