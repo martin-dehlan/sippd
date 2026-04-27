@@ -189,11 +189,7 @@ class _CaptionStat extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(
-          icon,
-          color: cs.primary,
-          size: context.captionFont * 1.05,
-        ),
+        Icon(icon, color: cs.primary, size: context.captionFont * 1.05),
         SizedBox(width: context.xs),
         Text(
           count.toString(),

@@ -51,13 +51,15 @@ class OnboardingOptionCard extends StatelessWidget {
             child: Row(
               children: [
                 if (emoji != null)
-                  Text(emoji!,
-                      style: TextStyle(fontSize: context.w * 0.07)),
+                  Text(emoji!, style: TextStyle(fontSize: context.w * 0.07)),
                 if (icon != null)
-                  Icon(icon,
-                      size: context.w * 0.06,
-                      color: iconColor ??
-                          (selected ? cs.primary : cs.onSurfaceVariant)),
+                  Icon(
+                    icon,
+                    size: context.w * 0.06,
+                    color:
+                        iconColor ??
+                        (selected ? cs.primary : cs.onSurfaceVariant),
+                  ),
                 SizedBox(width: context.w * 0.03),
                 Expanded(
                   child: Column(
@@ -88,8 +90,11 @@ class OnboardingOptionCard extends StatelessWidget {
                 AnimatedOpacity(
                   opacity: selected ? 1 : 0,
                   duration: const Duration(milliseconds: 150),
-                  child: Icon(PhosphorIconsRegular.checkCircle,
-                      color: cs.primary, size: context.w * 0.06),
+                  child: Icon(
+                    PhosphorIconsRegular.checkCircle,
+                    color: cs.primary,
+                    size: context.w * 0.06,
+                  ),
                 ),
               ],
             ),

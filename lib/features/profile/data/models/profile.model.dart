@@ -29,23 +29,23 @@ class ProfileModel with _$ProfileModel {
 
 extension ProfileModelX on ProfileModel {
   ProfileEntity toEntity() => ProfileEntity(
-        id: id,
-        username: username,
-        displayName: displayName,
-        avatarUrl: avatarUrl,
-        onboardingCompleted: onboardingCompleted,
-        tasteLevel: _enumByName(TasteLevel.values, tasteLevel),
-        goals: goals
-            .map((g) => _enumByName(OnboardingGoal.values, g))
-            .whereType<OnboardingGoal>()
-            .toSet(),
-        styles: styles
-            .map((s) => _enumByName(WineType.values, s))
-            .whereType<WineType>()
-            .toSet(),
-        drinkFrequency: _enumByName(DrinkFrequency.values, drinkFrequency),
-        tasteEmoji: tasteEmoji,
-      );
+    id: id,
+    username: username,
+    displayName: displayName,
+    avatarUrl: avatarUrl,
+    onboardingCompleted: onboardingCompleted,
+    tasteLevel: _enumByName(TasteLevel.values, tasteLevel),
+    goals: goals
+        .map((g) => _enumByName(OnboardingGoal.values, g))
+        .whereType<OnboardingGoal>()
+        .toSet(),
+    styles: styles
+        .map((s) => _enumByName(WineType.values, s))
+        .whereType<WineType>()
+        .toSet(),
+    drinkFrequency: _enumByName(DrinkFrequency.values, drinkFrequency),
+    tasteEmoji: tasteEmoji,
+  );
 }
 
 T? _enumByName<T extends Enum>(List<T> values, String? name) {

@@ -73,7 +73,9 @@ class ProfileController extends _$ProfileController {
     String? displayName,
     required OnboardingAnswers answers,
   }) async {
-    await ref.read(profileApiProvider).seedProfileFromOnboarding(
+    await ref
+        .read(profileApiProvider)
+        .seedProfileFromOnboarding(
           username: username,
           displayName: displayName,
           answers: answers,

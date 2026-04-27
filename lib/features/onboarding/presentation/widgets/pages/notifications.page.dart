@@ -11,8 +11,7 @@ class NotificationsPage extends ConsumerStatefulWidget {
   const NotificationsPage({super.key});
 
   @override
-  ConsumerState<NotificationsPage> createState() =>
-      _NotificationsPageState();
+  ConsumerState<NotificationsPage> createState() => _NotificationsPageState();
 }
 
 class _NotificationsPageState extends ConsumerState<NotificationsPage> {
@@ -28,7 +27,9 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
     setState(() => _requesting = true);
     try {
       await ref.read(fcmServiceProvider).requestPermission();
-    } catch (_) {/* best effort */}
+    } catch (_) {
+      /* best effort */
+    }
     await ref
         .read(onboardingAnswersControllerProvider.notifier)
         .markNotificationsAsked();
@@ -65,8 +66,11 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
             ),
             child: Row(
               children: [
-                Icon(PhosphorIconsRegular.bellRinging,
-                    color: cs.primary, size: context.w * 0.08),
+                Icon(
+                  PhosphorIconsRegular.bellRinging,
+                  color: cs.primary,
+                  size: context.w * 0.08,
+                ),
                 SizedBox(width: context.w * 0.04),
                 Expanded(
                   child: Text(
@@ -82,27 +86,7 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
             ),
           ),
           const Spacer(),
-          if (asked)
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: context.m),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(PhosphorIconsRegular.check,
-                      size: context.w * 0.045, color: cs.primary),
-                  SizedBox(width: context.w * 0.02),
-                  Text(
-                    'You\'re set',
-                    style: TextStyle(
-                      fontSize: context.bodyFont * 0.95,
-                      fontWeight: FontWeight.w600,
-                      color: cs.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              ),
-            )
-          else ...[
+          if (!asked) ...[
             SizedBox(
               height: context.h * 0.065,
               child: FilledButton(
@@ -118,7 +102,9 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
                         height: context.w * 0.05,
                         width: context.w * 0.05,
                         child: const CircularProgressIndicator(
-                            strokeWidth: 2, color: Colors.white),
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
                       )
                     : Text(
                         'Turn on notifications',

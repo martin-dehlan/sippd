@@ -56,8 +56,11 @@ class _ChooseUsernameScreenState extends ConsumerState<ChooseUsernameScreen> {
           .read(profileControllerProvider.notifier)
           .isAvailable(value);
       if (!mounted || _controller.text.trim().toLowerCase() != value) return;
-      setState(() =>
-          _status = available ? _UsernameState.available : _UsernameState.taken);
+      setState(
+        () => _status = available
+            ? _UsernameState.available
+            : _UsernameState.taken,
+      );
     });
   }
 
@@ -146,8 +149,7 @@ class _ChooseUsernameScreenState extends ConsumerState<ChooseUsernameScreen> {
                   style: FilledButton.styleFrom(
                     elevation: 0,
                     shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(context.w * 0.03),
+                      borderRadius: BorderRadius.circular(context.w * 0.03),
                     ),
                   ),
                   child: _saving
@@ -155,7 +157,9 @@ class _ChooseUsernameScreenState extends ConsumerState<ChooseUsernameScreen> {
                           width: 20,
                           height: 20,
                           child: CircularProgressIndicator(
-                              strokeWidth: 2, color: cs.onPrimary),
+                            strokeWidth: 2,
+                            color: cs.onPrimary,
+                          ),
                         )
                       : Text(
                           'Continue',
@@ -193,8 +197,7 @@ class _UsernameField extends StatelessWidget {
       _UsernameState.available => cs.primary,
       _UsernameState.taken ||
       _UsernameState.invalid ||
-      _UsernameState.tooShort =>
-        cs.error,
+      _UsernameState.tooShort => cs.error,
       _UsernameState.idle || _UsernameState.checking => cs.outlineVariant,
     };
 
@@ -229,8 +232,10 @@ class _UsernameField extends StatelessWidget {
           color: cs.outline,
         ),
         counterText: '',
-        contentPadding:
-            EdgeInsets.symmetric(vertical: context.m, horizontal: context.s),
+        contentPadding: EdgeInsets.symmetric(
+          vertical: context.m,
+          horizontal: context.s,
+        ),
         enabledBorder: UnderlineInputBorder(
           borderSide: BorderSide(color: borderColor),
         ),
@@ -250,11 +255,12 @@ class _StatusLine extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final (text, color) = switch (status) {
-      _UsernameState.idle =>
-        ('3–20 chars · letters, numbers, . and _', cs.outline),
+      _UsernameState.idle => (
+        '3–20 chars · letters, numbers, . and _',
+        cs.outline,
+      ),
       _UsernameState.tooShort => ('At least 3 characters', cs.error),
-      _UsernameState.invalid =>
-        ('Only letters, numbers, . and _', cs.error),
+      _UsernameState.invalid => ('Only letters, numbers, . and _', cs.error),
       _UsernameState.checking => ('Checking…', cs.onSurfaceVariant),
       _UsernameState.available => ('Available', cs.primary),
       _UsernameState.taken => ('Already taken', cs.error),

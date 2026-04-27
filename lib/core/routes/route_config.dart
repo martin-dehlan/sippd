@@ -16,6 +16,7 @@ import '../../features/auth/presentation/modules/profile/profile.screen.dart';
 import '../../features/onboarding/controller/onboarding.provider.dart';
 import '../../features/onboarding/presentation/modules/onboarding.screen.dart';
 import '../../features/paywall/presentation/modules/paywall/paywall.screen.dart';
+import '../../features/paywall/presentation/modules/subscription/subscription.screen.dart';
 import '../../features/profile/controller/profile.provider.dart';
 import '../../features/profile/presentation/modules/choose_username/choose_username.screen.dart';
 import '../../features/profile/presentation/modules/edit_profile/edit_profile.screen.dart';
@@ -201,14 +202,14 @@ GoRouter goRouter(GoRouterRef ref) {
           transitionDuration: const Duration(milliseconds: 320),
           reverseTransitionDuration: const Duration(milliseconds: 260),
           transitionsBuilder: (_, animation, _, child) => SlideTransition(
-            position: Tween<Offset>(
-              begin: const Offset(1, 0),
-              end: Offset.zero,
-            ).animate(CurvedAnimation(
-              parent: animation,
-              curve: Curves.easeOutCubic,
-              reverseCurve: Curves.easeInCubic,
-            )),
+            position: Tween<Offset>(begin: const Offset(1, 0), end: Offset.zero)
+                .animate(
+                  CurvedAnimation(
+                    parent: animation,
+                    curve: Curves.easeOutCubic,
+                    reverseCurve: Curves.easeInCubic,
+                  ),
+                ),
             child: child,
           ),
         ),
@@ -273,6 +274,10 @@ GoRouter goRouter(GoRouterRef ref) {
           final extra = state.extra as Map<String, dynamic>? ?? const {};
           return PaywallScreen(triggerSource: extra['source'] as String?);
         },
+      ),
+      GoRoute(
+        path: AppRoutes.subscription,
+        builder: (context, state) => const SubscriptionScreen(),
       ),
 
       // Friends

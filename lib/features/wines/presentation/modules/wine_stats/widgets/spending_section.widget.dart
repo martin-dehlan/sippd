@@ -101,8 +101,7 @@ class _Content extends StatelessWidget {
             label: 'Best value',
             wine: spend.bestValue!,
             valueFormatter: (w) => fmt.format(w.price ?? 0),
-            valueDetail:
-                '★ ${spend.bestValue!.rating.toStringAsFixed(1)}',
+            valueDetail: '★ ${spend.bestValue!.rating.toStringAsFixed(1)}',
             cs: cs,
             delay: 200,
           ),
@@ -157,11 +156,7 @@ class _Highlight extends StatelessWidget {
               color: cs.primary.withValues(alpha: 0.14),
               borderRadius: BorderRadius.circular(context.w * 0.025),
             ),
-            child: Icon(
-              icon,
-              color: cs.primary,
-              size: context.w * 0.04,
-            ),
+            child: Icon(icon, color: cs.primary, size: context.w * 0.04),
           ),
           SizedBox(width: context.s),
           Expanded(

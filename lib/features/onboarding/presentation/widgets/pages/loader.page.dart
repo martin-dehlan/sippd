@@ -1,20 +1,23 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../../../common/data/avatar_icons.dart';
 import '../../../../../common/utils/responsive.dart';
+import '../../../controller/onboarding.provider.dart';
 
-class LoaderPage extends StatefulWidget {
+class LoaderPage extends ConsumerStatefulWidget {
   final VoidCallback onDone;
   const LoaderPage({super.key, required this.onDone});
 
   @override
-  State<LoaderPage> createState() => _LoaderPageState();
+  ConsumerState<LoaderPage> createState() => _LoaderPageState();
 }
 
-class _LoaderPageState extends State<LoaderPage>
+class _LoaderPageState extends ConsumerState<LoaderPage>
     with TickerProviderStateMixin {
   static const _steps = [
     'Matching your taste',
@@ -67,6 +70,9 @@ class _LoaderPageState extends State<LoaderPage>
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final pickedIconKey =
+        ref.watch(onboardingAnswersControllerProvider).emoji;
+    final pickedIcon = avatarIconForKey(pickedIconKey);
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: context.paddingH),
       child: Column(
@@ -81,6 +87,7 @@ class _LoaderPageState extends State<LoaderPage>
                   ringCtrl: _ringCtrl,
                   pulseCtrl: _pulseCtrl,
                   finished: _finished,
+                  centerIcon: pickedIcon ?? PhosphorIconsRegular.wine,
                 ),
                 SizedBox(height: context.xl * 1.2),
                 Text(
@@ -123,10 +130,12 @@ class _LoaderPageState extends State<LoaderPage>
                 onPressed: _finished ? widget.onDone : null,
                 style: FilledButton.styleFrom(
                   elevation: 0,
-                  disabledBackgroundColor:
-                      Theme.of(context).colorScheme.surfaceContainer,
-                  disabledForegroundColor:
-                      Theme.of(context).colorScheme.outline,
+                  disabledBackgroundColor: Theme.of(
+                    context,
+                  ).colorScheme.surfaceContainer,
+                  disabledForegroundColor: Theme.of(
+                    context,
+                  ).colorScheme.outline,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(context.w * 0.04),
                   ),
@@ -151,10 +160,12 @@ class _LoaderRing extends StatelessWidget {
   final AnimationController ringCtrl;
   final AnimationController pulseCtrl;
   final bool finished;
+  final IconData centerIcon;
   const _LoaderRing({
     required this.ringCtrl,
     required this.pulseCtrl,
     required this.finished,
+    required this.centerIcon,
   });
 
   @override
@@ -191,8 +202,7 @@ class _LoaderRing extends StatelessWidget {
                 value: finished ? 1.0 : ringCtrl.value,
                 strokeWidth: 2.5,
                 color: cs.primary,
-                backgroundColor:
-                    cs.outlineVariant.withValues(alpha: 0.35),
+                backgroundColor: cs.outlineVariant.withValues(alpha: 0.35),
                 strokeCap: StrokeCap.round,
               ),
             ),
@@ -206,7 +216,7 @@ class _LoaderRing extends StatelessWidget {
             ),
             alignment: Alignment.center,
             child: Icon(
-              finished ? PhosphorIconsFill.check : PhosphorIconsRegular.wine,
+              finished ? PhosphorIconsFill.check : centerIcon,
               size: size * 0.25,
               color: cs.primary,
             ),
@@ -296,8 +306,7 @@ class _ChecklistRow extends StatelessWidget {
                           height: tickHeight,
                           decoration: BoxDecoration(
                             color: cs.outlineVariant.withValues(alpha: 0.4),
-                            borderRadius:
-                                BorderRadius.circular(tickHeight),
+                            borderRadius: BorderRadius.circular(tickHeight),
                           ),
                         );
                       }
@@ -310,8 +319,7 @@ class _ChecklistRow extends StatelessWidget {
                             height: tickHeight,
                             decoration: BoxDecoration(
                               color: cs.primary.withValues(alpha: 0.2),
-                              borderRadius:
-                                  BorderRadius.circular(tickHeight),
+                              borderRadius: BorderRadius.circular(tickHeight),
                             ),
                           ),
                           Container(
@@ -319,8 +327,7 @@ class _ChecklistRow extends StatelessWidget {
                             height: tickHeight,
                             decoration: BoxDecoration(
                               color: cs.primary,
-                              borderRadius:
-                                  BorderRadius.circular(tickHeight),
+                              borderRadius: BorderRadius.circular(tickHeight),
                             ),
                           ),
                         ],

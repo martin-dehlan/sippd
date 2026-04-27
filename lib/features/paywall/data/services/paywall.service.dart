@@ -15,8 +15,16 @@ class PaywallService {
   bool _enabled = false;
   CustomerInfo? _lastInfo;
 
-  Stream<CustomerInfo> get customerInfoStream =>
-      _customerInfoController.stream;
+  Stream<CustomerInfo> get customerInfoStream => _customerInfoController.stream;
+
+  /// Latest snapshot of CustomerInfo, or null if RC hasn't produced
+  /// one yet. Lets surfaces that mount after init's broadcast emit
+  /// (and so missed it) read the current state synchronously.
+  CustomerInfo? get currentInfo => _lastInfo;
+
+  /// True once init() has successfully configured RC. When false the
+  /// service is silent — no purchases, no stream events, no restore.
+  bool get isInitialised => _enabled;
 
   bool get isPro {
     final info = _lastInfo;
@@ -45,9 +53,7 @@ class PaywallService {
       return;
     }
 
-    await Purchases.setLogLevel(
-      kDebugMode ? LogLevel.debug : LogLevel.warn,
-    );
+    await Purchases.setLogLevel(kDebugMode ? LogLevel.debug : LogLevel.warn);
     await Purchases.configure(PurchasesConfiguration(apiKey));
 
     Purchases.addCustomerInfoUpdateListener((info) {

@@ -94,7 +94,10 @@ Future<String?> showTextInputSheet({
                     isDense: true,
                     contentPadding: EdgeInsets.zero,
                   ),
-                  onSubmitted: (v) => Navigator.pop(ctx, v.trim()),
+                  onSubmitted: (v) {
+                    FocusManager.instance.primaryFocus?.unfocus();
+                    Navigator.pop(ctx, v.trim());
+                  },
                 ),
                 SizedBox(height: ctx.s),
                 Container(
@@ -106,8 +109,10 @@ Future<String?> showTextInputSheet({
                   width: double.infinity,
                   height: ctx.h * 0.055,
                   child: FilledButton(
-                    onPressed: () =>
-                        Navigator.pop(ctx, controller.text.trim()),
+                    onPressed: () {
+                      FocusManager.instance.primaryFocus?.unfocus();
+                      Navigator.pop(ctx, controller.text.trim());
+                    },
                     style: FilledButton.styleFrom(
                       elevation: 0,
                       shape: RoundedRectangleBorder(

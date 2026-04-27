@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -26,79 +27,82 @@ class ResponsibilityPage extends StatelessWidget {
       eyebrow: 'A note from us',
       title: 'Drink less,\ntaste more.',
       subtitle:
-          'Sippd is for remembering and rating wines you’ve enjoyed — '
-          'not pressure to drink more. We don’t do streaks or daily '
+          'Sippd is for remembering and rating wines you\'ve enjoyed — '
+          'not pressure to drink more. We don\'t do streaks or daily '
           'quotas, on purpose.',
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Container(
-            padding: EdgeInsets.all(context.m),
-            decoration: BoxDecoration(
-              color: cs.surfaceContainer,
-              borderRadius: BorderRadius.circular(context.w * 0.04),
-              border: Border.all(color: cs.outlineVariant, width: 0.5),
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(
-                  PhosphorIconsRegular.lifebuoy,
-                  color: cs.primary,
-                  size: context.w * 0.07,
-                ),
-                SizedBox(width: context.w * 0.04),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'If alcohol is hurting you or someone close, '
-                        'free confidential help is available.',
-                        style: TextStyle(
-                          fontSize: context.bodyFont * 0.95,
-                          height: 1.4,
-                          color: cs.onSurface,
-                        ),
-                      ),
-                      SizedBox(height: context.s),
-                      InkWell(
-                        onTap: _openHelp,
-                        borderRadius:
-                            BorderRadius.circular(context.w * 0.02),
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                            vertical: context.xs,
-                          ),
-                          child: Row(
-                            children: [
-                              Text(
-                                'Find help',
-                                style: TextStyle(
-                                  fontSize: context.bodyFont * 0.95,
-                                  fontWeight: FontWeight.w800,
-                                  color: cs.primary,
-                                  letterSpacing: 0.2,
-                                ),
-                              ),
-                              SizedBox(width: context.xs),
-                              Icon(
-                                PhosphorIconsBold.arrowRight,
-                                size: context.w * 0.04,
-                                color: cs.primary,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Quiet ringed lifebuoy — adds focal point without card weight.
+            Container(
+                  width: context.w * 0.18,
+                  height: context.w * 0.18,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: cs.outlineVariant, width: 1),
                   ),
+                  child: Icon(
+                    PhosphorIconsRegular.lifebuoy,
+                    color: cs.primary,
+                    size: context.w * 0.085,
+                  ),
+                )
+                .animate()
+                .fadeIn(duration: 360.ms)
+                .scale(
+                  begin: const Offset(0.85, 0.85),
+                  end: const Offset(1, 1),
+                  duration: 420.ms,
+                  curve: Curves.easeOutBack,
                 ),
-              ],
-            ),
-          ),
-          const Spacer(),
-        ],
+            SizedBox(height: context.l),
+            Text(
+                  'If alcohol is hurting you or someone close,\n'
+                  'free confidential help is available.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: context.bodyFont * 0.95,
+                    height: 1.5,
+                    color: cs.onSurfaceVariant,
+                  ),
+                )
+                .animate()
+                .fadeIn(delay: 160.ms, duration: 360.ms)
+                .moveY(begin: 6, end: 0, delay: 160.ms, duration: 360.ms),
+            SizedBox(height: context.m),
+            TextButton(
+              onPressed: _openHelp,
+              style: TextButton.styleFrom(
+                padding: EdgeInsets.symmetric(
+                  horizontal: context.m,
+                  vertical: context.s,
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Find help',
+                    style: TextStyle(
+                      fontSize: context.bodyFont,
+                      fontWeight: FontWeight.w800,
+                      color: cs.primary,
+                      letterSpacing: 0.3,
+                    ),
+                  ),
+                  SizedBox(width: context.xs),
+                  Icon(
+                    PhosphorIconsBold.arrowRight,
+                    size: context.w * 0.04,
+                    color: cs.primary,
+                  ),
+                ],
+              ),
+            ).animate().fadeIn(delay: 280.ms, duration: 320.ms),
+          ],
+        ),
       ),
     );
   }

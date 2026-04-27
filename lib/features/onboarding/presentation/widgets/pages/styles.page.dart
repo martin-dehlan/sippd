@@ -18,7 +18,8 @@ class StylesPage extends ConsumerWidget {
     return OnboardingPageShell(
       eyebrow: 'Your styles',
       title: 'What do you\nreach for?',
-      subtitle: 'Pick any that feel like you. We\'ll keep an eye on your picks.',
+      subtitle:
+          'Pick any that feel like you. We\'ll keep an eye on your picks.',
       child: ListView(
         children: WineType.values
             .map(

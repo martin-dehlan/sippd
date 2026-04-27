@@ -18,6 +18,11 @@ Stream<CustomerInfo> customerInfoStream(CustomerInfoStreamRef ref) {
 
 @riverpod
 bool isPro(IsProRef ref) {
+  // Local test override. Run with --dart-define=FORCE_PRO=true|false to
+  // bypass RevenueCat and exercise pro/free UI without a sandbox purchase.
+  if (const bool.hasEnvironment('FORCE_PRO')) {
+    return const bool.fromEnvironment('FORCE_PRO');
+  }
   final info = ref.watch(customerInfoStreamProvider).valueOrNull;
   if (info == null) return ref.watch(paywallProvider).isPro;
   return info.entitlements.active.containsKey(proEntitlementId);
@@ -26,4 +31,14 @@ bool isPro(IsProRef ref) {
 @riverpod
 Future<Offerings?> paywallOfferings(PaywallOfferingsRef ref) {
   return ref.watch(paywallProvider).getOfferings();
+}
+
+/// Latest CustomerInfo, preferring stream values for liveness but
+/// falling back to the service's cached snapshot so screens that
+/// mount after the broadcast stream's initial emit still get a value.
+@riverpod
+CustomerInfo? currentCustomerInfo(CurrentCustomerInfoRef ref) {
+  final fromStream = ref.watch(customerInfoStreamProvider).valueOrNull;
+  if (fromStream != null) return fromStream;
+  return ref.watch(paywallProvider).currentInfo;
 }

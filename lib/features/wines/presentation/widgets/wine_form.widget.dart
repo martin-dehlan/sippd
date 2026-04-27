@@ -208,6 +208,7 @@ class WineFormState extends State<WineForm>
   }
 
   Future<void> _editPrice() async {
+    FocusScope.of(context).unfocus();
     final result = await showTextInputSheet(
       context: context,
       title: 'Price',
@@ -215,6 +216,8 @@ class WineFormState extends State<WineForm>
       prefix: '€ ',
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
     );
+    if (!mounted) return;
+    FocusManager.instance.primaryFocus?.unfocus();
     if (result == null) return;
     setState(() => _price = result.isEmpty
         ? null
@@ -233,30 +236,37 @@ class WineFormState extends State<WineForm>
   }
 
   Future<void> _editGrape() async {
+    FocusScope.of(context).unfocus();
     final result = await showTextInputSheet(
       context: context,
       title: 'Grape variety',
       initial: _grape,
       hint: 'e.g. Merlot',
     );
+    if (!mounted) return;
+    FocusManager.instance.primaryFocus?.unfocus();
     if (result == null) return;
     setState(() => _grape = result.isEmpty ? null : result);
     _scheduleAutoSave();
   }
 
   Future<void> _editWinery() async {
+    FocusScope.of(context).unfocus();
     final result = await showTextInputSheet(
       context: context,
       title: 'Winery',
       initial: _winery,
       hint: 'e.g. Château Margaux',
     );
+    if (!mounted) return;
+    FocusManager.instance.primaryFocus?.unfocus();
     if (result == null) return;
     setState(() => _winery = result.isEmpty ? null : result);
     _scheduleAutoSave();
   }
 
   Future<void> _editNotes() async {
+    FocusScope.of(context).unfocus();
     final result = await showTextInputSheet(
       context: context,
       title: 'Tasting notes',
@@ -264,6 +274,8 @@ class WineFormState extends State<WineForm>
       hint: 'Aromas, body, finish…',
       maxLines: 5,
     );
+    if (!mounted) return;
+    FocusManager.instance.primaryFocus?.unfocus();
     if (result == null) return;
     setState(() => _notes = result.isEmpty ? null : result);
     _scheduleAutoSave();
@@ -300,10 +312,13 @@ class WineFormState extends State<WineForm>
   }
 
   Future<void> _editPlace() async {
+    FocusScope.of(context).unfocus();
     final result = await showLocationSearchSheet(
       context: context,
       initial: _location,
     );
+    if (!mounted) return;
+    FocusManager.instance.primaryFocus?.unfocus();
     if (result == null) return;
     setState(() => _location = result);
     _scheduleAutoSave();

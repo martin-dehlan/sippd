@@ -70,7 +70,11 @@ class _LocationSearchWidgetState extends ConsumerState<LocationSearchWidget> {
 
   void _onSelected(LocationEntity location) {
     _controller.text = location.shortDisplay;
-    _focusNode.unfocus();
+    // Drop the system-wide primary focus, not just our node — otherwise
+    // the focus jumps back to whichever TextField on the calling screen
+    // was active before the sheet opened, and the keyboard re-appears
+    // after the pop.
+    FocusManager.instance.primaryFocus?.unfocus();
     setState(() => _showResults = false);
     ref.read(locationSearchControllerProvider.notifier).clearResults();
     widget.onLocationSelected(location);

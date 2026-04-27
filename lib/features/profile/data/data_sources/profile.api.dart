@@ -24,9 +24,9 @@ class ProfileApi {
         .stream(primaryKey: ['id'])
         .eq('id', _uid)
         .map((rows) {
-      if (rows.isEmpty) return null;
-      return ProfileModel.fromJson(rows.first);
-    });
+          if (rows.isEmpty) return null;
+          return ProfileModel.fromJson(rows.first);
+        });
   }
 
   Future<bool> isUsernameAvailable(String username) async {
@@ -74,27 +74,33 @@ class ProfileApi {
     String? displayName,
     required OnboardingAnswers answers,
   }) async {
-    await _client.from('profiles').update({
-      'username': username.toLowerCase(),
-      'display_name': displayName,
-      'onboarding_completed': true,
-      'taste_level': answers.tasteLevel?.name,
-      'goals': answers.goals.map((g) => g.name).toList(),
-      'styles': answers.styles.map((s) => s.name).toList(),
-      'drink_frequency': answers.frequency?.name,
-      'taste_emoji': answers.emoji,
-    }).eq('id', _uid);
+    await _client
+        .from('profiles')
+        .update({
+          'username': username.toLowerCase(),
+          'display_name': displayName,
+          'onboarding_completed': true,
+          'taste_level': answers.tasteLevel?.name,
+          'goals': answers.goals.map((g) => g.name).toList(),
+          'styles': answers.styles.map((s) => s.name).toList(),
+          'drink_frequency': answers.frequency?.name,
+          'taste_emoji': answers.emoji,
+        })
+        .eq('id', _uid);
   }
 
   /// Used by edit-profile when the user adjusts taste fields after signup.
   Future<void> updateTasteProfile(OnboardingAnswers answers) async {
-    await _client.from('profiles').update({
-      'taste_level': answers.tasteLevel?.name,
-      'goals': answers.goals.map((g) => g.name).toList(),
-      'styles': answers.styles.map((s) => s.name).toList(),
-      'drink_frequency': answers.frequency?.name,
-      'taste_emoji': answers.emoji,
-    }).eq('id', _uid);
+    await _client
+        .from('profiles')
+        .update({
+          'taste_level': answers.tasteLevel?.name,
+          'goals': answers.goals.map((g) => g.name).toList(),
+          'styles': answers.styles.map((s) => s.name).toList(),
+          'drink_frequency': answers.frequency?.name,
+          'taste_emoji': answers.emoji,
+        })
+        .eq('id', _uid);
   }
 
   Future<void> deleteMyAccount() async {
@@ -130,7 +136,9 @@ class ProfileApi {
     final paths = <String>[];
 
     while (true) {
-      final files = await _client.storage.from(bucket).list(
+      final files = await _client.storage
+          .from(bucket)
+          .list(
             path: folder,
             searchOptions: SearchOptions(limit: pageSize, offset: offset),
           );

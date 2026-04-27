@@ -75,5 +75,27 @@ final paywallOfferingsProvider = AutoDisposeFutureProvider<Offerings?>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef PaywallOfferingsRef = AutoDisposeFutureProviderRef<Offerings?>;
+String _$currentCustomerInfoHash() =>
+    r'bbe5e4aa42c2e8b308e6b2ff5ed56e3eec3d557d';
+
+/// Latest CustomerInfo, preferring stream values for liveness but
+/// falling back to the service's cached snapshot so screens that
+/// mount after the broadcast stream's initial emit still get a value.
+///
+/// Copied from [currentCustomerInfo].
+@ProviderFor(currentCustomerInfo)
+final currentCustomerInfoProvider = AutoDisposeProvider<CustomerInfo?>.internal(
+  currentCustomerInfo,
+  name: r'currentCustomerInfoProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$currentCustomerInfoHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef CurrentCustomerInfoRef = AutoDisposeProviderRef<CustomerInfo?>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

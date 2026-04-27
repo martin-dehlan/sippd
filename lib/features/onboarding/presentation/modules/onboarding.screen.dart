@@ -15,15 +15,19 @@ import '../widgets/pages/level.page.dart';
 import '../widgets/pages/loader.page.dart';
 import '../widgets/pages/name.page.dart';
 import '../widgets/pages/notifications.page.dart';
+import '../widgets/pages/paywall.page.dart';
 import '../widgets/pages/responsibility.page.dart';
 import '../widgets/pages/results.page.dart';
 import '../widgets/pages/styles.page.dart';
 import '../widgets/pages/welcome.page.dart';
 import '../widgets/pages/why.page.dart';
 
-// Funnel order: pure value first (quiz → archetype reveal), commitment last
-// (notifications → auth). Sets up clean insertion point for a paywall step
-// between notifications and the auth handoff later.
+// Funnel order: pure value first (quiz → archetype reveal → Pro pitch),
+// then the low-stakes asks (notifications). The paywall sits *immediately*
+// after the archetype reveal — that's the peak engagement moment, while
+// the user is still riding the "the app gets me" feeling. Asking later
+// (e.g. after notifications) pushes it past the dopamine window and
+// stacks two asks back-to-back.
 enum _Step {
   welcome,
   responsibility,
@@ -35,6 +39,7 @@ enum _Step {
   name,
   loader,
   results,
+  paywall,
   notifications,
 }
 
@@ -55,6 +60,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     super.initState();
     // Authed users (signing up a second account on this device) skip the
     // pre-auth welcome page — they're already past the marketing pitch.
+    // Unauthed users see the full flow including the paywall:
+    // RevenueCat handles anonymous purchases by attaching them to an
+    // anonymous user-id, then merges them into the real user as soon as
+    // main.dart's auth listener calls paywall.identify(...) on signup.
+    // Skipping the step would mean missing the peak-engagement window
+    // right after the archetype reveal.
     final authed = ref.read(isAuthenticatedProvider);
     _steps = authed
         ? _Step.values.where((s) => s != _Step.welcome).toList()
@@ -76,6 +87,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       case _Step.why:
       case _Step.loader:
       case _Step.results:
+      case _Step.paywall:
         return true;
       case _Step.level:
         return a.tasteLevel != null;
@@ -127,7 +139,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         if (pending.isNotEmpty) {
           try {
             await profileCtrl.setDisplayName(pending);
-          } catch (_) {/* non-fatal */}
+          } catch (_) {
+            /* non-fatal */
+          }
         }
         await profileCtrl.markOnboardingCompleted();
         await ref.read(onboardingControllerProvider.notifier).markSeen();
@@ -215,11 +229,13 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       return LoaderPage(onDone: () => _goTo(_index + 1));
                     case _Step.results:
                       return const ResultsPage();
+                    case _Step.paywall:
+                      return OnboardingPaywallPage(onFinish: _next);
                   }
                 }).toList(),
               ),
             ),
-            if (step != _Step.loader)
+            if (step != _Step.loader && step != _Step.paywall)
               Padding(
                 padding: EdgeInsets.fromLTRB(
                   context.paddingH,
@@ -286,8 +302,11 @@ class _Header extends StatelessWidget {
                 ? const SizedBox.shrink()
                 : IconButton(
                     onPressed: onBack,
-                    icon: Icon(PhosphorIconsRegular.arrowLeft,
-                        size: context.w * 0.05, color: cs.onSurface),
+                    icon: Icon(
+                      PhosphorIconsRegular.arrowLeft,
+                      size: context.w * 0.05,
+                      color: cs.onSurface,
+                    ),
                   ),
           ),
           SizedBox(width: context.w * 0.02),

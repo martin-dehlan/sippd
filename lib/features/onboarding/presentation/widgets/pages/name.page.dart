@@ -1,21 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../../../common/data/avatar_icons.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../controller/onboarding.provider.dart';
 import '../onboarding_page_shell.widget.dart';
-
-const avatarIconOptions = <(String, IconData)>[
-  ('wine', PhosphorIconsRegular.wine),
-  ('champagne', PhosphorIconsRegular.champagne),
-  ('martini', PhosphorIconsRegular.martini),
-  ('sparkle', PhosphorIconsRegular.sparkle),
-  ('heart', PhosphorIconsRegular.heart),
-  ('star', PhosphorIconsRegular.star),
-  ('fire', PhosphorIconsRegular.fire),
-  ('confetti', PhosphorIconsRegular.confetti),
-];
 
 class NamePage extends ConsumerStatefulWidget {
   const NamePage({super.key});
@@ -83,7 +72,7 @@ class _NamePageState extends ConsumerState<NamePage> {
           ),
           SizedBox(height: context.l),
           Text(
-            'Pick an icon',
+            'Pick your icon',
             style: TextStyle(
               fontSize: context.captionFont,
               fontWeight: FontWeight.w600,
@@ -91,33 +80,41 @@ class _NamePageState extends ConsumerState<NamePage> {
             ),
           ),
           SizedBox(height: context.s),
+          Text(
+            'Shows up as your avatar.',
+            style: TextStyle(
+              fontSize: context.captionFont * 0.9,
+              color: cs.outline,
+            ),
+          ),
+          SizedBox(height: context.m),
           Wrap(
-            spacing: context.w * 0.03,
-            runSpacing: context.w * 0.03,
+            spacing: context.w * 0.025,
+            runSpacing: context.w * 0.025,
             children: avatarIconOptions.map((entry) {
-              final (key, iconData) = entry;
-              final selected = answers.emoji == key;
+              final selected = answers.emoji == entry.key;
+              final tile = context.w * 0.16;
               return GestureDetector(
-                onTap: () => notifier.setName(emoji: key),
+                onTap: () => notifier.setName(emoji: entry.key),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 150),
-                  width: context.w * 0.14,
-                  height: context.w * 0.14,
+                  width: tile,
+                  height: tile,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    color: selected
-                        ? cs.primary.withValues(alpha: 0.15)
-                        : cs.surfaceContainer,
-                    borderRadius: BorderRadius.circular(context.w * 0.04),
+                    color: selected ? cs.primaryContainer : cs.surfaceContainer,
+                    borderRadius: BorderRadius.circular(context.w * 0.035),
                     border: Border.all(
                       color: selected ? cs.primary : cs.outlineVariant,
                       width: selected ? 1.5 : 0.5,
                     ),
                   ),
                   child: Icon(
-                    iconData,
-                    size: context.w * 0.065,
-                    color: selected ? cs.primary : cs.onSurfaceVariant,
+                    entry.icon,
+                    size: tile * 0.42,
+                    color: selected
+                        ? cs.onPrimaryContainer
+                        : cs.onSurfaceVariant,
                   ),
                 ),
               );
