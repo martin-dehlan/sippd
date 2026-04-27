@@ -7,7 +7,6 @@ import '../../../../../common/services/analytics/analytics.provider.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../../paywall/controller/paywall.provider.dart';
-import '../../../../paywall/presentation/widgets/paywall_sheet.widget.dart';
 import '../../../controller/group.provider.dart';
 import '../../../domain/entities/group.entity.dart';
 import '../../widgets/group_invitations_inbox.widget.dart';
@@ -172,8 +171,8 @@ class GroupListScreen extends ConsumerWidget {
   }
 
   /// Gate: free users get [kFreeGroupLimit] groups. The 4th create attempt
-  /// shows the paywall sheet; on successful purchase we drop straight into
-  /// the create sheet so the user finishes the action they started.
+  /// pushes the paywall screen; on successful purchase we drop straight
+  /// into the create sheet so the user finishes the action they started.
   Future<void> _onCreateTap(BuildContext context, WidgetRef ref) async {
     final groups = ref.read(groupControllerProvider).valueOrNull ?? const [];
     final isPro = ref.read(isProProvider);
@@ -181,11 +180,11 @@ class GroupListScreen extends ConsumerWidget {
       ref
           .read(analyticsProvider)
           .capture('group_gate_hit', properties: {'count': groups.length});
-      final purchased = await showGroupLimitPaywall(
-        context,
-        currentGroupCount: groups.length,
+      final purchased = await context.push<bool>(
+        AppRoutes.paywall,
+        extra: const {'source': 'group_limit'},
       );
-      if (!context.mounted || !purchased) return;
+      if (!context.mounted || purchased != true) return;
       _showCreateSheet(context, ref);
       return;
     }
