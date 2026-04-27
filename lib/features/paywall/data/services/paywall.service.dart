@@ -15,8 +15,7 @@ class PaywallService {
   bool _enabled = false;
   CustomerInfo? _lastInfo;
 
-  Stream<CustomerInfo> get customerInfoStream =>
-      _customerInfoController.stream;
+  Stream<CustomerInfo> get customerInfoStream => _customerInfoController.stream;
 
   bool get isPro {
     final info = _lastInfo;
@@ -45,9 +44,7 @@ class PaywallService {
       return;
     }
 
-    await Purchases.setLogLevel(
-      kDebugMode ? LogLevel.debug : LogLevel.warn,
-    );
+    await Purchases.setLogLevel(kDebugMode ? LogLevel.debug : LogLevel.warn);
     await Purchases.configure(PurchasesConfiguration(apiKey));
 
     Purchases.addCustomerInfoUpdateListener((info) {

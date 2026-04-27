@@ -10,11 +10,7 @@ class TallyBars extends StatelessWidget {
   final List<Tally> items;
   final int maxItems;
 
-  const TallyBars({
-    super.key,
-    required this.items,
-    this.maxItems = 5,
-  });
+  const TallyBars({super.key, required this.items, this.maxItems = 5});
 
   @override
   Widget build(BuildContext context) {
@@ -37,11 +33,7 @@ class TallyBars extends StatelessWidget {
       children: [
         for (int i = 0; i < visible.length; i++) ...[
           if (i > 0) SizedBox(height: context.m),
-          _TallyRow(
-            item: visible[i],
-            maxCount: maxCount,
-            delay: i * 70,
-          ),
+          _TallyRow(item: visible[i], maxCount: maxCount, delay: i * 70),
         ],
       ],
     );

@@ -24,10 +24,7 @@ class PaywallFeatureRow extends StatelessWidget {
           Expanded(
             child: Text(
               label,
-              style: TextStyle(
-                fontSize: context.bodyFont,
-                color: cs.onSurface,
-              ),
+              style: TextStyle(fontSize: context.bodyFont, color: cs.onSurface),
             ),
           ),
         ],

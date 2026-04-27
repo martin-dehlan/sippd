@@ -50,10 +50,12 @@ class _PaywallBodyState extends ConsumerState<PaywallBody> {
   @override
   void initState() {
     super.initState();
-    ref.read(analyticsProvider).capture(
-      'paywall_impression',
-      properties: {'source': widget.triggerSource},
-    );
+    ref
+        .read(analyticsProvider)
+        .capture(
+          'paywall_impression',
+          properties: {'source': widget.triggerSource},
+        );
   }
 
   void _maybePreselectAnnual(List<Package> packages) {
@@ -75,10 +77,7 @@ class _PaywallBodyState extends ConsumerState<PaywallBody> {
     final analytics = ref.read(analyticsProvider);
     analytics.capture(
       'paywall_cta_tap',
-      properties: {
-        'package': pkg.identifier,
-        'source': widget.triggerSource,
-      },
+      properties: {'package': pkg.identifier, 'source': widget.triggerSource},
     );
 
     try {
@@ -86,10 +85,7 @@ class _PaywallBodyState extends ConsumerState<PaywallBody> {
       if (!mounted) return;
       analytics.capture(
         'paywall_purchase_success',
-        properties: {
-          'package': pkg.identifier,
-          'source': widget.triggerSource,
-        },
+        properties: {'package': pkg.identifier, 'source': widget.triggerSource},
       );
       widget.onSuccess?.call();
     } catch (e) {
@@ -122,9 +118,11 @@ class _PaywallBodyState extends ConsumerState<PaywallBody> {
       final restored = info.entitlements.active.containsKey(proEntitlementId);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(restored
-              ? 'Welcome back to Sippd Pro!'
-              : 'No active subscription found.'),
+          content: Text(
+            restored
+                ? 'Welcome back to Sippd Pro!'
+                : 'No active subscription found.',
+          ),
         ),
       );
       if (restored) widget.onSuccess?.call();

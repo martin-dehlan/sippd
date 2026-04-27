@@ -40,8 +40,9 @@ class WineLocationsMap extends ConsumerWidget {
                 onTap: () => Navigator.of(context).push(
                   PageRouteBuilder<void>(
                     transitionDuration: const Duration(milliseconds: 280),
-                    reverseTransitionDuration:
-                        const Duration(milliseconds: 220),
+                    reverseTransitionDuration: const Duration(
+                      milliseconds: 220,
+                    ),
                     pageBuilder: (_, animation, _) => FadeTransition(
                       opacity: animation,
                       child: WineMapFullscreen(wines: wines),
@@ -111,8 +112,7 @@ class _MapBody extends StatelessWidget {
         interactionOptions: InteractionOptions(
           flags: interactive
               ? InteractiveFlag.all
-              : InteractiveFlag.pinchZoom |
-                  InteractiveFlag.doubleTapZoom,
+              : InteractiveFlag.pinchZoom | InteractiveFlag.doubleTapZoom,
         ),
       ),
       children: [
@@ -148,10 +148,14 @@ class _MapBody extends StatelessWidget {
     final lats = wines.map((w) => w.latitude!);
     final lngs = wines.map((w) => w.longitude!);
     return LatLngBounds(
-      LatLng(lats.reduce((a, b) => a < b ? a : b),
-          lngs.reduce((a, b) => a < b ? a : b)),
-      LatLng(lats.reduce((a, b) => a > b ? a : b),
-          lngs.reduce((a, b) => a > b ? a : b)),
+      LatLng(
+        lats.reduce((a, b) => a < b ? a : b),
+        lngs.reduce((a, b) => a < b ? a : b),
+      ),
+      LatLng(
+        lats.reduce((a, b) => a > b ? a : b),
+        lngs.reduce((a, b) => a > b ? a : b),
+      ),
     );
   }
 
@@ -160,10 +164,26 @@ class _MapBody extends StatelessWidget {
   static Widget _darkTileBuilder(BuildContext context, Widget tile, _) {
     return ColorFiltered(
       colorFilter: const ColorFilter.matrix([
-        0.55, 0, 0, 0, 0,
-        0, 0.55, 0, 0, 0,
-        0, 0, 0.55, 0, 0,
-        0, 0, 0, 1, 0,
+        0.55,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0.55,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0.55,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
       ]),
       child: tile,
     );

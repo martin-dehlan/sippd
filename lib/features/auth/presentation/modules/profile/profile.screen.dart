@@ -31,7 +31,8 @@ class ProfileScreen extends ConsumerWidget {
     final profile = ref.watch(currentProfileProvider).valueOrNull;
     final winesAsync = ref.watch(wineControllerProvider);
 
-    final headlineName = profile?.username ??
+    final headlineName =
+        profile?.username ??
         profile?.displayName ??
         user?.userMetadata?['display_name'] as String? ??
         user?.email?.split('@').first ??
@@ -68,17 +69,19 @@ class ProfileScreen extends ConsumerWidget {
                               width: context.w * 0.26 * 0.025,
                             ),
                           ),
-                          child: Icon(PhosphorIconsRegular.user,
-                              size: context.w * 0.1, color: cs.primary),
+                          child: Icon(
+                            PhosphorIconsRegular.user,
+                            size: context.w * 0.1,
+                            color: cs.primary,
+                          ),
                         ),
                   SizedBox(height: context.m),
                   Text(
-                    profile?.username != null
-                        ? '@$headlineName'
-                        : headlineName,
+                    profile?.username != null ? '@$headlineName' : headlineName,
                     style: TextStyle(
-                        fontSize: context.headingFont,
-                        fontWeight: FontWeight.bold),
+                      fontSize: context.headingFont,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   SizedBox(height: context.m),
                   const TasteMetaLine(),
@@ -98,16 +101,18 @@ class ProfileScreen extends ConsumerWidget {
                 final avg = wines.isEmpty
                     ? '—'
                     : (wines.map((w) => w.rating).reduce((a, b) => a + b) /
-                            wines.length)
-                        .toStringAsFixed(1);
-                return StatsCard(stats: [
-                  (label: 'Wines', value: wines.length.toString()),
-                  (label: 'Avg', value: avg),
-                  (
-                    label: countries == 1 ? 'Country' : 'Countries',
-                    value: countries.toString(),
-                  ),
-                ]);
+                              wines.length)
+                          .toStringAsFixed(1);
+                return StatsCard(
+                  stats: [
+                    (label: 'Wines', value: wines.length.toString()),
+                    (label: 'Avg', value: avg),
+                    (
+                      label: countries == 1 ? 'Country' : 'Countries',
+                      value: countries.toString(),
+                    ),
+                  ],
+                );
               },
               loading: () => const SizedBox.shrink(),
               error: (_, _) => const SizedBox.shrink(),
@@ -154,10 +159,7 @@ class ProfileScreen extends ConsumerWidget {
             _MenuItem(
               icon: PhosphorIconsRegular.star,
               label: 'Rate Sippd',
-              onTap: () => _launch(
-                context,
-                'https://apps.apple.com/app/sippd',
-              ),
+              onTap: () => _launch(context, 'https://apps.apple.com/app/sippd'),
             ),
             SizedBox(height: context.l),
 
@@ -193,12 +195,16 @@ class ProfileScreen extends ConsumerWidget {
                     await ref
                         .read(fcmServiceProvider)
                         .unregisterCurrentDevice();
-                  } catch (_) {/* best-effort */}
+                  } catch (_) {
+                    /* best-effort */
+                  }
                   // Wipe cached wine/memory data so the next account on this
                   // device can't briefly see the previous user's rows.
                   try {
                     await ref.read(appDatabaseProvider).clearAll();
-                  } catch (_) {/* best-effort */}
+                  } catch (_) {
+                    /* best-effort */
+                  }
                   await ref.read(authControllerProvider.notifier).signOut();
                   if (context.mounted) context.go(AppRoutes.login);
                 },
@@ -293,9 +299,9 @@ Future<void> _launch(BuildContext context, String url) async {
   final uri = Uri.parse(url);
   final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
   if (!ok && context.mounted) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Could not open $url')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('Could not open $url')));
   }
 }
 
@@ -311,9 +317,9 @@ Future<void> _confirmDelete(BuildContext context, WidgetRef ref) async {
     // Router auto-redirects to /login on auth state change; no manual go().
   } catch (e) {
     if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Delete failed: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Delete failed: $e')));
     }
   }
 }
@@ -369,8 +375,7 @@ class _ConfirmDeleteDialogState extends State<_ConfirmDeleteDialog> {
           child: const Text('Cancel'),
         ),
         TextButton(
-          onPressed:
-              canDelete ? () => Navigator.pop(context, true) : null,
+          onPressed: canDelete ? () => Navigator.pop(context, true) : null,
           style: TextButton.styleFrom(foregroundColor: cs.error),
           child: const Text('Delete'),
         ),
@@ -387,10 +392,7 @@ class _SectionLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     return Padding(
-      padding: EdgeInsets.only(
-        left: context.w * 0.02,
-        bottom: context.s,
-      ),
+      padding: EdgeInsets.only(left: context.w * 0.02, bottom: context.s),
       child: Text(
         text.toUpperCase(),
         style: TextStyle(
@@ -423,7 +425,9 @@ class _MenuItem extends StatelessWidget {
       onTap: onTap,
       child: Container(
         padding: EdgeInsets.symmetric(
-            vertical: context.m, horizontal: context.w * 0.04),
+          vertical: context.m,
+          horizontal: context.w * 0.04,
+        ),
         margin: EdgeInsets.only(bottom: context.xs),
         decoration: BoxDecoration(
           color: cs.surfaceContainer,
@@ -434,14 +438,20 @@ class _MenuItem extends StatelessWidget {
             Icon(icon, color: cs.primary, size: context.w * 0.05),
             SizedBox(width: context.w * 0.04),
             Expanded(
-              child: Text(label,
-                  style: TextStyle(
-                      fontSize: context.bodyFont,
-                      fontWeight: FontWeight.w500,
-                      color: cs.onSurface)),
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontSize: context.bodyFont,
+                  fontWeight: FontWeight.w500,
+                  color: cs.onSurface,
+                ),
+              ),
             ),
-            Icon(PhosphorIconsRegular.caretRight,
-                size: context.w * 0.05, color: cs.outline),
+            Icon(
+              PhosphorIconsRegular.caretRight,
+              size: context.w * 0.05,
+              color: cs.outline,
+            ),
           ],
         ),
       ),
@@ -469,7 +479,9 @@ class _DangerButton extends StatelessWidget {
       onTap: onTap,
       child: Container(
         padding: EdgeInsets.symmetric(
-            vertical: context.m, horizontal: context.w * 0.04),
+          vertical: context.m,
+          horizontal: context.w * 0.04,
+        ),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(context.w * 0.03),
           border: Border.all(color: cs.outlineVariant, width: 1),

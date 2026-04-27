@@ -32,8 +32,7 @@ class GroupListScreen extends ConsumerWidget {
           children: [
             SizedBox(height: context.xl),
             Padding(
-              padding:
-                  EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
+              padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
@@ -51,10 +50,13 @@ class GroupListScreen extends ConsumerWidget {
                           ),
                         ),
                         SizedBox(height: context.xs),
-                        Text('Taste together',
-                            style: TextStyle(
-                                fontSize: context.captionFont,
-                                color: cs.onSurfaceVariant)),
+                        Text(
+                          'Taste together',
+                          style: TextStyle(
+                            fontSize: context.captionFont,
+                            color: cs.onSurfaceVariant,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -88,10 +90,8 @@ class GroupListScreen extends ConsumerWidget {
             ),
             SizedBox(height: context.l),
             Padding(
-              padding:
-                  EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
-              child: _JoinCard(
-                  onTap: () => _showJoinSheet(context, ref)),
+              padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
+              child: _JoinCard(onTap: () => _showJoinSheet(context, ref)),
             ),
             SizedBox(height: context.m),
             const GroupInvitationsInbox(),
@@ -105,43 +105,53 @@ class GroupListScreen extends ConsumerWidget {
                   }
                   final sorted = List<GroupEntity>.from(groups)
                     ..sort(switch (sortMode) {
-                      GroupSortMode.recent =>
-                        (a, b) => b.createdAt.compareTo(a.createdAt),
-                      GroupSortMode.name => (a, b) =>
-                          a.name.toLowerCase().compareTo(b.name.toLowerCase()),
+                      GroupSortMode.recent => (a, b) => b.createdAt.compareTo(
+                        a.createdAt,
+                      ),
+                      GroupSortMode.name =>
+                        (a, b) => a.name.toLowerCase().compareTo(
+                          b.name.toLowerCase(),
+                        ),
                     });
                   return ListView.separated(
                     restorationId: 'group_list_scroll',
                     padding: EdgeInsets.symmetric(
-                        horizontal: context.paddingH * 1.3),
+                      horizontal: context.paddingH * 1.3,
+                    ),
                     itemCount: sorted.length,
-                    separatorBuilder: (_, _) =>
-                        SizedBox(height: context.s),
+                    separatorBuilder: (_, _) => SizedBox(height: context.s),
                     itemBuilder: (_, index) => _GroupCard(group: sorted[index]),
                   );
                 },
-                loading: () =>
-                    const Center(child: CircularProgressIndicator()),
+                loading: () => const Center(child: CircularProgressIndicator()),
                 error: (error, _) => Center(
                   child: Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: context.paddingH),
+                    padding: EdgeInsets.symmetric(horizontal: context.paddingH),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(PhosphorIconsRegular.warningCircle,
-                            color: cs.error, size: context.w * 0.1),
+                        Icon(
+                          PhosphorIconsRegular.warningCircle,
+                          color: cs.error,
+                          size: context.w * 0.1,
+                        ),
                         SizedBox(height: context.m),
-                        Text('Could not load groups',
-                            style: TextStyle(
-                                fontSize: context.bodyFont,
-                                fontWeight: FontWeight.w600)),
+                        Text(
+                          'Could not load groups',
+                          style: TextStyle(
+                            fontSize: context.bodyFont,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                         SizedBox(height: context.xs),
-                        Text(error.toString(),
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontSize: context.captionFont,
-                                color: cs.onSurfaceVariant)),
+                        Text(
+                          error.toString(),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: context.captionFont,
+                            color: cs.onSurfaceVariant,
+                          ),
+                        ),
                         SizedBox(height: context.m),
                         FilledButton.icon(
                           onPressed: () =>
@@ -168,10 +178,9 @@ class GroupListScreen extends ConsumerWidget {
     final groups = ref.read(groupControllerProvider).valueOrNull ?? const [];
     final isPro = ref.read(isProProvider);
     if (!isPro && groups.length >= kFreeGroupLimit) {
-      ref.read(analyticsProvider).capture(
-        'group_gate_hit',
-        properties: {'count': groups.length},
-      );
+      ref
+          .read(analyticsProvider)
+          .capture('group_gate_hit', properties: {'count': groups.length});
       final purchased = await showGroupLimitPaywall(
         context,
         currentGroupCount: groups.length,
@@ -190,8 +199,9 @@ class GroupListScreen extends ConsumerWidget {
       isScrollControlled: true,
       backgroundColor: Theme.of(context).colorScheme.surface,
       shape: RoundedRectangleBorder(
-        borderRadius:
-            BorderRadius.vertical(top: Radius.circular(context.w * 0.05)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(context.w * 0.05),
+        ),
       ),
       builder: (ctx) => _CreateSheet(
         nameController: nameController,
@@ -212,8 +222,9 @@ class GroupListScreen extends ConsumerWidget {
       isScrollControlled: true,
       backgroundColor: Theme.of(context).colorScheme.surface,
       shape: RoundedRectangleBorder(
-        borderRadius:
-            BorderRadius.vertical(top: Radius.circular(context.w * 0.05)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(context.w * 0.05),
+        ),
       ),
       builder: (ctx) => _JoinSheet(
         controller: controller,
@@ -221,15 +232,13 @@ class GroupListScreen extends ConsumerWidget {
           final code = controller.text.trim();
           if (code.isEmpty) return;
           try {
-            await ref
-                .read(groupControllerProvider.notifier)
-                .joinGroup(code);
+            await ref.read(groupControllerProvider.notifier).joinGroup(code);
             if (ctx.mounted) Navigator.pop(ctx);
           } catch (_) {
             if (ctx.mounted) {
-              ScaffoldMessenger.of(ctx).showSnackBar(
-                const SnackBar(content: Text('Group not found')),
-              );
+              ScaffoldMessenger.of(
+                ctx,
+              ).showSnackBar(const SnackBar(content: Text('Group not found')));
             }
           }
         },
@@ -258,8 +267,11 @@ class _HeaderAddButton extends StatelessWidget {
           child: SizedBox(
             width: size,
             height: size,
-            child: Icon(PhosphorIconsRegular.plus,
-                color: cs.onSurface, size: context.w * 0.055),
+            child: Icon(
+              PhosphorIconsRegular.plus,
+              color: cs.onSurface,
+              size: context.w * 0.055,
+            ),
           ),
         ),
       ),
@@ -278,35 +290,48 @@ class _JoinCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         padding: EdgeInsets.symmetric(
-            horizontal: context.w * 0.04, vertical: context.m),
+          horizontal: context.w * 0.04,
+          vertical: context.m,
+        ),
         decoration: BoxDecoration(
           color: cs.primaryContainer,
           borderRadius: BorderRadius.circular(context.w * 0.03),
         ),
         child: Row(
           children: [
-            Icon(PhosphorIconsRegular.link, color: cs.primary, size: context.w * 0.05),
+            Icon(
+              PhosphorIconsRegular.link,
+              color: cs.primary,
+              size: context.w * 0.05,
+            ),
             SizedBox(width: context.w * 0.03),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Join a group',
-                      style: TextStyle(
-                          fontSize: context.bodyFont,
-                          fontWeight: FontWeight.w600,
-                          color: cs.onPrimaryContainer)),
-                  Text('Enter an invite code',
-                      style: TextStyle(
-                          fontSize: context.captionFont,
-                          color: cs.onPrimaryContainer
-                              .withValues(alpha: 0.7))),
+                  Text(
+                    'Join a group',
+                    style: TextStyle(
+                      fontSize: context.bodyFont,
+                      fontWeight: FontWeight.w600,
+                      color: cs.onPrimaryContainer,
+                    ),
+                  ),
+                  Text(
+                    'Enter an invite code',
+                    style: TextStyle(
+                      fontSize: context.captionFont,
+                      color: cs.onPrimaryContainer.withValues(alpha: 0.7),
+                    ),
+                  ),
                 ],
               ),
             ),
-            Icon(PhosphorIconsRegular.caretRight,
-                size: context.w * 0.04,
-                color: cs.onPrimaryContainer),
+            Icon(
+              PhosphorIconsRegular.caretRight,
+              size: context.w * 0.04,
+              color: cs.onPrimaryContainer,
+            ),
           ],
         ),
       ),
@@ -347,22 +372,31 @@ class _GroupCard extends StatelessWidget {
                     : null,
               ),
               child: group.imageUrl == null
-                  ? Icon(PhosphorIconsRegular.wine,
-                      color: cs.primary, size: context.w * 0.06)
+                  ? Icon(
+                      PhosphorIconsRegular.wine,
+                      color: cs.primary,
+                      size: context.w * 0.06,
+                    )
                   : null,
             ),
             SizedBox(width: context.w * 0.04),
             Expanded(
-              child: Text(group.name,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                      fontSize: context.bodyFont,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: -0.2)),
+              child: Text(
+                group.name,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: context.bodyFont,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: -0.2,
+                ),
+              ),
             ),
-            Icon(PhosphorIconsRegular.caretRight,
-                size: context.w * 0.035, color: cs.outline),
+            Icon(
+              PhosphorIconsRegular.caretRight,
+              size: context.w * 0.035,
+              color: cs.outline,
+            ),
           ],
         ),
       ),
@@ -385,19 +419,31 @@ class _GroupEmptyState extends StatelessWidget {
             width: context.w * 0.2,
             height: context.w * 0.2,
             decoration: BoxDecoration(
-                color: cs.primaryContainer, shape: BoxShape.circle),
-            child: Icon(PhosphorIconsRegular.users,
-                size: context.w * 0.1, color: cs.primary),
+              color: cs.primaryContainer,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              PhosphorIconsRegular.users,
+              size: context.w * 0.1,
+              color: cs.primary,
+            ),
           ),
           SizedBox(height: context.m),
-          Text('No groups yet',
-              style: TextStyle(
-                  fontSize: context.bodyFont, fontWeight: FontWeight.w600)),
+          Text(
+            'No groups yet',
+            style: TextStyle(
+              fontSize: context.bodyFont,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
           SizedBox(height: context.xs),
-          Text('Create or join one to share wines',
-              style: TextStyle(
-                  fontSize: context.captionFont,
-                  color: cs.onSurfaceVariant)),
+          Text(
+            'Create or join one to share wines',
+            style: TextStyle(
+              fontSize: context.captionFont,
+              color: cs.onSurfaceVariant,
+            ),
+          ),
           SizedBox(height: context.l),
           FilledButton.icon(
             onPressed: onCreate,
@@ -414,10 +460,7 @@ class _CreateSheet extends StatelessWidget {
   final TextEditingController nameController;
   final VoidCallback onSubmit;
 
-  const _CreateSheet({
-    required this.nameController,
-    required this.onSubmit,
-  });
+  const _CreateSheet({required this.nameController, required this.onSubmit});
 
   @override
   Widget build(BuildContext context) {
@@ -428,7 +471,9 @@ class _CreateSheet extends StatelessWidget {
       child: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(
-              horizontal: context.paddingH, vertical: context.m),
+            horizontal: context.paddingH,
+            vertical: context.m,
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -444,11 +489,14 @@ class _CreateSheet extends StatelessWidget {
                 ),
               ),
               SizedBox(height: context.m),
-              Text('New group',
-                  style: TextStyle(
-                      fontSize: context.bodyFont,
-                      fontWeight: FontWeight.w600,
-                      color: cs.onSurfaceVariant)),
+              Text(
+                'New group',
+                style: TextStyle(
+                  fontSize: context.bodyFont,
+                  fontWeight: FontWeight.w600,
+                  color: cs.onSurfaceVariant,
+                ),
+              ),
               SizedBox(height: context.s),
               _BorderlessField(
                 controller: nameController,
@@ -466,14 +514,16 @@ class _CreateSheet extends StatelessWidget {
                   style: FilledButton.styleFrom(
                     elevation: 0,
                     shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(context.w * 0.03),
+                      borderRadius: BorderRadius.circular(context.w * 0.03),
                     ),
                   ),
-                  child: Text('Create',
-                      style: TextStyle(
-                          fontSize: context.bodyFont,
-                          fontWeight: FontWeight.w600)),
+                  child: Text(
+                    'Create',
+                    style: TextStyle(
+                      fontSize: context.bodyFont,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
               ),
               SizedBox(height: context.s),
@@ -499,7 +549,9 @@ class _JoinSheet extends StatelessWidget {
       child: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(
-              horizontal: context.paddingH, vertical: context.m),
+            horizontal: context.paddingH,
+            vertical: context.m,
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -515,11 +567,14 @@ class _JoinSheet extends StatelessWidget {
                 ),
               ),
               SizedBox(height: context.m),
-              Text('Invite code',
-                  style: TextStyle(
-                      fontSize: context.bodyFont,
-                      fontWeight: FontWeight.w600,
-                      color: cs.onSurfaceVariant)),
+              Text(
+                'Invite code',
+                style: TextStyle(
+                  fontSize: context.bodyFont,
+                  fontWeight: FontWeight.w600,
+                  color: cs.onSurfaceVariant,
+                ),
+              ),
               SizedBox(height: context.s),
               _BorderlessField(
                 controller: controller,
@@ -538,14 +593,16 @@ class _JoinSheet extends StatelessWidget {
                   style: FilledButton.styleFrom(
                     elevation: 0,
                     shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(context.w * 0.03),
+                      borderRadius: BorderRadius.circular(context.w * 0.03),
                     ),
                   ),
-                  child: Text('Join',
-                      style: TextStyle(
-                          fontSize: context.bodyFont,
-                          fontWeight: FontWeight.w600)),
+                  child: Text(
+                    'Join',
+                    style: TextStyle(
+                      fontSize: context.bodyFont,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
               ),
               SizedBox(height: context.s),
@@ -599,8 +656,9 @@ class _BorderlessField extends StatelessWidget {
       decoration: InputDecoration(
         hintText: hint,
         hintStyle: style.copyWith(
-            color: cs.outline,
-            fontWeight: big ? FontWeight.bold : FontWeight.w400),
+          color: cs.outline,
+          fontWeight: big ? FontWeight.bold : FontWeight.w400,
+        ),
         filled: false,
         fillColor: Colors.transparent,
         border: InputBorder.none,

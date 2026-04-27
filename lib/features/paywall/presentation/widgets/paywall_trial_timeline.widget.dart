@@ -42,11 +42,7 @@ class PaywallTrialTimeline extends StatelessWidget {
             if (i > 0) SizedBox(height: context.s),
             Row(
               children: [
-                Icon(
-                  rows[i].icon,
-                  color: cs.primary,
-                  size: context.w * 0.055,
-                ),
+                Icon(rows[i].icon, color: cs.primary, size: context.w * 0.055),
                 SizedBox(width: context.w * 0.035),
                 Expanded(
                   child: Column(

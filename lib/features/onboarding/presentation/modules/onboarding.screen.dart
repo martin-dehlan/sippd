@@ -134,7 +134,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         if (pending.isNotEmpty) {
           try {
             await profileCtrl.setDisplayName(pending);
-          } catch (_) {/* non-fatal */}
+          } catch (_) {
+            /* non-fatal */
+          }
         }
         await profileCtrl.markOnboardingCompleted();
         await ref.read(onboardingControllerProvider.notifier).markSeen();
@@ -295,8 +297,11 @@ class _Header extends StatelessWidget {
                 ? const SizedBox.shrink()
                 : IconButton(
                     onPressed: onBack,
-                    icon: Icon(PhosphorIconsRegular.arrowLeft,
-                        size: context.w * 0.05, color: cs.onSurface),
+                    icon: Icon(
+                      PhosphorIconsRegular.arrowLeft,
+                      size: context.w * 0.05,
+                      color: cs.onSurface,
+                    ),
                   ),
           ),
           SizedBox(width: context.w * 0.02),

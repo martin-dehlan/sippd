@@ -52,9 +52,7 @@ class WineStatsScreen extends ConsumerWidget {
                 // Hero stat card.
                 SliverToBoxAdapter(
                   child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: context.paddingH,
-                    ),
+                    padding: EdgeInsets.symmetric(horizontal: context.paddingH),
                     child: const StatsHero(),
                   ),
                 ),
@@ -104,8 +102,9 @@ class WineStatsScreen extends ConsumerWidget {
                 ] else ...[
                   SliverToBoxAdapter(
                     child: Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: context.paddingH),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: context.paddingH,
+                      ),
                       child: const StatsProLock(),
                     ),
                   ),
@@ -139,9 +138,7 @@ class _Header extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     return Animate(
-      effects: [
-        FadeEffect(duration: 360.ms),
-      ],
+      effects: [FadeEffect(duration: 360.ms)],
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

@@ -24,8 +24,9 @@ Future<bool> showPaywallSheet(
     useSafeArea: true,
     backgroundColor: cs.surface,
     shape: RoundedRectangleBorder(
-      borderRadius:
-          BorderRadius.vertical(top: Radius.circular(context.w * 0.05)),
+      borderRadius: BorderRadius.vertical(
+        top: Radius.circular(context.w * 0.05),
+      ),
     ),
     builder: (ctx) => _PaywallSheetContent(
       triggerSource: triggerSource,

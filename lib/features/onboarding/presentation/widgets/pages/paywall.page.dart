@@ -5,10 +5,7 @@ import '../../../../paywall/presentation/widgets/paywall_body.widget.dart';
 import '../onboarding_page_shell.widget.dart';
 
 class OnboardingPaywallPage extends StatelessWidget {
-  const OnboardingPaywallPage({
-    super.key,
-    required this.onFinish,
-  });
+  const OnboardingPaywallPage({super.key, required this.onFinish});
 
   /// Called for both purchase-success and "Maybe later" — onboarding has no
   /// screen left to render after this step, so either path hands off to the

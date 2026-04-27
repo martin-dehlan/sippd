@@ -22,9 +22,7 @@ class WineTypeBreakdown extends StatelessWidget {
         borderRadius: BorderRadius.circular(context.w * 0.05),
         border: Border.all(color: cs.outlineVariant, width: 0.5),
       ),
-      child: total == 0
-          ? _EmptyState(cs: cs)
-          : _content(context, cs, total),
+      child: total == 0 ? _EmptyState(cs: cs) : _content(context, cs, total),
     );
 
     return card;
@@ -61,8 +59,7 @@ class WineTypeBreakdown extends StatelessWidget {
                       _Highlight(
                         title: 'Most drunk',
                         value: _label(mostDrunk.type),
-                        chip:
-                            '${(mostDrunk.count / total * 100).round()}%',
+                        chip: '${(mostDrunk.count / total * 100).round()}%',
                         color: _colorFor(mostDrunk.type, cs),
                       ),
                       SizedBox(height: context.m),

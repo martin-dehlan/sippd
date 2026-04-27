@@ -226,8 +226,18 @@ class _ProStatusCard extends StatelessWidget {
 
   String _fmt(DateTime d) {
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return '${d.day} ${months[d.month - 1]} ${d.year}';
   }
@@ -382,10 +392,12 @@ Future<void> _openManagement(BuildContext context, CustomerInfo info) async {
 }
 
 Future<void> _restore(BuildContext context, WidgetRef ref) async {
-  ref.read(analyticsProvider).capture(
-    'paywall_restore_tap',
-    properties: const {'source': 'subscription_screen'},
-  );
+  ref
+      .read(analyticsProvider)
+      .capture(
+        'paywall_restore_tap',
+        properties: const {'source': 'subscription_screen'},
+      );
   try {
     final info = await ref.read(paywallProvider).restore();
     if (!context.mounted) return;
@@ -414,8 +426,9 @@ void _showCancelHelp(BuildContext context) {
     context: context,
     backgroundColor: cs.surface,
     shape: RoundedRectangleBorder(
-      borderRadius:
-          BorderRadius.vertical(top: Radius.circular(context.w * 0.05)),
+      borderRadius: BorderRadius.vertical(
+        top: Radius.circular(context.w * 0.05),
+      ),
     ),
     builder: (ctx) => SafeArea(
       child: Padding(
@@ -439,11 +452,11 @@ void _showCancelHelp(BuildContext context) {
             Text(
               isIos
                   ? '1. Tap "Manage subscription" above.\n'
-                      '2. The App Store opens with your subscriptions list.\n'
-                      '3. Tap Sippd Pro, then "Cancel Subscription".'
+                        '2. The App Store opens with your subscriptions list.\n'
+                        '3. Tap Sippd Pro, then "Cancel Subscription".'
                   : '1. Tap "Manage subscription" above.\n'
-                      '2. Google Play opens with your subscriptions list.\n'
-                      '3. Tap Sippd Pro, then "Cancel subscription".',
+                        '2. Google Play opens with your subscriptions list.\n'
+                        '3. Tap Sippd Pro, then "Cancel subscription".',
               style: TextStyle(
                 fontSize: context.bodyFont * 0.95,
                 color: cs.onSurfaceVariant,

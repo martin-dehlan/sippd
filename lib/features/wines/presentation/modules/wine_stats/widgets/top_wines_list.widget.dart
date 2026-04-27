@@ -9,11 +9,7 @@ class TopWinesList extends StatelessWidget {
   final List<WineEntity> wines;
   final int maxItems;
 
-  const TopWinesList({
-    super.key,
-    required this.wines,
-    this.maxItems = 5,
-  });
+  const TopWinesList({super.key, required this.wines, this.maxItems = 5});
 
   @override
   Widget build(BuildContext context) {
@@ -47,11 +43,7 @@ class _Row extends StatelessWidget {
   final WineEntity wine;
   final int delay;
 
-  const _Row({
-    required this.rank,
-    required this.wine,
-    required this.delay,
-  });
+  const _Row({required this.rank, required this.wine, required this.delay});
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +74,9 @@ class _Row extends StatelessWidget {
           color: cs.surface,
           borderRadius: BorderRadius.circular(context.w * 0.03),
           border: Border.all(
-            color: isFirst ? cs.primary.withValues(alpha: 0.5) : cs.outlineVariant,
+            color: isFirst
+                ? cs.primary.withValues(alpha: 0.5)
+                : cs.outlineVariant,
             width: isFirst ? 1 : 0.5,
           ),
         ),
@@ -178,9 +172,7 @@ class _RatingPill extends StatelessWidget {
         vertical: context.xs,
       ),
       decoration: BoxDecoration(
-        color: isFirst
-            ? cs.primary
-            : cs.primary.withValues(alpha: 0.12),
+        color: isFirst ? cs.primary : cs.primary.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(context.w * 0.03),
       ),
       child: Text(
