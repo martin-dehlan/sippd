@@ -426,8 +426,14 @@ class _StatsColumn extends StatelessWidget {
             ),
             SizedBox(height: context.l),
           ],
-          if (wine.country != null)
+          if (wine.region != null)
+            _StatItem(label: 'Region', value: wine.region!, isText: true)
+          else if (wine.country != null)
             _StatItem(label: 'Country', value: wine.country!, isText: true),
+          if (wine.region != null && wine.country != null) ...[
+            SizedBox(height: context.l),
+            _StatItem(label: 'Country', value: wine.country!, isText: true),
+          ],
         ],
       ),
     );

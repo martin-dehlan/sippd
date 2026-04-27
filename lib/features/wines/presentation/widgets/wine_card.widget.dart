@@ -127,7 +127,8 @@ class WineCardWidget extends StatelessWidget {
   List<String> _metaParts(WineEntity wine) {
     final parts = <String>[DateFormat('MMM yyyy').format(wine.createdAt)];
     if (wine.price != null) parts.add('€${wine.price!.toStringAsFixed(0)}');
-    if (wine.country != null) parts.add(wine.country!);
+    final origin = wine.region ?? wine.country;
+    if (origin != null) parts.add(origin);
     return parts;
   }
 }

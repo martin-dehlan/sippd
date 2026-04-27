@@ -77,6 +77,15 @@ class $WinesTableTable extends WinesTable
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _regionMeta = const VerificationMeta('region');
+  @override
+  late final GeneratedColumn<String> region = GeneratedColumn<String>(
+    'region',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _locationMeta = const VerificationMeta(
     'location',
   );
@@ -234,6 +243,7 @@ class $WinesTableTable extends WinesTable
     price,
     currency,
     country,
+    region,
     location,
     latitude,
     longitude,
@@ -306,6 +316,12 @@ class $WinesTableTable extends WinesTable
       context.handle(
         _countryMeta,
         country.isAcceptableOrUnknown(data['country']!, _countryMeta),
+      );
+    }
+    if (data.containsKey('region')) {
+      context.handle(
+        _regionMeta,
+        region.isAcceptableOrUnknown(data['region']!, _regionMeta),
       );
     }
     if (data.containsKey('location')) {
@@ -434,6 +450,10 @@ class $WinesTableTable extends WinesTable
         DriftSqlType.string,
         data['${effectivePrefix}country'],
       ),
+      region: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}region'],
+      ),
       location: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}location'],
@@ -507,6 +527,7 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
   final double? price;
   final String currency;
   final String? country;
+  final String? region;
   final String? location;
   final double? latitude;
   final double? longitude;
@@ -529,6 +550,7 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
     this.price,
     required this.currency,
     this.country,
+    this.region,
     this.location,
     this.latitude,
     this.longitude,
@@ -557,6 +579,9 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
     map['currency'] = Variable<String>(currency);
     if (!nullToAbsent || country != null) {
       map['country'] = Variable<String>(country);
+    }
+    if (!nullToAbsent || region != null) {
+      map['region'] = Variable<String>(region);
     }
     if (!nullToAbsent || location != null) {
       map['location'] = Variable<String>(location);
@@ -610,6 +635,9 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
       country: country == null && nullToAbsent
           ? const Value.absent()
           : Value(country),
+      region: region == null && nullToAbsent
+          ? const Value.absent()
+          : Value(region),
       location: location == null && nullToAbsent
           ? const Value.absent()
           : Value(location),
@@ -662,6 +690,7 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
       price: serializer.fromJson<double?>(json['price']),
       currency: serializer.fromJson<String>(json['currency']),
       country: serializer.fromJson<String?>(json['country']),
+      region: serializer.fromJson<String?>(json['region']),
       location: serializer.fromJson<String?>(json['location']),
       latitude: serializer.fromJson<double?>(json['latitude']),
       longitude: serializer.fromJson<double?>(json['longitude']),
@@ -689,6 +718,7 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
       'price': serializer.toJson<double?>(price),
       'currency': serializer.toJson<String>(currency),
       'country': serializer.toJson<String?>(country),
+      'region': serializer.toJson<String?>(region),
       'location': serializer.toJson<String?>(location),
       'latitude': serializer.toJson<double?>(latitude),
       'longitude': serializer.toJson<double?>(longitude),
@@ -714,6 +744,7 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
     Value<double?> price = const Value.absent(),
     String? currency,
     Value<String?> country = const Value.absent(),
+    Value<String?> region = const Value.absent(),
     Value<String?> location = const Value.absent(),
     Value<double?> latitude = const Value.absent(),
     Value<double?> longitude = const Value.absent(),
@@ -736,6 +767,7 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
     price: price.present ? price.value : this.price,
     currency: currency ?? this.currency,
     country: country.present ? country.value : this.country,
+    region: region.present ? region.value : this.region,
     location: location.present ? location.value : this.location,
     latitude: latitude.present ? latitude.value : this.latitude,
     longitude: longitude.present ? longitude.value : this.longitude,
@@ -762,6 +794,7 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
       price: data.price.present ? data.price.value : this.price,
       currency: data.currency.present ? data.currency.value : this.currency,
       country: data.country.present ? data.country.value : this.country,
+      region: data.region.present ? data.region.value : this.region,
       location: data.location.present ? data.location.value : this.location,
       latitude: data.latitude.present ? data.latitude.value : this.latitude,
       longitude: data.longitude.present ? data.longitude.value : this.longitude,
@@ -793,6 +826,7 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
           ..write('price: $price, ')
           ..write('currency: $currency, ')
           ..write('country: $country, ')
+          ..write('region: $region, ')
           ..write('location: $location, ')
           ..write('latitude: $latitude, ')
           ..write('longitude: $longitude, ')
@@ -820,6 +854,7 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
     price,
     currency,
     country,
+    region,
     location,
     latitude,
     longitude,
@@ -846,6 +881,7 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
           other.price == this.price &&
           other.currency == this.currency &&
           other.country == this.country &&
+          other.region == this.region &&
           other.location == this.location &&
           other.latitude == this.latitude &&
           other.longitude == this.longitude &&
@@ -870,6 +906,7 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
   final Value<double?> price;
   final Value<String> currency;
   final Value<String?> country;
+  final Value<String?> region;
   final Value<String?> location;
   final Value<double?> latitude;
   final Value<double?> longitude;
@@ -893,6 +930,7 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
     this.price = const Value.absent(),
     this.currency = const Value.absent(),
     this.country = const Value.absent(),
+    this.region = const Value.absent(),
     this.location = const Value.absent(),
     this.latitude = const Value.absent(),
     this.longitude = const Value.absent(),
@@ -917,6 +955,7 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
     this.price = const Value.absent(),
     this.currency = const Value.absent(),
     this.country = const Value.absent(),
+    this.region = const Value.absent(),
     this.location = const Value.absent(),
     this.latitude = const Value.absent(),
     this.longitude = const Value.absent(),
@@ -945,6 +984,7 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
     Expression<double>? price,
     Expression<String>? currency,
     Expression<String>? country,
+    Expression<String>? region,
     Expression<String>? location,
     Expression<double>? latitude,
     Expression<double>? longitude,
@@ -969,6 +1009,7 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
       if (price != null) 'price': price,
       if (currency != null) 'currency': currency,
       if (country != null) 'country': country,
+      if (region != null) 'region': region,
       if (location != null) 'location': location,
       if (latitude != null) 'latitude': latitude,
       if (longitude != null) 'longitude': longitude,
@@ -995,6 +1036,7 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
     Value<double?>? price,
     Value<String>? currency,
     Value<String?>? country,
+    Value<String?>? region,
     Value<String?>? location,
     Value<double?>? latitude,
     Value<double?>? longitude,
@@ -1019,6 +1061,7 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
       price: price ?? this.price,
       currency: currency ?? this.currency,
       country: country ?? this.country,
+      region: region ?? this.region,
       location: location ?? this.location,
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
@@ -1060,6 +1103,9 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
     }
     if (country.present) {
       map['country'] = Variable<String>(country.value);
+    }
+    if (region.present) {
+      map['region'] = Variable<String>(region.value);
     }
     if (location.present) {
       map['location'] = Variable<String>(location.value);
@@ -1119,6 +1165,7 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
           ..write('price: $price, ')
           ..write('currency: $currency, ')
           ..write('country: $country, ')
+          ..write('region: $region, ')
           ..write('location: $location, ')
           ..write('latitude: $latitude, ')
           ..write('longitude: $longitude, ')
@@ -2015,6 +2062,7 @@ typedef $$WinesTableTableCreateCompanionBuilder =
       Value<double?> price,
       Value<String> currency,
       Value<String?> country,
+      Value<String?> region,
       Value<String?> location,
       Value<double?> latitude,
       Value<double?> longitude,
@@ -2040,6 +2088,7 @@ typedef $$WinesTableTableUpdateCompanionBuilder =
       Value<double?> price,
       Value<String> currency,
       Value<String?> country,
+      Value<String?> region,
       Value<String?> location,
       Value<double?> latitude,
       Value<double?> longitude,
@@ -2098,6 +2147,11 @@ class $$WinesTableTableFilterComposer
 
   ColumnFilters<String> get country => $composableBuilder(
     column: $table.country,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get region => $composableBuilder(
+    column: $table.region,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2216,6 +2270,11 @@ class $$WinesTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get region => $composableBuilder(
+    column: $table.region,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get location => $composableBuilder(
     column: $table.location,
     builder: (column) => ColumnOrderings(column),
@@ -2317,6 +2376,9 @@ class $$WinesTableTableAnnotationComposer
   GeneratedColumn<String> get country =>
       $composableBuilder(column: $table.country, builder: (column) => column);
 
+  GeneratedColumn<String> get region =>
+      $composableBuilder(column: $table.region, builder: (column) => column);
+
   GeneratedColumn<String> get location =>
       $composableBuilder(column: $table.location, builder: (column) => column);
 
@@ -2402,6 +2464,7 @@ class $$WinesTableTableTableManager
                 Value<double?> price = const Value.absent(),
                 Value<String> currency = const Value.absent(),
                 Value<String?> country = const Value.absent(),
+                Value<String?> region = const Value.absent(),
                 Value<String?> location = const Value.absent(),
                 Value<double?> latitude = const Value.absent(),
                 Value<double?> longitude = const Value.absent(),
@@ -2425,6 +2488,7 @@ class $$WinesTableTableTableManager
                 price: price,
                 currency: currency,
                 country: country,
+                region: region,
                 location: location,
                 latitude: latitude,
                 longitude: longitude,
@@ -2450,6 +2514,7 @@ class $$WinesTableTableTableManager
                 Value<double?> price = const Value.absent(),
                 Value<String> currency = const Value.absent(),
                 Value<String?> country = const Value.absent(),
+                Value<String?> region = const Value.absent(),
                 Value<String?> location = const Value.absent(),
                 Value<double?> latitude = const Value.absent(),
                 Value<double?> longitude = const Value.absent(),
@@ -2473,6 +2538,7 @@ class $$WinesTableTableTableManager
                 price: price,
                 currency: currency,
                 country: country,
+                region: region,
                 location: location,
                 latitude: latitude,
                 longitude: longitude,

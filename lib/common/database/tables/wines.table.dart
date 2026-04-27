@@ -9,6 +9,7 @@ class WinesTable extends Table {
   RealColumn get price => real().nullable()();
   TextColumn get currency => text().withDefault(const Constant('EUR'))();
   TextColumn get country => text().nullable()();
+  TextColumn get region => text().nullable()();
   TextColumn get location => text().nullable()();
   RealColumn get latitude => real().nullable()();
   RealColumn get longitude => real().nullable()();

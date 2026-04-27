@@ -28,6 +28,7 @@ mixin _$WineModel {
   double? get price => throw _privateConstructorUsedError;
   String get currency => throw _privateConstructorUsedError;
   String? get country => throw _privateConstructorUsedError;
+  String? get region => throw _privateConstructorUsedError;
   String? get location => throw _privateConstructorUsedError;
   double? get latitude => throw _privateConstructorUsedError;
   double? get longitude => throw _privateConstructorUsedError;
@@ -72,6 +73,7 @@ abstract class $WineModelCopyWith<$Res> {
     double? price,
     String currency,
     String? country,
+    String? region,
     String? location,
     double? latitude,
     double? longitude,
@@ -111,6 +113,7 @@ class _$WineModelCopyWithImpl<$Res, $Val extends WineModel>
     Object? price = freezed,
     Object? currency = null,
     Object? country = freezed,
+    Object? region = freezed,
     Object? location = freezed,
     Object? latitude = freezed,
     Object? longitude = freezed,
@@ -155,6 +158,10 @@ class _$WineModelCopyWithImpl<$Res, $Val extends WineModel>
             country: freezed == country
                 ? _value.country
                 : country // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            region: freezed == region
+                ? _value.region
+                : region // ignore: cast_nullable_to_non_nullable
                       as String?,
             location: freezed == location
                 ? _value.location
@@ -235,6 +242,7 @@ abstract class _$$WineModelImplCopyWith<$Res>
     double? price,
     String currency,
     String? country,
+    String? region,
     String? location,
     double? latitude,
     double? longitude,
@@ -273,6 +281,7 @@ class __$$WineModelImplCopyWithImpl<$Res>
     Object? price = freezed,
     Object? currency = null,
     Object? country = freezed,
+    Object? region = freezed,
     Object? location = freezed,
     Object? latitude = freezed,
     Object? longitude = freezed,
@@ -317,6 +326,10 @@ class __$$WineModelImplCopyWithImpl<$Res>
         country: freezed == country
             ? _value.country
             : country // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        region: freezed == region
+            ? _value.region
+            : region // ignore: cast_nullable_to_non_nullable
                   as String?,
         location: freezed == location
             ? _value.location
@@ -390,6 +403,7 @@ class _$WineModelImpl implements _WineModel {
     this.price,
     this.currency = 'EUR',
     this.country,
+    this.region,
     this.location,
     this.latitude,
     this.longitude,
@@ -424,6 +438,8 @@ class _$WineModelImpl implements _WineModel {
   final String currency;
   @override
   final String? country;
+  @override
+  final String? region;
   @override
   final String? location;
   @override
@@ -462,7 +478,7 @@ class _$WineModelImpl implements _WineModel {
 
   @override
   String toString() {
-    return 'WineModel(id: $id, name: $name, rating: $rating, type: $type, price: $price, currency: $currency, country: $country, location: $location, latitude: $latitude, longitude: $longitude, notes: $notes, imageUrl: $imageUrl, localImagePath: $localImagePath, vintage: $vintage, grape: $grape, winery: $winery, nameNorm: $nameNorm, userId: $userId, visibility: $visibility, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'WineModel(id: $id, name: $name, rating: $rating, type: $type, price: $price, currency: $currency, country: $country, region: $region, location: $location, latitude: $latitude, longitude: $longitude, notes: $notes, imageUrl: $imageUrl, localImagePath: $localImagePath, vintage: $vintage, grape: $grape, winery: $winery, nameNorm: $nameNorm, userId: $userId, visibility: $visibility, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -478,6 +494,7 @@ class _$WineModelImpl implements _WineModel {
             (identical(other.currency, currency) ||
                 other.currency == currency) &&
             (identical(other.country, country) || other.country == country) &&
+            (identical(other.region, region) || other.region == region) &&
             (identical(other.location, location) ||
                 other.location == location) &&
             (identical(other.latitude, latitude) ||
@@ -514,6 +531,7 @@ class _$WineModelImpl implements _WineModel {
     price,
     currency,
     country,
+    region,
     location,
     latitude,
     longitude,
@@ -553,6 +571,7 @@ abstract class _WineModel implements WineModel {
     final double? price,
     final String currency,
     final String? country,
+    final String? region,
     final String? location,
     final double? latitude,
     final double? longitude,
@@ -586,6 +605,8 @@ abstract class _WineModel implements WineModel {
   String get currency;
   @override
   String? get country;
+  @override
+  String? get region;
   @override
   String? get location;
   @override

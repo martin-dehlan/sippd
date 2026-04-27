@@ -8,6 +8,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:latlong2/latlong.dart';
 
+import '../../../../common/data/wine_regions.dart';
 import '../../../../common/utils/responsive.dart';
 import '../../../../common/widgets/text_input_sheet.dart';
 import '../../../../common/widgets/year_picker_sheet.dart';
@@ -18,6 +19,7 @@ import 'rating_sheet.dart';
 import 'wine_country_picker.widget.dart';
 import 'wine_memories_editor.widget.dart';
 import 'wine_photo_picker.widget.dart';
+import 'wine_region_picker.widget.dart';
 
 class WineFormData {
   final String name;
@@ -28,6 +30,7 @@ class WineFormData {
   final String? grape;
   final String? winery;
   final String? country;
+  final String? region;
   final LocationEntity? location;
   final String? notes;
   final String? imageUrl;
@@ -43,6 +46,7 @@ class WineFormData {
     this.grape,
     this.winery,
     this.country,
+    this.region,
     this.location,
     this.notes,
     this.imageUrl,
@@ -88,6 +92,7 @@ class _WineFormState extends State<WineForm>
   String? _grape;
   String? _winery;
   String? _country;
+  String? _region;
   LocationEntity? _location;
   String? _notes;
 
@@ -121,6 +126,7 @@ class _WineFormState extends State<WineForm>
       _grape = init.grape;
       _winery = init.winery;
       _country = init.country;
+      _region = init.region;
       _location = init.location;
       _notes = init.notes;
       _imageUrl = init.imageUrl;
@@ -157,6 +163,7 @@ class _WineFormState extends State<WineForm>
         grape: _grape,
         winery: _winery,
         country: _country,
+        region: _region,
         location: _location,
         notes: _notes,
         imageUrl: _imageUrl,
@@ -253,6 +260,36 @@ class _WineFormState extends State<WineForm>
     _scheduleAutoSave();
   }
 
+  void _editOrigin() {
+    showWineCountryPicker(
+      context: context,
+      selected: _country,
+      onChanged: (c) {
+        final countryChanged = c != _country;
+        setState(() {
+          _country = c;
+          if (countryChanged) _region = null;
+        });
+        _scheduleAutoSave();
+        if (c != null && hasRegionsFor(c)) {
+          // Defer to let the country sheet finish dismissing.
+          Future.microtask(() {
+            if (!mounted) return;
+            showWineRegionPicker(
+              context: context,
+              country: c,
+              selected: _region,
+              onChanged: (r) {
+                setState(() => _region = r);
+                _scheduleAutoSave();
+              },
+            );
+          });
+        }
+      },
+    );
+  }
+
   Future<void> _editPlace() async {
     final result = await showLocationSearchSheet(
       context: context,
@@ -329,14 +366,8 @@ class _WineFormState extends State<WineForm>
                       SizedBox(height: context.l),
                       WineFormCountryStat(
                         country: _country,
-                        onTap: () => showWineCountryPicker(
-                          context: context,
-                          selected: _country,
-                          onChanged: (c) {
-                            setState(() => _country = c);
-                            _scheduleAutoSave();
-                          },
-                        ),
+                        region: _region,
+                        onTap: _editOrigin,
                       ),
                     ],
                   ),
@@ -681,35 +712,52 @@ class WineFormTypeChoice extends StatelessWidget {
 
 class WineFormCountryStat extends StatelessWidget {
   final String? country;
+  final String? region;
   final VoidCallback onTap;
   const WineFormCountryStat({
     super.key,
     required this.country,
+    required this.region,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final headline = region ?? country;
+    final hasValue = headline != null;
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: onTap,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          const WineFormStatLabel(text: 'Country'),
+          WineFormStatLabel(text: region != null ? 'Region' : 'Country'),
           SizedBox(height: context.xs * 0.3),
           Text(
-            country ?? '—',
+            headline ?? '—',
             textAlign: TextAlign.right,
             style: TextStyle(
               fontSize: context.bodyFont * 1.1,
               fontWeight: FontWeight.bold,
-              color: country != null ? cs.onSurface : cs.outline,
+              color: hasValue ? cs.onSurface : cs.outline,
             ),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
+          if (region != null && country != null) ...[
+            SizedBox(height: context.xs * 0.3),
+            Text(
+              country!,
+              textAlign: TextAlign.right,
+              style: TextStyle(
+                fontSize: context.captionFont,
+                color: cs.onSurfaceVariant,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
         ],
       ),
     );

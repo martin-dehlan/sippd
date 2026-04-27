@@ -82,6 +82,7 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
       type: data.type,
       price: data.price,
       country: data.country,
+      region: data.region,
       location: data.location?.shortDisplay,
       latitude: data.location?.lat,
       longitude: data.location?.lng,
