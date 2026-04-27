@@ -323,8 +323,8 @@ class _WineOverflowMenu extends StatelessWidget {
             value: _WineMenuAction.shareImage,
             child: Row(
               children: [
-                Icon(PhosphorIconsFill.megaphoneSimple,
-                    size: context.w * 0.045, color: cs.primary),
+                Icon(PhosphorIconsRegular.megaphoneSimple,
+                    size: context.w * 0.045, color: cs.onSurface),
                 SizedBox(width: context.s),
                 const Text('Share rating'),
               ],
