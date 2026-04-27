@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../../common/services/analytics/analytics.provider.dart';
 import '../../../../../common/utils/responsive.dart';
-import '../../../../../core/routes/app.routes.dart';
 import '../../../controller/paywall.provider.dart';
 import '../../../data/services/paywall.service.dart';
+import '../../widgets/paywall_body.widget.dart';
 
 /// Already-Pro and free-plan management surface. Mirrors the iOS Settings
 /// → Subscriptions pattern: a status card, deep link to the store-native
@@ -62,63 +61,95 @@ class _SubscriptionContent extends ConsumerWidget {
     final entitlement = info?.entitlements.active[proEntitlementId];
     final isPro = entitlement != null;
 
+    if (isPro) {
+      return _ProManagementContent(info: info!, entitlement: entitlement);
+    }
+    return const _FreeUpsellContent();
+  }
+}
+
+/// Free-tier view: render the same animated paywall body the standalone
+/// /paywall route uses, embedded directly so the user can subscribe in
+/// place. CustomerInfo updates via stream → screen rebuilds into the
+/// management view automatically on success, no manual nav needed.
+class _FreeUpsellContent extends StatelessWidget {
+  const _FreeUpsellContent();
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: EdgeInsets.fromLTRB(
+        context.paddingH,
+        0,
+        context.paddingH,
+        context.l,
+      ),
+      child: const PaywallBody(
+        triggerSource: 'subscription_screen',
+        showHero: true,
+        eyebrow: 'Sippd Pro',
+        headline: 'See how you\nreally taste.',
+        subhead:
+            'Map every bottle, leaderboard with your friends, '
+            'and share cards that actually look good.',
+        benefits: [
+          (
+            icon: PhosphorIconsRegular.usersThree,
+            title: 'Unlimited groups & members',
+            subtitle: 'Bring your whole tasting circle.',
+          ),
+          (
+            icon: PhosphorIconsRegular.chartLineUp,
+            title: 'Deep stats & taste insights',
+            subtitle: 'Map · prices · top regions · podium.',
+          ),
+          (
+            icon: PhosphorIconsRegular.shareNetwork,
+            title: 'Premium share-cards & themes',
+            subtitle: 'Stand out everywhere you post.',
+          ),
+        ],
+        primaryLabel: 'Continue',
+      ),
+    );
+  }
+}
+
+/// Pro-tier view: status card + the three management actions Apple's
+/// own settings → subscriptions surface offers.
+class _ProManagementContent extends ConsumerWidget {
+  const _ProManagementContent({
+    required this.info,
+    required this.entitlement,
+  });
+
+  final CustomerInfo info;
+  final EntitlementInfo entitlement;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
     return ListView(
       padding: EdgeInsets.symmetric(horizontal: context.paddingH),
       children: [
         SizedBox(height: context.m),
-        if (isPro)
-          _ProStatusCard(entitlement: entitlement)
-        else
-          const _FreePlanCard(),
+        _ProStatusCard(entitlement: entitlement),
         SizedBox(height: context.l),
-        if (isPro) ...[
-          _MenuTile(
-            icon: PhosphorIconsRegular.arrowSquareOut,
-            label: 'Manage subscription',
-            subtitle: 'Opens in the App Store or Play Store',
-            onTap: () => _openManagement(context, info!),
-          ),
-          _MenuTile(
-            icon: PhosphorIconsRegular.clockCounterClockwise,
-            label: 'Restore purchases',
-            onTap: () => _restore(context, ref),
-          ),
-          _MenuTile(
-            icon: PhosphorIconsRegular.question,
-            label: 'How to cancel',
-            onTap: () => _showCancelHelp(context),
-          ),
-        ] else ...[
-          SizedBox(
-            width: double.infinity,
-            height: context.h * 0.06,
-            child: FilledButton(
-              onPressed: () => context.push(
-                AppRoutes.paywall,
-                extra: const {'source': 'subscription_screen'},
-              ),
-              style: FilledButton.styleFrom(
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(context.w * 0.03),
-                ),
-              ),
-              child: Text(
-                'See Pro plans',
-                style: TextStyle(
-                  fontSize: context.bodyFont,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
-          ),
-          SizedBox(height: context.m),
-          _MenuTile(
-            icon: PhosphorIconsRegular.clockCounterClockwise,
-            label: 'Restore purchases',
-            onTap: () => _restore(context, ref),
-          ),
-        ],
+        _MenuTile(
+          icon: PhosphorIconsRegular.arrowSquareOut,
+          label: 'Manage subscription',
+          subtitle: 'Opens in the App Store or Play Store',
+          onTap: () => _openManagement(context, info),
+        ),
+        _MenuTile(
+          icon: PhosphorIconsRegular.clockCounterClockwise,
+          label: 'Restore purchases',
+          onTap: () => _restore(context, ref),
+        ),
+        _MenuTile(
+          icon: PhosphorIconsRegular.question,
+          label: 'How to cancel',
+          onTap: () => _showCancelHelp(context),
+        ),
         SizedBox(height: context.xl),
         const _Disclosure(),
         SizedBox(height: context.l),
@@ -232,45 +263,6 @@ class _ProStatusCard extends StatelessWidget {
       'Dec',
     ];
     return '${d.day} ${months[d.month - 1]} ${d.year}';
-  }
-}
-
-class _FreePlanCard extends StatelessWidget {
-  const _FreePlanCard();
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return Container(
-      padding: EdgeInsets.all(context.w * 0.05),
-      decoration: BoxDecoration(
-        color: cs.surfaceContainer,
-        borderRadius: BorderRadius.circular(context.w * 0.04),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'On the Free plan',
-            style: TextStyle(
-              fontSize: context.bodyFont * 1.1,
-              fontWeight: FontWeight.w800,
-              color: cs.onSurface,
-              letterSpacing: -0.3,
-            ),
-          ),
-          SizedBox(height: context.xs),
-          Text(
-            'Upgrade to unlock unlimited groups, deep stats and more.',
-            style: TextStyle(
-              fontSize: context.bodyFont * 0.95,
-              color: cs.onSurfaceVariant,
-              height: 1.4,
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }
 
