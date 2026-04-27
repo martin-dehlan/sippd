@@ -28,6 +28,7 @@ import '../../features/tastings/presentation/modules/tasting_detail/tasting_deta
 import '../../features/tastings/presentation/modules/tasting_edit/tasting_edit.screen.dart';
 import '../../features/wines/presentation/modules/wine_list/wine_list.screen.dart';
 import '../../features/wines/presentation/modules/wine_add/wine_add.screen.dart';
+import '../../features/wines/presentation/modules/wine_stats/wine_stats.screen.dart';
 import '../../features/wines/presentation/modules/wine_detail/wine_detail.screen.dart';
 import '../../features/wines/presentation/modules/wine_edit/wine_edit.screen.dart';
 import 'app.routes.dart';
@@ -190,6 +191,28 @@ GoRouter goRouter(GoRouterRef ref) {
       ),
 
       // Wine routes (outside shell)
+      GoRoute(
+        path: AppRoutes.wineStats,
+        // Custom slide-from-right transition so the stats screen feels
+        // like a sister page to the wines list rather than a stacked card.
+        pageBuilder: (context, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: const WineStatsScreen(),
+          transitionDuration: const Duration(milliseconds: 320),
+          reverseTransitionDuration: const Duration(milliseconds: 260),
+          transitionsBuilder: (_, animation, _, child) => SlideTransition(
+            position: Tween<Offset>(
+              begin: const Offset(1, 0),
+              end: Offset.zero,
+            ).animate(CurvedAnimation(
+              parent: animation,
+              curve: Curves.easeOutCubic,
+              reverseCurve: Curves.easeInCubic,
+            )),
+            child: child,
+          ),
+        ),
+      ),
       GoRoute(
         path: AppRoutes.wineAdd,
         builder: (context, state) => const WineAddScreen(),

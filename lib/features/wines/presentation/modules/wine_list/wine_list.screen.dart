@@ -85,6 +85,12 @@ class WineListScreen extends ConsumerWidget {
                     ),
                     SizedBox(width: context.w * 0.01),
                     _HeaderIconButton(
+                      icon: PhosphorIconsRegular.chartBar,
+                      onTap: () => context.push(AppRoutes.wineStats),
+                      tooltip: 'Your stats',
+                    ),
+                    SizedBox(width: context.w * 0.01),
+                    _HeaderIconButton(
                       icon: PhosphorIconsRegular.plus,
                       onTap: () => context.push(AppRoutes.wineAdd),
                       tooltip: 'Add wine',
