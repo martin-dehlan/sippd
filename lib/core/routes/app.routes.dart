@@ -17,6 +17,7 @@ class AppRoutes {
   static const String profileEdit = '/profile/edit';
 
   // Wine
+  static const String wineStats = '/wines/stats';
   static const String wineDetail = '/wines/:id';
   static const String wineAdd = '/wines/add';
   static const String wineEdit = '/wines/:id/edit';
