@@ -39,12 +39,27 @@ class PaywallScreen extends ConsumerWidget {
           ),
           child: PaywallBody(
             triggerSource: triggerSource ?? 'standalone',
-            headline: 'Sippd Pro',
-            subhead: 'More groups, deeper insights, premium share-cards.',
+            showHero: true,
+            headline: 'See how you\nreally taste.',
+            subhead:
+                'Map every bottle, leaderboard with your friends, '
+                'and share cards that actually look good.',
             benefits: const [
-              'Unlimited groups & members',
-              'Deep stats & taste insights',
-              'Premium share-cards & themes',
+              (
+                icon: PhosphorIconsRegular.usersThree,
+                title: 'Unlimited groups & members',
+                subtitle: 'Bring your whole tasting circle.',
+              ),
+              (
+                icon: PhosphorIconsRegular.chartLineUp,
+                title: 'Deep stats & taste insights',
+                subtitle: 'Map · prices · top regions · podium.',
+              ),
+              (
+                icon: PhosphorIconsRegular.shareNetwork,
+                title: 'Premium share-cards & themes',
+                subtitle: 'Stand out everywhere you post.',
+              ),
             ],
             primaryLabel: 'Continue',
             onSuccess: () => Navigator.of(context).pop(true),

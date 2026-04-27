@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../common/utils/responsive.dart';
+import 'paywall_benefit.widget.dart';
 import 'paywall_body.widget.dart';
 
 /// Modal bottom sheet that hosts [PaywallBody] for contextual gates
@@ -12,7 +13,7 @@ Future<bool> showPaywallSheet(
   required String triggerSource,
   required String headline,
   required String subhead,
-  required List<String> benefits,
+  required List<PaywallBenefit> benefits,
   IconData? heroIcon,
   String primaryLabel = 'Try Pro free for 7 days',
   String dismissLabel = 'Not now',
@@ -55,7 +56,7 @@ class _PaywallSheetContent extends StatelessWidget {
   final String triggerSource;
   final String headline;
   final String subhead;
-  final List<String> benefits;
+  final List<PaywallBenefit> benefits;
   final IconData? heroIcon;
   final String primaryLabel;
   final String dismissLabel;
@@ -64,7 +65,7 @@ class _PaywallSheetContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     return ConstrainedBox(
-      constraints: BoxConstraints(maxHeight: context.h * 0.88),
+      constraints: BoxConstraints(maxHeight: context.h * 0.92),
       child: SingleChildScrollView(
         padding: EdgeInsets.symmetric(
           horizontal: context.paddingH,
@@ -88,16 +89,17 @@ class _PaywallSheetContent extends StatelessWidget {
               SizedBox(height: context.l),
               Center(
                 child: Container(
-                  width: context.w * 0.18,
-                  height: context.w * 0.18,
+                  width: context.w * 0.2,
+                  height: context.w * 0.2,
                   decoration: BoxDecoration(
                     color: cs.primaryContainer,
                     shape: BoxShape.circle,
+                    border: Border.all(color: cs.primary, width: 1.5),
                   ),
                   child: Icon(
                     heroIcon,
                     color: cs.primary,
-                    size: context.w * 0.09,
+                    size: context.w * 0.1,
                   ),
                 ),
               ),
@@ -136,9 +138,21 @@ Future<bool> showGroupLimitPaywall(
         'You\'re on all $currentGroupCount free groups. Pro lifts the '
         'limit and adds leaderboards plus deeper insights.',
     benefits: const [
-      'Unlimited groups & members',
-      'Group leaderboards',
-      'Deep stats & taste insights',
+      (
+        icon: PhosphorIconsRegular.usersThree,
+        title: 'Unlimited groups & members',
+        subtitle: 'Bring your whole tasting circle.',
+      ),
+      (
+        icon: PhosphorIconsRegular.trophy,
+        title: 'Group leaderboards',
+        subtitle: 'See who rates strict, who shares your taste.',
+      ),
+      (
+        icon: PhosphorIconsRegular.chartLineUp,
+        title: 'Deep stats & taste insights',
+        subtitle: 'Map · prices · top regions.',
+      ),
     ],
   );
 }

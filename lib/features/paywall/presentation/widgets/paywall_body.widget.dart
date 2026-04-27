@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
@@ -7,21 +8,24 @@ import '../../../../common/services/analytics/analytics.provider.dart';
 import '../../../../common/utils/responsive.dart';
 import '../../controller/paywall.provider.dart';
 import '../../data/services/paywall.service.dart';
-import 'paywall_feature_row.widget.dart';
+import 'paywall_benefit.widget.dart';
+import 'paywall_hero.widget.dart';
 import 'paywall_plan_card.widget.dart';
 import 'paywall_trial_timeline.widget.dart';
 
-/// Reusable paywall body — renders headline, benefits, plan picker, primary
-/// CTA, dismiss link and footer disclosure. The host screen owns the chrome
-/// (Scaffold, sheet, AppBar) so the same content can live in onboarding,
-/// bottom sheets, and stand-alone paywall screens without duplication.
+/// Reusable paywall body — renders an optional hero, headline, benefits,
+/// plan picker, primary CTA, dismiss link and footer disclosure. Host
+/// screens own the chrome (Scaffold, sheet, AppBar) so the same content
+/// can live in onboarding, contextual sheets and the standalone screen
+/// without duplication.
 class PaywallBody extends ConsumerStatefulWidget {
   const PaywallBody({
     super.key,
     required this.triggerSource,
+    required this.benefits,
     this.headline,
     this.subhead,
-    required this.benefits,
+    this.showHero = false,
     this.showTrialTimeline = false,
     this.primaryLabel,
     this.dismissLabel,
@@ -30,9 +34,10 @@ class PaywallBody extends ConsumerStatefulWidget {
   });
 
   final String triggerSource;
+  final List<PaywallBenefit> benefits;
   final String? headline;
   final String? subhead;
-  final List<String> benefits;
+  final bool showHero;
   final bool showTrialTimeline;
   final String? primaryLabel;
   final String? dismissLabel;
@@ -134,118 +139,209 @@ class _PaywallBodyState extends ConsumerState<PaywallBody> {
     }
   }
 
+  /// Computes how much the annual plan saves vs paying monthly for a year.
+  /// Returns null if either plan is missing or the math doesn't make sense.
+  int? _annualSavingsPct(List<Package> packages) {
+    final monthly = _firstOrNull(
+      packages,
+      (p) => p.packageType == PackageType.monthly,
+    );
+    final annual = _firstOrNull(
+      packages,
+      (p) => p.packageType == PackageType.annual,
+    );
+    if (monthly == null || annual == null) return null;
+    final monthlyPrice = monthly.storeProduct.price;
+    final annualPrice = annual.storeProduct.price;
+    if (monthlyPrice <= 0 || annualPrice <= 0) return null;
+    final yearlyAtMonthly = monthlyPrice * 12;
+    if (yearlyAtMonthly <= annualPrice) return null;
+    final pct = ((yearlyAtMonthly - annualPrice) / yearlyAtMonthly) * 100;
+    return pct.round();
+  }
+
+  Package? _firstOrNull(List<Package> ps, bool Function(Package) test) {
+    for (final p in ps) {
+      if (test(p)) return p;
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final offeringsAsync = ref.watch(paywallOfferingsProvider);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        if (widget.headline != null) ...[
+    final children = <Widget>[];
+
+    if (widget.showHero) {
+      children
+        ..add(
+          Center(child: const PaywallHero())
+              .animate()
+              .fadeIn(duration: 360.ms)
+              .moveY(begin: 12, end: 0, duration: 360.ms),
+        )
+        ..add(SizedBox(height: context.l));
+    }
+
+    if (widget.headline != null) {
+      children
+        ..add(
           Text(
-            widget.headline!,
-            style: GoogleFonts.playfairDisplay(
-              fontSize: context.titleFont,
-              fontWeight: FontWeight.w800,
-              letterSpacing: -0.5,
-              height: 1.1,
-              color: cs.onSurface,
-            ),
-          ),
-          SizedBox(height: context.s),
-        ],
-        if (widget.subhead != null) ...[
-          Text(
-            widget.subhead!,
-            style: TextStyle(
-              fontSize: context.bodyFont * 0.95,
-              height: 1.4,
-              color: cs.onSurfaceVariant,
-            ),
-          ),
-          SizedBox(height: context.l),
-        ],
-        ...widget.benefits.map((b) => PaywallFeatureRow(label: b)),
-        if (widget.showTrialTimeline) ...[
-          SizedBox(height: context.m),
-          const PaywallTrialTimeline(),
-        ],
-        SizedBox(height: context.l),
-        offeringsAsync.when(
-          loading: () => Padding(
-            padding: EdgeInsets.symmetric(vertical: context.l),
-            child: const Center(child: CircularProgressIndicator()),
-          ),
-          error: (_, _) => Padding(
-            padding: EdgeInsets.symmetric(vertical: context.m),
-            child: Text(
-              'Could not load plans. Please try again.',
-              style: TextStyle(color: cs.onSurfaceVariant),
-            ),
-          ),
-          data: (offerings) {
-            final packages =
-                offerings?.current?.availablePackages ?? const <Package>[];
-            if (packages.isEmpty) {
-              return Padding(
-                padding: EdgeInsets.symmetric(vertical: context.m),
-                child: Text(
-                  'No plans available yet.',
-                  style: TextStyle(color: cs.onSurfaceVariant),
+                widget.headline!,
+                textAlign: widget.showHero ? TextAlign.center : TextAlign.start,
+                style: GoogleFonts.playfairDisplay(
+                  fontSize: context.titleFont,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -0.5,
+                  height: 1.1,
+                  color: cs.onSurface,
                 ),
-              );
-            }
-            _maybePreselectAnnual(packages);
-            return Column(
-              children: [
-                for (var i = 0; i < packages.length; i++) ...[
-                  if (i > 0) SizedBox(height: context.s),
-                  PaywallPlanCard(
-                    package: packages[i],
-                    selected: _selected?.identifier == packages[i].identifier,
-                    onTap: () => setState(() => _selected = packages[i]),
-                  ),
-                ],
-              ],
-            );
-          },
-        ),
-        SizedBox(height: context.m),
-        SizedBox(
-          height: context.h * 0.065,
-          child: FilledButton(
-            onPressed: _selected == null || _purchasing ? null : _purchase,
-            style: FilledButton.styleFrom(
-              elevation: 0,
-              disabledBackgroundColor: cs.surfaceContainer,
-              disabledForegroundColor: cs.outline,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(context.w * 0.04),
-              ),
+              )
+              .animate()
+              .fadeIn(delay: 120.ms, duration: 360.ms)
+              .moveY(begin: 8, end: 0, delay: 120.ms, duration: 360.ms),
+        )
+        ..add(SizedBox(height: context.s));
+    }
+
+    if (widget.subhead != null) {
+      children
+        ..add(
+          Text(
+                widget.subhead!,
+                textAlign: widget.showHero ? TextAlign.center : TextAlign.start,
+                style: TextStyle(
+                  fontSize: context.bodyFont * 0.95,
+                  height: 1.4,
+                  color: cs.onSurfaceVariant,
+                ),
+              )
+              .animate()
+              .fadeIn(delay: 180.ms, duration: 360.ms)
+              .moveY(begin: 6, end: 0, delay: 180.ms, duration: 360.ms),
+        )
+        ..add(SizedBox(height: context.l));
+    }
+
+    for (var i = 0; i < widget.benefits.length; i++) {
+      final b = widget.benefits[i];
+      children.add(
+        PaywallBenefitRow(icon: b.icon, title: b.title, subtitle: b.subtitle)
+            .animate()
+            .fadeIn(delay: (260 + i * 90).ms, duration: 320.ms)
+            .moveX(
+              begin: 8,
+              end: 0,
+              delay: (260 + i * 90).ms,
+              duration: 320.ms,
             ),
-            child: _purchasing
-                ? SizedBox(
-                    height: context.w * 0.05,
-                    width: context.w * 0.05,
-                    child: const CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: Colors.white,
-                    ),
-                  )
-                : Text(
-                    widget.primaryLabel ??
-                        (_selected == null ? 'Select a plan' : 'Continue'),
-                    style: TextStyle(
-                      fontSize: context.bodyFont * 1.05,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
+      );
+    }
+
+    if (widget.showTrialTimeline) {
+      children
+        ..add(SizedBox(height: context.m))
+        ..add(
+          const PaywallTrialTimeline().animate().fadeIn(
+            delay: 540.ms,
+            duration: 320.ms,
+          ),
+        );
+    }
+    children.add(SizedBox(height: context.l));
+
+    children.add(
+      offeringsAsync.when(
+        loading: () => Padding(
+          padding: EdgeInsets.symmetric(vertical: context.l),
+          child: const Center(child: CircularProgressIndicator()),
+        ),
+        error: (_, _) => Padding(
+          padding: EdgeInsets.symmetric(vertical: context.m),
+          child: Text(
+            'Could not load plans. Please try again.',
+            style: TextStyle(color: cs.onSurfaceVariant),
           ),
         ),
-        if (widget.dismissLabel != null) ...[
-          SizedBox(height: context.s),
+        data: (offerings) {
+          final packages =
+              offerings?.current?.availablePackages ?? const <Package>[];
+          if (packages.isEmpty) {
+            return Padding(
+              padding: EdgeInsets.symmetric(vertical: context.m),
+              child: Text(
+                'No plans available yet.',
+                style: TextStyle(color: cs.onSurfaceVariant),
+              ),
+            );
+          }
+          _maybePreselectAnnual(packages);
+          final savingsPct = _annualSavingsPct(packages);
+          return Column(
+                children: [
+                  for (var i = 0; i < packages.length; i++) ...[
+                    if (i > 0) SizedBox(height: context.s * 1.2),
+                    PaywallPlanCard(
+                      package: packages[i],
+                      selected: _selected?.identifier == packages[i].identifier,
+                      onTap: () => setState(() => _selected = packages[i]),
+                      badge: _badgeFor(packages[i]),
+                      savingsLabel: _savingsLabelFor(packages[i], savingsPct),
+                    ),
+                  ],
+                ],
+              )
+              .animate()
+              .fadeIn(delay: 480.ms, duration: 360.ms)
+              .moveY(begin: 8, end: 0, delay: 480.ms, duration: 360.ms);
+        },
+      ),
+    );
+    children.add(SizedBox(height: context.m));
+
+    children.add(
+      SizedBox(
+            height: context.h * 0.065,
+            child: FilledButton(
+              onPressed: _selected == null || _purchasing ? null : _purchase,
+              style: FilledButton.styleFrom(
+                elevation: 0,
+                disabledBackgroundColor: cs.surfaceContainer,
+                disabledForegroundColor: cs.outline,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(context.w * 0.04),
+                ),
+              ),
+              child: _purchasing
+                  ? SizedBox(
+                      height: context.w * 0.05,
+                      width: context.w * 0.05,
+                      child: const CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : Text(
+                      widget.primaryLabel ??
+                          (_selected == null ? 'Select a plan' : 'Continue'),
+                      style: TextStyle(
+                        fontSize: context.bodyFont * 1.05,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+            ),
+          )
+          .animate()
+          .fadeIn(delay: 580.ms, duration: 320.ms)
+          .moveY(begin: 8, end: 0, delay: 580.ms, duration: 320.ms),
+    );
+
+    if (widget.dismissLabel != null) {
+      children
+        ..add(SizedBox(height: context.s))
+        ..add(
           Center(
             child: TextButton(
               onPressed: widget.onDismiss,
@@ -259,8 +355,11 @@ class _PaywallBodyState extends ConsumerState<PaywallBody> {
               ),
             ),
           ),
-        ],
-        SizedBox(height: context.s),
+        );
+    }
+    children
+      ..add(SizedBox(height: context.s))
+      ..add(
         Center(
           child: Text(
             'Cancel anytime · billed by Apple or Google',
@@ -270,7 +369,9 @@ class _PaywallBodyState extends ConsumerState<PaywallBody> {
             ),
           ),
         ),
-        SizedBox(height: context.xs),
+      )
+      ..add(SizedBox(height: context.xs))
+      ..add(
         Center(
           child: TextButton(
             onPressed: _restore,
@@ -292,7 +393,30 @@ class _PaywallBodyState extends ConsumerState<PaywallBody> {
             ),
           ),
         ),
-      ],
+      );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: children,
     );
+  }
+
+  String? _badgeFor(Package p) {
+    switch (p.packageType) {
+      case PackageType.annual:
+        return 'BEST VALUE';
+      case PackageType.lifetime:
+        return 'ONE-TIME';
+      default:
+        return null;
+    }
+  }
+
+  String? _savingsLabelFor(Package p, int? savingsPct) {
+    if (p.packageType == PackageType.annual && savingsPct != null) {
+      return 'Save $savingsPct% vs monthly';
+    }
+    return null;
   }
 }

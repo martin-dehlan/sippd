@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../../common/utils/responsive.dart';
 import '../../../../paywall/presentation/widgets/paywall_body.widget.dart';
@@ -25,9 +26,21 @@ class OnboardingPaywallPage extends StatelessWidget {
         child: PaywallBody(
           triggerSource: 'onboarding',
           benefits: const [
-            'Unlimited groups & members',
-            'Deep stats — prices, regions, map',
-            'Premium share-cards & themes',
+            (
+              icon: PhosphorIconsRegular.usersThree,
+              title: 'Unlimited groups & members',
+              subtitle: 'Bring your whole tasting circle.',
+            ),
+            (
+              icon: PhosphorIconsRegular.chartLineUp,
+              title: 'Deep stats & taste insights',
+              subtitle: 'Map · prices · top regions.',
+            ),
+            (
+              icon: PhosphorIconsRegular.shareNetwork,
+              title: 'Premium share-cards & themes',
+              subtitle: 'Stand out everywhere you post.',
+            ),
           ],
           showTrialTimeline: true,
           primaryLabel: 'Start 7-day free trial',
