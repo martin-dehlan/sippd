@@ -20,6 +20,7 @@ class WineAddScreen extends ConsumerStatefulWidget {
 }
 
 class _WineAddScreenState extends ConsumerState<WineAddScreen> {
+  final GlobalKey<WineFormState> _formKey = GlobalKey<WineFormState>();
   WineFormData? _current;
   bool _allowPop = false;
 
@@ -127,10 +128,29 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
       },
       child: Scaffold(
         body: SafeArea(
-          child: WineForm(
-            submitLabel: 'Save wine',
-            onChanged: (data) => setState(() => _current = data),
-            onSubmit: (_) => _save(),
+          child: Stack(
+            children: [
+              WineForm(
+                key: _formKey,
+                submitLabel: 'Save wine',
+                showInlineSubmit: false,
+                onChanged: (data) => setState(() => _current = data),
+                onSubmit: (_) => _save(),
+              ),
+              Positioned(
+                right: context.paddingH,
+                bottom: context.m,
+                child: FloatingActionButton.extended(
+                  heroTag: 'wine_add_save',
+                  onPressed: () => _formKey.currentState?.submit(),
+                  icon: const Icon(PhosphorIconsRegular.check),
+                  label: const Text(
+                    'Save wine',
+                    style: TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
         floatingActionButton: _FloatingBackButton(

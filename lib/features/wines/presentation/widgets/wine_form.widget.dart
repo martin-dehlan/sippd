@@ -62,6 +62,10 @@ class WineForm extends StatefulWidget {
   final ValueChanged<WineFormData>? onChanged;
   final bool autoSave;
 
+  /// When false, the form omits its inline submit button. Host screens
+  /// drive submission through a [GlobalKey] and call [WineFormState.submit].
+  final bool showInlineSubmit;
+
   const WineForm({
     super.key,
     this.initial,
@@ -69,14 +73,18 @@ class WineForm extends StatefulWidget {
     required this.onSubmit,
     this.onChanged,
     this.autoSave = false,
+    this.showInlineSubmit = true,
   });
 
   @override
-  State<WineForm> createState() => _WineFormState();
+  State<WineForm> createState() => WineFormState();
 }
 
-class _WineFormState extends State<WineForm>
+class WineFormState extends State<WineForm>
     with SingleTickerProviderStateMixin {
+  /// Public submit hook for parents that host the action button outside
+  /// the form (e.g. floating action button).
+  Future<void> submit() => _submit();
 
   final _nameController = TextEditingController();
   final _nameFocus = FocusNode();
@@ -404,7 +412,7 @@ class _WineFormState extends State<WineForm>
             onTap: _editPlace,
           ),
         ),
-        if (!widget.autoSave) ...[
+        if (!widget.autoSave && widget.showInlineSubmit) ...[
           SizedBox(height: context.l),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: context.paddingH),
@@ -431,7 +439,9 @@ class _WineFormState extends State<WineForm>
             ),
           ),
         ],
-        SizedBox(height: context.xl * 2.5),
+        // Bottom scroll padding — keeps the last form field clear of the
+        // floating Save / Back buttons hosted by the parent screen.
+        SizedBox(height: context.xl * 3),
       ],
     );
   }
