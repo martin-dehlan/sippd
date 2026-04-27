@@ -61,16 +61,15 @@ class WineTypeBreakdown extends StatelessWidget {
                       _Highlight(
                         title: 'Most drunk',
                         value: _label(mostDrunk.type),
-                        detail: '${mostDrunk.count} '
-                            '${mostDrunk.count == 1 ? 'wine' : 'wines'}',
+                        chip:
+                            '${(mostDrunk.count / total * 100).round()}%',
                         color: _colorFor(mostDrunk.type, cs),
                       ),
                       SizedBox(height: context.m),
                       _Highlight(
                         title: 'Top rated',
                         value: _label(topRated.type),
-                        detail:
-                            '${topRated.avgRating.toStringAsFixed(1)} avg',
+                        chip: '★ ${topRated.avgRating.toStringAsFixed(1)}',
                         color: _colorFor(topRated.type, cs),
                       ),
                     ],
@@ -324,13 +323,13 @@ class _TypeRow extends StatelessWidget {
 class _Highlight extends StatelessWidget {
   final String title;
   final String value;
-  final String detail;
+  final String chip;
   final Color color;
 
   const _Highlight({
     required this.title,
     required this.value,
-    required this.detail,
+    required this.chip,
     required this.color,
   });
 
@@ -362,27 +361,40 @@ class _Highlight extends StatelessWidget {
               ),
             ),
             SizedBox(width: context.s),
-            Text(
-              value,
-              style: TextStyle(
-                fontSize: context.headingFont * 0.95,
-                fontWeight: FontWeight.w800,
-                color: cs.onSurface,
-                letterSpacing: -0.4,
+            Expanded(
+              child: Text(
+                value,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: context.headingFont * 0.95,
+                  fontWeight: FontWeight.w800,
+                  color: cs.onSurface,
+                  letterSpacing: -0.4,
+                ),
+              ),
+            ),
+            SizedBox(width: context.xs),
+            Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: context.xs * 1.4,
+                vertical: context.xs * 0.6,
+              ),
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.18),
+                borderRadius: BorderRadius.circular(context.w * 0.025),
+              ),
+              child: Text(
+                chip,
+                style: TextStyle(
+                  fontSize: context.captionFont,
+                  fontWeight: FontWeight.w800,
+                  color: cs.onSurface,
+                  letterSpacing: -0.1,
+                ),
               ),
             ),
           ],
-        ),
-        SizedBox(height: context.xs * 0.5),
-        Padding(
-          padding: EdgeInsets.only(left: context.s + context.w * 0.018),
-          child: Text(
-            detail,
-            style: TextStyle(
-              fontSize: context.captionFont,
-              color: cs.onSurfaceVariant,
-            ),
-          ),
         ),
       ],
     );
