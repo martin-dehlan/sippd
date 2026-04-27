@@ -73,21 +73,37 @@ class GroupController extends _$GroupController {
   /// Creates a group and returns the inserted row so the caller can chain
   /// the invite-share sheet without re-fetching. Returns null only if the
   /// user is unauthenticated (caller skips the post-create UI).
+  ///
+  /// Insert and re-fetch run as two separate calls. Combining them with
+  /// `.insert(...).select()` triggers the SELECT RLS policy on the same
+  /// snapshot the INSERT was prepared on — before the AFTER-INSERT trigger
+  /// `handle_new_group` adds the creator to `group_members` — which makes
+  /// the row invisible to the SELECT policy and 42501s the whole call.
+  /// A separate SELECT after the trigger has committed sees the membership.
   Future<GroupEntity?> createGroup(String name) async {
     final userId = ref.read(currentUserIdProvider);
     if (userId == null) return null;
 
     final client = ref.read(supabaseClientProvider);
 
-    final inserted = await client
+    await client.from('groups').insert({
+      'name': name,
+      'created_by': userId,
+    });
+
+    final row = await client
         .from('groups')
-        .insert({'name': name, 'created_by': userId})
         .select()
-        .single();
+        .eq('created_by', userId)
+        .eq('name', name)
+        .order('created_at', ascending: false)
+        .limit(1)
+        .maybeSingle();
 
     ref.read(analyticsProvider).capture('group_created');
     ref.invalidateSelf();
-    return GroupModel.fromJson(inserted).toEntity();
+    if (row == null) return null;
+    return GroupModel.fromJson(row).toEntity();
   }
 
   Future<void> joinGroup(String inviteCode) async {
