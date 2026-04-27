@@ -10,6 +10,8 @@ import 'package:latlong2/latlong.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../../groups/presentation/widgets/share_wine_sheet.dart';
+import '../../../../profile/controller/profile.provider.dart';
+import '../../../../share_cards/controller/share_card.provider.dart';
 import '../../../controller/wine.provider.dart';
 import '../../../domain/entities/wine.entity.dart';
 import '../../../domain/entities/wine_memory.entity.dart';
@@ -114,19 +116,31 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        _IconCircleButton(
-                          icon: PhosphorIconsRegular.usersThree,
-                          onTap: () => showShareWineSheet(
-                            context: context,
-                            wineId: widget.wine.id,
+                        Consumer(
+                          builder: (context, ref, _) => _WineOverflowMenu(
+                            onShareToGroup: () => showShareWineSheet(
+                              context: context,
+                              wineId: widget.wine.id,
+                            ),
+                            onShareImage: () {
+                              final username = ref
+                                  .read(currentProfileProvider)
+                                  .valueOrNull
+                                  ?.username;
+                              ref
+                                  .read(shareCardProvider)
+                                  .shareWineRatingCard(
+                                    context: context,
+                                    wine: widget.wine,
+                                    username: username,
+                                    source: 'wine_detail',
+                                  );
+                            },
+                            onEdit: () => context.push(
+                              AppRoutes.wineEditPath(widget.wine.id),
+                            ),
+                            onDelete: () => _confirmDelete(context),
                           ),
-                        ),
-                        SizedBox(width: context.w * 0.02),
-                        _WineOverflowMenu(
-                          onEdit: () => context.push(
-                            AppRoutes.wineEditPath(widget.wine.id),
-                          ),
-                          onDelete: () => _confirmDelete(context),
                         ),
                       ],
                     ),
@@ -208,31 +222,6 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
   }
 }
 
-class _IconCircleButton extends StatelessWidget {
-  final IconData icon;
-  final VoidCallback onTap;
-  const _IconCircleButton({required this.icon, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: onTap,
-      child: Container(
-        width: context.w * 0.1,
-        height: context.w * 0.1,
-        decoration: BoxDecoration(
-          color: cs.surfaceContainer,
-          shape: BoxShape.circle,
-          border: Border.all(color: cs.outlineVariant, width: 0.5),
-        ),
-        child: Icon(icon, size: context.w * 0.045, color: cs.onSurface),
-      ),
-    );
-  }
-}
-
 class _FloatingBackButton extends StatelessWidget {
   const _FloatingBackButton();
 
@@ -284,10 +273,17 @@ class _NameTitle extends StatelessWidget {
 }
 
 class _WineOverflowMenu extends StatelessWidget {
+  final VoidCallback onShareToGroup;
+  final VoidCallback onShareImage;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
 
-  const _WineOverflowMenu({required this.onEdit, required this.onDelete});
+  const _WineOverflowMenu({
+    required this.onShareToGroup,
+    required this.onShareImage,
+    required this.onEdit,
+    required this.onDelete,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -304,7 +300,7 @@ class _WineOverflowMenu extends StatelessWidget {
       child: PopupMenuButton<_WineMenuAction>(
         icon: Icon(PhosphorIconsRegular.dotsThreeVertical,
             size: context.w * 0.05, color: cs.onSurface),
-        tooltip: 'Mehr',
+        tooltip: 'More',
         padding: EdgeInsets.zero,
         color: cs.surfaceContainerHigh,
         shape: RoundedRectangleBorder(
@@ -312,6 +308,10 @@ class _WineOverflowMenu extends StatelessWidget {
         ),
         onSelected: (value) {
           switch (value) {
+            case _WineMenuAction.shareImage:
+              onShareImage();
+            case _WineMenuAction.shareGroup:
+              onShareToGroup();
             case _WineMenuAction.edit:
               onEdit();
             case _WineMenuAction.delete:
@@ -319,6 +319,28 @@ class _WineOverflowMenu extends StatelessWidget {
           }
         },
         itemBuilder: (ctx) => [
+          PopupMenuItem(
+            value: _WineMenuAction.shareImage,
+            child: Row(
+              children: [
+                Icon(PhosphorIconsRegular.megaphoneSimple,
+                    size: context.w * 0.045, color: cs.onSurface),
+                SizedBox(width: context.s),
+                const Text('Share rating'),
+              ],
+            ),
+          ),
+          PopupMenuItem(
+            value: _WineMenuAction.shareGroup,
+            child: Row(
+              children: [
+                Icon(PhosphorIconsRegular.usersThree,
+                    size: context.w * 0.045, color: cs.onSurface),
+                SizedBox(width: context.s),
+                const Text('Share to group'),
+              ],
+            ),
+          ),
           PopupMenuItem(
             value: _WineMenuAction.edit,
             child: Row(
@@ -347,7 +369,7 @@ class _WineOverflowMenu extends StatelessWidget {
   }
 }
 
-enum _WineMenuAction { edit, delete }
+enum _WineMenuAction { shareImage, shareGroup, edit, delete }
 
 class _WineImage extends StatelessWidget {
   final WineEntity wine;
