@@ -15,6 +15,7 @@ import '../widgets/pages/level.page.dart';
 import '../widgets/pages/loader.page.dart';
 import '../widgets/pages/name.page.dart';
 import '../widgets/pages/notifications.page.dart';
+import '../widgets/pages/responsibility.page.dart';
 import '../widgets/pages/results.page.dart';
 import '../widgets/pages/styles.page.dart';
 import '../widgets/pages/welcome.page.dart';
@@ -25,6 +26,7 @@ import '../widgets/pages/why.page.dart';
 // between notifications and the auth handoff later.
 enum _Step {
   welcome,
+  responsibility,
   level,
   goals,
   styles,
@@ -70,6 +72,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   bool _canAdvance(OnboardingAnswers a) {
     switch (_steps[_index]) {
       case _Step.welcome:
+      case _Step.responsibility:
       case _Step.why:
       case _Step.loader:
       case _Step.results:
@@ -162,6 +165,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           : 'Sign in to save it';
     }
     if (step == _Step.welcome) return 'Get started';
+    if (step == _Step.responsibility) return 'I understand';
     return 'Continue';
   }
 
@@ -189,6 +193,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 onPageChanged: (i) => setState(() => _index = i),
                 children: _steps.map((s) {
                   switch (s) {
+                    case _Step.responsibility:
+                      return const ResponsibilityPage();
                     case _Step.welcome:
                       return WelcomePage(onTap: _next);
                     case _Step.level:

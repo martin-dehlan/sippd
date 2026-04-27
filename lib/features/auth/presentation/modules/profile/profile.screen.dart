@@ -17,6 +17,7 @@ import '../email_confirmation/email_confirmation.screen.dart';
 
 const _privacyUrl = 'https://sippd.xyz/privacy';
 const _termsUrl = 'https://sippd.xyz/terms';
+const _helpUrl = 'https://sippd.xyz/help';
 const _supportEmail = 'support@sippd.xyz';
 
 class ProfileScreen extends ConsumerWidget {
@@ -157,6 +158,11 @@ class ProfileScreen extends ConsumerWidget {
 
             // LEGAL
             const _SectionLabel('Legal'),
+            _MenuItem(
+              icon: PhosphorIconsRegular.lifebuoy,
+              label: 'Drink responsibly · find help',
+              onTap: () => _launch(context, _helpUrl),
+            ),
             _MenuItem(
               icon: PhosphorIconsRegular.shieldCheck,
               label: 'Privacy Policy',
