@@ -7,6 +7,7 @@ import 'package:uuid/uuid.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../auth/controller/auth.provider.dart';
 import '../../../../locations/domain/entities/location.entity.dart';
+import '../../../../share_cards/presentation/widgets/wine_share_prompt_sheet.dart';
 import '../../../controller/wine.provider.dart';
 import '../../../domain/entities/wine.entity.dart';
 import '../../../domain/entities/wine_memory.entity.dart';
@@ -111,6 +112,16 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
         ),
       );
     }
+    if (!mounted) return;
+    // Nudge to share before bouncing back to the list. Sheet always
+    // dismisses (share, "Maybe later", or drag) so the post-save pop
+    // still runs whatever the user chose.
+    setState(() => _allowPop = true);
+    await showWineSharePromptSheet(
+      context: context,
+      wine: wine,
+      triggerSource: 'wine_add_post_save',
+    );
     if (mounted) context.pop();
   }
 
