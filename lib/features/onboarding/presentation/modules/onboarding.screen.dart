@@ -60,13 +60,16 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     super.initState();
     // Authed users (signing up a second account on this device) skip the
     // pre-auth welcome page — they're already past the marketing pitch.
-    // Unauthed users skip the paywall — RevenueCat anonymous purchases
-    // make linking flaky pre-signup, and asking to pay before a user has
-    // an account is the kind of pressure we explicitly try to avoid.
+    // Unauthed users see the full flow including the paywall:
+    // RevenueCat handles anonymous purchases by attaching them to an
+    // anonymous user-id, then merges them into the real user as soon as
+    // main.dart's auth listener calls paywall.identify(...) on signup.
+    // Skipping the step would mean missing the peak-engagement window
+    // right after the archetype reveal.
     final authed = ref.read(isAuthenticatedProvider);
     _steps = authed
         ? _Step.values.where((s) => s != _Step.welcome).toList()
-        : _Step.values.where((s) => s != _Step.paywall).toList();
+        : _Step.values;
     _index = 0;
     _pageCtrl = PageController(initialPage: 0);
   }
