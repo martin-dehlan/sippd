@@ -34,6 +34,17 @@ class PaywallService {
       return;
     }
 
+    // RevenueCat shows a native warning dialog when a test_-prefixed key
+    // is used in a release build. Skip configure entirely in that case so
+    // beta testers don't get hit with the dev-only popup. Paywall stays
+    // silent until production keys land in .env.
+    if (apiKey.startsWith('test_') && !kDebugMode) {
+      debugPrint(
+        'PaywallService: test key on release build — skipping configure.',
+      );
+      return;
+    }
+
     await Purchases.setLogLevel(
       kDebugMode ? LogLevel.debug : LogLevel.warn,
     );
