@@ -28,6 +28,7 @@ class PaywallPlanCard extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
     final product = package.storeProduct;
     final title = _titleForPackage(package);
+    final hasSavings = savingsLabel != null;
     final subtitle = savingsLabel ?? _defaultSubtitle(package);
 
     return InkWell(
@@ -75,8 +76,10 @@ class PaywallPlanCard extends StatelessWidget {
                           subtitle,
                           style: TextStyle(
                             fontSize: context.captionFont,
-                            color: cs.onSurfaceVariant,
-                            fontWeight: FontWeight.w500,
+                            color: hasSavings ? cs.primary : cs.onSurfaceVariant,
+                            fontWeight: hasSavings
+                                ? FontWeight.w800
+                                : FontWeight.w500,
                           ),
                         ),
                       ],
@@ -140,9 +143,9 @@ class PaywallPlanCard extends StatelessWidget {
   String? _defaultSubtitle(Package package) {
     switch (package.packageType) {
       case PackageType.annual:
-        return 'Best value';
+        return 'Most popular';
       case PackageType.lifetime:
-        return 'Pay once · keep forever';
+        return 'Limited launch offer · pay once';
       case PackageType.monthly:
         return 'Cancel anytime';
       default:

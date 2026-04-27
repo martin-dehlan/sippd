@@ -375,18 +375,6 @@ class _PaywallBodyState extends ConsumerState<PaywallBody> {
         );
     }
     children
-      ..add(SizedBox(height: context.s))
-      ..add(
-        Center(
-          child: Text(
-            'Cancel anytime · billed by Apple or Google',
-            style: TextStyle(
-              fontSize: context.captionFont * 0.85,
-              color: cs.outline,
-            ),
-          ),
-        ),
-      )
       ..add(SizedBox(height: context.xs))
       ..add(
         Center(
@@ -406,7 +394,20 @@ class _PaywallBodyState extends ConsumerState<PaywallBody> {
                 fontSize: context.captionFont,
                 color: cs.onSurfaceVariant,
                 decoration: TextDecoration.underline,
+                fontWeight: FontWeight.w600,
               ),
+            ),
+          ),
+        ),
+      )
+      ..add(SizedBox(height: context.xs))
+      ..add(
+        Center(
+          child: Text(
+            'Cancel anytime · billed by Apple or Google',
+            style: TextStyle(
+              fontSize: context.captionFont * 0.85,
+              color: cs.outline,
             ),
           ),
         ),
@@ -422,9 +423,9 @@ class _PaywallBodyState extends ConsumerState<PaywallBody> {
   String? _badgeFor(Package p) {
     switch (p.packageType) {
       case PackageType.annual:
-        return 'BEST VALUE';
+        return 'MOST POPULAR';
       case PackageType.lifetime:
-        return 'ONE-TIME';
+        return 'FOUNDERS EDITION';
       default:
         return null;
     }
