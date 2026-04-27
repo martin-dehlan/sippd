@@ -25,6 +25,8 @@ class SubscriptionScreen extends ConsumerWidget {
     // falls back to the service's cached value, so the screen renders
     // immediately as either Pro or Free.
     final info = ref.watch(currentCustomerInfoProvider);
+    final isPro =
+        info?.entitlements.active.containsKey(proEntitlementId) ?? false;
 
     return Scaffold(
       backgroundColor: cs.surface,
@@ -32,16 +34,23 @@ class SubscriptionScreen extends ConsumerWidget {
         backgroundColor: cs.surface,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(PhosphorIconsRegular.arrowLeft),
+          icon: Icon(
+            isPro ? PhosphorIconsRegular.arrowLeft : PhosphorIconsRegular.x,
+          ),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: Text(
-          'Subscription',
-          style: TextStyle(
-            fontSize: context.bodyFont * 1.05,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
+        // Pro users see this as a management screen → title makes sense.
+        // Free users see the paywall pitch directly → title would compete
+        // with the hero + Playfair headline below, so drop it.
+        title: isPro
+            ? Text(
+                'Subscription',
+                style: TextStyle(
+                  fontSize: context.bodyFont * 1.05,
+                  fontWeight: FontWeight.w700,
+                ),
+              )
+            : null,
       ),
       body: SafeArea(
         top: false,
