@@ -27,6 +27,17 @@ class Tally {
   const Tally({required this.label, required this.count});
 }
 
+class TypeBreakdown {
+  final WineType type;
+  final int count;
+  final double avgRating;
+  const TypeBreakdown({
+    required this.type,
+    required this.count,
+    required this.avgRating,
+  });
+}
+
 @riverpod
 List<WineEntity> _wineList(_WineListRef ref) {
   return ref.watch(wineControllerProvider).valueOrNull ?? const [];
@@ -107,4 +118,27 @@ List<WineEntity> statsWinesWithLocation(StatsWinesWithLocationRef ref) {
   return wines
       .where((w) => w.latitude != null && w.longitude != null)
       .toList();
+}
+
+@riverpod
+List<TypeBreakdown> statsTypeBreakdown(StatsTypeBreakdownRef ref) {
+  final wines = ref.watch(_wineListProvider);
+  final perType = <WineType, List<WineEntity>>{};
+  for (final w in wines) {
+    perType.putIfAbsent(w.type, () => []).add(w);
+  }
+  // Always emit all four types in canonical order so the donut + cards
+  // stay visually stable even when the user has zero wines of a type.
+  return WineType.values.map((t) {
+    final list = perType[t] ?? const [];
+    if (list.isEmpty) {
+      return TypeBreakdown(type: t, count: 0, avgRating: 0);
+    }
+    final sum = list.fold<double>(0, (acc, w) => acc + w.rating);
+    return TypeBreakdown(
+      type: t,
+      count: list.length,
+      avgRating: sum / list.length,
+    );
+  }).toList();
 }

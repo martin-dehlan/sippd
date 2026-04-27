@@ -110,5 +110,24 @@ final statsWinesWithLocationProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef StatsWinesWithLocationRef = AutoDisposeProviderRef<List<WineEntity>>;
+String _$statsTypeBreakdownHash() =>
+    r'a2f7455c30b3feeb8a4f7a18599c6aac27711cbb';
+
+/// See also [statsTypeBreakdown].
+@ProviderFor(statsTypeBreakdown)
+final statsTypeBreakdownProvider =
+    AutoDisposeProvider<List<TypeBreakdown>>.internal(
+      statsTypeBreakdown,
+      name: r'statsTypeBreakdownProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$statsTypeBreakdownHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef StatsTypeBreakdownRef = AutoDisposeProviderRef<List<TypeBreakdown>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

@@ -1,34 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../../common/utils/responsive.dart';
-import '../../../../../core/routes/app.routes.dart';
-import '../../../../paywall/controller/paywall.provider.dart';
 import '../../../controller/wine_stats.provider.dart';
 import 'widgets/stats_hero.widget.dart';
-import 'widgets/stats_section.widget.dart';
 import 'widgets/tally_bars.widget.dart';
+import 'widgets/top_wines_list.widget.dart';
+import 'widgets/wine_locations_map.widget.dart';
+import 'widgets/wine_type_breakdown.widget.dart';
 
 class WineStatsScreen extends ConsumerWidget {
   const WineStatsScreen({super.key});
 
-  void _openPaywall(BuildContext context, String source) {
-    context.push(
-      AppRoutes.paywall,
-      extra: {'source': 'stats_$source'},
-    );
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
-    final isPro = ref.watch(isProProvider);
     final regions = ref.watch(statsTopRegionsProvider);
+    final breakdown = ref.watch(statsTypeBreakdownProvider);
     final topWines = ref.watch(statsTopWinesProvider);
 
     return Scaffold(
+      backgroundColor: cs.surface,
       appBar: AppBar(
         backgroundColor: cs.surface,
         elevation: 0,
@@ -41,6 +36,7 @@ class WineStatsScreen extends ConsumerWidget {
           style: TextStyle(
             fontSize: context.bodyFont * 1.1,
             fontWeight: FontWeight.w800,
+            letterSpacing: -0.2,
           ),
         ),
       ),
@@ -48,7 +44,7 @@ class WineStatsScreen extends ConsumerWidget {
         child: ListView(
           padding: EdgeInsets.fromLTRB(
             context.paddingH,
-            context.m,
+            context.s,
             context.paddingH,
             context.xl * 2,
           ),
@@ -56,136 +52,35 @@ class WineStatsScreen extends ConsumerWidget {
             const StatsHero(),
             SizedBox(height: context.xl),
 
-            // Top regions — free shows top 3, Pro shows top 10.
-            StatsSection(
-              title: 'Top regions',
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  TallyBars(
-                    items: regions,
-                    maxItems: isPro ? 10 : 3,
-                  ),
-                  if (!isPro && regions.length > 3) ...[
-                    SizedBox(height: context.m),
-                    _PreviewCta(
-                      label: '+${regions.length - 3} more in Sippd Pro',
-                      onTap: () => _openPaywall(context, 'top_regions'),
-                    ),
-                  ],
-                ],
-              ),
+            _Section(
+              title: 'Wine type breakdown',
+              subtitle: 'How your taste splits across the four styles.',
+              delay: 100,
+              child: WineTypeBreakdown(data: breakdown),
             ),
-            SizedBox(height: context.m),
+            SizedBox(height: context.l),
 
-            // Top wines — free shows the highest-rated only.
-            StatsSection(
-              title: 'Highest rated',
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (topWines.isEmpty)
-                    Text(
-                      'Rate your first wine to see it here.',
-                      style: TextStyle(
-                        fontSize: context.captionFont,
-                        color: cs.onSurfaceVariant,
-                      ),
-                    )
-                  else ...[
-                    for (int i = 0; i < (isPro ? topWines.length : 1); i++) ...[
-                      if (i > 0) SizedBox(height: context.s),
-                      _TopWineRow(
-                        rank: i + 1,
-                        name: topWines[i].name,
-                        rating: topWines[i].rating,
-                      ),
-                    ],
-                  ],
-                  if (!isPro && topWines.length > 1) ...[
-                    SizedBox(height: context.m),
-                    _PreviewCta(
-                      label: 'See your top 10 in Sippd Pro',
-                      onTap: () => _openPaywall(context, 'top_wines'),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-            SizedBox(height: context.m),
-
-            // Pro-locked: top wineries.
-            StatsSection(
-              title: 'Top wineries',
-              subtitle: 'Which producers you keep coming back to.',
-              locked: !isPro,
-              onLockedTap: () => _openPaywall(context, 'top_wineries'),
-              child: Consumer(
-                builder: (context, ref, _) {
-                  final wineries = ref.watch(statsTopWineriesProvider);
-                  return TallyBars(
-                    items: wineries,
-                    maxItems: 10,
-                  );
-                },
-              ),
-            ),
-            SizedBox(height: context.m),
-
-            // Pro-locked placeholder: world map.
-            StatsSection(
+            _Section(
               title: 'Where you’ve drunk wine',
-              subtitle: 'Every wine you logged with a place, on a map.',
-              locked: !isPro,
-              onLockedTap: () => _openPaywall(context, 'map'),
-              child: SizedBox(
-                height: context.h * 0.22,
-                child: Center(
-                  child: Icon(
-                    PhosphorIconsRegular.mapTrifold,
-                    size: context.w * 0.18,
-                    color: cs.outlineVariant,
-                  ),
-                ),
-              ),
+              subtitle: 'Every wine you logged with a place.',
+              delay: 200,
+              child: const WineLocationsMap(),
             ),
-            SizedBox(height: context.m),
+            SizedBox(height: context.l),
 
-            // Pro-locked placeholder: drinking partners.
-            StatsSection(
-              title: 'Drinking partners',
-              subtitle: 'The people you most often share wine with.',
-              locked: !isPro,
-              onLockedTap: () => _openPaywall(context, 'partners'),
-              child: SizedBox(
-                height: context.h * 0.16,
-                child: Center(
-                  child: Icon(
-                    PhosphorIconsRegular.usersThree,
-                    size: context.w * 0.18,
-                    color: cs.outlineVariant,
-                  ),
-                ),
-              ),
+            _Section(
+              title: 'Top regions',
+              subtitle: 'Where most of your bottles come from.',
+              delay: 300,
+              child: TallyBars(items: regions, maxItems: 8),
             ),
-            SizedBox(height: context.m),
+            SizedBox(height: context.l),
 
-            // Pro-locked placeholder: calendar heatmap.
-            StatsSection(
-              title: 'Tasting calendar',
-              subtitle: 'A year of your ratings at a glance.',
-              locked: !isPro,
-              onLockedTap: () => _openPaywall(context, 'calendar'),
-              child: SizedBox(
-                height: context.h * 0.16,
-                child: Center(
-                  child: Icon(
-                    PhosphorIconsRegular.calendarBlank,
-                    size: context.w * 0.18,
-                    color: cs.outlineVariant,
-                  ),
-                ),
-              ),
+            _Section(
+              title: 'Highest rated',
+              subtitle: 'Your personal podium.',
+              delay: 400,
+              child: TopWinesList(wines: topWines, maxItems: 5),
             ),
           ],
         ),
@@ -194,114 +89,62 @@ class WineStatsScreen extends ConsumerWidget {
   }
 }
 
-class _PreviewCta extends StatelessWidget {
-  final String label;
-  final VoidCallback onTap;
-  const _PreviewCta({required this.label, required this.onTap});
+class _Section extends StatelessWidget {
+  final String title;
+  final String? subtitle;
+  final Widget child;
+  final int delay;
 
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(context.w * 0.04),
-      child: Container(
-        padding: EdgeInsets.symmetric(
-          horizontal: context.w * 0.04,
-          vertical: context.s,
-        ),
-        decoration: BoxDecoration(
-          color: cs.primary.withValues(alpha: 0.12),
-          borderRadius: BorderRadius.circular(context.w * 0.04),
-        ),
-        child: Row(
-          children: [
-            Icon(
-              PhosphorIconsBold.lockKey,
-              color: cs.primary,
-              size: context.w * 0.04,
-            ),
-            SizedBox(width: context.s),
-            Expanded(
-              child: Text(
-                label,
-                style: TextStyle(
-                  fontSize: context.captionFont,
-                  color: cs.primary,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
-            Icon(
-              PhosphorIconsRegular.caretRight,
-              color: cs.primary,
-              size: context.w * 0.035,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _TopWineRow extends StatelessWidget {
-  final int rank;
-  final String name;
-  final double rating;
-
-  const _TopWineRow({
-    required this.rank,
-    required this.name,
-    required this.rating,
+  const _Section({
+    required this.title,
+    this.subtitle,
+    required this.child,
+    this.delay = 0,
   });
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    return Row(
-      children: [
-        Container(
-          width: context.w * 0.07,
-          height: context.w * 0.07,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: rank == 1
-                ? cs.primary
-                : cs.primaryContainer,
-            shape: BoxShape.circle,
-          ),
-          child: Text(
-            rank.toString(),
-            style: TextStyle(
-              color: rank == 1 ? cs.onPrimary : cs.primary,
-              fontWeight: FontWeight.w800,
-              fontSize: context.captionFont,
-            ),
-          ),
+    return Animate(
+      effects: [
+        FadeEffect(
+          duration: 420.ms,
+          delay: Duration(milliseconds: delay),
         ),
-        SizedBox(width: context.s),
-        Expanded(
-          child: Text(
-            name,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: context.bodyFont,
-              fontWeight: FontWeight.w600,
-              color: cs.onSurface,
-            ),
-          ),
-        ),
-        SizedBox(width: context.s),
-        Text(
-          rating.toStringAsFixed(1),
-          style: TextStyle(
-            fontSize: context.bodyFont,
-            fontWeight: FontWeight.w800,
-            color: cs.primary,
-          ),
+        SlideEffect(
+          begin: const Offset(0, 0.05),
+          end: Offset.zero,
+          duration: 420.ms,
+          delay: Duration(milliseconds: delay),
+          curve: Curves.easeOut,
         ),
       ],
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: context.bodyFont * 1.1,
+              fontWeight: FontWeight.w800,
+              color: cs.onSurface,
+              letterSpacing: -0.3,
+            ),
+          ),
+          if (subtitle != null) ...[
+            SizedBox(height: context.xs * 0.5),
+            Text(
+              subtitle!,
+              style: TextStyle(
+                fontSize: context.captionFont,
+                color: cs.onSurfaceVariant,
+              ),
+            ),
+          ],
+          SizedBox(height: context.m),
+          child,
+        ],
+      ),
     );
   }
 }
