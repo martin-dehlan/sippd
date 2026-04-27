@@ -33,6 +33,11 @@ class ShareCardService {
       },
     );
 
+    // Precache the wine photo so the off-screen render captures the
+    // actual pixels rather than an empty placeholder.
+    await _precacheWineImage(context, wine);
+    if (!context.mounted) return;
+
     final card = WineRatingCard(wine: wine, username: username);
     final file = await _renderToFile(
       context: context,
@@ -56,6 +61,29 @@ class ShareCardService {
         'source': source,
       },
     );
+  }
+
+  Future<void> _precacheWineImage(
+    BuildContext context,
+    WineEntity wine,
+  ) async {
+    final local = wine.localImagePath;
+    if (local != null && local.isNotEmpty) {
+      final file = File(local);
+      if (file.existsSync() && context.mounted) {
+        await precacheImage(FileImage(file), context);
+        return;
+      }
+    }
+    final url = wine.imageUrl;
+    if (url != null && url.isNotEmpty && context.mounted) {
+      try {
+        await precacheImage(NetworkImage(url), context);
+      } catch (_) {
+        // Network image failed; the card falls back to typographic layout
+        // when neither image source resolves.
+      }
+    }
   }
 
   /// Renders [card] off-screen at the share-card dimensions and saves
