@@ -6,9 +6,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../../common/utils/responsive.dart';
+import '../../../../paywall/controller/paywall.provider.dart';
 import '../../../controller/wine_stats.provider.dart';
 import 'widgets/spending_section.widget.dart';
 import 'widgets/stats_hero.widget.dart';
+import 'widgets/stats_pro_lock.widget.dart';
 import 'widgets/tally_bars.widget.dart';
 import 'widgets/top_wines_list.widget.dart';
 import 'widgets/wine_locations_map.widget.dart';
@@ -23,6 +25,7 @@ class WineStatsScreen extends ConsumerWidget {
     final regions = ref.watch(statsTopRegionsProvider);
     final breakdown = ref.watch(statsTypeBreakdownProvider);
     final topWines = ref.watch(statsTopWinesProvider);
+    final isPro = ref.watch(isProProvider);
 
     return Scaffold(
       backgroundColor: cs.surface,
@@ -66,37 +69,47 @@ class WineStatsScreen extends ConsumerWidget {
                 SliverToBoxAdapter(child: SizedBox(height: context.m)),
 
                 _SliverSection(
-                  title: 'Prices & value',
-                  subtitle:
-                      'Sum of bottle prices logged on your rated wines '
-                      '— not actual consumption spend.',
-                  delay: 150,
-                  child: const SpendingSection(),
-                ),
-                SliverToBoxAdapter(child: SizedBox(height: context.m)),
-
-                _SliverSection(
-                  title: 'Where you’ve drunk wine',
-                  subtitle: 'Every wine you logged with a place.',
-                  delay: 200,
-                  child: const WineLocationsMap(),
-                ),
-                SliverToBoxAdapter(child: SizedBox(height: context.m)),
-
-                _SliverSection(
-                  title: 'Top regions',
-                  subtitle: 'Where most of your bottles come from.',
-                  delay: 300,
-                  child: TallyBars(items: regions, maxItems: 8),
-                ),
-                SliverToBoxAdapter(child: SizedBox(height: context.m)),
-
-                _SliverSection(
                   title: 'Highest rated',
                   subtitle: 'Your personal podium.',
-                  delay: 400,
+                  delay: 150,
                   child: TopWinesList(wines: topWines, maxItems: 5),
                 ),
+                SliverToBoxAdapter(child: SizedBox(height: context.m)),
+
+                if (isPro) ...[
+                  _SliverSection(
+                    title: 'Prices & value',
+                    subtitle:
+                        'Sum of bottle prices logged on your rated wines '
+                        '— not actual consumption spend.',
+                    delay: 200,
+                    child: const SpendingSection(),
+                  ),
+                  SliverToBoxAdapter(child: SizedBox(height: context.m)),
+
+                  _SliverSection(
+                    title: 'Where you’ve drunk wine',
+                    subtitle: 'Every wine you logged with a place.',
+                    delay: 300,
+                    child: const WineLocationsMap(),
+                  ),
+                  SliverToBoxAdapter(child: SizedBox(height: context.m)),
+
+                  _SliverSection(
+                    title: 'Top regions',
+                    subtitle: 'Where most of your bottles come from.',
+                    delay: 400,
+                    child: TallyBars(items: regions, maxItems: 8),
+                  ),
+                ] else ...[
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: context.paddingH),
+                      child: const StatsProLock(),
+                    ),
+                  ),
+                ],
                 // Floating back button is ~w*0.16 + bottom margin, so reserve
                 // enough space here that scrollable content never disappears
                 // behind it on the last section.
