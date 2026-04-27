@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../common/utils/responsive.dart';
+import '../../../../common/widgets/photo_error.dart';
 import '../../../auth/controller/auth.provider.dart';
 import '../../controller/wine.provider.dart';
 
@@ -79,11 +80,7 @@ class _WineMemoriesEditorState extends ConsumerState<WineMemoriesEditor> {
       ];
       widget.onChanged(next);
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Photo failed: $e')),
-        );
-      }
+      if (mounted) await PhotoErrorHandler.handle(context, e);
     } finally {
       if (mounted) setState(() => _isUploading = false);
     }
