@@ -14,58 +14,75 @@ class WineTypeBreakdown extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final total = data.fold<int>(0, (acc, t) => acc + t.count);
-    if (total == 0) {
-      return _EmptyState(cs: cs);
-    }
 
+    final card = Container(
+      padding: EdgeInsets.all(context.w * 0.045),
+      decoration: BoxDecoration(
+        color: cs.surfaceContainer,
+        borderRadius: BorderRadius.circular(context.w * 0.05),
+        border: Border.all(color: cs.outlineVariant, width: 0.5),
+      ),
+      child: total == 0
+          ? _EmptyState(cs: cs)
+          : _content(context, cs, total),
+    );
+
+    return card;
+  }
+
+  Widget _content(BuildContext context, ColorScheme cs, int total) {
     final mostDrunk = data.reduce((a, b) => a.count >= b.count ? a : b);
-    final highestRated = data
-        .where((t) => t.count > 0)
-        .toList()
-        ..sort((a, b) => b.avgRating.compareTo(a.avgRating));
-    final topRated = highestRated.first;
+    final ratedTypes = data.where((t) => t.count > 0).toList()
+      ..sort((a, b) => b.avgRating.compareTo(a.avgRating));
+    final topRated = ratedTypes.first;
+    // With <3 wines or when both highlights resolve to the same type the
+    // donut + dual highlights row is just noise — show only the rows.
+    final showHero = total >= 3 && mostDrunk.type != topRated.type;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(
-          height: context.w * 0.5,
-          child: Row(
-            children: [
-              Expanded(
-                flex: 4,
-                child: _Donut(data: data, total: total),
-              ),
-              SizedBox(width: context.w * 0.04),
-              Expanded(
-                flex: 5,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _Highlight(
-                      title: 'Most drunk',
-                      value: _label(mostDrunk.type),
-                      detail: '${mostDrunk.count} '
-                          '${mostDrunk.count == 1 ? 'wine' : 'wines'}',
-                      color: _colorFor(mostDrunk.type, cs),
-                    ),
-                    SizedBox(height: context.m),
-                    _Highlight(
-                      title: 'Top rated',
-                      value: _label(topRated.type),
-                      detail: '${topRated.avgRating.toStringAsFixed(1)} avg',
-                      color: _colorFor(topRated.type, cs),
-                    ),
-                  ],
+        if (showHero) ...[
+          SizedBox(
+            height: context.w * 0.45,
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 4,
+                  child: _Donut(data: data, total: total),
                 ),
-              ),
-            ],
+                SizedBox(width: context.w * 0.04),
+                Expanded(
+                  flex: 5,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _Highlight(
+                        title: 'Most drunk',
+                        value: _label(mostDrunk.type),
+                        detail: '${mostDrunk.count} '
+                            '${mostDrunk.count == 1 ? 'wine' : 'wines'}',
+                        color: _colorFor(mostDrunk.type, cs),
+                      ),
+                      SizedBox(height: context.m),
+                      _Highlight(
+                        title: 'Top rated',
+                        value: _label(topRated.type),
+                        detail:
+                            '${topRated.avgRating.toStringAsFixed(1)} avg',
+                        color: _colorFor(topRated.type, cs),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-        SizedBox(height: context.l),
+          SizedBox(height: context.l),
+        ],
         for (int i = 0; i < data.length; i++) ...[
-          if (i > 0) SizedBox(height: context.s),
+          if (i > 0) SizedBox(height: context.m),
           _TypeRow(
             data: data[i],
             color: _colorFor(data[i].type, cs),
@@ -223,93 +240,76 @@ class _TypeRow extends StatelessWidget {
           curve: Curves.easeOut,
         ),
       ],
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Label column — fixed width so bars line up.
-          SizedBox(
-            width: context.w * 0.18,
-            child: Row(
+          Row(
+            children: [
+              Container(
+                width: context.w * 0.022,
+                height: context.w * 0.022,
+                decoration: BoxDecoration(
+                  color: empty ? cs.outlineVariant : color,
+                  shape: BoxShape.circle,
+                ),
+              ),
+              SizedBox(width: context.xs),
+              Expanded(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: context.captionFont * 1.1,
+                    color: empty ? cs.onSurfaceVariant : cs.onSurface,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: -0.1,
+                  ),
+                ),
+              ),
+              SizedBox(width: context.s),
+              Text(
+                data.count.toString(),
+                style: TextStyle(
+                  fontSize: context.bodyFont,
+                  fontWeight: FontWeight.w800,
+                  color: empty ? cs.outline : cs.onSurface,
+                  letterSpacing: -0.2,
+                ),
+              ),
+              SizedBox(width: context.xs),
+              Text(
+                empty ? '—' : data.avgRating.toStringAsFixed(1),
+                style: TextStyle(
+                  fontSize: context.captionFont,
+                  color: cs.onSurfaceVariant,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: context.xs),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(context.w * 0.012),
+            child: Stack(
               children: [
                 Container(
-                  width: context.w * 0.022,
-                  height: context.w * 0.022,
-                  decoration: BoxDecoration(
-                    color: empty ? cs.outlineVariant : color,
-                    shape: BoxShape.circle,
-                  ),
+                  height: context.w * 0.018,
+                  color: cs.outlineVariant.withValues(alpha: 0.3),
                 ),
-                SizedBox(width: context.xs),
-                Flexible(
-                  child: Text(
-                    label,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: context.captionFont * 1.05,
-                      color: empty ? cs.onSurfaceVariant : cs.onSurface,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: -0.1,
+                TweenAnimationBuilder<double>(
+                  tween: Tween(
+                    begin: 0,
+                    end: empty ? 0.0 : ratio.clamp(0.04, 1.0),
+                  ),
+                  duration: Duration(milliseconds: 700 + delay),
+                  curve: Curves.easeOutCubic,
+                  builder: (_, v, _) => FractionallySizedBox(
+                    widthFactor: v,
+                    child: Container(
+                      height: context.w * 0.018,
+                      color: empty ? Colors.transparent : color,
                     ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(width: context.s),
-          // Bar.
-          Expanded(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(context.w * 0.012),
-              child: Stack(
-                children: [
-                  Container(
-                    height: context.w * 0.022,
-                    color: cs.outlineVariant.withValues(alpha: 0.3),
-                  ),
-                  TweenAnimationBuilder<double>(
-                    tween: Tween(
-                      begin: 0,
-                      end: empty ? 0.0 : ratio.clamp(0.04, 1.0),
-                    ),
-                    duration: Duration(milliseconds: 700 + delay),
-                    curve: Curves.easeOutCubic,
-                    builder: (_, v, _) => FractionallySizedBox(
-                      widthFactor: v,
-                      child: Container(
-                        height: context.w * 0.022,
-                        color: empty
-                            ? Colors.transparent
-                            : color,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          SizedBox(width: context.s),
-          // Count + avg.
-          SizedBox(
-            width: context.w * 0.16,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Text(
-                  data.count.toString(),
-                  style: TextStyle(
-                    fontSize: context.bodyFont,
-                    fontWeight: FontWeight.w800,
-                    color: empty ? cs.outline : cs.onSurface,
-                    letterSpacing: -0.2,
-                  ),
-                ),
-                SizedBox(width: context.xs),
-                Text(
-                  empty ? '—' : data.avgRating.toStringAsFixed(1),
-                  style: TextStyle(
-                    fontSize: context.captionFont,
-                    color: cs.onSurfaceVariant,
-                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ],

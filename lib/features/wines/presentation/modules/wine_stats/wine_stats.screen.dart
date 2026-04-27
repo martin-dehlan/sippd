@@ -31,7 +31,7 @@ class WineStatsScreen extends ConsumerWidget {
             CustomScrollView(
               restorationId: 'wine_stats_scroll',
               slivers: [
-                SliverToBoxAdapter(child: SizedBox(height: context.xl)),
+                SliverToBoxAdapter(child: SizedBox(height: context.l)),
 
                 // Header — same family as wine_list (Playfair display +
                 // muted subtitle) so the slide-in feels like a sister page.
@@ -43,9 +43,9 @@ class WineStatsScreen extends ConsumerWidget {
                     child: const _Header(),
                   ),
                 ),
-                SliverToBoxAdapter(child: SizedBox(height: context.l)),
+                SliverToBoxAdapter(child: SizedBox(height: context.m)),
 
-                // Hero stat cards.
+                // Hero stat card.
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: EdgeInsets.symmetric(
@@ -54,7 +54,7 @@ class WineStatsScreen extends ConsumerWidget {
                     child: const StatsHero(),
                   ),
                 ),
-                SliverToBoxAdapter(child: SizedBox(height: context.xl)),
+                SliverToBoxAdapter(child: SizedBox(height: context.l)),
 
                 _SliverSection(
                   title: 'Wine type breakdown',
@@ -62,7 +62,7 @@ class WineStatsScreen extends ConsumerWidget {
                   delay: 100,
                   child: WineTypeBreakdown(data: breakdown),
                 ),
-                SliverToBoxAdapter(child: SizedBox(height: context.l)),
+                SliverToBoxAdapter(child: SizedBox(height: context.m)),
 
                 _SliverSection(
                   title: 'Where you’ve drunk wine',
@@ -70,7 +70,7 @@ class WineStatsScreen extends ConsumerWidget {
                   delay: 200,
                   child: const WineLocationsMap(),
                 ),
-                SliverToBoxAdapter(child: SizedBox(height: context.l)),
+                SliverToBoxAdapter(child: SizedBox(height: context.m)),
 
                 _SliverSection(
                   title: 'Top regions',
@@ -78,7 +78,7 @@ class WineStatsScreen extends ConsumerWidget {
                   delay: 300,
                   child: TallyBars(items: regions, maxItems: 8),
                 ),
-                SliverToBoxAdapter(child: SizedBox(height: context.l)),
+                SliverToBoxAdapter(child: SizedBox(height: context.m)),
 
                 _SliverSection(
                   title: 'Highest rated',
@@ -86,7 +86,10 @@ class WineStatsScreen extends ConsumerWidget {
                   delay: 400,
                   child: TopWinesList(wines: topWines, maxItems: 5),
                 ),
-                SliverToBoxAdapter(child: SizedBox(height: context.xl * 2)),
+                // Floating back button is ~w*0.16 + bottom margin, so reserve
+                // enough space here that scrollable content never disappears
+                // behind it on the last section.
+                SliverToBoxAdapter(child: SizedBox(height: context.w * 0.3)),
               ],
             ),
 
