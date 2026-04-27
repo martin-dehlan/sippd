@@ -14,9 +14,8 @@ const _onBgMuted = Color(0xFF8A7E92);
 const _primary = Color(0xFF6B3A51);
 const _divider = Color(0xFF2A2330);
 
-/// 1080x1920 IG-story share card. Photo-first layout when the wine has
-/// an image (full-bleed top 58%, content on a dark surface bottom 42%);
-/// pure typographic fallback when there is no photo.
+/// 1080x1920 IG-story share card. Photo-led when the wine has an
+/// image, typographic fallback when not.
 class WineRatingCard extends StatelessWidget {
   final WineEntity wine;
   final String? username;
@@ -52,6 +51,9 @@ ImageProvider? _resolveImage(WineEntity wine) {
   return null;
 }
 
+String _formatRated(DateTime d) =>
+    DateFormat('d MMM yyyy').format(d).toUpperCase();
+
 class _PhotoLayout extends StatelessWidget {
   final WineEntity wine;
   final String? username;
@@ -65,9 +67,9 @@ class _PhotoLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final origin = wine.region ?? wine.country ?? '';
-    final dateLine = DateFormat('d MMM yyyy').format(wine.createdAt);
+    final origin = wine.region ?? wine.country;
     final byLine = username == null ? null : '@$username';
+    final notesTeaser = _teaserFromNotes(wine.notes);
 
     return Container(
       width: shareCardWidth,
@@ -76,7 +78,6 @@ class _PhotoLayout extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Header bar — small, sits above the photo on the same dark BG.
           Padding(
             padding: const EdgeInsets.fromLTRB(80, 70, 80, 30),
             child: Row(
@@ -96,17 +97,11 @@ class _PhotoLayout extends StatelessWidget {
               ],
             ),
           ),
-          // Photo — full bleed, fixed height, BoxFit.cover crops user photos
-          // to the share-card aspect cleanly.
           SizedBox(
-            height: 1020,
+            height: 980,
             width: shareCardWidth,
-            child: Image(
-              image: image,
-              fit: BoxFit.cover,
-            ),
+            child: Image(image: image, fit: BoxFit.cover),
           ),
-          // Content — name, rating, meta, footer.
           Expanded(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(80, 50, 80, 70),
@@ -114,49 +109,70 @@ class _PhotoLayout extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    wine.name,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.playfairDisplay(
-                      fontSize: 78,
-                      fontWeight: FontWeight.w900,
-                      color: _onBg,
-                      height: 1.05,
-                      letterSpacing: -1.5,
+                    'RATED · ${_formatRated(wine.createdAt)}',
+                    style: TextStyle(
+                      fontSize: 24,
+                      color: _onBgMuted,
+                      letterSpacing: 4,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
-                  if (wine.winery != null && wine.winery!.isNotEmpty) ...[
-                    const SizedBox(height: 12),
+                  const SizedBox(height: 18),
+                  _NameBlock(wine: wine, maxLines: 2, fontSize: 110),
+                  if (origin != null && origin.isNotEmpty) ...[
+                    const SizedBox(height: 14),
+                    _OriginRow(origin: origin),
+                  ],
+                  const Spacer(),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Icon(
+                        PhosphorIconsFill.star,
+                        color: _primary,
+                        size: 110,
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        wine.rating.toStringAsFixed(1),
+                        style: GoogleFonts.playfairDisplay(
+                          fontSize: 180,
+                          fontWeight: FontWeight.w900,
+                          color: _onBg,
+                          height: 0.95,
+                          letterSpacing: -7,
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 60),
+                        child: Text(
+                          '/ 10',
+                          style: TextStyle(
+                            fontSize: 50,
+                            color: _onBgMuted,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  if (notesTeaser != null) ...[
+                    const SizedBox(height: 22),
                     Text(
-                      wine.winery!,
-                      maxLines: 1,
+                      '“$notesTeaser”',
+                      maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
+                      style: GoogleFonts.playfairDisplay(
                         fontSize: 32,
-                        color: _onBgMuted,
-                        fontWeight: FontWeight.w500,
+                        color: _onBg,
                         fontStyle: FontStyle.italic,
+                        height: 1.25,
                       ),
                     ),
                   ],
-                  const SizedBox(height: 28),
-                  _RatingPill(rating: wine.rating),
                   const Spacer(),
-                  if (origin.isNotEmpty)
-                    _MetaRow(
-                      icon: PhosphorIconsFill.mapPin,
-                      label: '$origin · $dateLine',
-                    )
-                  else
-                    _MetaRow(
-                      icon: PhosphorIconsFill.calendarBlank,
-                      label: dateLine,
-                    ),
-                  const SizedBox(height: 36),
-                  const ShareCardFooter(
-                    textColor: _onBg,
-                    dividerColor: _divider,
-                  ),
+                  _Footer(),
                 ],
               ),
             ),
@@ -175,9 +191,9 @@ class _TypographicLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final origin = wine.region ?? wine.country ?? '';
-    final dateLine = DateFormat('d MMM yyyy').format(wine.createdAt);
+    final origin = wine.region ?? wine.country;
     final byLine = username == null ? null : '@$username';
+    final notesTeaser = _teaserFromNotes(wine.notes);
 
     return Container(
       width: shareCardWidth,
@@ -205,7 +221,7 @@ class _TypographicLayout extends StatelessWidget {
           ),
           const Spacer(flex: 1),
           Text(
-            'WINE RATED',
+            'RATED · ${_formatRated(wine.createdAt)}',
             style: TextStyle(
               fontSize: 26,
               color: _onBgMuted,
@@ -213,115 +229,162 @@ class _TypographicLayout extends StatelessWidget {
               fontWeight: FontWeight.w700,
             ),
           ),
-          const SizedBox(height: 24),
-          Text(
-            wine.name,
-            maxLines: 3,
-            overflow: TextOverflow.ellipsis,
-            style: GoogleFonts.playfairDisplay(
-              fontSize: 110,
-              fontWeight: FontWeight.w900,
-              color: _onBg,
-              height: 1.05,
-              letterSpacing: -2,
-            ),
+          const SizedBox(height: 22),
+          _NameBlock(wine: wine, maxLines: 3, fontSize: 130),
+          if (origin != null && origin.isNotEmpty) ...[
+            const SizedBox(height: 22),
+            _OriginRow(origin: origin),
+          ],
+          const Spacer(flex: 1),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Icon(
+                PhosphorIconsFill.star,
+                color: _primary,
+                size: 140,
+              ),
+              const SizedBox(width: 18),
+              Text(
+                wine.rating.toStringAsFixed(1),
+                style: GoogleFonts.playfairDisplay(
+                  fontSize: 240,
+                  fontWeight: FontWeight.w900,
+                  color: _onBg,
+                  height: 1,
+                  letterSpacing: -9,
+                ),
+              ),
+              const SizedBox(width: 14),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 40),
+                child: Text(
+                  '/ 10',
+                  style: TextStyle(
+                    fontSize: 60,
+                    color: _onBgMuted,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
           ),
-          if (wine.winery != null && wine.winery!.isNotEmpty) ...[
-            const SizedBox(height: 24),
+          if (notesTeaser != null) ...[
+            const SizedBox(height: 36),
             Text(
-              wine.winery!,
-              maxLines: 1,
+              '“$notesTeaser”',
+              maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(
+              style: GoogleFonts.playfairDisplay(
                 fontSize: 36,
-                color: _onBgMuted,
-                fontWeight: FontWeight.w500,
+                color: _onBg,
                 fontStyle: FontStyle.italic,
+                height: 1.25,
               ),
             ),
           ],
-          const Spacer(flex: 1),
-          _RatingPill(rating: wine.rating, big: true),
-          const SizedBox(height: 56),
-          if (origin.isNotEmpty)
-            _MetaRow(
-              icon: PhosphorIconsFill.mapPin,
-              label: origin,
-            ),
-          if (origin.isNotEmpty) const SizedBox(height: 18),
-          _MetaRow(
-            icon: PhosphorIconsFill.calendarBlank,
-            label: dateLine,
-          ),
           const Spacer(flex: 2),
-          const ShareCardFooter(textColor: _onBg, dividerColor: _divider),
+          _Footer(),
         ],
       ),
     );
   }
 }
 
-class _RatingPill extends StatelessWidget {
-  final double rating;
-  final bool big;
-  const _RatingPill({required this.rating, this.big = false});
+/// Wine name (Playfair big) + winery (italic) + vintage badge if set.
+class _NameBlock extends StatelessWidget {
+  final WineEntity wine;
+  final int maxLines;
+  final double fontSize;
+
+  const _NameBlock({
+    required this.wine,
+    required this.maxLines,
+    required this.fontSize,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final numberSize = big ? 220.0 : 150.0;
-    final iconSize = big ? 130.0 : 96.0;
-    final suffixSize = big ? 56.0 : 44.0;
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.end,
+    final showWinery = wine.winery != null &&
+        wine.winery!.isNotEmpty &&
+        wine.winery!.toLowerCase() != wine.name.toLowerCase();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(
-          PhosphorIconsFill.star,
-          color: _primary,
-          size: iconSize,
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Text(
+                wine.name,
+                maxLines: maxLines,
+                overflow: TextOverflow.ellipsis,
+                style: GoogleFonts.playfairDisplay(
+                  fontSize: fontSize,
+                  fontWeight: FontWeight.w900,
+                  color: _onBg,
+                  height: 1,
+                  letterSpacing: -2,
+                ),
+              ),
+            ),
+            if (wine.vintage != null) ...[
+              const SizedBox(width: 18),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 10,
+                ),
+                decoration: BoxDecoration(
+                  color: _primary.withValues(alpha: 0.18),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  wine.vintage.toString(),
+                  style: TextStyle(
+                    fontSize: 36,
+                    fontWeight: FontWeight.w800,
+                    color: _onBg,
+                    letterSpacing: -0.5,
+                    height: 1,
+                  ),
+                ),
+              ),
+            ],
+          ],
         ),
-        SizedBox(width: big ? 18 : 12),
-        Text(
-          rating.toStringAsFixed(1),
-          style: GoogleFonts.playfairDisplay(
-            fontSize: numberSize,
-            fontWeight: FontWeight.w900,
-            color: _onBg,
-            height: 1,
-            letterSpacing: big ? -8 : -5,
-          ),
-        ),
-        SizedBox(width: 14),
-        Padding(
-          padding: EdgeInsets.only(bottom: big ? 36 : 24),
-          child: Text(
-            '/ 10',
+        if (showWinery) ...[
+          const SizedBox(height: 10),
+          Text(
+            wine.winery!,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: TextStyle(
-              fontSize: suffixSize,
+              fontSize: 32,
               color: _onBgMuted,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w500,
+              fontStyle: FontStyle.italic,
             ),
           ),
-        ),
+        ],
       ],
     );
   }
 }
 
-class _MetaRow extends StatelessWidget {
-  final IconData icon;
-  final String label;
-
-  const _MetaRow({required this.icon, required this.label});
+class _OriginRow extends StatelessWidget {
+  final String origin;
+  const _OriginRow({required this.origin});
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, color: _primary, size: 36),
-        const SizedBox(width: 14),
+        Icon(PhosphorIconsFill.mapPin, color: _primary, size: 32),
+        const SizedBox(width: 12),
         Flexible(
           child: Text(
-            label,
+            origin,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
@@ -335,4 +398,76 @@ class _MetaRow extends StatelessWidget {
       ],
     );
   }
+}
+
+class _Footer extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(height: 1, color: _divider),
+        const SizedBox(height: 28),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              'SIPPD',
+              style: GoogleFonts.playfairDisplay(
+                fontSize: 40,
+                fontWeight: FontWeight.w900,
+                color: _onBg,
+                letterSpacing: -0.5,
+                height: 1,
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 22,
+                vertical: 14,
+              ),
+              decoration: BoxDecoration(
+                color: _primary,
+                borderRadius: BorderRadius.circular(36),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'rate yours at sippd.xyz',
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w800,
+                      color: _onBg,
+                      letterSpacing: 0.3,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Icon(
+                    PhosphorIconsBold.arrowRight,
+                    color: _onBg,
+                    size: 28,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+/// Take the first sentence (or first 90 chars) of notes for the
+/// share-card teaser. Returns null when the user has no notes.
+String? _teaserFromNotes(String? notes) {
+  if (notes == null) return null;
+  final trimmed = notes.trim();
+  if (trimmed.isEmpty) return null;
+  final firstSentenceEnd = trimmed.indexOf(RegExp(r'[.!?]'));
+  String snippet =
+      firstSentenceEnd > 20 ? trimmed.substring(0, firstSentenceEnd) : trimmed;
+  if (snippet.length > 90) snippet = '${snippet.substring(0, 87)}…';
+  return snippet;
 }
