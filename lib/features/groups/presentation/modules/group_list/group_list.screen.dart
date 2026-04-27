@@ -369,6 +369,12 @@ class _GroupEmptyState extends StatelessWidget {
               style: TextStyle(
                   fontSize: context.captionFont,
                   color: cs.onSurfaceVariant)),
+          SizedBox(height: context.l),
+          FilledButton.icon(
+            onPressed: onCreate,
+            icon: const Icon(PhosphorIconsRegular.plus),
+            label: const Text('Create group'),
+          ),
         ],
       ),
     );
