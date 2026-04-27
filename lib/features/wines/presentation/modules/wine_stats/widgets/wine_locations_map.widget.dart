@@ -21,49 +21,68 @@ class WineLocationsMap extends ConsumerWidget {
       return _MapEmptyState(height: height, cs: cs);
     }
 
-    final bounds = _bounds(wines);
-
     return ClipRRect(
       borderRadius: BorderRadius.circular(context.w * 0.04),
       child: SizedBox(
         height: height,
         child: Stack(
           children: [
-            FlutterMap(
-              options: MapOptions(
-                initialCameraFit: CameraFit.bounds(
-                  bounds: bounds,
-                  padding: EdgeInsets.all(context.w * 0.08),
-                ),
-                interactionOptions: const InteractionOptions(
-                  flags: InteractiveFlag.pinchZoom |
-                      InteractiveFlag.drag |
-                      InteractiveFlag.doubleTapZoom,
-                ),
-              ),
-              children: [
-                TileLayer(
-                  urlTemplate:
-                      'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                  userAgentPackageName: 'xyz.sippd.app',
-                  tileBuilder: _darkTileBuilder,
-                ),
-                MarkerLayer(
-                  markers: [
-                    for (final w in wines)
-                      Marker(
-                        point: LatLng(w.latitude!, w.longitude!),
-                        width: context.w * 0.07,
-                        height: context.w * 0.07,
-                        child: _WinePin(rating: w.rating, cs: cs),
-                      ),
-                  ],
-                ),
-              ],
+            _MapBody(wines: wines, interactive: false),
+            Positioned(
+              top: context.s,
+              left: context.s,
+              child: _CountBadge(count: wines.length, cs: cs),
             ),
             Positioned(
               top: context.s,
               right: context.s,
+              child: _FullscreenButton(
+                onTap: () => Navigator.of(context).push(
+                  PageRouteBuilder<void>(
+                    transitionDuration: const Duration(milliseconds: 280),
+                    reverseTransitionDuration:
+                        const Duration(milliseconds: 220),
+                    pageBuilder: (_, animation, _) => FadeTransition(
+                      opacity: animation,
+                      child: WineMapFullscreen(wines: wines),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class WineMapFullscreen extends StatelessWidget {
+  final List<WineEntity> wines;
+  const WineMapFullscreen({super.key, required this.wines});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Scaffold(
+      backgroundColor: cs.surface,
+      body: SafeArea(
+        child: Stack(
+          children: [
+            _MapBody(wines: wines, interactive: true),
+            Positioned(
+              top: context.s,
+              left: context.paddingH,
+              child: _PillButton(
+                icon: PhosphorIconsRegular.x,
+                label: 'Close',
+                onTap: () => Navigator.of(context).pop(),
+                cs: cs,
+              ),
+            ),
+            Positioned(
+              top: context.s,
+              right: context.paddingH,
               child: _CountBadge(count: wines.length, cs: cs),
             ),
           ],
@@ -71,10 +90,54 @@ class WineLocationsMap extends ConsumerWidget {
       ),
     );
   }
+}
 
-  LatLngBounds _bounds(List<WineEntity> wines) {
+class _MapBody extends StatelessWidget {
+  final List<WineEntity> wines;
+  final bool interactive;
+  const _MapBody({required this.wines, required this.interactive});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final bounds = _bounds(wines);
+    final padding = interactive ? context.w * 0.18 : context.w * 0.08;
+    return FlutterMap(
+      options: MapOptions(
+        initialCameraFit: CameraFit.bounds(
+          bounds: bounds,
+          padding: EdgeInsets.all(padding),
+        ),
+        interactionOptions: InteractionOptions(
+          flags: interactive
+              ? InteractiveFlag.all
+              : InteractiveFlag.pinchZoom |
+                  InteractiveFlag.doubleTapZoom,
+        ),
+      ),
+      children: [
+        TileLayer(
+          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+          userAgentPackageName: 'xyz.sippd.app',
+          tileBuilder: _darkTileBuilder,
+        ),
+        MarkerLayer(
+          markers: [
+            for (final w in wines)
+              Marker(
+                point: LatLng(w.latitude!, w.longitude!),
+                width: context.w * 0.07,
+                height: context.w * 0.07,
+                child: _WinePin(rating: w.rating, cs: cs),
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  static LatLngBounds _bounds(List<WineEntity> wines) {
     if (wines.length == 1) {
-      // Pad a single point so flutter_map gets a non-zero bounds.
       final lat = wines.first.latitude!;
       final lng = wines.first.longitude!;
       return LatLngBounds(
@@ -94,7 +157,7 @@ class WineLocationsMap extends ConsumerWidget {
 
   /// Subtle dark filter on OSM tiles so the bright default tile artwork
   /// doesn't clash with the rest of the dark UI.
-  Widget _darkTileBuilder(BuildContext context, Widget tile, _) {
+  static Widget _darkTileBuilder(BuildContext context, Widget tile, _) {
     return ColorFiltered(
       colorFilter: const ColorFilter.matrix([
         0.55, 0, 0, 0, 0,
@@ -162,6 +225,88 @@ class _CountBadge extends StatelessWidget {
           fontWeight: FontWeight.w700,
           color: cs.onSurface,
           letterSpacing: 0.2,
+        ),
+      ),
+    );
+  }
+}
+
+class _FullscreenButton extends StatelessWidget {
+  final VoidCallback onTap;
+  const _FullscreenButton({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Material(
+      color: cs.surface.withValues(alpha: 0.92),
+      borderRadius: BorderRadius.circular(context.w * 0.05),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          padding: EdgeInsets.all(context.w * 0.025),
+          decoration: BoxDecoration(
+            border: Border.all(color: cs.outlineVariant, width: 0.5),
+            borderRadius: BorderRadius.circular(context.w * 0.05),
+          ),
+          child: Icon(
+            PhosphorIconsRegular.arrowsOutSimple,
+            color: cs.onSurface,
+            size: context.w * 0.045,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _PillButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+  final ColorScheme cs;
+
+  const _PillButton({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+    required this.cs,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: cs.surface.withValues(alpha: 0.92),
+      borderRadius: BorderRadius.circular(context.w * 0.05),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          padding: EdgeInsets.symmetric(
+            horizontal: context.w * 0.04,
+            vertical: context.xs * 1.2,
+          ),
+          decoration: BoxDecoration(
+            border: Border.all(color: cs.outlineVariant, width: 0.5),
+            borderRadius: BorderRadius.circular(context.w * 0.05),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: context.w * 0.045, color: cs.onSurface),
+              SizedBox(width: context.xs),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: context.captionFont,
+                  fontWeight: FontWeight.w700,
+                  color: cs.onSurface,
+                  letterSpacing: 0.2,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

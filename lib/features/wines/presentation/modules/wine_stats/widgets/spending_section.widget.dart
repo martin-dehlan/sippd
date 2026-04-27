@@ -42,7 +42,7 @@ class _Content extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'TOTAL SPEND',
+          'RATED PORTFOLIO',
           style: TextStyle(
             fontSize: context.captionFont * 0.85,
             color: cs.onSurfaceVariant,

@@ -66,8 +66,10 @@ class WineStatsScreen extends ConsumerWidget {
                 SliverToBoxAdapter(child: SizedBox(height: context.m)),
 
                 _SliverSection(
-                  title: 'Spend & value',
-                  subtitle: 'What your wines cost — and where the deals hide.',
+                  title: 'Prices & value',
+                  subtitle:
+                      'Sum of bottle prices logged on your rated wines '
+                      '— not actual consumption spend.',
                   delay: 150,
                   child: const SpendingSection(),
                 ),
