@@ -193,7 +193,25 @@ GoRouter goRouter(GoRouterRef ref) {
       // Wine routes (outside shell)
       GoRoute(
         path: AppRoutes.wineStats,
-        builder: (context, state) => const WineStatsScreen(),
+        // Custom slide-from-right transition so the stats screen feels
+        // like a sister page to the wines list rather than a stacked card.
+        pageBuilder: (context, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: const WineStatsScreen(),
+          transitionDuration: const Duration(milliseconds: 320),
+          reverseTransitionDuration: const Duration(milliseconds: 260),
+          transitionsBuilder: (_, animation, _, child) => SlideTransition(
+            position: Tween<Offset>(
+              begin: const Offset(1, 0),
+              end: Offset.zero,
+            ).animate(CurvedAnimation(
+              parent: animation,
+              curve: Curves.easeOutCubic,
+              reverseCurve: Curves.easeInCubic,
+            )),
+            child: child,
+          ),
+        ),
       ),
       GoRoute(
         path: AppRoutes.wineAdd,
