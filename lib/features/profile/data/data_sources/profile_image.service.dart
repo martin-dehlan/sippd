@@ -32,7 +32,9 @@ class ProfileImageService {
     final fileName = '${const Uuid().v4()}.$ext';
     final storagePath = '$userId/$fileName';
 
-    await _client.storage.from('avatars').upload(
+    await _client.storage
+        .from('avatars')
+        .upload(
           storagePath,
           file,
           fileOptions: const FileOptions(cacheControl: '3600', upsert: true),

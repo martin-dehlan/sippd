@@ -84,48 +84,49 @@ class _ArchetypeChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     return Center(
-      child: Container(
-        padding: EdgeInsets.symmetric(
-          horizontal: context.w * 0.04,
-          vertical: context.xs * 1.4,
-        ),
-        decoration: BoxDecoration(
-          color: cs.primaryContainer,
-          borderRadius: BorderRadius.circular(context.w * 0.06),
-          border: Border.all(
-            color: cs.primary.withValues(alpha: 0.4),
-            width: 1,
-          ),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              archetype.icon,
-              size: context.w * 0.045,
-              color: cs.onPrimaryContainer,
-            ),
-            SizedBox(width: context.w * 0.02),
-            Text(
-              archetype.title,
-              style: TextStyle(
-                fontSize: context.captionFont,
-                fontWeight: FontWeight.w800,
-                color: cs.onPrimaryContainer,
-                letterSpacing: 0.3,
+      child:
+          Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: context.w * 0.04,
+                  vertical: context.xs * 1.4,
+                ),
+                decoration: BoxDecoration(
+                  color: cs.primaryContainer,
+                  borderRadius: BorderRadius.circular(context.w * 0.06),
+                  border: Border.all(
+                    color: cs.primary.withValues(alpha: 0.4),
+                    width: 1,
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      archetype.icon,
+                      size: context.w * 0.045,
+                      color: cs.onPrimaryContainer,
+                    ),
+                    SizedBox(width: context.w * 0.02),
+                    Text(
+                      archetype.title,
+                      style: TextStyle(
+                        fontSize: context.captionFont,
+                        fontWeight: FontWeight.w800,
+                        color: cs.onPrimaryContainer,
+                        letterSpacing: 0.3,
+                      ),
+                    ),
+                  ],
+                ),
+              )
+              .animate()
+              .fadeIn(duration: 360.ms)
+              .scale(
+                begin: const Offset(0.9, 0.9),
+                end: const Offset(1, 1),
+                duration: 360.ms,
+                curve: Curves.easeOutBack,
               ),
-            ),
-          ],
-        ),
-      )
-          .animate()
-          .fadeIn(duration: 360.ms)
-          .scale(
-            begin: const Offset(0.9, 0.9),
-            end: const Offset(1, 1),
-            duration: 360.ms,
-            curve: Curves.easeOutBack,
-          ),
     );
   }
 }

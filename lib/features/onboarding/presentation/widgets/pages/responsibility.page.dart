@@ -37,21 +37,18 @@ class ResponsibilityPage extends StatelessWidget {
           children: [
             // Quiet ringed lifebuoy — adds focal point without card weight.
             Container(
-              width: context.w * 0.18,
-              height: context.w * 0.18,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: cs.outlineVariant,
-                  width: 1,
-                ),
-              ),
-              child: Icon(
-                PhosphorIconsRegular.lifebuoy,
-                color: cs.primary,
-                size: context.w * 0.085,
-              ),
-            )
+                  width: context.w * 0.18,
+                  height: context.w * 0.18,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: cs.outlineVariant, width: 1),
+                  ),
+                  child: Icon(
+                    PhosphorIconsRegular.lifebuoy,
+                    color: cs.primary,
+                    size: context.w * 0.085,
+                  ),
+                )
                 .animate()
                 .fadeIn(duration: 360.ms)
                 .scale(
@@ -62,23 +59,18 @@ class ResponsibilityPage extends StatelessWidget {
                 ),
             SizedBox(height: context.l),
             Text(
-              'If alcohol is hurting you or someone close,\n'
-              'free confidential help is available.',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: context.bodyFont * 0.95,
-                height: 1.5,
-                color: cs.onSurfaceVariant,
-              ),
-            )
+                  'If alcohol is hurting you or someone close,\n'
+                  'free confidential help is available.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: context.bodyFont * 0.95,
+                    height: 1.5,
+                    color: cs.onSurfaceVariant,
+                  ),
+                )
                 .animate()
                 .fadeIn(delay: 160.ms, duration: 360.ms)
-                .moveY(
-                  begin: 6,
-                  end: 0,
-                  delay: 160.ms,
-                  duration: 360.ms,
-                ),
+                .moveY(begin: 6, end: 0, delay: 160.ms, duration: 360.ms),
             SizedBox(height: context.m),
             TextButton(
               onPressed: _openHelp,

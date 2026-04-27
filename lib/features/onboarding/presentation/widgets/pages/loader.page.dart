@@ -14,8 +14,7 @@ class LoaderPage extends StatefulWidget {
   State<LoaderPage> createState() => _LoaderPageState();
 }
 
-class _LoaderPageState extends State<LoaderPage>
-    with TickerProviderStateMixin {
+class _LoaderPageState extends State<LoaderPage> with TickerProviderStateMixin {
   static const _steps = [
     'Matching your taste',
     'Curating your styles',
@@ -123,10 +122,12 @@ class _LoaderPageState extends State<LoaderPage>
                 onPressed: _finished ? widget.onDone : null,
                 style: FilledButton.styleFrom(
                   elevation: 0,
-                  disabledBackgroundColor:
-                      Theme.of(context).colorScheme.surfaceContainer,
-                  disabledForegroundColor:
-                      Theme.of(context).colorScheme.outline,
+                  disabledBackgroundColor: Theme.of(
+                    context,
+                  ).colorScheme.surfaceContainer,
+                  disabledForegroundColor: Theme.of(
+                    context,
+                  ).colorScheme.outline,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(context.w * 0.04),
                   ),
@@ -191,8 +192,7 @@ class _LoaderRing extends StatelessWidget {
                 value: finished ? 1.0 : ringCtrl.value,
                 strokeWidth: 2.5,
                 color: cs.primary,
-                backgroundColor:
-                    cs.outlineVariant.withValues(alpha: 0.35),
+                backgroundColor: cs.outlineVariant.withValues(alpha: 0.35),
                 strokeCap: StrokeCap.round,
               ),
             ),
@@ -296,8 +296,7 @@ class _ChecklistRow extends StatelessWidget {
                           height: tickHeight,
                           decoration: BoxDecoration(
                             color: cs.outlineVariant.withValues(alpha: 0.4),
-                            borderRadius:
-                                BorderRadius.circular(tickHeight),
+                            borderRadius: BorderRadius.circular(tickHeight),
                           ),
                         );
                       }
@@ -310,8 +309,7 @@ class _ChecklistRow extends StatelessWidget {
                             height: tickHeight,
                             decoration: BoxDecoration(
                               color: cs.primary.withValues(alpha: 0.2),
-                              borderRadius:
-                                  BorderRadius.circular(tickHeight),
+                              borderRadius: BorderRadius.circular(tickHeight),
                             ),
                           ),
                           Container(
@@ -319,8 +317,7 @@ class _ChecklistRow extends StatelessWidget {
                             height: tickHeight,
                             decoration: BoxDecoration(
                               color: cs.primary,
-                              borderRadius:
-                                  BorderRadius.circular(tickHeight),
+                              borderRadius: BorderRadius.circular(tickHeight),
                             ),
                           ),
                         ],

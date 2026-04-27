@@ -2,9 +2,17 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../../common/data/avatar_icons.dart';
+
 class ProfileAvatar extends StatelessWidget {
   final String? avatarUrl;
   final String fallbackText;
+
+  /// User-picked avatar icon key (from onboarding). When set and no
+  /// avatar image is uploaded, the icon renders instead of initials so
+  /// the choice from onboarding actually surfaces somewhere.
+  final String? iconKey;
+
   final double size;
   final bool showEditBadge;
   final bool showRing;
@@ -15,6 +23,7 @@ class ProfileAvatar extends StatelessWidget {
     required this.avatarUrl,
     required this.fallbackText,
     required this.size,
+    this.iconKey,
     this.showEditBadge = false,
     this.showRing = false,
     this.onTap,
@@ -27,7 +36,10 @@ class ProfileAvatar extends StatelessWidget {
     final badgeSize = size * 0.28;
 
     final hasImage = avatarUrl != null && avatarUrl!.isNotEmpty;
-    final fallback = _Initials(text: fallbackText, size: size);
+    final pickedIcon = avatarIconForKey(iconKey);
+    final fallback = pickedIcon != null
+        ? _IconFallback(icon: pickedIcon, size: size)
+        : _Initials(text: fallbackText, size: size);
 
     final avatar = Container(
       width: size,
@@ -72,10 +84,7 @@ class ProfileAvatar extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: cs.primary,
                       shape: BoxShape.circle,
-                      border: Border.all(
-                        color: cs.surface,
-                        width: ringWidth,
-                      ),
+                      border: Border.all(color: cs.surface, width: ringWidth),
                     ),
                     child: Icon(
                       PhosphorIconsRegular.pencilSimple,
@@ -121,6 +130,21 @@ class _Initials extends StatelessWidget {
           color: cs.primary,
         ),
       ),
+    );
+  }
+}
+
+class _IconFallback extends StatelessWidget {
+  final IconData icon;
+  final double size;
+
+  const _IconFallback({required this.icon, required this.size});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Center(
+      child: Icon(icon, size: size * 0.46, color: cs.primary),
     );
   }
 }

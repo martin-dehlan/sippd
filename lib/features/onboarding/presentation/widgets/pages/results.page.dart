@@ -196,12 +196,11 @@ class _LevelCard extends StatelessWidget {
                   textAlign: i == 0
                       ? TextAlign.start
                       : i == levels.length - 1
-                          ? TextAlign.end
-                          : TextAlign.center,
+                      ? TextAlign.end
+                      : TextAlign.center,
                   style: TextStyle(
                     fontSize: context.captionFont * 0.85,
-                    fontWeight:
-                        isCurrent ? FontWeight.w700 : FontWeight.w400,
+                    fontWeight: isCurrent ? FontWeight.w700 : FontWeight.w400,
                     color: isCurrent ? cs.onSurface : cs.onSurfaceVariant,
                   ),
                 ),
@@ -219,10 +218,10 @@ class _FrequencyCard extends StatelessWidget {
   const _FrequencyCard({required this.current});
 
   int get _fillBars => switch (current) {
-        DrinkFrequency.weekly => 5,
-        DrinkFrequency.monthly => 3,
-        DrinkFrequency.rare => 1,
-      };
+    DrinkFrequency.weekly => 5,
+    DrinkFrequency.monthly => 3,
+    DrinkFrequency.rare => 1,
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -232,8 +231,7 @@ class _FrequencyCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Icon(current.icon,
-              size: context.w * 0.06, color: cs.primary),
+          Icon(current.icon, size: context.w * 0.06, color: cs.primary),
           SizedBox(width: context.w * 0.03),
           Expanded(
             child: Column(
@@ -310,10 +308,7 @@ class _StyleChip extends StatelessWidget {
       decoration: BoxDecoration(
         color: cs.surface.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(context.w * 0.05),
-        border: Border.all(
-          color: color.withValues(alpha: 0.45),
-          width: 0.8,
-        ),
+        border: Border.all(color: color.withValues(alpha: 0.45), width: 0.8),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -372,8 +367,11 @@ class _GoalsCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(context.w * 0.02),
                       ),
                       alignment: Alignment.center,
-                      child: Icon(g.icon,
-                          size: context.w * 0.04, color: cs.primary),
+                      child: Icon(
+                        g.icon,
+                        size: context.w * 0.04,
+                        color: cs.primary,
+                      ),
                     ),
                     SizedBox(width: context.w * 0.03),
                     Expanded(

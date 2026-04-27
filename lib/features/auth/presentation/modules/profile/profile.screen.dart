@@ -53,6 +53,7 @@ class ProfileScreen extends ConsumerWidget {
                       ? ProfileAvatar(
                           avatarUrl: profile?.avatarUrl,
                           fallbackText: headlineName,
+                          iconKey: profile?.tasteEmoji,
                           size: context.w * 0.26,
                           showRing: true,
                           showEditBadge: true,

@@ -32,12 +32,12 @@ extension ProfileEntityX on ProfileEntity {
       styles.isNotEmpty;
 
   OnboardingAnswers toOnboardingAnswers() => OnboardingAnswers(
-        tasteLevel: tasteLevel,
-        goals: goals,
-        styles: styles,
-        frequency: drinkFrequency,
-        displayName: displayName,
-        emoji: tasteEmoji,
-        notificationsAsked: true,
-      );
+    tasteLevel: tasteLevel,
+    goals: goals,
+    styles: styles,
+    frequency: drinkFrequency,
+    displayName: displayName,
+    emoji: tasteEmoji,
+    notificationsAsked: true,
+  );
 }
