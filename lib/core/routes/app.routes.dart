@@ -35,6 +35,7 @@ class AppRoutes {
 
   // Paywall
   static const String paywall = '/paywall';
+  static const String subscription = '/subscription';
 
   // Tastings
   static const String tastingCreate = '/groups/:groupId/tastings/new';

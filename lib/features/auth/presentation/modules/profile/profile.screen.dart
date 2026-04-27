@@ -127,6 +127,11 @@ class ProfileScreen extends ConsumerWidget {
                 label: 'Friends',
                 onTap: () => context.push(AppRoutes.friends),
               ),
+              _MenuItem(
+                icon: PhosphorIconsRegular.sparkle,
+                label: 'Subscription',
+                onTap: () => context.push(AppRoutes.subscription),
+              ),
               if (_isEmailUser(user))
                 _MenuItem(
                   icon: PhosphorIconsRegular.lockKey,
