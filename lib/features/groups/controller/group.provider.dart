@@ -590,4 +590,27 @@ Future<String?> groupWineShareMeta(
   return row?['shared_by'] as String?;
 }
 
+/// Set of group IDs that already contain [wineId] (or its canonical
+/// counterpart resolved through the alias system). Used by the share
+/// sheet to mark groups that have already received this wine.
+@riverpod
+Future<Set<String>> groupsContainingWine(
+    GroupsContainingWineRef ref, String wineId) async {
+  final userId = ref.watch(currentUserIdProvider);
+  if (userId == null) return const {};
+
+  final canonical = await ref
+      .read(wineAliasRepositoryProvider)
+      .resolveCanonical(userId: userId, localWineId: wineId);
+
+  final client = ref.read(supabaseClientProvider);
+  final rows = await client
+      .from('group_wines')
+      .select('group_id')
+      .eq('wine_id', canonical);
+  return (rows as List)
+      .map((r) => (r as Map<String, dynamic>)['group_id'] as String)
+      .toSet();
+}
+
 

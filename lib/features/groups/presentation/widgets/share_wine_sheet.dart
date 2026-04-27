@@ -111,6 +111,7 @@ class _ShareWineSheetState extends ConsumerState<_ShareWineSheet> {
 
   void _finish(GroupEntity group) {
     ref.invalidate(groupWinesProvider(group.id));
+    ref.invalidate(groupsContainingWineProvider(widget.wineId));
     if (!mounted) return;
     final messenger = ScaffoldMessenger.of(context);
     Navigator.pop(context);
@@ -161,13 +162,19 @@ class _ShareWineSheetState extends ConsumerState<_ShareWineSheet> {
                     ),
                   );
                 }
+                final sharedAsync =
+                    ref.watch(groupsContainingWineProvider(widget.wineId));
+                final shared = sharedAsync.valueOrNull ?? const <String>{};
                 return Column(
                   children: [
                     for (final g in groups) ...[
                       _GroupRow(
                         group: g,
                         isBusy: _busyGroupId == g.id,
-                        onTap: _busyGroupId != null ? null : () => _onPick(g),
+                        alreadyShared: shared.contains(g.id),
+                        onTap: _busyGroupId != null || shared.contains(g.id)
+                            ? null
+                            : () => _onPick(g),
                       ),
                       SizedBox(height: context.s),
                     ],
@@ -192,90 +199,98 @@ class _GroupRow extends ConsumerWidget {
   final GroupEntity group;
   final VoidCallback? onTap;
   final bool isBusy;
+  final bool alreadyShared;
 
   const _GroupRow({
     required this.group,
     required this.onTap,
     this.isBusy = false,
+    this.alreadyShared = false,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
     final membersAsync = ref.watch(groupMembersProvider(group.id));
-    final subtitle = _subtitle();
+    final subtitle = alreadyShared ? 'Already shared' : _subtitle();
 
-    return Material(
-      color: cs.surfaceContainer,
-      borderRadius: BorderRadius.circular(context.w * 0.04),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: EdgeInsets.all(context.w * 0.04),
-          child: Row(
-            children: [
-              Container(
-                width: context.w * 0.12,
-                height: context.w * 0.12,
-                decoration: BoxDecoration(
-                  color: group.imageUrl == null
-                      ? cs.primaryContainer
-                      : cs.surfaceContainer,
-                  borderRadius: BorderRadius.circular(context.w * 0.03),
-                  image: group.imageUrl != null
-                      ? DecorationImage(
-                          image: NetworkImage(group.imageUrl!),
-                          fit: BoxFit.cover,
-                        )
+    return Opacity(
+      opacity: alreadyShared ? 0.55 : 1,
+      child: Material(
+        color: cs.surfaceContainer,
+        borderRadius: BorderRadius.circular(context.w * 0.04),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: EdgeInsets.all(context.w * 0.04),
+            child: Row(
+              children: [
+                Container(
+                  width: context.w * 0.12,
+                  height: context.w * 0.12,
+                  decoration: BoxDecoration(
+                    color: group.imageUrl == null
+                        ? cs.primaryContainer
+                        : cs.surfaceContainer,
+                    borderRadius: BorderRadius.circular(context.w * 0.03),
+                    image: group.imageUrl != null
+                        ? DecorationImage(
+                            image: NetworkImage(group.imageUrl!),
+                            fit: BoxFit.cover,
+                          )
+                        : null,
+                  ),
+                  child: group.imageUrl == null
+                      ? Icon(PhosphorIconsRegular.wine,
+                          color: cs.primary, size: context.w * 0.06)
                       : null,
                 ),
-                child: group.imageUrl == null
-                    ? Icon(PhosphorIconsRegular.wine,
-                        color: cs.primary, size: context.w * 0.06)
-                    : null,
-              ),
-              SizedBox(width: context.w * 0.04),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(group.name,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                            fontSize: context.bodyFont,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: -0.2)),
-                    if (subtitle != null) ...[
-                      SizedBox(height: context.xs),
-                      Text(subtitle,
+                SizedBox(width: context.w * 0.04),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(group.name,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                              fontSize: context.captionFont,
-                              color: cs.onSurfaceVariant)),
+                              fontSize: context.bodyFont,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: -0.2)),
+                      if (subtitle != null) ...[
+                        SizedBox(height: context.xs),
+                        Text(subtitle,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                                fontSize: context.captionFont,
+                                color: cs.onSurfaceVariant)),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
-              ),
-              SizedBox(width: context.w * 0.02),
-              if (isBusy)
-                SizedBox(
-                  width: context.w * 0.05,
-                  height: context.w * 0.05,
-                  child: const CircularProgressIndicator(strokeWidth: 2),
-                )
-              else
-                membersAsync.maybeWhen(
-                  data: (members) => members.isEmpty
-                      ? Icon(PhosphorIconsRegular.caretRight,
-                          size: context.w * 0.035, color: cs.outline)
-                      : _AvatarCluster(members: members),
-                  orElse: () => Icon(PhosphorIconsRegular.caretRight,
-                      size: context.w * 0.035, color: cs.outline),
-                ),
-            ],
+                SizedBox(width: context.w * 0.02),
+                if (isBusy)
+                  SizedBox(
+                    width: context.w * 0.05,
+                    height: context.w * 0.05,
+                    child: const CircularProgressIndicator(strokeWidth: 2),
+                  )
+                else if (alreadyShared)
+                  Icon(PhosphorIconsRegular.checkCircle,
+                      size: context.w * 0.055, color: cs.primary)
+                else
+                  membersAsync.maybeWhen(
+                    data: (members) => members.isEmpty
+                        ? Icon(PhosphorIconsRegular.caretRight,
+                            size: context.w * 0.035, color: cs.outline)
+                        : _AvatarCluster(members: members),
+                    orElse: () => Icon(PhosphorIconsRegular.caretRight,
+                        size: context.w * 0.035, color: cs.outline),
+                  ),
+              ],
+            ),
           ),
         ),
       ),
