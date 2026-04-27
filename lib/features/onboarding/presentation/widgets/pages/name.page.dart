@@ -88,22 +88,22 @@ class _NamePageState extends ConsumerState<NamePage> {
             ),
           ),
           SizedBox(height: context.m),
-          GridView.count(
-            crossAxisCount: 4,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            mainAxisSpacing: context.w * 0.03,
-            crossAxisSpacing: context.w * 0.03,
+          Wrap(
+            spacing: context.w * 0.025,
+            runSpacing: context.w * 0.025,
             children: avatarIconOptions.map((entry) {
               final selected = answers.emoji == entry.key;
+              final tile = context.w * 0.16;
               return GestureDetector(
                 onTap: () => notifier.setName(emoji: entry.key),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 150),
+                  width: tile,
+                  height: tile,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                     color: selected ? cs.primaryContainer : cs.surfaceContainer,
-                    borderRadius: BorderRadius.circular(context.w * 0.04),
+                    borderRadius: BorderRadius.circular(context.w * 0.035),
                     border: Border.all(
                       color: selected ? cs.primary : cs.outlineVariant,
                       width: selected ? 1.5 : 0.5,
@@ -111,7 +111,7 @@ class _NamePageState extends ConsumerState<NamePage> {
                   ),
                   child: Icon(
                     entry.icon,
-                    size: context.w * 0.075,
+                    size: tile * 0.42,
                     color: selected
                         ? cs.onPrimaryContainer
                         : cs.onSurfaceVariant,
