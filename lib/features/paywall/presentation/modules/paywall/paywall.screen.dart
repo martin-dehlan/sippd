@@ -40,6 +40,7 @@ class PaywallScreen extends ConsumerWidget {
           child: PaywallBody(
             triggerSource: triggerSource ?? 'standalone',
             showHero: true,
+            eyebrow: 'Sippd Pro',
             headline: 'See how you\nreally taste.',
             subhead:
                 'Map every bottle, leaderboard with your friends, '

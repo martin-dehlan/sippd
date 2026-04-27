@@ -33,7 +33,7 @@ class PaywallBenefitRow extends StatelessWidget {
               color: cs.primaryContainer,
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: cs.primary, size: tile * 0.5),
+            child: Icon(icon, color: cs.onPrimaryContainer, size: tile * 0.5),
           ),
           SizedBox(width: context.w * 0.035),
           Expanded(

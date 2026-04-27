@@ -23,6 +23,7 @@ class PaywallBody extends ConsumerStatefulWidget {
     super.key,
     required this.triggerSource,
     required this.benefits,
+    this.eyebrow,
     this.headline,
     this.subhead,
     this.showHero = false,
@@ -35,6 +36,7 @@ class PaywallBody extends ConsumerStatefulWidget {
 
   final String triggerSource;
   final List<PaywallBenefit> benefits;
+  final String? eyebrow;
   final String? headline;
   final String? subhead;
   final bool showHero;
@@ -176,13 +178,25 @@ class _PaywallBodyState extends ConsumerState<PaywallBody> {
 
     if (widget.showHero) {
       children
+        ..add(Center(child: const PaywallHero()))
+        ..add(SizedBox(height: context.m));
+    }
+
+    if (widget.eyebrow != null) {
+      children
         ..add(
-          Center(child: const PaywallHero())
-              .animate()
-              .fadeIn(duration: 360.ms)
-              .moveY(begin: 12, end: 0, duration: 360.ms),
+          Text(
+            widget.eyebrow!.toUpperCase(),
+            textAlign: widget.showHero ? TextAlign.center : TextAlign.start,
+            style: TextStyle(
+              fontSize: context.captionFont * 0.85,
+              fontWeight: FontWeight.w800,
+              color: cs.primary,
+              letterSpacing: 1.6,
+            ),
+          ).animate().fadeIn(delay: 1500.ms, duration: 360.ms),
         )
-        ..add(SizedBox(height: context.l));
+        ..add(SizedBox(height: context.s * 0.8));
     }
 
     if (widget.headline != null) {
@@ -200,8 +214,8 @@ class _PaywallBodyState extends ConsumerState<PaywallBody> {
                 ),
               )
               .animate()
-              .fadeIn(delay: 120.ms, duration: 360.ms)
-              .moveY(begin: 8, end: 0, delay: 120.ms, duration: 360.ms),
+              .fadeIn(delay: 1600.ms, duration: 360.ms)
+              .moveY(begin: 8, end: 0, delay: 1600.ms, duration: 360.ms),
         )
         ..add(SizedBox(height: context.s));
     }
@@ -219,33 +233,33 @@ class _PaywallBodyState extends ConsumerState<PaywallBody> {
                 ),
               )
               .animate()
-              .fadeIn(delay: 180.ms, duration: 360.ms)
-              .moveY(begin: 6, end: 0, delay: 180.ms, duration: 360.ms),
+              .fadeIn(delay: 1700.ms, duration: 360.ms)
+              .moveY(begin: 6, end: 0, delay: 1700.ms, duration: 360.ms),
         )
         ..add(SizedBox(height: context.l));
     }
 
+    // Benefits start animating after the hero finishes (~1.8s) so the
+    // user reads the upgrade beat first, then takes in the value props.
+    final benefitDelayBase = widget.showHero ? 1850 : 260;
     for (var i = 0; i < widget.benefits.length; i++) {
       final b = widget.benefits[i];
+      final delay = benefitDelayBase + i * 90;
       children.add(
         PaywallBenefitRow(icon: b.icon, title: b.title, subtitle: b.subtitle)
             .animate()
-            .fadeIn(delay: (260 + i * 90).ms, duration: 320.ms)
-            .moveX(
-              begin: 8,
-              end: 0,
-              delay: (260 + i * 90).ms,
-              duration: 320.ms,
-            ),
+            .fadeIn(delay: delay.ms, duration: 320.ms)
+            .moveX(begin: 8, end: 0, delay: delay.ms, duration: 320.ms),
       );
     }
 
     if (widget.showTrialTimeline) {
+      final timelineDelay = benefitDelayBase + widget.benefits.length * 90 + 80;
       children
         ..add(SizedBox(height: context.m))
         ..add(
           const PaywallTrialTimeline().animate().fadeIn(
-            delay: 540.ms,
+            delay: timelineDelay.ms,
             duration: 320.ms,
           ),
         );
@@ -279,6 +293,8 @@ class _PaywallBodyState extends ConsumerState<PaywallBody> {
           }
           _maybePreselectAnnual(packages);
           final savingsPct = _annualSavingsPct(packages);
+          final plansDelay =
+              benefitDelayBase + widget.benefits.length * 90 + 60;
           return Column(
                 children: [
                   for (var i = 0; i < packages.length; i++) ...[
@@ -294,13 +310,14 @@ class _PaywallBodyState extends ConsumerState<PaywallBody> {
                 ],
               )
               .animate()
-              .fadeIn(delay: 480.ms, duration: 360.ms)
-              .moveY(begin: 8, end: 0, delay: 480.ms, duration: 360.ms);
+              .fadeIn(delay: plansDelay.ms, duration: 360.ms)
+              .moveY(begin: 8, end: 0, delay: plansDelay.ms, duration: 360.ms);
         },
       ),
     );
     children.add(SizedBox(height: context.m));
 
+    final ctaDelay = benefitDelayBase + widget.benefits.length * 90 + 200;
     children.add(
       SizedBox(
             height: context.h * 0.065,
@@ -334,8 +351,8 @@ class _PaywallBodyState extends ConsumerState<PaywallBody> {
             ),
           )
           .animate()
-          .fadeIn(delay: 580.ms, duration: 320.ms)
-          .moveY(begin: 8, end: 0, delay: 580.ms, duration: 320.ms),
+          .fadeIn(delay: ctaDelay.ms, duration: 320.ms)
+          .moveY(begin: 8, end: 0, delay: ctaDelay.ms, duration: 320.ms),
     );
 
     if (widget.dismissLabel != null) {
