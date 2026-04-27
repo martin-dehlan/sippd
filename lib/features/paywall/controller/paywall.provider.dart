@@ -18,6 +18,11 @@ Stream<CustomerInfo> customerInfoStream(CustomerInfoStreamRef ref) {
 
 @riverpod
 bool isPro(IsProRef ref) {
+  // Local test override. Run with --dart-define=FORCE_PRO=true|false to
+  // bypass RevenueCat and exercise pro/free UI without a sandbox purchase.
+  if (const bool.hasEnvironment('FORCE_PRO')) {
+    return const bool.fromEnvironment('FORCE_PRO');
+  }
   final info = ref.watch(customerInfoStreamProvider).valueOrNull;
   if (info == null) return ref.watch(paywallProvider).isPro;
   return info.entitlements.active.containsKey(proEntitlementId);
