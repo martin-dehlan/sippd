@@ -32,6 +32,9 @@ class InviteShareSheet extends ConsumerWidget {
       context: context,
       backgroundColor: Theme.of(context).colorScheme.surface,
       isScrollControlled: true,
+      // Render on the root navigator so the sheet covers the shell's
+      // bottom nav instead of stopping above it.
+      useRootNavigator: true,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(context.w * 0.05),
