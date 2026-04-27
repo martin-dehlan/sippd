@@ -10,6 +10,7 @@ import '../../../../paywall/controller/paywall.provider.dart';
 import '../../../controller/group.provider.dart';
 import '../../../domain/entities/group.entity.dart';
 import '../../widgets/group_invitations_inbox.widget.dart';
+import '../group_detail/widgets/invite_share_sheet.widget.dart';
 
 /// Free users can create up to this many groups before the paywall sheet
 /// gates further group creation. Confirmed in monetization plan.
@@ -207,8 +208,21 @@ class GroupListScreen extends ConsumerWidget {
         onSubmit: () async {
           final name = nameController.text.trim();
           if (name.isEmpty) return;
-          await ref.read(groupControllerProvider.notifier).createGroup(name);
-          if (ctx.mounted) Navigator.pop(ctx);
+          final created = await ref
+              .read(groupControllerProvider.notifier)
+              .createGroup(name);
+          if (!ctx.mounted) return;
+          Navigator.pop(ctx);
+          // Group is fresh and empty — chain straight into the invite sheet
+          // so the user fills it before they leave the moment.
+          if (created != null && context.mounted) {
+            await InviteShareSheet.show(
+              context,
+              code: created.inviteCode,
+              groupId: created.id,
+              groupName: created.name,
+            );
+          }
         },
       ),
     );
