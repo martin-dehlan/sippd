@@ -9,24 +9,21 @@ import '../../../../../common/utils/responsive.dart';
 import '../../../controller/paywall.provider.dart';
 import '../../../data/services/paywall.service.dart';
 import '../../widgets/paywall_body.widget.dart';
+import '../../widgets/paywall_pitch.dart';
 
 /// Already-Pro and free-plan management surface. Mirrors the iOS Settings
-/// → Subscriptions pattern: a status card, deep link to the store-native
-/// management page, restore, and a plain-text "how to cancel" so the exit
-/// is symmetric with the entry.
+/// → Subscriptions pattern: a status hero, a benefits recap, and a grouped
+/// list of management actions that deep-link to the store-native cancel
+/// page (no in-app cancel button — Apple/Google require billing changes
+/// to happen in their own UI).
 class SubscriptionScreen extends ConsumerWidget {
   const SubscriptionScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
-    // Read CustomerInfo without blocking on a stream that may have
-    // already emitted before this screen mounted. currentCustomerInfo
-    // falls back to the service's cached value, so the screen renders
-    // immediately as either Pro or Free.
     final info = ref.watch(currentCustomerInfoProvider);
-    final isPro =
-        info?.entitlements.active.containsKey(proEntitlementId) ?? false;
+    final isPro = ref.watch(isProProvider);
 
     return Scaffold(
       backgroundColor: cs.surface,
@@ -67,11 +64,11 @@ class _SubscriptionContent extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isPro = ref.watch(isProProvider);
     final entitlement = info?.entitlements.active[proEntitlementId];
-    final isPro = entitlement != null;
 
     if (isPro) {
-      return _ProManagementContent(info: info!, entitlement: entitlement);
+      return _ProManagementContent(info: info, entitlement: entitlement);
     }
     return const _FreeUpsellContent();
   }
@@ -96,87 +93,93 @@ class _FreeUpsellContent extends StatelessWidget {
       child: const PaywallBody(
         triggerSource: 'subscription_screen',
         showHero: true,
-        eyebrow: 'Sippd Pro',
-        headline: 'See how you\nreally taste.',
-        subhead:
-            'Map every bottle, leaderboard with your friends, '
-            'and share cards that actually look good.',
-        benefits: [
-          (
-            icon: PhosphorIconsRegular.usersThree,
-            title: 'Unlimited groups & members',
-            subtitle: 'Bring your whole tasting circle.',
-          ),
-          (
-            icon: PhosphorIconsRegular.chartLineUp,
-            title: 'Deep stats & taste insights',
-            subtitle: 'Map · prices · top regions · podium.',
-          ),
-          (
-            icon: PhosphorIconsRegular.shareNetwork,
-            title: 'Premium share-cards & themes',
-            subtitle: 'Stand out everywhere you post.',
-          ),
-        ],
+        eyebrow: kProPitchEyebrow,
+        headline: kProPitchHeadline,
+        subhead: kProPitchSubhead,
+        benefits: kProPitchBenefits,
         primaryLabel: 'Continue',
       ),
     );
   }
 }
 
-/// Pro-tier view: status card + the three management actions Apple's
-/// own settings → subscriptions surface offers.
+/// Pro-tier view. `entitlement` is null when isPro is forced via the
+/// FORCE_PRO test flag — the screen renders a "test mode" status and
+/// hides the rows that don't apply (change/cancel plan).
 class _ProManagementContent extends ConsumerWidget {
-  const _ProManagementContent({
-    required this.info,
-    required this.entitlement,
-  });
+  const _ProManagementContent({required this.info, required this.entitlement});
 
-  final CustomerInfo info;
-  final EntitlementInfo entitlement;
+  final CustomerInfo? info;
+  final EntitlementInfo? entitlement;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isLifetime =
+        entitlement != null && entitlement!.expirationDate == null;
+    final isTestMode = entitlement == null;
+
     return ListView(
-      padding: EdgeInsets.symmetric(horizontal: context.paddingH),
+      padding: EdgeInsets.fromLTRB(
+        context.paddingH,
+        context.s,
+        context.paddingH,
+        context.l,
+      ),
       children: [
-        SizedBox(height: context.m),
-        _ProStatusCard(entitlement: entitlement),
+        _StatusCard(entitlement: entitlement),
         SizedBox(height: context.l),
-        _MenuTile(
-          icon: PhosphorIconsRegular.arrowSquareOut,
-          label: 'Manage subscription',
-          subtitle: 'Opens in the App Store or Play Store',
-          onTap: () => _openManagement(context, info),
+        const _Section(
+          title: 'Included in Pro',
+          children: [_BenefitsBlock()],
         ),
-        _MenuTile(
-          icon: PhosphorIconsRegular.clockCounterClockwise,
-          label: 'Restore purchases',
-          onTap: () => _restore(context, ref),
-        ),
-        _MenuTile(
-          icon: PhosphorIconsRegular.question,
-          label: 'How to cancel',
-          onTap: () => _showCancelHelp(context),
+        SizedBox(height: context.l),
+        _Section(
+          title: 'Manage',
+          children: [
+            if (!isLifetime && !isTestMode)
+              _SectionRow(
+                label: 'Change plan',
+                trailing: _TrailingIcon(PhosphorIconsRegular.arrowSquareOut),
+                onTap: () => _openManagement(context, info),
+              ),
+            _SectionRow(
+              label: 'Restore purchases',
+              trailing: _TrailingIcon(
+                PhosphorIconsRegular.clockCounterClockwise,
+              ),
+              onTap: () => _restore(context, ref),
+            ),
+            if (!isLifetime && !isTestMode)
+              _SectionRow(
+                label: 'Cancel subscription',
+                destructive: true,
+                trailing: _TrailingIcon(PhosphorIconsRegular.arrowSquareOut),
+                onTap: () => _openManagement(context, info),
+              ),
+          ],
         ),
         SizedBox(height: context.xl),
         const _Disclosure(),
-        SizedBox(height: context.l),
       ],
     );
   }
 }
 
-class _ProStatusCard extends StatelessWidget {
-  const _ProStatusCard({required this.entitlement});
+/// Hero status card. Adapts the chip + status line to the four real
+/// states (active, trial, ending, lifetime) and the synthetic
+/// "test mode" state used when isPro is forced via env-define.
+class _StatusCard extends ConsumerWidget {
+  const _StatusCard({required this.entitlement});
 
-  final EntitlementInfo entitlement;
+  final EntitlementInfo? entitlement;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
-    final renewalLine = _renewalLine(entitlement);
-    final inTrial = entitlement.periodType == PeriodType.trial;
+    final state = _resolveState(entitlement);
+    final planName = _planNameFor(entitlement);
+    final price = _priceFor(ref, entitlement);
+    final billedVia = _billedViaFor(entitlement);
 
     return Container(
       padding: EdgeInsets.all(context.w * 0.05),
@@ -192,7 +195,7 @@ class _ProStatusCard extends StatelessWidget {
               Icon(
                 PhosphorIconsRegular.sparkle,
                 color: cs.primary,
-                size: context.w * 0.06,
+                size: context.w * 0.055,
               ),
               SizedBox(width: context.w * 0.025),
               Text(
@@ -204,143 +207,284 @@ class _ProStatusCard extends StatelessWidget {
                   letterSpacing: -0.3,
                 ),
               ),
-              if (inTrial) ...[
-                SizedBox(width: context.w * 0.02),
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: context.w * 0.02,
-                    vertical: context.w * 0.005,
-                  ),
-                  decoration: BoxDecoration(
-                    color: cs.primary,
-                    borderRadius: BorderRadius.circular(context.w * 0.04),
-                  ),
-                  child: Text(
-                    'TRIAL',
-                    style: TextStyle(
-                      fontSize: context.captionFont * 0.8,
-                      color: cs.onPrimary,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 1,
-                    ),
-                  ),
-                ),
-              ],
+              const Spacer(),
+              _StatusChip(state: state),
             ],
           ),
-          SizedBox(height: context.s),
+          SizedBox(height: context.m),
           Text(
-            renewalLine,
+            planName,
             style: TextStyle(
-              fontSize: context.bodyFont * 0.95,
-              color: cs.onPrimaryContainer.withValues(alpha: 0.85),
-              height: 1.4,
+              fontSize: context.bodyFont,
+              fontWeight: FontWeight.w700,
+              color: cs.onPrimaryContainer,
             ),
           ),
+          if (price != null) ...[
+            SizedBox(height: context.xs * 0.6),
+            Text(
+              price,
+              style: TextStyle(
+                fontSize: context.bodyFont * 0.95,
+                color: cs.onPrimaryContainer.withValues(alpha: 0.85),
+              ),
+            ),
+          ],
+          SizedBox(height: context.m),
+          Container(
+            height: 1,
+            color: cs.onPrimaryContainer.withValues(alpha: 0.12),
+          ),
+          SizedBox(height: context.m),
+          _StatusLine(text: _statusLineFor(state, entitlement)),
+          if (billedVia != null) ...[
+            SizedBox(height: context.xs),
+            _StatusLine(text: 'Billed via $billedVia'),
+          ],
         ],
       ),
     );
   }
+}
 
-  String _renewalLine(EntitlementInfo e) {
-    if (e.willRenew == false && e.expirationDate != null) {
-      final date = DateTime.tryParse(e.expirationDate!);
-      if (date != null) return 'Ends ${_fmt(date)} — won\'t renew.';
-    }
-    if (e.expirationDate == null) {
-      return 'Lifetime access — yours forever.';
-    }
-    final date = DateTime.tryParse(e.expirationDate!);
-    if (date == null) return 'Active.';
-    final verb = e.periodType == PeriodType.trial ? 'Trial ends' : 'Renews';
-    return '$verb ${_fmt(date)}.';
-  }
+class _StatusChip extends StatelessWidget {
+  const _StatusChip({required this.state});
 
-  String _fmt(DateTime d) {
-    const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
-    return '${d.day} ${months[d.month - 1]} ${d.year}';
+  final _SubState state;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final (label, fg, bg) = switch (state) {
+      _SubState.active => ('ACTIVE', cs.onPrimary, cs.primary),
+      _SubState.trial => ('TRIAL', cs.onPrimary, cs.primary),
+      _SubState.ending => (
+        'ENDING',
+        cs.onErrorContainer,
+        cs.errorContainer,
+      ),
+      _SubState.lifetime => ('LIFETIME', cs.onPrimary, cs.primary),
+      _SubState.test => ('TEST MODE', cs.onSurface, cs.surfaceContainer),
+    };
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: context.w * 0.025,
+        vertical: context.w * 0.008,
+      ),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(context.w * 0.04),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: context.captionFont * 0.78,
+          color: fg,
+          fontWeight: FontWeight.w800,
+          letterSpacing: 1.1,
+        ),
+      ),
+    );
   }
 }
 
-class _MenuTile extends StatelessWidget {
-  const _MenuTile({
-    required this.icon,
+class _StatusLine extends StatelessWidget {
+  const _StatusLine({required this.text});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Text(
+      text,
+      style: TextStyle(
+        fontSize: context.bodyFont * 0.93,
+        color: cs.onPrimaryContainer.withValues(alpha: 0.85),
+        height: 1.4,
+      ),
+    );
+  }
+}
+
+/// Section header + grouped container. Header is small-caps / letter-spaced
+/// to match iOS Settings rhythm; container holds rows separated by
+/// indented hairline dividers.
+class _Section extends StatelessWidget {
+  const _Section({required this.title, required this.children});
+
+  final String title;
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final visible = children.whereType<Widget>().toList();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: EdgeInsets.only(
+            left: context.w * 0.04,
+            bottom: context.s,
+          ),
+          child: Text(
+            title.toUpperCase(),
+            style: TextStyle(
+              fontSize: context.captionFont * 0.85,
+              color: cs.onSurfaceVariant,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 1.2,
+            ),
+          ),
+        ),
+        Container(
+          decoration: BoxDecoration(
+            color: cs.surfaceContainer,
+            borderRadius: BorderRadius.circular(context.w * 0.04),
+          ),
+          child: Column(
+            children: [
+              for (var i = 0; i < visible.length; i++) ...[
+                if (i > 0)
+                  Padding(
+                    padding: EdgeInsets.only(left: context.w * 0.14),
+                    child: Container(
+                      height: 1,
+                      color: cs.outlineVariant.withValues(alpha: 0.5),
+                    ),
+                  ),
+                visible[i],
+              ],
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _SectionRow extends StatelessWidget {
+  const _SectionRow({
     required this.label,
-    this.subtitle,
+    this.trailing,
+    this.destructive = false,
     required this.onTap,
   });
 
-  final IconData icon;
   final String label;
-  final String? subtitle;
+  final Widget? trailing;
+  final bool destructive;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    return GestureDetector(
+    final fg = destructive ? cs.error : cs.onSurface;
+    return InkWell(
       onTap: onTap,
-      child: Container(
+      borderRadius: BorderRadius.circular(context.w * 0.04),
+      child: Padding(
         padding: EdgeInsets.symmetric(
-          vertical: context.m,
           horizontal: context.w * 0.04,
-        ),
-        margin: EdgeInsets.only(bottom: context.xs),
-        decoration: BoxDecoration(
-          color: cs.surfaceContainer,
-          borderRadius: BorderRadius.circular(context.w * 0.03),
+          vertical: context.m,
         ),
         child: Row(
           children: [
-            Icon(icon, color: cs.primary, size: context.w * 0.05),
-            SizedBox(width: context.w * 0.04),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    label,
-                    style: TextStyle(
-                      fontSize: context.bodyFont,
-                      fontWeight: FontWeight.w600,
-                      color: cs.onSurface,
-                    ),
-                  ),
-                  if (subtitle != null) ...[
-                    SizedBox(height: context.xs * 0.5),
-                    Text(
-                      subtitle!,
-                      style: TextStyle(
-                        fontSize: context.captionFont,
-                        color: cs.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ],
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontSize: context.bodyFont,
+                  fontWeight: FontWeight.w600,
+                  color: fg,
+                ),
               ),
             ),
-            Icon(
-              PhosphorIconsRegular.caretRight,
-              size: context.w * 0.04,
-              color: cs.outline,
-            ),
+            ?trailing,
           ],
         ),
       ),
+    );
+  }
+}
+
+class _TrailingIcon extends StatelessWidget {
+  const _TrailingIcon(this.icon);
+
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Icon(icon, size: context.w * 0.045, color: cs.outline);
+  }
+}
+
+/// Reuses the canonical Pro pitch benefits as informational rows so the
+/// management view echoes what the user paid for, without a separate
+/// copy that could drift from the paywall.
+class _BenefitsBlock extends StatelessWidget {
+  const _BenefitsBlock();
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Column(
+      children: [
+        for (var i = 0; i < kProPitchBenefits.length; i++) ...[
+          if (i > 0)
+            Padding(
+              padding: EdgeInsets.only(left: context.w * 0.14),
+              child: Container(
+                height: 1,
+                color: cs.outlineVariant.withValues(alpha: 0.5),
+              ),
+            ),
+          Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: context.w * 0.04,
+              vertical: context.m,
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(
+                  kProPitchBenefits[i].icon,
+                  size: context.w * 0.05,
+                  color: cs.primary,
+                ),
+                SizedBox(width: context.w * 0.04),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        kProPitchBenefits[i].title,
+                        style: TextStyle(
+                          fontSize: context.bodyFont,
+                          fontWeight: FontWeight.w600,
+                          color: cs.onSurface,
+                        ),
+                      ),
+                      if (kProPitchBenefits[i].subtitle != null) ...[
+                        SizedBox(height: context.xs * 0.4),
+                        Text(
+                          kProPitchBenefits[i].subtitle!,
+                          style: TextStyle(
+                            fontSize: context.captionFont,
+                            color: cs.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ],
     );
   }
 }
@@ -356,7 +500,7 @@ class _Disclosure extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: context.w * 0.05),
         child: Text(
           'Subscriptions are billed by Apple or Google. '
-          'Manage there to cancel.',
+          'Manage them in store settings.',
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: context.captionFont * 0.9,
@@ -369,8 +513,122 @@ class _Disclosure extends StatelessWidget {
   }
 }
 
-Future<void> _openManagement(BuildContext context, CustomerInfo info) async {
-  final url = info.managementURL;
+// ─── State derivation ─────────────────────────────────────────────────────
+
+enum _SubState { active, trial, ending, lifetime, test }
+
+_SubState _resolveState(EntitlementInfo? e) {
+  if (e == null) return _SubState.test;
+  if (e.expirationDate == null) return _SubState.lifetime;
+  if (e.willRenew == false) return _SubState.ending;
+  if (e.periodType == PeriodType.trial) return _SubState.trial;
+  return _SubState.active;
+}
+
+String _planNameFor(EntitlementInfo? e) {
+  if (e == null) return 'Test mode';
+  if (e.expirationDate == null) return 'Lifetime';
+  final id = e.productIdentifier.toLowerCase();
+  if (id.contains('year') || id.contains('annual')) return 'Annual';
+  if (id.contains('month')) return 'Monthly';
+  if (id.contains('week')) return 'Weekly';
+  return 'Pro plan';
+}
+
+String? _priceFor(WidgetRef ref, EntitlementInfo? e) {
+  if (e == null) return null;
+  if (e.expirationDate == null) {
+    return _priceFromOfferings(ref, e.productIdentifier);
+  }
+  return _priceFromOfferings(ref, e.productIdentifier);
+}
+
+String? _priceFromOfferings(WidgetRef ref, String productId) {
+  final offerings = ref.watch(paywallOfferingsProvider).valueOrNull;
+  final packages = offerings?.current?.availablePackages ?? const <Package>[];
+  for (final pkg in packages) {
+    if (pkg.storeProduct.identifier == productId) {
+      final price = pkg.storeProduct.priceString;
+      final period = _periodSuffix(pkg.packageType);
+      return period == null ? price : '$price $period';
+    }
+  }
+  return null;
+}
+
+String? _periodSuffix(PackageType type) => switch (type) {
+  PackageType.annual => '/ year',
+  PackageType.monthly => '/ month',
+  PackageType.weekly => '/ week',
+  PackageType.lifetime => 'one-time',
+  _ => null,
+};
+
+String? _billedViaFor(EntitlementInfo? e) {
+  if (e == null) return null;
+  return switch (e.store) {
+    Store.appStore => 'App Store',
+    Store.playStore => 'Play Store',
+    Store.stripe => 'Stripe',
+    Store.amazon => 'Amazon',
+    Store.macAppStore => 'Mac App Store',
+    Store.promotional => 'Promo grant',
+    _ => null,
+  };
+}
+
+String _statusLineFor(_SubState state, EntitlementInfo? e) {
+  if (e == null) return 'Pro features unlocked locally · no real subscription';
+  switch (state) {
+    case _SubState.lifetime:
+      return 'Lifetime access — yours forever';
+    case _SubState.ending:
+      final date = _parseDate(e.expirationDate);
+      if (date == null) return "Won't renew";
+      return "Access until ${_fmtDate(date)} · won't renew";
+    case _SubState.trial:
+      final date = _parseDate(e.expirationDate);
+      if (date == null) return 'Trial active';
+      final days = date.difference(DateTime.now()).inDays;
+      if (days <= 0) return 'Trial ends today';
+      if (days == 1) return 'Trial ends tomorrow';
+      return 'Trial ends in $days days';
+    case _SubState.active:
+      final date = _parseDate(e.expirationDate);
+      if (date == null) return 'Active';
+      return 'Renews ${_fmtDate(date)}';
+    case _SubState.test:
+      return 'Pro features unlocked locally';
+  }
+}
+
+DateTime? _parseDate(String? raw) {
+  if (raw == null) return null;
+  return DateTime.tryParse(raw);
+}
+
+String _fmtDate(DateTime d) {
+  const months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
+  return '${d.day} ${months[d.month - 1]} ${d.year}';
+}
+
+// ─── Side-effect helpers ──────────────────────────────────────────────────
+
+Future<void> _openManagement(BuildContext context, CustomerInfo? info) async {
+  final url = info?.managementURL;
   final fallback = Theme.of(context).platform == TargetPlatform.iOS
       ? 'https://apps.apple.com/account/subscriptions'
       : 'https://play.google.com/store/account/subscriptions';
@@ -410,69 +668,4 @@ Future<void> _restore(BuildContext context, WidgetRef ref) async {
       const SnackBar(content: Text('Could not restore purchases.')),
     );
   }
-}
-
-void _showCancelHelp(BuildContext context) {
-  final cs = Theme.of(context).colorScheme;
-  final isIos = Theme.of(context).platform == TargetPlatform.iOS;
-  showModalBottomSheet<void>(
-    context: context,
-    backgroundColor: cs.surface,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(
-        top: Radius.circular(context.w * 0.05),
-      ),
-    ),
-    builder: (ctx) => SafeArea(
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: context.paddingH,
-          vertical: context.l,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'How to cancel',
-              style: TextStyle(
-                fontSize: context.bodyFont * 1.15,
-                fontWeight: FontWeight.w800,
-                color: cs.onSurface,
-              ),
-            ),
-            SizedBox(height: context.m),
-            Text(
-              isIos
-                  ? '1. Tap "Manage subscription" above.\n'
-                        '2. The App Store opens with your subscriptions list.\n'
-                        '3. Tap Sippd Pro, then "Cancel Subscription".'
-                  : '1. Tap "Manage subscription" above.\n'
-                        '2. Google Play opens with your subscriptions list.\n'
-                        '3. Tap Sippd Pro, then "Cancel subscription".',
-              style: TextStyle(
-                fontSize: context.bodyFont * 0.95,
-                color: cs.onSurfaceVariant,
-                height: 1.6,
-              ),
-            ),
-            SizedBox(height: context.l),
-            Center(
-              child: TextButton(
-                onPressed: () => Navigator.of(ctx).pop(),
-                child: Text(
-                  'Close',
-                  style: TextStyle(
-                    fontSize: context.bodyFont,
-                    color: cs.onSurfaceVariant,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    ),
-  );
 }
