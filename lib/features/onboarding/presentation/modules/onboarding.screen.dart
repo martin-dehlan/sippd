@@ -15,6 +15,7 @@ import '../widgets/pages/level.page.dart';
 import '../widgets/pages/loader.page.dart';
 import '../widgets/pages/name.page.dart';
 import '../widgets/pages/notifications.page.dart';
+import '../widgets/pages/paywall.page.dart';
 import '../widgets/pages/responsibility.page.dart';
 import '../widgets/pages/results.page.dart';
 import '../widgets/pages/styles.page.dart';
@@ -22,8 +23,9 @@ import '../widgets/pages/welcome.page.dart';
 import '../widgets/pages/why.page.dart';
 
 // Funnel order: pure value first (quiz → archetype reveal), commitment last
-// (notifications → auth). Sets up clean insertion point for a paywall step
-// between notifications and the auth handoff later.
+// (notifications → paywall → auth). Paywall sits at the end so the user has
+// already seen their archetype and felt the value before being asked to
+// upgrade.
 enum _Step {
   welcome,
   responsibility,
@@ -36,6 +38,7 @@ enum _Step {
   loader,
   results,
   notifications,
+  paywall,
 }
 
 class OnboardingScreen extends ConsumerStatefulWidget {
@@ -55,10 +58,13 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     super.initState();
     // Authed users (signing up a second account on this device) skip the
     // pre-auth welcome page — they're already past the marketing pitch.
+    // Unauthed users skip the paywall — RevenueCat anonymous purchases
+    // make linking flaky pre-signup, and asking to pay before a user has
+    // an account is the kind of pressure we explicitly try to avoid.
     final authed = ref.read(isAuthenticatedProvider);
     _steps = authed
         ? _Step.values.where((s) => s != _Step.welcome).toList()
-        : _Step.values;
+        : _Step.values.where((s) => s != _Step.paywall).toList();
     _index = 0;
     _pageCtrl = PageController(initialPage: 0);
   }
@@ -76,6 +82,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       case _Step.why:
       case _Step.loader:
       case _Step.results:
+      case _Step.paywall:
         return true;
       case _Step.level:
         return a.tasteLevel != null;
@@ -215,11 +222,13 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       return LoaderPage(onDone: () => _goTo(_index + 1));
                     case _Step.results:
                       return const ResultsPage();
+                    case _Step.paywall:
+                      return OnboardingPaywallPage(onFinish: _next);
                   }
                 }).toList(),
               ),
             ),
-            if (step != _Step.loader)
+            if (step != _Step.loader && step != _Step.paywall)
               Padding(
                 padding: EdgeInsets.fromLTRB(
                   context.paddingH,
