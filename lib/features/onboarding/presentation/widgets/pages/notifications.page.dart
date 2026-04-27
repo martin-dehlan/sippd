@@ -8,8 +8,7 @@ import '../../../controller/onboarding.provider.dart';
 import '../onboarding_page_shell.widget.dart';
 
 class NotificationsPage extends ConsumerStatefulWidget {
-  final VoidCallback? onDone;
-  const NotificationsPage({super.key, this.onDone});
+  const NotificationsPage({super.key});
 
   @override
   ConsumerState<NotificationsPage> createState() =>
@@ -18,6 +17,11 @@ class NotificationsPage extends ConsumerStatefulWidget {
 
 class _NotificationsPageState extends ConsumerState<NotificationsPage> {
   bool _requesting = false;
+
+  // Recording the choice flips notificationsAsked so the screen-level
+  // CTA ("Sign in to save it" / "Save and continue") is enabled. We
+  // intentionally do NOT auto-advance — the user has to tap that CTA so
+  // the choice feels deliberate, not skipped past.
 
   Future<void> _ask() async {
     if (_requesting) return;
@@ -29,14 +33,12 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
         .read(onboardingAnswersControllerProvider.notifier)
         .markNotificationsAsked();
     if (mounted) setState(() => _requesting = false);
-    widget.onDone?.call();
   }
 
   Future<void> _skip() async {
     await ref
         .read(onboardingAnswersControllerProvider.notifier)
         .markNotificationsAsked();
-    widget.onDone?.call();
   }
 
   @override

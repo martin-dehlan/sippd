@@ -202,7 +202,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     case _Step.why:
                       return const WhyPage();
                     case _Step.notifications:
-                      return NotificationsPage(onDone: _next);
+                      return const NotificationsPage();
                     case _Step.name:
                       return const NamePage();
                     case _Step.loader:
