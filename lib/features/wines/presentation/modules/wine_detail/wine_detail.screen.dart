@@ -10,6 +10,8 @@ import 'package:latlong2/latlong.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../../groups/presentation/widgets/share_wine_sheet.dart';
+import '../../../../profile/controller/profile.provider.dart';
+import '../../../../share_cards/controller/share_card.provider.dart';
 import '../../../controller/wine.provider.dart';
 import '../../../domain/entities/wine.entity.dart';
 import '../../../domain/entities/wine_memory.entity.dart';
@@ -120,6 +122,26 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
                             context: context,
                             wineId: widget.wine.id,
                           ),
+                        ),
+                        SizedBox(width: context.w * 0.02),
+                        Consumer(
+                          builder: (context, ref, _) {
+                            return _IconCircleButton(
+                              icon: PhosphorIconsRegular.shareNetwork,
+                              onTap: () {
+                                final username = ref
+                                    .read(currentProfileProvider)
+                                    .valueOrNull
+                                    ?.username;
+                                ref.read(shareCardProvider).shareWineRatingCard(
+                                      context: context,
+                                      wine: widget.wine,
+                                      username: username,
+                                      source: 'wine_detail',
+                                    );
+                              },
+                            );
+                          },
                         ),
                         SizedBox(width: context.w * 0.02),
                         _WineOverflowMenu(
