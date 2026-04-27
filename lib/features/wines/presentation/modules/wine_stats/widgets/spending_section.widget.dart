@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../../../common/utils/responsive.dart';
+import '../../../../../../common/widgets/skeleton.widget.dart';
 import '../../../../controller/wine_stats.provider.dart';
 import '../../../../domain/entities/wine.entity.dart';
 
@@ -24,7 +25,7 @@ class SpendingSection extends ConsumerWidget {
         border: Border.all(color: cs.outlineVariant, width: 0.5),
       ),
       child: spend.pricedCount == 0
-          ? _Empty(cs: cs)
+          ? const _Empty()
           : _Content(spend: spend, cs: cs),
     );
   }
@@ -232,35 +233,74 @@ class _Highlight extends StatelessWidget {
 }
 
 class _Empty extends StatelessWidget {
-  final ColorScheme cs;
-  const _Empty({required this.cs});
+  const _Empty();
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: context.m),
+    return Skeleton(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'No prices yet',
-            style: TextStyle(
-              fontSize: context.bodyFont * 1.1,
-              fontWeight: FontWeight.w800,
-              color: cs.onSurface,
-              letterSpacing: -0.3,
-            ),
+          SkeletonBox(
+            width: context.w * 0.32,
+            height: context.captionFont * 0.85,
+          ),
+          SizedBox(height: context.s),
+          SkeletonBox(
+            width: context.w * 0.45,
+            height: context.titleFont * 1.4,
+            radius: 4,
           ),
           SizedBox(height: context.xs),
-          Text(
-            'Add a price when you rate a wine to see your spend and best-value finds.',
-            style: TextStyle(
-              fontSize: context.captionFont,
-              color: cs.onSurfaceVariant,
-            ),
-          ),
+          SkeletonBox(width: context.w * 0.55, height: context.captionFont),
+          SizedBox(height: context.l),
+          const _HighlightSkeleton(),
+          SizedBox(height: context.s),
+          const _HighlightSkeleton(),
         ],
       ),
+    );
+  }
+}
+
+class _HighlightSkeleton extends StatelessWidget {
+  const _HighlightSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        SkeletonBox(
+          width: context.w * 0.085,
+          height: context.w * 0.085,
+          radius: context.w * 0.025,
+        ),
+        SizedBox(width: context.s),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SkeletonBox(
+                width: context.w * 0.28,
+                height: context.captionFont * 0.8,
+              ),
+              SizedBox(height: context.xs * 0.5),
+              SkeletonBox(width: context.w * 0.5, height: context.bodyFont),
+              SizedBox(height: context.xs * 0.5),
+              SkeletonBox(width: context.w * 0.3, height: context.captionFont),
+            ],
+          ),
+        ),
+        SizedBox(width: context.s),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            SkeletonBox(width: context.w * 0.18, height: context.bodyFont),
+            SizedBox(height: context.xs * 0.5),
+            SkeletonBox(width: context.w * 0.12, height: context.captionFont),
+          ],
+        ),
+      ],
     );
   }
 }

@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../../../common/utils/responsive.dart';
+import '../../../../../../common/widgets/skeleton.widget.dart';
 import '../../../../domain/entities/wine.entity.dart';
 
 class TopWinesList extends StatelessWidget {
@@ -15,14 +16,14 @@ class TopWinesList extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     if (wines.isEmpty) {
-      return Padding(
-        padding: EdgeInsets.symmetric(vertical: context.s),
-        child: Text(
-          'Rate a wine to see it here.',
-          style: TextStyle(
-            fontSize: context.captionFont,
-            color: cs.onSurfaceVariant,
-          ),
+      return Skeleton(
+        child: Column(
+          children: [
+            for (int i = 0; i < 3; i++) ...[
+              if (i > 0) SizedBox(height: context.s),
+              _TopWineRowSkeleton(cs: cs),
+            ],
+          ],
         ),
       );
     }
@@ -154,6 +155,54 @@ class _RankBadge extends StatelessWidget {
                 fontSize: context.captionFont,
               ),
             ),
+    );
+  }
+}
+
+class _TopWineRowSkeleton extends StatelessWidget {
+  final ColorScheme cs;
+  const _TopWineRowSkeleton({required this.cs});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: context.w * 0.03,
+        vertical: context.s,
+      ),
+      decoration: BoxDecoration(
+        color: cs.surface,
+        borderRadius: BorderRadius.circular(context.w * 0.03),
+        border: Border.all(color: cs.outlineVariant, width: 0.5),
+      ),
+      child: Row(
+        children: [
+          SkeletonBox.circle(size: context.w * 0.085),
+          SizedBox(width: context.s),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SkeletonBox(
+                  width: context.w * 0.45,
+                  height: context.bodyFont,
+                ),
+                SizedBox(height: context.xs * 0.6),
+                SkeletonBox(
+                  width: context.w * 0.3,
+                  height: context.captionFont,
+                ),
+              ],
+            ),
+          ),
+          SizedBox(width: context.s),
+          SkeletonBox(
+            width: context.w * 0.13,
+            height: context.bodyFont * 1.7,
+            radius: context.w * 0.03,
+          ),
+        ],
+      ),
     );
   }
 }

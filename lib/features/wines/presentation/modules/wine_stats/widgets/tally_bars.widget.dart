@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../../../../../common/utils/responsive.dart';
+import '../../../../../../common/widgets/skeleton.widget.dart';
 import '../../../../controller/wine_stats.provider.dart';
 
 /// Polished horizontal bar list — labels + counts, bars animate from 0
@@ -14,16 +15,15 @@ class TallyBars extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
     if (items.isEmpty) {
-      return Padding(
-        padding: EdgeInsets.symmetric(vertical: context.s),
-        child: Text(
-          'No data yet.',
-          style: TextStyle(
-            fontSize: context.captionFont,
-            color: cs.onSurfaceVariant,
-          ),
+      return Skeleton(
+        child: Column(
+          children: [
+            for (int i = 0; i < 4; i++) ...[
+              if (i > 0) SizedBox(height: context.m),
+              _TallyRowSkeleton(widthFactor: 0.85 - i * 0.18),
+            ],
+          ],
         ),
       );
     }
@@ -117,6 +117,41 @@ class _TallyRow extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _TallyRowSkeleton extends StatelessWidget {
+  final double widthFactor;
+  const _TallyRowSkeleton({required this.widthFactor});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: SkeletonBox(
+                width: context.w * 0.32,
+                height: context.captionFont * 1.15,
+              ),
+            ),
+            SizedBox(width: context.s),
+            SkeletonBox(width: context.w * 0.05, height: context.captionFont),
+          ],
+        ),
+        SizedBox(height: context.xs),
+        FractionallySizedBox(
+          alignment: Alignment.centerLeft,
+          widthFactor: widthFactor.clamp(0.18, 1.0),
+          child: SkeletonBox(
+            height: context.w * 0.022,
+            radius: context.w * 0.012,
+          ),
+        ),
+      ],
     );
   }
 }

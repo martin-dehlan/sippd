@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../../../common/utils/responsive.dart';
+import '../../../../../../common/widgets/skeleton.widget.dart';
 import '../../../../controller/wine_stats.provider.dart';
 
 /// Wine-rating-first hero. Headline is the user's average rating with
@@ -47,7 +48,7 @@ class StatsHero extends ConsumerWidget {
                 regions: hero.distinctRegions,
                 cs: cs,
               )
-            : _EmptyContent(cs: cs),
+            : const _EmptyContent(),
       ),
     );
   }
@@ -215,35 +216,72 @@ class _CaptionStat extends StatelessWidget {
 }
 
 class _EmptyContent extends StatelessWidget {
-  final ColorScheme cs;
-  const _EmptyContent({required this.cs});
+  const _EmptyContent();
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: context.m),
+    return Skeleton(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'No ratings yet',
-            style: TextStyle(
-              fontSize: context.bodyFont * 1.1,
-              fontWeight: FontWeight.w800,
-              color: cs.onSurface,
-              letterSpacing: -0.3,
-            ),
+          SkeletonBox(
+            width: context.w * 0.18,
+            height: context.captionFont * 0.85,
           ),
-          SizedBox(height: context.xs),
-          Text(
-            'Rate your first wine to start tracking your taste.',
-            style: TextStyle(
-              fontSize: context.captionFont,
-              color: cs.onSurfaceVariant,
-            ),
+          SizedBox(height: context.s),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              SkeletonBox.circle(size: context.titleFont * 0.95),
+              SizedBox(width: context.xs),
+              SkeletonBox(
+                width: context.w * 0.22,
+                height: context.titleFont * 1.4,
+                radius: 4,
+              ),
+              SizedBox(width: context.xs),
+              Padding(
+                padding: EdgeInsets.only(bottom: context.xs * 0.6),
+                child: SkeletonBox(
+                  width: context.w * 0.1,
+                  height: context.bodyFont * 1.05,
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: context.s),
+          SkeletonBox(
+            width: double.infinity,
+            height: context.w * 0.018,
+            radius: context.w * 0.012,
+          ),
+          SizedBox(height: context.m),
+          Row(
+            children: [
+              const _CaptionSkeleton(),
+              SizedBox(width: context.l),
+              const _CaptionSkeleton(),
+            ],
           ),
         ],
       ),
+    );
+  }
+}
+
+class _CaptionSkeleton extends StatelessWidget {
+  const _CaptionSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        SkeletonBox.circle(size: context.captionFont * 1.05),
+        SizedBox(width: context.xs),
+        SkeletonBox(width: context.w * 0.06, height: context.bodyFont),
+        SizedBox(width: context.xs * 0.7),
+        SkeletonBox(width: context.w * 0.12, height: context.captionFont),
+      ],
     );
   }
 }

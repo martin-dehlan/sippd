@@ -9,6 +9,7 @@ import '../../../../../common/utils/responsive.dart';
 import '../../../../paywall/controller/paywall.provider.dart';
 import '../../../controller/wine_stats.provider.dart';
 import 'widgets/spending_section.widget.dart';
+import 'widgets/stats_empty_hero.widget.dart';
 import 'widgets/stats_hero.widget.dart';
 import 'widgets/stats_pro_lock.widget.dart';
 import 'widgets/tally_bars.widget.dart';
@@ -26,6 +27,8 @@ class WineStatsScreen extends ConsumerWidget {
     final breakdown = ref.watch(statsTypeBreakdownProvider);
     final topWines = ref.watch(statsTopWinesProvider);
     final isPro = ref.watch(isProProvider);
+    final hasWines =
+        ref.watch(statsHeroProvider.select((h) => h.totalWines > 0));
 
     return Scaffold(
       backgroundColor: cs.surface,
@@ -49,14 +52,30 @@ class WineStatsScreen extends ConsumerWidget {
                 ),
                 SliverToBoxAdapter(child: SizedBox(height: context.m)),
 
-                // Hero stat card.
+                // Hero stat card. Swaps to an actionable empty-state with a
+                // "Rate a wine" CTA when the user has zero ratings — sections
+                // below still render as faint skeleton previews so the user
+                // sees what's coming.
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: context.paddingH),
-                    child: const StatsHero(),
+                    child: hasWines
+                        ? const StatsHero()
+                        : const StatsEmptyHero(),
                   ),
                 ),
                 SliverToBoxAdapter(child: SizedBox(height: context.l)),
+                if (!hasWines)
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: context.paddingH,
+                      ),
+                      child: const _PreviewLabel(),
+                    ),
+                  ),
+                if (!hasWines)
+                  SliverToBoxAdapter(child: SizedBox(height: context.m)),
 
                 _SliverSection(
                   title: 'Wine type breakdown',
@@ -127,6 +146,49 @@ class WineStatsScreen extends ConsumerWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _PreviewLabel extends StatelessWidget {
+  const _PreviewLabel();
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Row(
+      children: [
+        Container(
+          padding: EdgeInsets.symmetric(
+            horizontal: context.w * 0.025,
+            vertical: context.xs * 0.7,
+          ),
+          decoration: BoxDecoration(
+            color: cs.surfaceContainer,
+            borderRadius: BorderRadius.circular(context.w * 0.015),
+            border: Border.all(color: cs.outlineVariant, width: 0.5),
+          ),
+          child: Text(
+            'PREVIEW',
+            style: TextStyle(
+              fontSize: context.captionFont * 0.75,
+              fontWeight: FontWeight.w800,
+              color: cs.onSurfaceVariant,
+              letterSpacing: 1.4,
+            ),
+          ),
+        ),
+        SizedBox(width: context.s),
+        Expanded(
+          child: Text(
+            'What you’ll see after a few ratings.',
+            style: TextStyle(
+              fontSize: context.captionFont,
+              color: cs.onSurfaceVariant,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

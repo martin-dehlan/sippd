@@ -5,6 +5,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../../../common/utils/responsive.dart';
+import '../../../../../../common/widgets/skeleton.widget.dart';
 import '../../../../controller/wine_stats.provider.dart';
 import '../../../../domain/entities/wine.entity.dart';
 
@@ -18,7 +19,7 @@ class WineLocationsMap extends ConsumerWidget {
     final height = context.h * 0.32;
 
     if (wines.isEmpty) {
-      return _MapEmptyState(height: height, cs: cs);
+      return _MapEmptyState(height: height);
     }
 
     return ClipRRect(
@@ -335,37 +336,40 @@ class _PillButton extends StatelessWidget {
 
 class _MapEmptyState extends StatelessWidget {
   final double height;
-  final ColorScheme cs;
-  const _MapEmptyState({required this.height, required this.cs});
+  const _MapEmptyState({required this.height});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: height,
-      decoration: BoxDecoration(
-        color: cs.surfaceContainer,
-        borderRadius: BorderRadius.circular(context.w * 0.04),
-        border: Border.all(color: cs.outlineVariant, width: 0.5),
-      ),
-      alignment: Alignment.center,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            PhosphorIconsRegular.mapTrifold,
-            size: context.w * 0.14,
-            color: cs.outline,
-          ),
-          SizedBox(height: context.s),
-          Text(
-            'Add places to your wines to see them here.',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: context.captionFont,
-              color: cs.onSurfaceVariant,
+    final pinSize = context.w * 0.07;
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(context.w * 0.04),
+      child: Skeleton(
+        child: Stack(
+          children: [
+            SkeletonBox(width: double.infinity, height: height, radius: 0),
+            // Faux pins to hint at the real map markers.
+            Positioned(
+              left: context.w * 0.18,
+              top: height * 0.32,
+              child: SkeletonBox.circle(size: pinSize),
             ),
-          ),
-        ],
+            Positioned(
+              left: context.w * 0.42,
+              top: height * 0.55,
+              child: SkeletonBox.circle(size: pinSize),
+            ),
+            Positioned(
+              right: context.w * 0.22,
+              top: height * 0.28,
+              child: SkeletonBox.circle(size: pinSize),
+            ),
+            Positioned(
+              right: context.w * 0.34,
+              bottom: height * 0.18,
+              child: SkeletonBox.circle(size: pinSize * 0.85),
+            ),
+          ],
+        ),
       ),
     );
   }
