@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -7,6 +8,9 @@ import '../../../../push/controller/push.provider.dart';
 import '../../../../push/domain/entities/notification_prefs.entity.dart';
 
 const _reminderHourOptions = [1, 2, 3, 4, 6, 12, 24];
+// Sentinel for the debug-only "30 seconds before" mapping in
+// claim_due_tasting_reminders. Hidden behind kDebugMode in the picker.
+const _debugReminderHoursValue = 0;
 
 class NotificationSettingsScreen extends ConsumerWidget {
   const NotificationSettingsScreen({super.key});
@@ -232,10 +236,16 @@ class _HourPicker extends StatelessWidget {
           Wrap(
             spacing: context.w * 0.02,
             runSpacing: context.s,
-            children: _reminderHourOptions.map((h) {
+            children: [
+              if (kDebugMode) _debugReminderHoursValue,
+              ..._reminderHourOptions,
+            ].map((h) {
               final isSelected = h == selected;
+              final label = h == _debugReminderHoursValue
+                  ? '30s · debug'
+                  : (h == 1 ? '1h' : '${h}h');
               return ChoiceChip(
-                label: Text(h == 1 ? '1h' : '${h}h'),
+                label: Text(label),
                 selected: isSelected,
                 onSelected: (_) => onChanged(h),
                 selectedColor: cs.primary,
