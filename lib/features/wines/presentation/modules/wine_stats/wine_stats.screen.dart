@@ -12,6 +12,7 @@ import 'widgets/spending_section.widget.dart';
 import 'widgets/stats_empty_hero.widget.dart';
 import 'widgets/stats_hero.widget.dart';
 import 'widgets/stats_pro_lock.widget.dart';
+import 'widgets/stats_section_empty.widget.dart';
 import 'widgets/tally_bars.widget.dart';
 import 'widgets/top_wines_list.widget.dart';
 import 'widgets/wine_locations_map.widget.dart';
@@ -29,6 +30,10 @@ class WineStatsScreen extends ConsumerWidget {
     final isPro = ref.watch(isProProvider);
     final hasWines =
         ref.watch(statsHeroProvider.select((h) => h.totalWines > 0));
+    final hasLocations =
+        ref.watch(statsWinesWithLocationProvider).isNotEmpty;
+    final hasPriced =
+        ref.watch(statsSpendingProvider.select((s) => s.pricedCount > 0));
 
     return Scaffold(
       backgroundColor: cs.surface,
@@ -100,7 +105,17 @@ class WineStatsScreen extends ConsumerWidget {
                         'Sum of bottle prices logged on your rated wines '
                         '— not actual consumption spend.',
                     delay: 200,
-                    child: const SpendingSection(),
+                    child: hasWines && !hasPriced
+                        ? StatsSectionEmpty(
+                            icon: PhosphorIconsFill.tag,
+                            title: 'Add a price',
+                            body:
+                                'Log what you paid on a wine to unlock '
+                                'spend, average cost and best-value picks.',
+                            ctaLabel: 'Edit a wine',
+                            onTap: () => context.pop(),
+                          )
+                        : const SpendingSection(),
                   ),
                   SliverToBoxAdapter(child: SizedBox(height: context.m)),
 
@@ -108,7 +123,17 @@ class WineStatsScreen extends ConsumerWidget {
                     title: 'Where you’ve drunk wine',
                     subtitle: 'Every wine you logged with a place.',
                     delay: 300,
-                    child: const WineLocationsMap(),
+                    child: hasWines && !hasLocations
+                        ? StatsSectionEmpty(
+                            icon: PhosphorIconsFill.mapPin,
+                            title: 'Add a location',
+                            body:
+                                'Drop a pin on a wine to start mapping '
+                                'where you drink — bars, dinners, trips.',
+                            ctaLabel: 'Edit a wine',
+                            onTap: () => context.pop(),
+                          )
+                        : const WineLocationsMap(),
                   ),
                   SliverToBoxAdapter(child: SizedBox(height: context.m)),
 
@@ -116,7 +141,17 @@ class WineStatsScreen extends ConsumerWidget {
                     title: 'Top regions',
                     subtitle: 'Where most of your bottles come from.',
                     delay: 400,
-                    child: TallyBars(items: regions, maxItems: 8),
+                    child: hasWines && regions.isEmpty
+                        ? StatsSectionEmpty(
+                            icon: PhosphorIconsFill.globe,
+                            title: 'Add a region',
+                            body:
+                                'Tag wines with a region or country to '
+                                'see where your taste leans.',
+                            ctaLabel: 'Edit a wine',
+                            onTap: () => context.pop(),
+                          )
+                        : TallyBars(items: regions, maxItems: 8),
                   ),
                 ] else ...[
                   SliverToBoxAdapter(
