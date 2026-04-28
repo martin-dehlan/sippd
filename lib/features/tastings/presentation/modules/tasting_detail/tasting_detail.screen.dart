@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import '../../../../../common/utils/responsive.dart';
+import '../../../../../common/widgets/overflow_menu.widget.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../../auth/controller/auth.provider.dart';
 import '../../../../friends/domain/entities/friend_profile.entity.dart';
@@ -48,109 +49,6 @@ class TastingDetailScreen extends ConsumerWidget {
   }
 }
 
-enum _TastingMenuAction { addToCalendar, share, edit, cancel }
-
-class _OverflowMenu extends StatelessWidget {
-  final VoidCallback onAddToCalendar;
-  final VoidCallback onShare;
-  final VoidCallback? onEdit;
-  final VoidCallback? onCancel;
-
-  const _OverflowMenu({
-    required this.onAddToCalendar,
-    required this.onShare,
-    this.onEdit,
-    this.onCancel,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    final size = context.w * 0.1;
-    final isOwner = onEdit != null && onCancel != null;
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        color: cs.surfaceContainer,
-        shape: BoxShape.circle,
-        border: Border.all(color: cs.outlineVariant, width: 0.5),
-      ),
-      child: PopupMenuButton<_TastingMenuAction>(
-        icon: Icon(PhosphorIconsRegular.dotsThreeVertical,
-            size: context.w * 0.05, color: cs.onSurface),
-        tooltip: 'More',
-        padding: EdgeInsets.zero,
-        color: cs.surfaceContainerHigh,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(context.w * 0.03),
-        ),
-        onSelected: (value) {
-          switch (value) {
-            case _TastingMenuAction.addToCalendar:
-              onAddToCalendar();
-            case _TastingMenuAction.share:
-              onShare();
-            case _TastingMenuAction.edit:
-              onEdit?.call();
-            case _TastingMenuAction.cancel:
-              onCancel?.call();
-          }
-        },
-        itemBuilder: (ctx) => [
-          PopupMenuItem(
-            value: _TastingMenuAction.addToCalendar,
-            child: Row(
-              children: [
-                Icon(PhosphorIconsRegular.calendarBlank,
-                    size: context.w * 0.045, color: cs.onSurface),
-                SizedBox(width: context.s),
-                const Text('Add to calendar'),
-              ],
-            ),
-          ),
-          PopupMenuItem(
-            value: _TastingMenuAction.share,
-            child: Row(
-              children: [
-                Icon(PhosphorIconsRegular.shareNetwork,
-                    size: context.w * 0.045, color: cs.onSurface),
-                SizedBox(width: context.s),
-                const Text('Share'),
-              ],
-            ),
-          ),
-          if (isOwner) ...[
-            const PopupMenuDivider(),
-            PopupMenuItem(
-              value: _TastingMenuAction.edit,
-              child: Row(
-                children: [
-                  Icon(PhosphorIconsRegular.pencilSimple,
-                      size: context.w * 0.045, color: cs.onSurface),
-                  SizedBox(width: context.s),
-                  const Text('Edit tasting'),
-                ],
-              ),
-            ),
-            PopupMenuItem(
-              value: _TastingMenuAction.cancel,
-              child: Row(
-                children: [
-                  Icon(PhosphorIconsRegular.calendarX,
-                      size: context.w * 0.045, color: cs.error),
-                  SizedBox(width: context.s),
-                  Text('Cancel tasting',
-                      style: TextStyle(color: cs.error)),
-                ],
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-}
 
 class _WhenRow extends StatelessWidget {
   final DateTime when;
@@ -247,20 +145,41 @@ class _Body extends ConsumerWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              _OverflowMenu(
-                onAddToCalendar: () => addTastingToCalendar(
-                    context: context, tasting: tasting),
-                onShare: () => Share.share(
-                  '${tasting.title}\n\n${DeepLinkService.tastingHttpsUri(tasting.id)}',
-                  subject: tasting.title,
-                ),
-                onEdit: isOwner
-                    ? () =>
-                        context.push(AppRoutes.tastingEditPath(tasting.id))
-                    : null,
-                onCancel: isOwner
-                    ? () => _confirmDelete(context, ref, tasting)
-                    : null,
+              OverflowMenu(
+                circleBackground: true,
+                groups: [
+                  [
+                    OverflowMenuItem(
+                      icon: PhosphorIconsRegular.calendarBlank,
+                      label: 'Add to calendar',
+                      onTap: () => addTastingToCalendar(
+                          context: context, tasting: tasting),
+                    ),
+                    OverflowMenuItem(
+                      icon: PhosphorIconsRegular.shareNetwork,
+                      label: 'Share',
+                      onTap: () => Share.share(
+                        '${tasting.title}\n\n${DeepLinkService.tastingHttpsUri(tasting.id)}',
+                        subject: tasting.title,
+                      ),
+                    ),
+                  ],
+                  if (isOwner)
+                    [
+                      OverflowMenuItem(
+                        icon: PhosphorIconsRegular.pencilSimple,
+                        label: 'Edit tasting',
+                        onTap: () => context
+                            .push(AppRoutes.tastingEditPath(tasting.id)),
+                      ),
+                      OverflowMenuItem(
+                        icon: PhosphorIconsRegular.calendarX,
+                        label: 'Cancel tasting',
+                        destructive: true,
+                        onTap: () => _confirmDelete(context, ref, tasting),
+                      ),
+                    ],
+                ],
               ),
             ],
           ),
