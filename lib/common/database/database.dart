@@ -19,18 +19,13 @@ part 'database.g.dart';
     WineAliasesTable,
     NotificationPrefsTable,
   ],
-  daos: [
-    WinesDao,
-    WineMemoriesDao,
-    WineAliasesDao,
-    NotificationPrefsDao,
-  ],
+  daos: [WinesDao, WineMemoriesDao, WineAliasesDao, NotificationPrefsDao],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 1;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
