@@ -3,6 +3,14 @@
 // Deployed to: https://ungvhpffjhnojessifri.supabase.co/functions/v1/tasting-reminders
 // Invoked by pg_cron every minute (see migration 20260428_tasting_reminder_cron.sql).
 //
+// Per-attendee reminders: every user with status='going' on a tasting receives
+// a push at (scheduled_at - their own pref hours), respecting their personal
+// user_notification_prefs.tasting_reminders flag. The Postgres
+// claim_due_tasting_reminders() function holds a FOR UPDATE SKIP LOCKED claim
+// while stamping reminder_sent_at, so two cron ticks cannot double-send. We
+// revert the stamp for any (tasting_id, user_id) whose FCM transport failed
+// so the next tick retries.
+//
 // Required env (Supabase Edge Function secrets):
 //   FIREBASE_SERVICE_ACCOUNT — full service-account JSON as string
 //   PUSH_WEBHOOK_SECRET      — shared secret with the cron job
@@ -39,10 +47,10 @@ function getJwtClient(): JWT {
 }
 
 interface DueReminder {
-  id: string;
-  title: string;
-  recipientId: string;
-  groupId: string;
+  tasting_id: string;
+  user_id: string;
+  tasting_title: string;
+  group_id: string;
 }
 
 Deno.serve(async (req) => {
@@ -55,72 +63,26 @@ Deno.serve(async (req) => {
   }
 
   const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
-  const now = new Date();
 
-  // Pull every unsent reminder that hasn't already passed scheduled_at.
-  // Partial index group_tastings_reminder_pending_idx keeps this cheap
-  // even at scale.
-  const { data: tastings, error: tastingsErr } = await admin
-    .from('group_tastings')
-    .select('id, title, scheduled_at, created_by, group_id')
-    .gt('scheduled_at', now.toISOString())
-    .is('reminder_sent_at', null);
-  if (tastingsErr) {
-    console.error('group_tastings query failed', tastingsErr);
-    return new Response(`db error: ${tastingsErr.message}`, { status: 500 });
+  // Atomic claim — stamps reminder_sent_at for every due (attendee, tasting)
+  // pair and returns the rows we need to deliver. Revert pending below.
+  const { data: claimed, error: claimErr } = await admin.rpc(
+    'claim_due_tasting_reminders',
+  );
+  if (claimErr) {
+    console.error('claim_due_tasting_reminders failed', claimErr);
+    return new Response(`db error: ${claimErr.message}`, { status: 500 });
   }
-  if (!tastings || tastings.length === 0) {
-    return new Response(JSON.stringify({ checked: 0 }), {
+  const due = (claimed ?? []) as DueReminder[];
+  if (due.length === 0) {
+    return new Response(JSON.stringify({ due: 0 }), {
       status: 200,
       headers: { 'content-type': 'application/json' },
     });
   }
 
-  const userIds = [
-    ...new Set(tastings.map((t: any) => t.created_by as string)),
-  ];
-  const { data: prefRows } = await admin
-    .from('user_notification_prefs')
-    .select('user_id, tasting_reminders, tasting_reminder_hours')
-    .in('user_id', userIds);
-  const prefsByUser = new Map<
-    string,
-    { tasting_reminders: boolean; tasting_reminder_hours: number }
-  >();
-  for (const p of prefRows ?? []) {
-    prefsByUser.set(p.user_id as string, {
-      tasting_reminders: p.tasting_reminders as boolean,
-      tasting_reminder_hours: p.tasting_reminder_hours as number,
-    });
-  }
-
-  const due: DueReminder[] = [];
-  for (const t of tastings as any[]) {
-    const pref = prefsByUser.get(t.created_by);
-    if (!pref?.tasting_reminders) continue;
-    const offsetMs = pref.tasting_reminder_hours * 60 * 60 * 1000;
-    const reminderAtMs = new Date(t.scheduled_at).getTime() - offsetMs;
-    if (reminderAtMs <= now.getTime()) {
-      due.push({
-        id: t.id as string,
-        title: t.title as string,
-        recipientId: t.created_by as string,
-        groupId: t.group_id as string,
-      });
-    }
-  }
-
-  if (due.length === 0) {
-    return new Response(
-      JSON.stringify({ checked: tastings.length, due: 0 }),
-      {
-        status: 200,
-        headers: { 'content-type': 'application/json' },
-      },
-    );
-  }
-
-  const recipientIds = [...new Set(due.map((d) => d.recipientId))];
+  // Fetch every recipient's device tokens in a single round-trip.
+  const recipientIds = [...new Set(due.map((d) => d.user_id))];
   const { data: deviceRows } = await admin
     .from('user_devices')
     .select('user_id, token')
@@ -138,9 +100,12 @@ Deno.serve(async (req) => {
     accessToken = r.token;
   } catch (e) {
     console.error('OAuth error', e);
+    // The claim has already stamped — revert all so the next tick retries.
+    await revertStamps(admin, due);
     return new Response(`oauth error: ${e}`, { status: 500 });
   }
   if (!accessToken) {
+    await revertStamps(admin, due);
     return new Response('no access token', { status: 500 });
   }
 
@@ -148,14 +113,16 @@ Deno.serve(async (req) => {
   let sent = 0;
   let failed = 0;
   const invalidTokens: string[] = [];
-  const stampedIds: string[] = [];
+  // Reminders that failed transport entirely (no token delivered) — revert
+  // their stamp so the next cron tick retries.
+  const toRevert: DueReminder[] = [];
 
   for (const reminder of due) {
-    const tokens = tokensByUser.get(reminder.recipientId) ?? [];
+    const tokens = tokensByUser.get(reminder.user_id) ?? [];
     if (tokens.length === 0) {
-      // Recipient has no devices registered — nothing to deliver. Stamp the
-      // tasting so we don't re-check it on every cron tick.
-      stampedIds.push(reminder.id);
+      // No device registered. Stamp stays so we don't keep checking — when
+      // the user installs the app and registers a device, the reminder is
+      // simply lost. Acceptable: alternative is to keep retrying forever.
       continue;
     }
 
@@ -165,10 +132,13 @@ Deno.serve(async (req) => {
         const body = {
           message: {
             token,
-            notification: { title: 'Tasting reminder', body: reminder.title },
+            notification: {
+              title: 'Tasting reminder',
+              body: reminder.tasting_title,
+            },
             data: {
               type: 'tasting_reminder',
-              tasting_id: reminder.id,
+              tasting_id: reminder.tasting_id,
             },
             android: {
               priority: 'HIGH',
@@ -178,7 +148,7 @@ Deno.serve(async (req) => {
                 notification_priority: 'PRIORITY_MAX',
                 default_sound: true,
                 default_vibrate_timings: true,
-                tag: `tasting_reminder:${reminder.id}`,
+                tag: `tasting_reminder:${reminder.tasting_id}`,
               },
             },
             apns: {
@@ -187,7 +157,7 @@ Deno.serve(async (req) => {
                 aps: {
                   sound: 'default',
                   'mutable-content': 1,
-                  'thread-id': `group:${reminder.groupId}`,
+                  'thread-id': `group:${reminder.group_id}`,
                 },
               },
             },
@@ -217,30 +187,44 @@ Deno.serve(async (req) => {
       }),
     );
 
-    if (anySent) {
-      stampedIds.push(reminder.id);
+    if (!anySent) {
+      // Every token for this recipient failed — revert so next tick retries.
+      toRevert.push(reminder);
     }
   }
 
   if (invalidTokens.length > 0) {
     await admin.from('user_devices').delete().in('token', invalidTokens);
   }
-  if (stampedIds.length > 0) {
-    await admin
-      .from('group_tastings')
-      .update({ reminder_sent_at: now.toISOString() })
-      .in('id', stampedIds);
+  if (toRevert.length > 0) {
+    await revertStamps(admin, toRevert);
   }
 
   return new Response(
     JSON.stringify({
-      checked: tastings.length,
       due: due.length,
       sent,
       failed,
+      reverted: toRevert.length,
       invalid_tokens_removed: invalidTokens.length,
-      stamped: stampedIds.length,
     }),
     { status: 200, headers: { 'content-type': 'application/json' } },
   );
 });
+
+async function revertStamps(
+  admin: ReturnType<typeof createClient>,
+  rows: DueReminder[],
+): Promise<void> {
+  // The composite key (tasting_id, user_id) doesn't compose into a single
+  // .in() filter; do per-row updates. Volume is small (size of `due`).
+  await Promise.all(
+    rows.map((r) =>
+      admin
+        .from('tasting_attendees')
+        .update({ reminder_sent_at: null })
+        .eq('tasting_id', r.tasting_id)
+        .eq('user_id', r.user_id),
+    ),
+  );
+}
