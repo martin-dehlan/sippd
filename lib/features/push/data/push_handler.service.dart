@@ -3,10 +3,7 @@ import 'dart:convert';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show PlatformException;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:timezone/data/latest_all.dart' as tz_data;
-import 'package:timezone/timezone.dart' as tz;
 
 /// Background isolate entry point. Must be top-level.
 @pragma('vm:entry-point')
@@ -14,6 +11,11 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   debugPrint('BG push: ${message.messageId} data=${message.data}');
 }
 
+/// Wraps Firebase Messaging plus a local notifications plugin used purely to
+/// surface FCM pushes while the app is foregrounded. Tasting reminders are
+/// fired server-side by the `tasting-reminders` edge function (cron-driven),
+/// so this class no longer schedules anything locally — keeps us off the
+/// SCHEDULE_EXACT_ALARM permission flow.
 class PushHandlerService {
   final FlutterLocalNotificationsPlugin _local =
       FlutterLocalNotificationsPlugin();
@@ -28,11 +30,6 @@ class PushHandlerService {
   StreamSubscription<RemoteMessage>? _openedSub;
 
   Future<void> init() async {
-    // Required for zonedSchedule — registers the IANA timezone database so
-    // we can convert wall-clock DateTimes into TZDateTime values that the
-    // OS scheduler honours across DST transitions.
-    tz_data.initializeTimeZones();
-
     const androidInit =
         AndroidInitializationSettings('ic_notification');
     const iosInit = DarwinInitializationSettings(
@@ -52,20 +49,15 @@ class PushHandlerService {
       },
     );
 
-    // FCM requestPermission grants the *system* notification permission but
-    // flutter_local_notifications tracks its own internal grant flag — so we
-    // re-request via the plugin to cover the local zonedSchedule path.
-    final androidPlugin = _local
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>();
-    await androidPlugin?.requestNotificationsPermission();
-
     const channel = AndroidNotificationChannel(
       'sippd_default',
       'Sippd notifications',
       importance: Importance.high,
     );
-    await androidPlugin?.createNotificationChannel(channel);
+    await _local
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(channel);
 
     _foregroundSub =
         FirebaseMessaging.onMessage.listen(_onForegroundMessage);
@@ -102,115 +94,6 @@ class PushHandlerService {
   RemoteMessage _fakeRemoteMessage(Map<String, dynamic> data) {
     return RemoteMessage(data: data.map((k, v) => MapEntry(k, v.toString())));
   }
-
-  /// Schedules a local notification at [reminderAt] for the given tasting.
-  /// Caller decides offset (driven by `user_notification_prefs.tasting_reminder_hours`).
-  /// No-op if [reminderAt] is in the past. Reuses the deterministic int derived
-  /// from the tasting id so re-scheduling on edit/pref-change replaces cleanly.
-  Future<void> scheduleTastingReminder({
-    required String tastingId,
-    required String tastingTitle,
-    required DateTime reminderAt,
-    required int offsetHours,
-  }) async {
-    final now = DateTime.now();
-    debugPrint(
-      'scheduleTastingReminder: id=$tastingId now=$now reminderAt=$reminderAt offsetHours=$offsetHours',
-    );
-    if (!reminderAt.isAfter(now)) {
-      debugPrint('scheduleTastingReminder: skip — reminderAt is in the past');
-      return;
-    }
-
-    final id = _idForTastingReminder(tastingId);
-    final tzTime = tz.TZDateTime.from(reminderAt, tz.local);
-    debugPrint(
-      'scheduleTastingReminder: tz.local=${tz.local} tzTime=$tzTime id=$id',
-    );
-    // offsetHours == 0 is the debug "Send test reminder" path — surface a
-    // plain "Tasting reminder" title so the notification doesn't read
-    // "Tasting in 0 hours".
-    final notificationTitle = offsetHours <= 0
-        ? 'Tasting reminder'
-        : 'Tasting in ${offsetHours == 1 ? '1 hour' : '$offsetHours hours'}';
-
-    final androidPlugin = _local
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>();
-    final notifEnabled = await androidPlugin?.areNotificationsEnabled();
-    final canScheduleExact =
-        await androidPlugin?.canScheduleExactNotifications();
-    debugPrint(
-      'scheduleTastingReminder: areNotificationsEnabled=$notifEnabled canScheduleExactNotifications=$canScheduleExact',
-    );
-
-    const details = NotificationDetails(
-      android: AndroidNotificationDetails(
-        'sippd_default',
-        'Sippd notifications',
-        importance: Importance.high,
-        priority: Priority.high,
-        icon: 'ic_notification',
-        color: Color(0xFF6B3A51),
-      ),
-      iOS: DarwinNotificationDetails(),
-    );
-    final payload = jsonEncode({
-      'type': 'tasting_reminder',
-      'tasting_id': tastingId,
-    });
-
-    // Try the precise modes first (alarmClock → exactAllowWhileIdle); both
-    // need SCHEDULE_EXACT_ALARM, which the user may not have granted via
-    // system Settings → Alarms & reminders. On the permission error fall
-    // back to inexactAllowWhileIdle so the notification still fires (just
-    // potentially Doze-delayed by minutes). The UX cost of a fuzzy timing
-    // beats the user getting nothing.
-    Future<void> tryWithMode(AndroidScheduleMode mode) {
-      return _local.zonedSchedule(
-        id,
-        notificationTitle,
-        tastingTitle,
-        tzTime,
-        details,
-        androidScheduleMode: mode,
-        uiLocalNotificationDateInterpretation:
-            UILocalNotificationDateInterpretation.absoluteTime,
-        payload: payload,
-      );
-    }
-
-    try {
-      await tryWithMode(AndroidScheduleMode.alarmClock);
-      debugPrint(
-          'scheduleTastingReminder: scheduled (alarmClock) OK.');
-    } on PlatformException catch (e) {
-      if (e.code != 'exact_alarms_not_permitted') {
-        debugPrint('scheduleTastingReminder: FAILED — $e');
-        rethrow;
-      }
-      debugPrint(
-        'scheduleTastingReminder: exact alarms denied; falling back to inexactAllowWhileIdle. Push may be delayed by Android Doze.',
-      );
-      await tryWithMode(AndroidScheduleMode.inexactAllowWhileIdle);
-      debugPrint(
-          'scheduleTastingReminder: scheduled (inexactAllowWhileIdle) OK.');
-    }
-
-    final pending = await _local.pendingNotificationRequests();
-    debugPrint(
-      'scheduleTastingReminder: pending=${pending.map((p) => '${p.id}:${p.title}').join(', ')}',
-    );
-  }
-
-  Future<void> cancelTastingReminder(String tastingId) async {
-    await _local.cancel(_idForTastingReminder(tastingId));
-  }
-
-  /// Maps a tasting UUID to a stable 31-bit int that fits the plugin's
-  /// notification id contract on every platform.
-  int _idForTastingReminder(String tastingId) =>
-      tastingId.hashCode & 0x7FFFFFFF;
 
   Future<void> dispose() async {
     await _foregroundSub?.cancel();

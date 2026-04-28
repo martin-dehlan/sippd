@@ -1,6 +1,4 @@
-import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
@@ -26,13 +24,7 @@ class NotificationSettingsScreen extends ConsumerWidget {
         elevation: 0,
       ),
       body: prefsAsync.when(
-        data: (prefs) => _Body(
-          prefs: prefs,
-          controller: controller,
-          onSendTestReminder: () => _sendTestReminder(context, ref),
-          onOpenExactAlarmSettings: () =>
-              _openExactAlarmSettings(context),
-        ),
+        data: (prefs) => _Body(prefs: prefs, controller: controller),
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(
           child: Padding(
@@ -49,57 +41,11 @@ class NotificationSettingsScreen extends ConsumerWidget {
   }
 }
 
-Future<void> _sendTestReminder(BuildContext context, WidgetRef ref) async {
-  final pushHandler = ref.read(pushHandlerProvider);
-  final reminderAt = DateTime.now().add(const Duration(seconds: 30));
-  // Stable id so a second tap replaces the pending alarm rather than
-  // stacking another one. Cleanup is best-effort; the cancel runs first
-  // anyway as part of the deterministic id contract on zonedSchedule.
-  await pushHandler.scheduleTastingReminder(
-    tastingId: 'debug-test-reminder',
-    tastingTitle: 'Test reminder',
-    reminderAt: reminderAt,
-    offsetHours: 0,
-  );
-  if (!context.mounted) return;
-  ScaffoldMessenger.of(context).showSnackBar(
-    const SnackBar(
-      content: Text('Test reminder scheduled in 30 seconds'),
-      duration: Duration(seconds: 2),
-    ),
-  );
-}
-
-Future<void> _openExactAlarmSettings(BuildContext context) async {
-  final androidPlugin = FlutterLocalNotificationsPlugin()
-      .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>();
-  final granted = await androidPlugin?.requestExactAlarmsPermission();
-  if (!context.mounted) return;
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Text(
-        granted == true
-            ? 'Exact alarms granted — reminders fire on time'
-            : 'Exact alarms still off — using fuzzy fallback (Doze may delay)',
-      ),
-      duration: const Duration(seconds: 3),
-    ),
-  );
-}
-
 class _Body extends StatelessWidget {
   final NotificationPrefsEntity prefs;
   final NotificationPrefsController controller;
-  final VoidCallback onSendTestReminder;
-  final VoidCallback onOpenExactAlarmSettings;
 
-  const _Body({
-    required this.prefs,
-    required this.controller,
-    required this.onSendTestReminder,
-    required this.onOpenExactAlarmSettings,
-  });
+  const _Body({required this.prefs, required this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -128,7 +74,7 @@ class _Body extends StatelessWidget {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: context.w * 0.02),
             child: Text(
-              'Applies to new tastings. Existing reminders keep their original timing until the tasting is edited.',
+              'Applies to all upcoming tastings — change anytime.',
               style: TextStyle(
                 fontSize: context.captionFont * 0.9,
                 color: cs.onSurfaceVariant,
@@ -164,92 +110,7 @@ class _Body extends StatelessWidget {
           value: prefs.groupWineShared,
           onChanged: controller.setGroupWineShared,
         ),
-        if (kDebugMode) ...[
-          SizedBox(height: context.l),
-          const _SectionLabel('Debug'),
-          _DebugActionTile(
-            icon: PhosphorIconsRegular.bellRinging,
-            label: 'Send test reminder (30 sec)',
-            subtitle: 'Schedules a one-off local notification right now',
-            onTap: onSendTestReminder,
-          ),
-          SizedBox(height: context.xs),
-          _DebugActionTile(
-            icon: PhosphorIconsRegular.alarm,
-            label: 'Allow exact alarms',
-            subtitle:
-                'Required for on-the-dot reminders. Opens system settings.',
-            onTap: onOpenExactAlarmSettings,
-          ),
-        ],
       ],
-    );
-  }
-}
-
-class _DebugActionTile extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String subtitle;
-  final VoidCallback onTap;
-
-  const _DebugActionTile({
-    required this.icon,
-    required this.label,
-    required this.subtitle,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return Material(
-      color: cs.surfaceContainer,
-      borderRadius: BorderRadius.circular(context.w * 0.03),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: EdgeInsets.symmetric(
-            vertical: context.m,
-            horizontal: context.w * 0.04,
-          ),
-          child: Row(
-            children: [
-              Icon(icon, color: cs.primary, size: context.w * 0.05),
-              SizedBox(width: context.w * 0.04),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      label,
-                      style: TextStyle(
-                        fontSize: context.bodyFont,
-                        fontWeight: FontWeight.w500,
-                        color: cs.onSurface,
-                      ),
-                    ),
-                    SizedBox(height: context.xs * 0.5),
-                    Text(
-                      subtitle,
-                      style: TextStyle(
-                        fontSize: context.captionFont * 0.95,
-                        color: cs.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Icon(
-                PhosphorIconsRegular.caretRight,
-                size: context.w * 0.05,
-                color: cs.outline,
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }
