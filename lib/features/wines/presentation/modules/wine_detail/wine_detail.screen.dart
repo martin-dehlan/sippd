@@ -302,6 +302,8 @@ class _WineOverflowMenu extends StatelessWidget {
             label: 'Share to group',
             onTap: onShareToGroup,
           ),
+        ],
+        [
           OverflowMenuItem(
             icon: PhosphorIconsRegular.pencilSimple,
             label: 'Edit wine',
