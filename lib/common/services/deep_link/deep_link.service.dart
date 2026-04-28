@@ -120,4 +120,26 @@ class DeepLinkService {
       'https://sippd.xyz/group/$code';
   static String friendHttpsUri(String id) =>
       'https://sippd.xyz/friend/$id';
+
+  // Compact wire format for SharedPreferences storage when a deep link
+  // arrives before the user is ready to consume it. Keep human-readable so
+  // the next session can debug the stash if it gets stuck.
+  static String serializeTarget(DeepLinkTarget t) => switch (t) {
+        DeepLinkGroupInvite(:final inviteCode) => 'group:$inviteCode',
+        DeepLinkTasting(:final tastingId) => 'tasting:$tastingId',
+        DeepLinkFriend(:final friendId) => 'friend:$friendId',
+      };
+
+  static DeepLinkTarget? deserializeTarget(String s) {
+    final i = s.indexOf(':');
+    if (i <= 0 || i == s.length - 1) return null;
+    final kind = s.substring(0, i);
+    final id = s.substring(i + 1);
+    return switch (kind) {
+      'group' => _inviteCodeRe.hasMatch(id) ? DeepLinkGroupInvite(id) : null,
+      'tasting' => _uuidRe.hasMatch(id) ? DeepLinkTasting(id) : null,
+      'friend' => _uuidRe.hasMatch(id) ? DeepLinkFriend(id) : null,
+      _ => null,
+    };
+  }
 }

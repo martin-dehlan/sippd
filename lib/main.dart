@@ -22,6 +22,8 @@ import 'features/friends/controller/friends.provider.dart';
 import 'features/groups/controller/group.provider.dart';
 import 'features/groups/controller/group_invitation.provider.dart';
 import 'features/onboarding/controller/onboarding.provider.dart';
+import 'features/profile/controller/profile.provider.dart';
+import 'features/profile/domain/entities/profile.entity.dart';
 import 'features/push/controller/push.provider.dart';
 import 'features/push/data/push_handler.service.dart';
 import 'firebase_options.dart';
@@ -162,6 +164,18 @@ class _SippdAppState extends ConsumerState<SippdApp> {
       },
     );
 
+    // Replay any deep link that arrived while the user was unauthenticated
+    // or mid-onboarding the moment the profile crosses into "ready" state.
+    // This is what makes a guest tapping a group invite link actually land
+    // inside the group post-signup instead of on /login with no context.
+    ref.listen<AsyncValue<ProfileEntity?>>(currentProfileProvider, (prev, next) {
+      final wasReady = prev?.valueOrNull?.onboardingCompleted ?? false;
+      final isReady = next.valueOrNull?.onboardingCompleted ?? false;
+      if (!wasReady && isReady) {
+        _consumePendingDeepLink(ref, router);
+      }
+    });
+
     return MaterialApp.router(
       title: 'Sippd',
       theme: AppTheme.dark,
@@ -174,8 +188,37 @@ class _SippdAppState extends ConsumerState<SippdApp> {
   }
 }
 
+/// SharedPreferences key for a deep link the user tapped before they were
+/// ready to consume it (unauthed, or mid-onboarding). Replayed once the
+/// profile flips to onboardingCompleted = true.
+const _kPendingDeepLinkKey = 'pending_deep_link';
+
+bool _readyForDeepLink(WidgetRef ref) {
+  if (!ref.read(isAuthenticatedProvider)) return false;
+  final profile = ref.read(currentProfileProvider).valueOrNull;
+  return profile != null && profile.onboardingCompleted;
+}
+
+Future<void> _consumePendingDeepLink(WidgetRef ref, GoRouter router) async {
+  final prefs = ref.read(sharedPreferencesProvider);
+  final stored = prefs.getString(_kPendingDeepLinkKey);
+  if (stored == null) return;
+  await prefs.remove(_kPendingDeepLinkKey);
+  final target = DeepLinkService.deserializeTarget(stored);
+  if (target == null) return;
+  await _handleDeepLink(ref, router, target);
+}
+
 Future<void> _handleDeepLink(
     WidgetRef ref, GoRouter router, DeepLinkTarget target) async {
+  // Guest taps the link → no auth, no profile, can't joinGroup or push a
+  // route the guard would just bounce back. Stash and replay later.
+  if (!_readyForDeepLink(ref)) {
+    await ref
+        .read(sharedPreferencesProvider)
+        .setString(_kPendingDeepLinkKey, DeepLinkService.serializeTarget(target));
+    return;
+  }
   switch (target) {
     case DeepLinkGroupInvite(:final inviteCode):
       try {
