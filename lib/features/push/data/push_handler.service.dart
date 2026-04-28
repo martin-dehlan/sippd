@@ -51,17 +51,20 @@ class PushHandlerService {
       },
     );
 
-    // Android 13+ notification permission is part of FCM requestPermission.
-    // Ensure channel exists so banner works.
+    // FCM requestPermission grants the *system* notification permission but
+    // flutter_local_notifications tracks its own internal grant flag — so we
+    // re-request via the plugin to cover the local zonedSchedule path.
+    final androidPlugin = _local
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>();
+    await androidPlugin?.requestNotificationsPermission();
+
     const channel = AndroidNotificationChannel(
       'sippd_default',
       'Sippd notifications',
       importance: Importance.high,
     );
-    await _local
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
-        ?.createNotificationChannel(channel);
+    await androidPlugin?.createNotificationChannel(channel);
 
     _foregroundSub =
         FirebaseMessaging.onMessage.listen(_onForegroundMessage);
@@ -157,7 +160,13 @@ class PushHandlerService {
           ),
           iOS: DarwinNotificationDetails(),
         ),
-        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        // alarmClock uses AlarmManager.setAlarmClock under the hood:
+        // bypasses Doze, fires on the dot, and crucially does NOT need
+        // SCHEDULE_EXACT_ALARM / USE_EXACT_ALARM grants. Side effect is the
+        // device's "next alarm" indicator may show in the status bar — that
+        // is acceptable for time-bound tasting reminders and avoids the
+        // permission-flow tax on every Android version.
+        androidScheduleMode: AndroidScheduleMode.alarmClock,
         uiLocalNotificationDateInterpretation:
             UILocalNotificationDateInterpretation.absoluteTime,
         payload: jsonEncode({

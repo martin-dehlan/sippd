@@ -1,13 +1,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
     <uses-permission android:name="android.permission.CAMERA"/>
-    <!-- Tasting reminder local notifications (flutter_local_notifications zonedSchedule).
-         SCHEDULE_EXACT_ALARM = Android 12 (API 31-32). USE_EXACT_ALARM = Android 13+
-         (API 33+, granted by default for calendar/alarm/reminder use cases). Required for
-         exactAllowWhileIdle so reminders fire on time even under Doze. RECEIVE_BOOT_COMPLETED
-         re-arms scheduled alarms after device reboot. -->
-    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
-    <uses-permission android:name="android.permission.USE_EXACT_ALARM"/>
+    <!-- Tasting reminder local notifications (flutter_local_notifications
+         AndroidScheduleMode.alarmClock). RECEIVE_BOOT_COMPLETED re-arms the
+         AlarmManager queue after device reboot. We deliberately avoid
+         SCHEDULE_EXACT_ALARM / USE_EXACT_ALARM — alarmClock uses
+         AlarmManager.setAlarmClock which doesn't need either grant and
+         bypasses Doze on the dot. Declaring USE_EXACT_ALARM here would draw
+         a Play Console attestation requirement we don't need. -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <!-- We pick single photos via image_picker, which uses Android Photo
          Picker on API 33+ — no broad media permission required. Strip
