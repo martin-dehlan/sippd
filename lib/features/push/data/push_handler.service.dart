@@ -109,40 +109,70 @@ class PushHandlerService {
     required DateTime reminderAt,
     required int offsetHours,
   }) async {
-    if (!reminderAt.isAfter(DateTime.now())) return;
+    final now = DateTime.now();
+    debugPrint(
+      'scheduleTastingReminder: id=$tastingId now=$now reminderAt=$reminderAt offsetHours=$offsetHours',
+    );
+    if (!reminderAt.isAfter(now)) {
+      debugPrint('scheduleTastingReminder: skip — reminderAt is in the past');
+      return;
+    }
 
     final id = _idForTastingReminder(tastingId);
     final tzTime = tz.TZDateTime.from(reminderAt, tz.local);
+    debugPrint(
+      'scheduleTastingReminder: tz.local=${tz.local} tzTime=$tzTime id=$id',
+    );
     // offsetHours == 0 is the debug "Send test reminder" path — surface a
     // plain "Tasting reminder" title so the notification doesn't read
     // "Tasting in 0 hours".
     final notificationTitle = offsetHours <= 0
         ? 'Tasting reminder'
         : 'Tasting in ${offsetHours == 1 ? '1 hour' : '$offsetHours hours'}';
-    await _local.zonedSchedule(
-      id,
-      notificationTitle,
-      tastingTitle,
-      tzTime,
-      const NotificationDetails(
-        android: AndroidNotificationDetails(
-          'sippd_default',
-          'Sippd notifications',
-          importance: Importance.high,
-          priority: Priority.high,
-          icon: 'ic_notification',
-          color: Color(0xFF6B3A51),
-        ),
-        iOS: DarwinNotificationDetails(),
-      ),
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
-      payload: jsonEncode({
-        'type': 'tasting_reminder',
-        'tasting_id': tastingId,
-      }),
+
+    final androidPlugin = _local
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>();
+    final notifEnabled = await androidPlugin?.areNotificationsEnabled();
+    final canScheduleExact =
+        await androidPlugin?.canScheduleExactNotifications();
+    debugPrint(
+      'scheduleTastingReminder: areNotificationsEnabled=$notifEnabled canScheduleExactNotifications=$canScheduleExact',
     );
+
+    try {
+      await _local.zonedSchedule(
+        id,
+        notificationTitle,
+        tastingTitle,
+        tzTime,
+        const NotificationDetails(
+          android: AndroidNotificationDetails(
+            'sippd_default',
+            'Sippd notifications',
+            importance: Importance.high,
+            priority: Priority.high,
+            icon: 'ic_notification',
+            color: Color(0xFF6B3A51),
+          ),
+          iOS: DarwinNotificationDetails(),
+        ),
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
+        payload: jsonEncode({
+          'type': 'tasting_reminder',
+          'tasting_id': tastingId,
+        }),
+      );
+      final pending = await _local.pendingNotificationRequests();
+      debugPrint(
+        'scheduleTastingReminder: scheduled OK. pending=${pending.map((p) => '${p.id}:${p.title}').join(', ')}',
+      );
+    } catch (e, st) {
+      debugPrint('scheduleTastingReminder: FAILED — $e\n$st');
+      rethrow;
+    }
   }
 
   Future<void> cancelTastingReminder(String tastingId) async {
