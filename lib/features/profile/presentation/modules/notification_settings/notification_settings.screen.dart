@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
@@ -29,6 +30,8 @@ class NotificationSettingsScreen extends ConsumerWidget {
           prefs: prefs,
           controller: controller,
           onSendTestReminder: () => _sendTestReminder(context, ref),
+          onOpenExactAlarmSettings: () =>
+              _openExactAlarmSettings(context),
         ),
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(
@@ -48,7 +51,7 @@ class NotificationSettingsScreen extends ConsumerWidget {
 
 Future<void> _sendTestReminder(BuildContext context, WidgetRef ref) async {
   final pushHandler = ref.read(pushHandlerProvider);
-  final reminderAt = DateTime.now().add(const Duration(minutes: 3));
+  final reminderAt = DateTime.now().add(const Duration(seconds: 30));
   // Stable id so a second tap replaces the pending alarm rather than
   // stacking another one. Cleanup is best-effort; the cancel runs first
   // anyway as part of the deterministic id contract on zonedSchedule.
@@ -61,8 +64,26 @@ Future<void> _sendTestReminder(BuildContext context, WidgetRef ref) async {
   if (!context.mounted) return;
   ScaffoldMessenger.of(context).showSnackBar(
     const SnackBar(
-      content: Text('Test reminder scheduled in 3 minutes'),
+      content: Text('Test reminder scheduled in 30 seconds'),
       duration: Duration(seconds: 2),
+    ),
+  );
+}
+
+Future<void> _openExactAlarmSettings(BuildContext context) async {
+  final androidPlugin = FlutterLocalNotificationsPlugin()
+      .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>();
+  final granted = await androidPlugin?.requestExactAlarmsPermission();
+  if (!context.mounted) return;
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(
+        granted == true
+            ? 'Exact alarms granted — reminders fire on time'
+            : 'Exact alarms still off — using fuzzy fallback (Doze may delay)',
+      ),
+      duration: const Duration(seconds: 3),
     ),
   );
 }
@@ -71,11 +92,13 @@ class _Body extends StatelessWidget {
   final NotificationPrefsEntity prefs;
   final NotificationPrefsController controller;
   final VoidCallback onSendTestReminder;
+  final VoidCallback onOpenExactAlarmSettings;
 
   const _Body({
     required this.prefs,
     required this.controller,
     required this.onSendTestReminder,
+    required this.onOpenExactAlarmSettings,
   });
 
   @override
@@ -146,9 +169,17 @@ class _Body extends StatelessWidget {
           const _SectionLabel('Debug'),
           _DebugActionTile(
             icon: PhosphorIconsRegular.bellRinging,
-            label: 'Send test reminder (3 min)',
+            label: 'Send test reminder (30 sec)',
             subtitle: 'Schedules a one-off local notification right now',
             onTap: onSendTestReminder,
+          ),
+          SizedBox(height: context.xs),
+          _DebugActionTile(
+            icon: PhosphorIconsRegular.alarm,
+            label: 'Allow exact alarms',
+            subtitle:
+                'Required for on-the-dot reminders. Opens system settings.',
+            onTap: onOpenExactAlarmSettings,
           ),
         ],
       ],
