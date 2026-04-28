@@ -2,6 +2,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../common/services/analytics/analytics.provider.dart';
 import '../../auth/controller/auth.provider.dart';
 import '../../friends/data/models/friend_profile.model.dart';
+import '../../push/controller/push.provider.dart';
 import '../../wines/data/models/wine.model.dart';
 import '../../wines/domain/entities/wine.entity.dart';
 import '../data/data_sources/tastings.api.dart';
@@ -100,6 +101,11 @@ class TastingsController extends _$TastingsController {
         'has_location': latitude != null && longitude != null,
       },
     );
+    await ref.read(pushHandlerProvider).scheduleTastingReminder(
+          tastingId: model.id,
+          tastingTitle: title,
+          scheduledAt: scheduledAt,
+        );
     ref.invalidate(groupTastingsProvider(groupId));
     return model.toEntity();
   }
@@ -137,6 +143,7 @@ class TastingsController extends _$TastingsController {
     final api = ref.read(tastingsApiProvider);
     if (api == null) return;
     await api.deleteTasting(tastingId);
+    await ref.read(pushHandlerProvider).cancelTastingReminder(tastingId);
     ref.read(analyticsProvider).capture('tasting_deleted');
     if (groupId != null) ref.invalidate(groupTastingsProvider(groupId));
   }
@@ -160,6 +167,15 @@ class TastingsController extends _$TastingsController {
       location: location,
       latitude: latitude,
       longitude: longitude,
+      scheduledAt: scheduledAt,
+    );
+    // Re-schedule against the new wall-clock time. cancel + schedule keeps
+    // the deterministic id so a stale reminder can't slip through.
+    final pushHandler = ref.read(pushHandlerProvider);
+    await pushHandler.cancelTastingReminder(tastingId);
+    await pushHandler.scheduleTastingReminder(
+      tastingId: tastingId,
+      tastingTitle: title,
       scheduledAt: scheduledAt,
     );
     ref.invalidate(tastingDetailProvider(tastingId));

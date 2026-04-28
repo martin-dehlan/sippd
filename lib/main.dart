@@ -26,6 +26,7 @@ import 'features/profile/controller/profile.provider.dart';
 import 'features/profile/domain/entities/profile.entity.dart';
 import 'features/push/controller/push.provider.dart';
 import 'features/push/data/push_handler.service.dart';
+import 'features/tastings/controller/tastings.provider.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -258,6 +259,14 @@ void _invalidateForPush(WidgetRef ref, RemoteMessage msg) {
     case 'group_wine_shared':
       ref.invalidate(groupControllerProvider);
       break;
+    case 'tasting_reminder':
+      // Local notification firing 1h before scheduledAt. Refresh the detail
+      // so attendees / wine list are current when the user taps in.
+      final id = msg.data['tasting_id'];
+      if (id is String && id.isNotEmpty) {
+        ref.invalidate(tastingDetailProvider(id));
+      }
+      break;
   }
 }
 
@@ -274,6 +283,7 @@ String? _routeForPush(RemoteMessage msg) {
     case 'friend_request_accepted':
       return AppRoutes.friends;
     case 'tasting_created':
+    case 'tasting_reminder':
       final id = data['tasting_id'];
       if (id is String && id.isNotEmpty) {
         return AppRoutes.tastingDetailPath(id);
