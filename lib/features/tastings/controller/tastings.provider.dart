@@ -101,13 +101,40 @@ class TastingsController extends _$TastingsController {
         'has_location': latitude != null && longitude != null,
       },
     );
-    await ref.read(pushHandlerProvider).scheduleTastingReminder(
-          tastingId: model.id,
-          tastingTitle: title,
-          scheduledAt: scheduledAt,
-        );
+    await _scheduleReminderRespectingPrefs(
+      tastingId: model.id,
+      title: title,
+      scheduledAt: scheduledAt,
+    );
     ref.invalidate(groupTastingsProvider(groupId));
     return model.toEntity();
+  }
+
+  Future<void> _scheduleReminderRespectingPrefs({
+    required String tastingId,
+    required String title,
+    required DateTime scheduledAt,
+  }) async {
+    final userId = ref.read(currentUserIdProvider);
+    if (userId == null) return;
+    // Prefer the live stream value (already hydrated for the settings screen)
+    // and fall back to a one-shot fetch when it hasn't emitted yet.
+    final cached =
+        ref.read(notificationPrefsControllerProvider).valueOrNull;
+    final prefs = cached ??
+        await ref
+            .read(notificationPrefsRepositoryProvider)
+            .getPrefs(userId);
+    if (!prefs.tastingReminders) return;
+    final offsetHours = prefs.tastingReminderHours;
+    final reminderAt =
+        scheduledAt.subtract(Duration(hours: offsetHours));
+    await ref.read(pushHandlerProvider).scheduleTastingReminder(
+          tastingId: tastingId,
+          tastingTitle: title,
+          reminderAt: reminderAt,
+          offsetHours: offsetHours,
+        );
   }
 
   Future<void> addWines(String tastingId, List<String> wineIds) async {
@@ -170,12 +197,12 @@ class TastingsController extends _$TastingsController {
       scheduledAt: scheduledAt,
     );
     // Re-schedule against the new wall-clock time. cancel + schedule keeps
-    // the deterministic id so a stale reminder can't slip through.
-    final pushHandler = ref.read(pushHandlerProvider);
-    await pushHandler.cancelTastingReminder(tastingId);
-    await pushHandler.scheduleTastingReminder(
+    // the deterministic id so a stale reminder can't slip through. Uses the
+    // user's current notification prefs (offset hours + master toggle).
+    await ref.read(pushHandlerProvider).cancelTastingReminder(tastingId);
+    await _scheduleReminderRespectingPrefs(
       tastingId: tastingId,
-      tastingTitle: title,
+      title: title,
       scheduledAt: scheduledAt,
     );
     ref.invalidate(tastingDetailProvider(tastingId));

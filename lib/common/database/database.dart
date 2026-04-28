@@ -4,21 +4,33 @@ import 'package:drift_flutter/drift_flutter.dart';
 import 'tables/wines.table.dart';
 import 'tables/wine_memories.table.dart';
 import 'tables/wine_aliases.table.dart';
+import 'tables/notification_prefs.table.dart';
 import 'daos/wines.dao.dart';
 import 'daos/wine_memories.dao.dart';
 import 'daos/wine_aliases.dao.dart';
+import 'daos/notification_prefs.dao.dart';
 
 part 'database.g.dart';
 
 @DriftDatabase(
-  tables: [WinesTable, WineMemoriesTable, WineAliasesTable],
-  daos: [WinesDao, WineMemoriesDao, WineAliasesDao],
+  tables: [
+    WinesTable,
+    WineMemoriesTable,
+    WineAliasesTable,
+    NotificationPrefsTable,
+  ],
+  daos: [
+    WinesDao,
+    WineMemoriesDao,
+    WineAliasesDao,
+    NotificationPrefsDao,
+  ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(

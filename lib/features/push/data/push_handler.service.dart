@@ -99,24 +99,24 @@ class PushHandlerService {
     return RemoteMessage(data: data.map((k, v) => MapEntry(k, v.toString())));
   }
 
-  /// Schedules a local notification 1h before [scheduledAt]. No-op when the
-  /// reminder window has already passed (tasting starts in <1h or is in the
-  /// past) — at that point the notification would be more annoyance than
-  /// utility. Reuses the deterministic int derived from the tasting id so
-  /// re-scheduling on edit replaces the old reminder cleanly.
+  /// Schedules a local notification at [reminderAt] for the given tasting.
+  /// Caller decides offset (driven by `user_notification_prefs.tasting_reminder_hours`).
+  /// No-op if [reminderAt] is in the past. Reuses the deterministic int derived
+  /// from the tasting id so re-scheduling on edit/pref-change replaces cleanly.
   Future<void> scheduleTastingReminder({
     required String tastingId,
     required String tastingTitle,
-    required DateTime scheduledAt,
+    required DateTime reminderAt,
+    required int offsetHours,
   }) async {
-    final reminderTime = scheduledAt.subtract(const Duration(hours: 1));
-    if (!reminderTime.isAfter(DateTime.now())) return;
+    if (!reminderAt.isAfter(DateTime.now())) return;
 
     final id = _idForTastingReminder(tastingId);
-    final tzTime = tz.TZDateTime.from(reminderTime, tz.local);
+    final tzTime = tz.TZDateTime.from(reminderAt, tz.local);
+    final hourLabel = offsetHours == 1 ? '1 hour' : '$offsetHours hours';
     await _local.zonedSchedule(
       id,
-      'Tasting in 1 hour',
+      'Tasting in $hourLabel',
       tastingTitle,
       tzTime,
       const NotificationDetails(
@@ -130,7 +130,7 @@ class PushHandlerService {
         ),
         iOS: DarwinNotificationDetails(),
       ),
-      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
       payload: jsonEncode({
