@@ -113,10 +113,15 @@ class PushHandlerService {
 
     final id = _idForTastingReminder(tastingId);
     final tzTime = tz.TZDateTime.from(reminderAt, tz.local);
-    final hourLabel = offsetHours == 1 ? '1 hour' : '$offsetHours hours';
+    // offsetHours == 0 is the debug "Send test reminder" path — surface a
+    // plain "Tasting reminder" title so the notification doesn't read
+    // "Tasting in 0 hours".
+    final notificationTitle = offsetHours <= 0
+        ? 'Tasting reminder'
+        : 'Tasting in ${offsetHours == 1 ? '1 hour' : '$offsetHours hours'}';
     await _local.zonedSchedule(
       id,
-      'Tasting in $hourLabel',
+      notificationTitle,
       tastingTitle,
       tzTime,
       const NotificationDetails(
