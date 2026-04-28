@@ -77,5 +77,69 @@ final pushTapsProvider = StreamProvider<RemoteMessage>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef PushTapsRef = StreamProviderRef<RemoteMessage>;
+String _$notificationPrefsApiHash() =>
+    r'8ee2707f5a241d5a0a59dee39abaca8bb27522f6';
+
+/// See also [notificationPrefsApi].
+@ProviderFor(notificationPrefsApi)
+final notificationPrefsApiProvider =
+    AutoDisposeProvider<NotificationPrefsApi?>.internal(
+      notificationPrefsApi,
+      name: r'notificationPrefsApiProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$notificationPrefsApiHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef NotificationPrefsApiRef = AutoDisposeProviderRef<NotificationPrefsApi?>;
+String _$notificationPrefsRepositoryHash() =>
+    r'c7ade37cba2a7a0f1f0346fd47b6ca924edf0058';
+
+/// See also [notificationPrefsRepository].
+@ProviderFor(notificationPrefsRepository)
+final notificationPrefsRepositoryProvider =
+    AutoDisposeProvider<NotificationPrefsRepository>.internal(
+      notificationPrefsRepository,
+      name: r'notificationPrefsRepositoryProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$notificationPrefsRepositoryHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef NotificationPrefsRepositoryRef =
+    AutoDisposeProviderRef<NotificationPrefsRepository>;
+String _$notificationPrefsControllerHash() =>
+    r'94ff2f7853c127631954a573eed3e740a8c88dce';
+
+/// Streams the authenticated user's notification preferences. Emits a defaults
+/// entity until the first server sync completes so the UI never has to render
+/// a loading state for what is effectively config data.
+///
+/// Copied from [NotificationPrefsController].
+@ProviderFor(NotificationPrefsController)
+final notificationPrefsControllerProvider =
+    AutoDisposeStreamNotifierProvider<
+      NotificationPrefsController,
+      NotificationPrefsEntity
+    >.internal(
+      NotificationPrefsController.new,
+      name: r'notificationPrefsControllerProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$notificationPrefsControllerHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+typedef _$NotificationPrefsController =
+    AutoDisposeStreamNotifier<NotificationPrefsEntity>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import '../../../../../common/utils/responsive.dart';
+import '../../../../../common/widgets/overflow_menu.widget.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../../auth/controller/auth.provider.dart';
 import '../../../../friends/domain/entities/friend_profile.entity.dart';
@@ -48,118 +49,6 @@ class TastingDetailScreen extends ConsumerWidget {
   }
 }
 
-class _CalendarIconButton extends StatelessWidget {
-  final VoidCallback onTap;
-  const _CalendarIconButton({required this.onTap});
-
-  @override
-  Widget build(BuildContext context) => _CircleIcon(
-        icon: PhosphorIconsRegular.calendarBlank,
-        onTap: onTap,
-      );
-}
-
-class _ShareIconButton extends StatelessWidget {
-  final VoidCallback onTap;
-  const _ShareIconButton({required this.onTap});
-
-  @override
-  Widget build(BuildContext context) => _CircleIcon(
-        icon: PhosphorIconsRegular.shareNetwork,
-        onTap: onTap,
-      );
-}
-
-class _CircleIcon extends StatelessWidget {
-  final IconData icon;
-  final VoidCallback onTap;
-  const _CircleIcon({required this.icon, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: onTap,
-      child: Container(
-        width: context.w * 0.1,
-        height: context.w * 0.1,
-        decoration: BoxDecoration(
-          color: cs.surfaceContainer,
-          shape: BoxShape.circle,
-          border: Border.all(color: cs.outlineVariant, width: 0.5),
-        ),
-        child: Icon(icon, size: context.w * 0.045, color: cs.onSurface),
-      ),
-    );
-  }
-}
-
-enum _TastingMenuAction { edit, cancel }
-
-class _OverflowMenu extends StatelessWidget {
-  final VoidCallback onEdit;
-  final VoidCallback onCancel;
-  const _OverflowMenu({required this.onEdit, required this.onCancel});
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    final size = context.w * 0.1;
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        color: cs.surfaceContainer,
-        shape: BoxShape.circle,
-        border: Border.all(color: cs.outlineVariant, width: 0.5),
-      ),
-      child: PopupMenuButton<_TastingMenuAction>(
-        icon: Icon(PhosphorIconsRegular.dotsThreeVertical,
-            size: context.w * 0.05, color: cs.onSurface),
-        tooltip: 'More',
-        padding: EdgeInsets.zero,
-        color: cs.surfaceContainerHigh,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(context.w * 0.03),
-        ),
-        onSelected: (value) {
-          switch (value) {
-            case _TastingMenuAction.edit:
-              onEdit();
-            case _TastingMenuAction.cancel:
-              onCancel();
-          }
-        },
-        itemBuilder: (ctx) => [
-          PopupMenuItem(
-            value: _TastingMenuAction.edit,
-            child: Row(
-              children: [
-                Icon(PhosphorIconsRegular.pencilSimple,
-                    size: context.w * 0.045, color: cs.onSurface),
-                SizedBox(width: context.s),
-                const Text('Edit tasting'),
-              ],
-            ),
-          ),
-          PopupMenuItem(
-            value: _TastingMenuAction.cancel,
-            child: Row(
-              children: [
-                Icon(PhosphorIconsRegular.calendarX,
-                    size: context.w * 0.045, color: cs.error),
-                SizedBox(width: context.s),
-                Text('Cancel tasting',
-                    style: TextStyle(color: cs.error)),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
 
 class _WhenRow extends StatelessWidget {
   final DateTime when;
@@ -256,25 +145,42 @@ class _Body extends ConsumerWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              _CalendarIconButton(
-                onTap: () => addTastingToCalendar(
-                    context: context, tasting: tasting),
+              OverflowMenu(
+                circleBackground: true,
+                groups: [
+                  [
+                    OverflowMenuItem(
+                      icon: PhosphorIconsRegular.calendarBlank,
+                      label: 'Add to calendar',
+                      onTap: () => addTastingToCalendar(
+                          context: context, tasting: tasting),
+                    ),
+                    OverflowMenuItem(
+                      icon: PhosphorIconsRegular.shareNetwork,
+                      label: 'Share',
+                      onTap: () => Share.share(
+                        '${tasting.title}\n\n${DeepLinkService.tastingHttpsUri(tasting.id)}',
+                        subject: tasting.title,
+                      ),
+                    ),
+                  ],
+                  if (isOwner)
+                    [
+                      OverflowMenuItem(
+                        icon: PhosphorIconsRegular.pencilSimple,
+                        label: 'Edit tasting',
+                        onTap: () => context
+                            .push(AppRoutes.tastingEditPath(tasting.id)),
+                      ),
+                      OverflowMenuItem(
+                        icon: PhosphorIconsRegular.calendarX,
+                        label: 'Cancel tasting',
+                        destructive: true,
+                        onTap: () => _confirmDelete(context, ref, tasting),
+                      ),
+                    ],
+                ],
               ),
-              SizedBox(width: context.w * 0.02),
-              _ShareIconButton(
-                onTap: () => Share.share(
-                  '${tasting.title}\n\n${DeepLinkService.tastingHttpsUri(tasting.id)}',
-                  subject: tasting.title,
-                ),
-              ),
-              if (isOwner) ...[
-                SizedBox(width: context.w * 0.02),
-                _OverflowMenu(
-                  onEdit: () => context
-                      .push(AppRoutes.tastingEditPath(tasting.id)),
-                  onCancel: () => _confirmDelete(context, ref, tasting),
-                ),
-              ],
             ],
           ),
         ),

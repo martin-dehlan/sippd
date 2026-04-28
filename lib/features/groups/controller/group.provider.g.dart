@@ -962,7 +962,7 @@ class _GroupsContainingWineProviderElement
   String get wineId => (origin as GroupsContainingWineProvider).wineId;
 }
 
-String _$groupControllerHash() => r'a9fef0a6e5768958ee7b63b8c33ad81299aadd98';
+String _$groupControllerHash() => r'cf34de19519fbcfe10177ec7d0d546959e50fe01';
 
 /// See also [GroupController].
 @ProviderFor(GroupController)

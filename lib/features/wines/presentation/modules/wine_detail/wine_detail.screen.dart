@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:latlong2/latlong.dart';
 import '../../../../../common/utils/responsive.dart';
+import '../../../../../common/widgets/overflow_menu.widget.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../../groups/presentation/widgets/share_wine_sheet.dart';
 import '../../../../profile/controller/profile.provider.dart';
@@ -287,89 +288,38 @@ class _WineOverflowMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    final size = context.w * 0.1;
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        color: cs.surfaceContainer,
-        shape: BoxShape.circle,
-        border: Border.all(color: cs.outlineVariant, width: 0.5),
-      ),
-      child: PopupMenuButton<_WineMenuAction>(
-        icon: Icon(PhosphorIconsRegular.dotsThreeVertical,
-            size: context.w * 0.05, color: cs.onSurface),
-        tooltip: 'More',
-        padding: EdgeInsets.zero,
-        color: cs.surfaceContainerHigh,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(context.w * 0.03),
-        ),
-        onSelected: (value) {
-          switch (value) {
-            case _WineMenuAction.shareImage:
-              onShareImage();
-            case _WineMenuAction.shareGroup:
-              onShareToGroup();
-            case _WineMenuAction.edit:
-              onEdit();
-            case _WineMenuAction.delete:
-              onDelete();
-          }
-        },
-        itemBuilder: (ctx) => [
-          PopupMenuItem(
-            value: _WineMenuAction.shareImage,
-            child: Row(
-              children: [
-                Icon(PhosphorIconsRegular.megaphoneSimple,
-                    size: context.w * 0.045, color: cs.onSurface),
-                SizedBox(width: context.s),
-                const Text('Share rating'),
-              ],
-            ),
+    return OverflowMenu(
+      circleBackground: true,
+      groups: [
+        [
+          OverflowMenuItem(
+            icon: PhosphorIconsRegular.megaphoneSimple,
+            label: 'Share rating',
+            onTap: onShareImage,
           ),
-          PopupMenuItem(
-            value: _WineMenuAction.shareGroup,
-            child: Row(
-              children: [
-                Icon(PhosphorIconsRegular.usersThree,
-                    size: context.w * 0.045, color: cs.onSurface),
-                SizedBox(width: context.s),
-                const Text('Share to group'),
-              ],
-            ),
-          ),
-          PopupMenuItem(
-            value: _WineMenuAction.edit,
-            child: Row(
-              children: [
-                Icon(PhosphorIconsRegular.pencilSimple,
-                    size: context.w * 0.045, color: cs.onSurface),
-                SizedBox(width: context.s),
-                const Text('Edit wine'),
-              ],
-            ),
-          ),
-          PopupMenuItem(
-            value: _WineMenuAction.delete,
-            child: Row(
-              children: [
-                Icon(PhosphorIconsRegular.trash,
-                    size: context.w * 0.045, color: cs.error),
-                SizedBox(width: context.s),
-                Text('Delete wine', style: TextStyle(color: cs.error)),
-              ],
-            ),
+          OverflowMenuItem(
+            icon: PhosphorIconsRegular.usersThree,
+            label: 'Share to group',
+            onTap: onShareToGroup,
           ),
         ],
-      ),
+        [
+          OverflowMenuItem(
+            icon: PhosphorIconsRegular.pencilSimple,
+            label: 'Edit wine',
+            onTap: onEdit,
+          ),
+          OverflowMenuItem(
+            icon: PhosphorIconsRegular.trash,
+            label: 'Delete wine',
+            destructive: true,
+            onTap: onDelete,
+          ),
+        ],
+      ],
     );
   }
 }
-
-enum _WineMenuAction { shareImage, shareGroup, edit, delete }
 
 class _WineImage extends StatelessWidget {
   final WineEntity wine;

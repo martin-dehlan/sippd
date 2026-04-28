@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../../common/utils/responsive.dart';
+import '../../../../../common/widgets/overflow_menu.widget.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../../auth/controller/auth.provider.dart';
 import '../../../controller/group.provider.dart';
@@ -229,67 +230,35 @@ class _GroupMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return PopupMenuButton<_MenuAction>(
-      icon: Icon(PhosphorIconsRegular.dotsThreeVertical,
-          size: context.w * 0.06, color: cs.onSurfaceVariant),
-      tooltip: 'More',
-      color: cs.surfaceContainerHigh,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(context.w * 0.03),
-      ),
-      onSelected: (value) {
-        switch (value) {
-          case _MenuAction.edit:
-            onEdit();
-          case _MenuAction.delete:
-            onDelete();
-          case _MenuAction.leave:
-            onLeave();
-        }
-      },
-      itemBuilder: (ctx) => [
-        if (isOwner) ...[
-          PopupMenuItem(
-            value: _MenuAction.edit,
-            child: Row(
-              children: [
-                Icon(PhosphorIconsRegular.pencilSimple,
-                    size: context.w * 0.045, color: cs.onSurface),
-                SizedBox(width: context.s),
-                const Text('Edit group'),
-              ],
+    return OverflowMenu(
+      groups: [
+        if (isOwner)
+          [
+            OverflowMenuItem(
+              icon: PhosphorIconsRegular.pencilSimple,
+              label: 'Edit group',
+              onTap: onEdit,
             ),
-          ),
-          PopupMenuItem(
-            value: _MenuAction.delete,
-            child: Row(
-              children: [
-                Icon(PhosphorIconsRegular.trash,
-                    size: context.w * 0.045, color: cs.error),
-                SizedBox(width: context.s),
-                Text('Delete group', style: TextStyle(color: cs.error)),
-              ],
+            OverflowMenuItem(
+              icon: PhosphorIconsRegular.trash,
+              label: 'Delete group',
+              destructive: true,
+              onTap: onDelete,
             ),
-          ),
-        ] else
-          PopupMenuItem(
-            value: _MenuAction.leave,
-            child: Row(
-              children: [
-                Icon(PhosphorIconsRegular.signOut,
-                    size: context.w * 0.045, color: cs.error),
-                SizedBox(width: context.s),
-                Text('Leave group', style: TextStyle(color: cs.error)),
-              ],
+          ]
+        else
+          [
+            OverflowMenuItem(
+              icon: PhosphorIconsRegular.signOut,
+              label: 'Leave group',
+              destructive: true,
+              onTap: onLeave,
             ),
-          ),
+          ],
       ],
     );
   }
 }
-
-enum _MenuAction { edit, delete, leave }
 
 class _SectionHeader extends StatelessWidget {
   final String label;

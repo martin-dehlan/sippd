@@ -20,6 +20,7 @@ import '../../features/paywall/presentation/modules/subscription/subscription.sc
 import '../../features/profile/controller/profile.provider.dart';
 import '../../features/profile/presentation/modules/choose_username/choose_username.screen.dart';
 import '../../features/profile/presentation/modules/edit_profile/edit_profile.screen.dart';
+import '../../features/profile/presentation/modules/notification_settings/notification_settings.screen.dart';
 import '../../features/friends/presentation/modules/friend_profile/friend_profile.screen.dart';
 import '../../features/friends/presentation/modules/friends/friends.screen.dart';
 import '../../features/groups/presentation/modules/group_detail/group_detail.screen.dart';
@@ -265,6 +266,10 @@ GoRouter goRouter(GoRouterRef ref) {
       GoRoute(
         path: AppRoutes.profileEdit,
         builder: (context, state) => const EditProfileScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.profileNotifications,
+        builder: (context, state) => const NotificationSettingsScreen(),
       ),
 
       // Paywall (shown as a fullscreen page; trigger source passed via extra)

@@ -2,7 +2,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../common/services/analytics/analytics.provider.dart';
 import '../../auth/controller/auth.provider.dart';
 import '../../friends/data/models/friend_profile.model.dart';
-import '../../push/controller/push.provider.dart';
 import '../../wines/data/models/wine.model.dart';
 import '../../wines/domain/entities/wine.entity.dart';
 import '../data/data_sources/tastings.api.dart';
@@ -101,11 +100,10 @@ class TastingsController extends _$TastingsController {
         'has_location': latitude != null && longitude != null,
       },
     );
-    await ref.read(pushHandlerProvider).scheduleTastingReminder(
-          tastingId: model.id,
-          tastingTitle: title,
-          scheduledAt: scheduledAt,
-        );
+    // Reminder delivery is handled server-side: the `tasting-reminders`
+    // edge function (cron) reads scheduled_at + the creator's
+    // user_notification_prefs and pushes via FCM at the right moment. No
+    // client-side scheduling required.
     ref.invalidate(groupTastingsProvider(groupId));
     return model.toEntity();
   }
@@ -143,7 +141,6 @@ class TastingsController extends _$TastingsController {
     final api = ref.read(tastingsApiProvider);
     if (api == null) return;
     await api.deleteTasting(tastingId);
-    await ref.read(pushHandlerProvider).cancelTastingReminder(tastingId);
     ref.read(analyticsProvider).capture('tasting_deleted');
     if (groupId != null) ref.invalidate(groupTastingsProvider(groupId));
   }
@@ -169,15 +166,10 @@ class TastingsController extends _$TastingsController {
       longitude: longitude,
       scheduledAt: scheduledAt,
     );
-    // Re-schedule against the new wall-clock time. cancel + schedule keeps
-    // the deterministic id so a stale reminder can't slip through.
-    final pushHandler = ref.read(pushHandlerProvider);
-    await pushHandler.cancelTastingReminder(tastingId);
-    await pushHandler.scheduleTastingReminder(
-      tastingId: tastingId,
-      tastingTitle: title,
-      scheduledAt: scheduledAt,
-    );
+    // No client-side reminder reschedule: the BEFORE-UPDATE trigger
+    // group_tastings_reset_reminder clears reminder_sent_at when
+    // scheduled_at changes, so the cron will pick the new fire time up
+    // automatically.
     ref.invalidate(tastingDetailProvider(tastingId));
     ref.invalidate(groupTastingsProvider(groupId));
     return model.toEntity();

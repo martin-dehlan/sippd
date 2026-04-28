@@ -60,6 +60,25 @@ function getJwtClient(): JWT {
   return cachedJwtClient;
 }
 
+// Maps the `data.type` of a push to the column on user_notification_prefs
+// that controls whether to deliver. `null` means the push is unconditional
+// (e.g. local-only types not sent through this function — defensive default).
+function prefColumnForPushType(type: string | undefined): string | null {
+  switch (type) {
+    case 'friend_request':
+    case 'friend_request_accepted':
+      return 'friend_activity';
+    case 'group_invitation':
+    case 'group_joined':
+    case 'tasting_created':
+      return 'group_activity';
+    case 'group_wine_shared':
+      return 'group_wine_shared';
+    default:
+      return null;
+  }
+}
+
 async function resolvePush(
   admin: ReturnType<typeof createClient>,
   payload: WebhookPayload,
@@ -330,6 +349,30 @@ Deno.serve(async (req) => {
   const push = await resolvePush(admin, payload);
   if (!push) {
     return new Response(JSON.stringify({ skipped: true }), { status: 200 });
+  }
+
+  // Per-user notification preferences gate. Maps the push type to the column
+  // controlling delivery and drops recipients who have it disabled. Migration
+  // 20260428 backfills + auto-seeds rows so every profile id has one entry —
+  // a missing row therefore means "never opted in" and we suppress.
+  const prefColumn = prefColumnForPushType(push.data?.type);
+  if (prefColumn) {
+    const { data: prefRows } = await admin
+      .from('user_notification_prefs')
+      .select(`user_id, ${prefColumn}`)
+      .in('user_id', push.recipients);
+    const allowed = new Set(
+      (prefRows ?? [])
+        .filter((r: any) => r[prefColumn] === true)
+        .map((r: any) => r.user_id as string),
+    );
+    push.recipients = push.recipients.filter((id) => allowed.has(id));
+    if (push.recipients.length === 0) {
+      return new Response(
+        JSON.stringify({ skipped: 'all recipients muted' }),
+        { status: 200 },
+      );
+    }
   }
 
   const { data: deviceRows } = await admin

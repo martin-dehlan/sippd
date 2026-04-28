@@ -2026,6 +2026,507 @@ class WineAliasesTableCompanion extends UpdateCompanion<WineAliasTableData> {
   }
 }
 
+class $NotificationPrefsTableTable extends NotificationPrefsTable
+    with TableInfo<$NotificationPrefsTableTable, NotificationPrefsTableData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $NotificationPrefsTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+    'user_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _tastingRemindersMeta = const VerificationMeta(
+    'tastingReminders',
+  );
+  @override
+  late final GeneratedColumn<bool> tastingReminders = GeneratedColumn<bool>(
+    'tasting_reminders',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("tasting_reminders" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _tastingReminderHoursMeta =
+      const VerificationMeta('tastingReminderHours');
+  @override
+  late final GeneratedColumn<int> tastingReminderHours = GeneratedColumn<int>(
+    'tasting_reminder_hours',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _friendActivityMeta = const VerificationMeta(
+    'friendActivity',
+  );
+  @override
+  late final GeneratedColumn<bool> friendActivity = GeneratedColumn<bool>(
+    'friend_activity',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("friend_activity" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _groupActivityMeta = const VerificationMeta(
+    'groupActivity',
+  );
+  @override
+  late final GeneratedColumn<bool> groupActivity = GeneratedColumn<bool>(
+    'group_activity',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("group_activity" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _groupWineSharedMeta = const VerificationMeta(
+    'groupWineShared',
+  );
+  @override
+  late final GeneratedColumn<bool> groupWineShared = GeneratedColumn<bool>(
+    'group_wine_shared',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("group_wine_shared" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    userId,
+    tastingReminders,
+    tastingReminderHours,
+    friendActivity,
+    groupActivity,
+    groupWineShared,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'notification_prefs';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<NotificationPrefsTableData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('user_id')) {
+      context.handle(
+        _userIdMeta,
+        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_userIdMeta);
+    }
+    if (data.containsKey('tasting_reminders')) {
+      context.handle(
+        _tastingRemindersMeta,
+        tastingReminders.isAcceptableOrUnknown(
+          data['tasting_reminders']!,
+          _tastingRemindersMeta,
+        ),
+      );
+    }
+    if (data.containsKey('tasting_reminder_hours')) {
+      context.handle(
+        _tastingReminderHoursMeta,
+        tastingReminderHours.isAcceptableOrUnknown(
+          data['tasting_reminder_hours']!,
+          _tastingReminderHoursMeta,
+        ),
+      );
+    }
+    if (data.containsKey('friend_activity')) {
+      context.handle(
+        _friendActivityMeta,
+        friendActivity.isAcceptableOrUnknown(
+          data['friend_activity']!,
+          _friendActivityMeta,
+        ),
+      );
+    }
+    if (data.containsKey('group_activity')) {
+      context.handle(
+        _groupActivityMeta,
+        groupActivity.isAcceptableOrUnknown(
+          data['group_activity']!,
+          _groupActivityMeta,
+        ),
+      );
+    }
+    if (data.containsKey('group_wine_shared')) {
+      context.handle(
+        _groupWineSharedMeta,
+        groupWineShared.isAcceptableOrUnknown(
+          data['group_wine_shared']!,
+          _groupWineSharedMeta,
+        ),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {userId};
+  @override
+  NotificationPrefsTableData map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return NotificationPrefsTableData(
+      userId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}user_id'],
+      )!,
+      tastingReminders: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}tasting_reminders'],
+      )!,
+      tastingReminderHours: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}tasting_reminder_hours'],
+      )!,
+      friendActivity: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}friend_activity'],
+      )!,
+      groupActivity: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}group_activity'],
+      )!,
+      groupWineShared: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}group_wine_shared'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $NotificationPrefsTableTable createAlias(String alias) {
+    return $NotificationPrefsTableTable(attachedDatabase, alias);
+  }
+}
+
+class NotificationPrefsTableData extends DataClass
+    implements Insertable<NotificationPrefsTableData> {
+  final String userId;
+  final bool tastingReminders;
+  final int tastingReminderHours;
+  final bool friendActivity;
+  final bool groupActivity;
+  final bool groupWineShared;
+  final DateTime updatedAt;
+  const NotificationPrefsTableData({
+    required this.userId,
+    required this.tastingReminders,
+    required this.tastingReminderHours,
+    required this.friendActivity,
+    required this.groupActivity,
+    required this.groupWineShared,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['user_id'] = Variable<String>(userId);
+    map['tasting_reminders'] = Variable<bool>(tastingReminders);
+    map['tasting_reminder_hours'] = Variable<int>(tastingReminderHours);
+    map['friend_activity'] = Variable<bool>(friendActivity);
+    map['group_activity'] = Variable<bool>(groupActivity);
+    map['group_wine_shared'] = Variable<bool>(groupWineShared);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  NotificationPrefsTableCompanion toCompanion(bool nullToAbsent) {
+    return NotificationPrefsTableCompanion(
+      userId: Value(userId),
+      tastingReminders: Value(tastingReminders),
+      tastingReminderHours: Value(tastingReminderHours),
+      friendActivity: Value(friendActivity),
+      groupActivity: Value(groupActivity),
+      groupWineShared: Value(groupWineShared),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory NotificationPrefsTableData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return NotificationPrefsTableData(
+      userId: serializer.fromJson<String>(json['userId']),
+      tastingReminders: serializer.fromJson<bool>(json['tastingReminders']),
+      tastingReminderHours: serializer.fromJson<int>(
+        json['tastingReminderHours'],
+      ),
+      friendActivity: serializer.fromJson<bool>(json['friendActivity']),
+      groupActivity: serializer.fromJson<bool>(json['groupActivity']),
+      groupWineShared: serializer.fromJson<bool>(json['groupWineShared']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'userId': serializer.toJson<String>(userId),
+      'tastingReminders': serializer.toJson<bool>(tastingReminders),
+      'tastingReminderHours': serializer.toJson<int>(tastingReminderHours),
+      'friendActivity': serializer.toJson<bool>(friendActivity),
+      'groupActivity': serializer.toJson<bool>(groupActivity),
+      'groupWineShared': serializer.toJson<bool>(groupWineShared),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  NotificationPrefsTableData copyWith({
+    String? userId,
+    bool? tastingReminders,
+    int? tastingReminderHours,
+    bool? friendActivity,
+    bool? groupActivity,
+    bool? groupWineShared,
+    DateTime? updatedAt,
+  }) => NotificationPrefsTableData(
+    userId: userId ?? this.userId,
+    tastingReminders: tastingReminders ?? this.tastingReminders,
+    tastingReminderHours: tastingReminderHours ?? this.tastingReminderHours,
+    friendActivity: friendActivity ?? this.friendActivity,
+    groupActivity: groupActivity ?? this.groupActivity,
+    groupWineShared: groupWineShared ?? this.groupWineShared,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  NotificationPrefsTableData copyWithCompanion(
+    NotificationPrefsTableCompanion data,
+  ) {
+    return NotificationPrefsTableData(
+      userId: data.userId.present ? data.userId.value : this.userId,
+      tastingReminders: data.tastingReminders.present
+          ? data.tastingReminders.value
+          : this.tastingReminders,
+      tastingReminderHours: data.tastingReminderHours.present
+          ? data.tastingReminderHours.value
+          : this.tastingReminderHours,
+      friendActivity: data.friendActivity.present
+          ? data.friendActivity.value
+          : this.friendActivity,
+      groupActivity: data.groupActivity.present
+          ? data.groupActivity.value
+          : this.groupActivity,
+      groupWineShared: data.groupWineShared.present
+          ? data.groupWineShared.value
+          : this.groupWineShared,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('NotificationPrefsTableData(')
+          ..write('userId: $userId, ')
+          ..write('tastingReminders: $tastingReminders, ')
+          ..write('tastingReminderHours: $tastingReminderHours, ')
+          ..write('friendActivity: $friendActivity, ')
+          ..write('groupActivity: $groupActivity, ')
+          ..write('groupWineShared: $groupWineShared, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    userId,
+    tastingReminders,
+    tastingReminderHours,
+    friendActivity,
+    groupActivity,
+    groupWineShared,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is NotificationPrefsTableData &&
+          other.userId == this.userId &&
+          other.tastingReminders == this.tastingReminders &&
+          other.tastingReminderHours == this.tastingReminderHours &&
+          other.friendActivity == this.friendActivity &&
+          other.groupActivity == this.groupActivity &&
+          other.groupWineShared == this.groupWineShared &&
+          other.updatedAt == this.updatedAt);
+}
+
+class NotificationPrefsTableCompanion
+    extends UpdateCompanion<NotificationPrefsTableData> {
+  final Value<String> userId;
+  final Value<bool> tastingReminders;
+  final Value<int> tastingReminderHours;
+  final Value<bool> friendActivity;
+  final Value<bool> groupActivity;
+  final Value<bool> groupWineShared;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const NotificationPrefsTableCompanion({
+    this.userId = const Value.absent(),
+    this.tastingReminders = const Value.absent(),
+    this.tastingReminderHours = const Value.absent(),
+    this.friendActivity = const Value.absent(),
+    this.groupActivity = const Value.absent(),
+    this.groupWineShared = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  NotificationPrefsTableCompanion.insert({
+    required String userId,
+    this.tastingReminders = const Value.absent(),
+    this.tastingReminderHours = const Value.absent(),
+    this.friendActivity = const Value.absent(),
+    this.groupActivity = const Value.absent(),
+    this.groupWineShared = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : userId = Value(userId);
+  static Insertable<NotificationPrefsTableData> custom({
+    Expression<String>? userId,
+    Expression<bool>? tastingReminders,
+    Expression<int>? tastingReminderHours,
+    Expression<bool>? friendActivity,
+    Expression<bool>? groupActivity,
+    Expression<bool>? groupWineShared,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (userId != null) 'user_id': userId,
+      if (tastingReminders != null) 'tasting_reminders': tastingReminders,
+      if (tastingReminderHours != null)
+        'tasting_reminder_hours': tastingReminderHours,
+      if (friendActivity != null) 'friend_activity': friendActivity,
+      if (groupActivity != null) 'group_activity': groupActivity,
+      if (groupWineShared != null) 'group_wine_shared': groupWineShared,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  NotificationPrefsTableCompanion copyWith({
+    Value<String>? userId,
+    Value<bool>? tastingReminders,
+    Value<int>? tastingReminderHours,
+    Value<bool>? friendActivity,
+    Value<bool>? groupActivity,
+    Value<bool>? groupWineShared,
+    Value<DateTime>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return NotificationPrefsTableCompanion(
+      userId: userId ?? this.userId,
+      tastingReminders: tastingReminders ?? this.tastingReminders,
+      tastingReminderHours: tastingReminderHours ?? this.tastingReminderHours,
+      friendActivity: friendActivity ?? this.friendActivity,
+      groupActivity: groupActivity ?? this.groupActivity,
+      groupWineShared: groupWineShared ?? this.groupWineShared,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
+    if (tastingReminders.present) {
+      map['tasting_reminders'] = Variable<bool>(tastingReminders.value);
+    }
+    if (tastingReminderHours.present) {
+      map['tasting_reminder_hours'] = Variable<int>(tastingReminderHours.value);
+    }
+    if (friendActivity.present) {
+      map['friend_activity'] = Variable<bool>(friendActivity.value);
+    }
+    if (groupActivity.present) {
+      map['group_activity'] = Variable<bool>(groupActivity.value);
+    }
+    if (groupWineShared.present) {
+      map['group_wine_shared'] = Variable<bool>(groupWineShared.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('NotificationPrefsTableCompanion(')
+          ..write('userId: $userId, ')
+          ..write('tastingReminders: $tastingReminders, ')
+          ..write('tastingReminderHours: $tastingReminderHours, ')
+          ..write('friendActivity: $friendActivity, ')
+          ..write('groupActivity: $groupActivity, ')
+          ..write('groupWineShared: $groupWineShared, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -2035,11 +2536,16 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $WineAliasesTableTable wineAliasesTable = $WineAliasesTableTable(
     this,
   );
+  late final $NotificationPrefsTableTable notificationPrefsTable =
+      $NotificationPrefsTableTable(this);
   late final WinesDao winesDao = WinesDao(this as AppDatabase);
   late final WineMemoriesDao wineMemoriesDao = WineMemoriesDao(
     this as AppDatabase,
   );
   late final WineAliasesDao wineAliasesDao = WineAliasesDao(
+    this as AppDatabase,
+  );
+  late final NotificationPrefsDao notificationPrefsDao = NotificationPrefsDao(
     this as AppDatabase,
   );
   @override
@@ -2050,6 +2556,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     winesTable,
     wineMemoriesTable,
     wineAliasesTable,
+    notificationPrefsTable,
   ];
 }
 
@@ -3047,6 +3554,273 @@ typedef $$WineAliasesTableTableProcessedTableManager =
       WineAliasTableData,
       PrefetchHooks Function()
     >;
+typedef $$NotificationPrefsTableTableCreateCompanionBuilder =
+    NotificationPrefsTableCompanion Function({
+      required String userId,
+      Value<bool> tastingReminders,
+      Value<int> tastingReminderHours,
+      Value<bool> friendActivity,
+      Value<bool> groupActivity,
+      Value<bool> groupWineShared,
+      Value<DateTime> updatedAt,
+      Value<int> rowid,
+    });
+typedef $$NotificationPrefsTableTableUpdateCompanionBuilder =
+    NotificationPrefsTableCompanion Function({
+      Value<String> userId,
+      Value<bool> tastingReminders,
+      Value<int> tastingReminderHours,
+      Value<bool> friendActivity,
+      Value<bool> groupActivity,
+      Value<bool> groupWineShared,
+      Value<DateTime> updatedAt,
+      Value<int> rowid,
+    });
+
+class $$NotificationPrefsTableTableFilterComposer
+    extends Composer<_$AppDatabase, $NotificationPrefsTableTable> {
+  $$NotificationPrefsTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get tastingReminders => $composableBuilder(
+    column: $table.tastingReminders,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get tastingReminderHours => $composableBuilder(
+    column: $table.tastingReminderHours,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get friendActivity => $composableBuilder(
+    column: $table.friendActivity,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get groupActivity => $composableBuilder(
+    column: $table.groupActivity,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get groupWineShared => $composableBuilder(
+    column: $table.groupWineShared,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$NotificationPrefsTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $NotificationPrefsTableTable> {
+  $$NotificationPrefsTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get tastingReminders => $composableBuilder(
+    column: $table.tastingReminders,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get tastingReminderHours => $composableBuilder(
+    column: $table.tastingReminderHours,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get friendActivity => $composableBuilder(
+    column: $table.friendActivity,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get groupActivity => $composableBuilder(
+    column: $table.groupActivity,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get groupWineShared => $composableBuilder(
+    column: $table.groupWineShared,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$NotificationPrefsTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $NotificationPrefsTableTable> {
+  $$NotificationPrefsTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<bool> get tastingReminders => $composableBuilder(
+    column: $table.tastingReminders,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get tastingReminderHours => $composableBuilder(
+    column: $table.tastingReminderHours,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get friendActivity => $composableBuilder(
+    column: $table.friendActivity,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get groupActivity => $composableBuilder(
+    column: $table.groupActivity,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get groupWineShared => $composableBuilder(
+    column: $table.groupWineShared,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$NotificationPrefsTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $NotificationPrefsTableTable,
+          NotificationPrefsTableData,
+          $$NotificationPrefsTableTableFilterComposer,
+          $$NotificationPrefsTableTableOrderingComposer,
+          $$NotificationPrefsTableTableAnnotationComposer,
+          $$NotificationPrefsTableTableCreateCompanionBuilder,
+          $$NotificationPrefsTableTableUpdateCompanionBuilder,
+          (
+            NotificationPrefsTableData,
+            BaseReferences<
+              _$AppDatabase,
+              $NotificationPrefsTableTable,
+              NotificationPrefsTableData
+            >,
+          ),
+          NotificationPrefsTableData,
+          PrefetchHooks Function()
+        > {
+  $$NotificationPrefsTableTableTableManager(
+    _$AppDatabase db,
+    $NotificationPrefsTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$NotificationPrefsTableTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$NotificationPrefsTableTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$NotificationPrefsTableTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> userId = const Value.absent(),
+                Value<bool> tastingReminders = const Value.absent(),
+                Value<int> tastingReminderHours = const Value.absent(),
+                Value<bool> friendActivity = const Value.absent(),
+                Value<bool> groupActivity = const Value.absent(),
+                Value<bool> groupWineShared = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => NotificationPrefsTableCompanion(
+                userId: userId,
+                tastingReminders: tastingReminders,
+                tastingReminderHours: tastingReminderHours,
+                friendActivity: friendActivity,
+                groupActivity: groupActivity,
+                groupWineShared: groupWineShared,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String userId,
+                Value<bool> tastingReminders = const Value.absent(),
+                Value<int> tastingReminderHours = const Value.absent(),
+                Value<bool> friendActivity = const Value.absent(),
+                Value<bool> groupActivity = const Value.absent(),
+                Value<bool> groupWineShared = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => NotificationPrefsTableCompanion.insert(
+                userId: userId,
+                tastingReminders: tastingReminders,
+                tastingReminderHours: tastingReminderHours,
+                friendActivity: friendActivity,
+                groupActivity: groupActivity,
+                groupWineShared: groupWineShared,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$NotificationPrefsTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $NotificationPrefsTableTable,
+      NotificationPrefsTableData,
+      $$NotificationPrefsTableTableFilterComposer,
+      $$NotificationPrefsTableTableOrderingComposer,
+      $$NotificationPrefsTableTableAnnotationComposer,
+      $$NotificationPrefsTableTableCreateCompanionBuilder,
+      $$NotificationPrefsTableTableUpdateCompanionBuilder,
+      (
+        NotificationPrefsTableData,
+        BaseReferences<
+          _$AppDatabase,
+          $NotificationPrefsTableTable,
+          NotificationPrefsTableData
+        >,
+      ),
+      NotificationPrefsTableData,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -3057,4 +3831,9 @@ class $AppDatabaseManager {
       $$WineMemoriesTableTableTableManager(_db, _db.wineMemoriesTable);
   $$WineAliasesTableTableTableManager get wineAliasesTable =>
       $$WineAliasesTableTableTableManager(_db, _db.wineAliasesTable);
+  $$NotificationPrefsTableTableTableManager get notificationPrefsTable =>
+      $$NotificationPrefsTableTableTableManager(
+        _db,
+        _db.notificationPrefsTable,
+      );
 }
