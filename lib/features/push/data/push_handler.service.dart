@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show PlatformException;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
@@ -143,45 +144,63 @@ class PushHandlerService {
       'scheduleTastingReminder: areNotificationsEnabled=$notifEnabled canScheduleExactNotifications=$canScheduleExact',
     );
 
-    try {
-      await _local.zonedSchedule(
+    const details = NotificationDetails(
+      android: AndroidNotificationDetails(
+        'sippd_default',
+        'Sippd notifications',
+        importance: Importance.high,
+        priority: Priority.high,
+        icon: 'ic_notification',
+        color: Color(0xFF6B3A51),
+      ),
+      iOS: DarwinNotificationDetails(),
+    );
+    final payload = jsonEncode({
+      'type': 'tasting_reminder',
+      'tasting_id': tastingId,
+    });
+
+    // Try the precise modes first (alarmClock → exactAllowWhileIdle); both
+    // need SCHEDULE_EXACT_ALARM, which the user may not have granted via
+    // system Settings → Alarms & reminders. On the permission error fall
+    // back to inexactAllowWhileIdle so the notification still fires (just
+    // potentially Doze-delayed by minutes). The UX cost of a fuzzy timing
+    // beats the user getting nothing.
+    Future<void> tryWithMode(AndroidScheduleMode mode) {
+      return _local.zonedSchedule(
         id,
         notificationTitle,
         tastingTitle,
         tzTime,
-        const NotificationDetails(
-          android: AndroidNotificationDetails(
-            'sippd_default',
-            'Sippd notifications',
-            importance: Importance.high,
-            priority: Priority.high,
-            icon: 'ic_notification',
-            color: Color(0xFF6B3A51),
-          ),
-          iOS: DarwinNotificationDetails(),
-        ),
-        // alarmClock uses AlarmManager.setAlarmClock under the hood:
-        // bypasses Doze, fires on the dot, and crucially does NOT need
-        // SCHEDULE_EXACT_ALARM / USE_EXACT_ALARM grants. Side effect is the
-        // device's "next alarm" indicator may show in the status bar — that
-        // is acceptable for time-bound tasting reminders and avoids the
-        // permission-flow tax on every Android version.
-        androidScheduleMode: AndroidScheduleMode.alarmClock,
+        details,
+        androidScheduleMode: mode,
         uiLocalNotificationDateInterpretation:
             UILocalNotificationDateInterpretation.absoluteTime,
-        payload: jsonEncode({
-          'type': 'tasting_reminder',
-          'tasting_id': tastingId,
-        }),
+        payload: payload,
       );
-      final pending = await _local.pendingNotificationRequests();
-      debugPrint(
-        'scheduleTastingReminder: scheduled OK. pending=${pending.map((p) => '${p.id}:${p.title}').join(', ')}',
-      );
-    } catch (e, st) {
-      debugPrint('scheduleTastingReminder: FAILED — $e\n$st');
-      rethrow;
     }
+
+    try {
+      await tryWithMode(AndroidScheduleMode.alarmClock);
+      debugPrint(
+          'scheduleTastingReminder: scheduled (alarmClock) OK.');
+    } on PlatformException catch (e) {
+      if (e.code != 'exact_alarms_not_permitted') {
+        debugPrint('scheduleTastingReminder: FAILED — $e');
+        rethrow;
+      }
+      debugPrint(
+        'scheduleTastingReminder: exact alarms denied; falling back to inexactAllowWhileIdle. Push may be delayed by Android Doze.',
+      );
+      await tryWithMode(AndroidScheduleMode.inexactAllowWhileIdle);
+      debugPrint(
+          'scheduleTastingReminder: scheduled (inexactAllowWhileIdle) OK.');
+    }
+
+    final pending = await _local.pendingNotificationRequests();
+    debugPrint(
+      'scheduleTastingReminder: pending=${pending.map((p) => '${p.id}:${p.title}').join(', ')}',
+    );
   }
 
   Future<void> cancelTastingReminder(String tastingId) async {
