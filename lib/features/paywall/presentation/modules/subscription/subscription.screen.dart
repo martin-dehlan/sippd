@@ -16,11 +16,44 @@ import '../../widgets/paywall_pitch.dart';
 /// list of management actions that deep-link to the store-native cancel
 /// page (no in-app cancel button — Apple/Google require billing changes
 /// to happen in their own UI).
-class SubscriptionScreen extends ConsumerWidget {
+class SubscriptionScreen extends ConsumerStatefulWidget {
   const SubscriptionScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SubscriptionScreen> createState() => _SubscriptionScreenState();
+}
+
+class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen>
+    with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    // Force a fresh fetch on mount: cached entitlement state is often
+    // stale after the user cancels or after a sub expires (the SDK's
+    // update listener doesn't always fire for expiry).
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(paywallProvider).refresh();
+    });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Returning from Play Store cancel/manage flow → entitlement may
+    // have changed server-side. Force a refresh so the UI reflects it.
+    if (state == AppLifecycleState.resumed) {
+      ref.read(paywallProvider).refresh();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final info = ref.watch(currentCustomerInfoProvider);
     final isPro = ref.watch(isProProvider);
@@ -114,8 +147,7 @@ class _ProManagementContent extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isLifetime =
-        entitlement != null && entitlement!.expirationDate == null;
+    final isLifetime = entitlement != null && _isLifetimeProduct(entitlement!);
     final isTestMode = entitlement == null;
 
     return ListView(
@@ -517,9 +549,16 @@ class _Disclosure extends StatelessWidget {
 
 enum _SubState { active, trial, ending, lifetime, test }
 
+/// True when the entitlement is backed by a one-time lifetime product.
+/// Subscriptions can transiently report null expirationDate during cache
+/// races or partial sandbox states, so we gate on productIdentifier
+/// instead of just the date being null.
+bool _isLifetimeProduct(EntitlementInfo e) =>
+    e.productIdentifier.toLowerCase().contains('lifetime');
+
 _SubState _resolveState(EntitlementInfo? e) {
   if (e == null) return _SubState.test;
-  if (e.expirationDate == null) return _SubState.lifetime;
+  if (_isLifetimeProduct(e)) return _SubState.lifetime;
   if (e.willRenew == false) return _SubState.ending;
   if (e.periodType == PeriodType.trial) return _SubState.trial;
   return _SubState.active;
@@ -527,7 +566,7 @@ _SubState _resolveState(EntitlementInfo? e) {
 
 String _planNameFor(EntitlementInfo? e) {
   if (e == null) return 'Test mode';
-  if (e.expirationDate == null) return 'Lifetime';
+  if (_isLifetimeProduct(e)) return 'Lifetime';
   final id = e.productIdentifier.toLowerCase();
   if (id.contains('year') || id.contains('annual')) return 'Annual';
   if (id.contains('month')) return 'Monthly';
@@ -537,9 +576,6 @@ String _planNameFor(EntitlementInfo? e) {
 
 String? _priceFor(WidgetRef ref, EntitlementInfo? e) {
   if (e == null) return null;
-  if (e.expirationDate == null) {
-    return _priceFromOfferings(ref, e.productIdentifier);
-  }
   return _priceFromOfferings(ref, e.productIdentifier);
 }
 

@@ -104,6 +104,25 @@ class PaywallService {
     return info;
   }
 
+  /// Force-fetches the latest CustomerInfo from RevenueCat, bypassing the
+  /// SDK's internal cache. Needed when the user just changed their sub
+  /// outside the app (cancel in Play Store, expiry, server-side change)
+  /// because expiry events don't always reach the update listener — the
+  /// SDK keeps serving cached "still active" data until next live fetch.
+  Future<CustomerInfo?> refresh() async {
+    if (!_enabled) return null;
+    try {
+      await Purchases.invalidateCustomerInfoCache();
+      final info = await Purchases.getCustomerInfo();
+      _lastInfo = info;
+      _customerInfoController.add(info);
+      return info;
+    } catch (e) {
+      debugPrint('PaywallService.refresh failed: $e');
+      return _lastInfo;
+    }
+  }
+
   void dispose() {
     _customerInfoController.close();
   }

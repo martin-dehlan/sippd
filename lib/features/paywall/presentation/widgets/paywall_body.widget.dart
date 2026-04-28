@@ -50,19 +50,42 @@ class PaywallBody extends ConsumerStatefulWidget {
   ConsumerState<PaywallBody> createState() => _PaywallBodyState();
 }
 
-class _PaywallBodyState extends ConsumerState<PaywallBody> {
+class _PaywallBodyState extends ConsumerState<PaywallBody>
+    with WidgetsBindingObserver {
   Package? _selected;
   bool _purchasing = false;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     ref
         .read(analyticsProvider)
         .capture(
           'paywall_impression',
           properties: {'source': widget.triggerSource},
         );
+    // Force-fresh entitlement on mount so the paywall reflects real
+    // server state — avoids "subscribe" being shown to a user whose
+    // sub just expired but whose cached customerInfo still says active.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(paywallProvider).refresh();
+    });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Returning from Play Store / App Store flow may have changed the
+    // user's entitlement; refresh so the paywall reflects it.
+    if (state == AppLifecycleState.resumed) {
+      ref.read(paywallProvider).refresh();
+    }
   }
 
   void _maybePreselectAnnual(List<Package> packages) {
