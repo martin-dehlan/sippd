@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 
 /// Identity wrapper kept as a single hook in case we ever want to apply
 /// a shared visual treatment to a group of [SkeletonBox]es. Static —
-/// no animation, so it reads as "no data" not "loading".
+/// no animation, so it reads as "no data" not "loading". Color muting
+/// lives in [SkeletonBox] via `surfaceContainerHighest`; an extra
+/// Opacity here would push naked-bg placeholders into invisibility.
 class Skeleton extends StatelessWidget {
   final Widget child;
   const Skeleton({super.key, required this.child});
 
   @override
-  Widget build(BuildContext context) => Opacity(opacity: 0.6, child: child);
+  Widget build(BuildContext context) => child;
 }
 
 /// Leaf placeholder rectangle used inside a [Skeleton] to mock the size

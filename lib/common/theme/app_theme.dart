@@ -10,6 +10,7 @@ class AppTheme {
   static const _darkSurface = Color(0xFF1C1722);
   static const _darkCard = Color(0xFF241D2C);
   static const _darkBorder = Color(0xFF2E2636);
+  static const _darkSkeleton = Color(0xFF332A3D);
   static const _textPrimary = Color(0xFFF2ECEF);
   static const _textSecondary = Color(0xFF9A8F98);
   static const _textTertiary = Color(0xFF6A5F68);
@@ -24,6 +25,7 @@ class AppTheme {
       onSecondary: Colors.black,
       surface: _darkBg,
       surfaceContainer: _darkSurface,
+      surfaceContainerHighest: _darkSkeleton,
       onSurface: _textPrimary,
       onSurfaceVariant: _textSecondary,
       outline: _textTertiary,

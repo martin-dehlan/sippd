@@ -274,13 +274,30 @@ class _TypeRow extends StatelessWidget {
                   letterSpacing: -0.2,
                 ),
               ),
-              SizedBox(width: context.xs),
-              Text(
-                empty ? '—' : data.avgRating.toStringAsFixed(1),
-                style: TextStyle(
-                  fontSize: context.captionFont,
-                  color: cs.onSurfaceVariant,
-                  fontWeight: FontWeight.w600,
+              SizedBox(width: context.s * 1.2),
+              Container(
+                width: 1,
+                height: context.captionFont * 0.9,
+                color: cs.outlineVariant,
+              ),
+              SizedBox(width: context.s * 1.2),
+              Icon(
+                Icons.star_rounded,
+                size: context.captionFont * 1.05,
+                color: empty ? cs.outline : cs.onSurfaceVariant,
+              ),
+              SizedBox(width: context.xs * 0.5),
+              SizedBox(
+                width: context.w * 0.07,
+                child: Text(
+                  empty ? '—' : data.avgRating.toStringAsFixed(1),
+                  textAlign: TextAlign.end,
+                  style: TextStyle(
+                    fontSize: context.captionFont,
+                    color: empty ? cs.outline : cs.onSurfaceVariant,
+                    fontWeight: FontWeight.w600,
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                  ),
                 ),
               ),
             ],
