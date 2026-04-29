@@ -6,8 +6,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../../common/utils/responsive.dart';
+import '../../../../../core/routes/app.routes.dart';
 import '../../../../paywall/controller/paywall.provider.dart';
 import '../../../controller/wine_stats.provider.dart';
+import 'widgets/drinking_partners.widget.dart';
 import 'widgets/spending_section.widget.dart';
 import 'widgets/stats_empty_hero.widget.dart';
 import 'widgets/stats_hero.widget.dart';
@@ -16,6 +18,7 @@ import 'widgets/stats_section_empty.widget.dart';
 import 'widgets/tally_bars.widget.dart';
 import 'widgets/top_wines_list.widget.dart';
 import 'widgets/wine_locations_map.widget.dart';
+import 'widgets/wine_timeline.widget.dart';
 import 'widgets/wine_type_breakdown.widget.dart';
 
 class WineStatsScreen extends ConsumerWidget {
@@ -27,6 +30,8 @@ class WineStatsScreen extends ConsumerWidget {
     final regions = ref.watch(statsTopRegionsProvider);
     final breakdown = ref.watch(statsTypeBreakdownProvider);
     final topWines = ref.watch(statsTopWinesProvider);
+    final timeline = ref.watch(statsTimelineProvider);
+    final partnersAsync = ref.watch(statsDrinkingPartnersProvider);
     final isPro = ref.watch(isProProvider);
     final hasWines =
         ref.watch(statsHeroProvider.select((h) => h.totalWines > 0));
@@ -99,6 +104,43 @@ class WineStatsScreen extends ConsumerWidget {
                 SliverToBoxAdapter(child: SizedBox(height: context.m)),
 
                 if (isPro) ...[
+                  _SliverSection(
+                    title: 'Timeline',
+                    subtitle:
+                        'Month by month, the wines that wrote your year.',
+                    delay: 175,
+                    child: hasWines
+                        ? WineTimeline(months: timeline)
+                        : const WineTimeline(months: []),
+                  ),
+                  SliverToBoxAdapter(child: SizedBox(height: context.m)),
+
+                  _SliverSection(
+                    title: 'Drinking partners',
+                    subtitle: 'Who you taste with most.',
+                    delay: 220,
+                    child: partnersAsync.when(
+                      loading: () => const DrinkingPartnersSkeleton(),
+                      error: (_, _) => StatsSectionEmpty(
+                        icon: PhosphorIconsFill.usersThree,
+                        title: 'Couldn\'t load partners',
+                        body: 'Pull down or come back in a moment.',
+                      ),
+                      data: (partners) => partners.isEmpty
+                          ? StatsSectionEmpty(
+                              icon: PhosphorIconsFill.usersThree,
+                              title: 'Rate together',
+                              body:
+                                  'Once you and a friend rate the same wine '
+                                  'in a group, they\'ll show up here.',
+                              ctaLabel: 'Open groups',
+                              onTap: () => context.go(AppRoutes.groups),
+                            )
+                          : DrinkingPartners(partners: partners),
+                    ),
+                  ),
+                  SliverToBoxAdapter(child: SizedBox(height: context.m)),
+
                   _SliverSection(
                     title: 'Prices & value',
                     subtitle:

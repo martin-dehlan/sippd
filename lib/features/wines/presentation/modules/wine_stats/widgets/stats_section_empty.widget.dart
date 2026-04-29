@@ -12,16 +12,16 @@ class StatsSectionEmpty extends StatelessWidget {
   final IconData icon;
   final String title;
   final String body;
-  final String ctaLabel;
-  final VoidCallback onTap;
+  final String? ctaLabel;
+  final VoidCallback? onTap;
 
   const StatsSectionEmpty({
     super.key,
     required this.icon,
     required this.title,
     required this.body,
-    required this.ctaLabel,
-    required this.onTap,
+    this.ctaLabel,
+    this.onTap,
   });
 
   @override
@@ -84,29 +84,31 @@ class StatsSectionEmpty extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: context.m),
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton(
-                onPressed: onTap,
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: cs.onSurface,
-                  side: BorderSide(color: cs.outlineVariant, width: 0.5),
-                  padding: EdgeInsets.symmetric(vertical: context.m * 0.7),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(context.w * 0.035),
+            if (ctaLabel != null && onTap != null) ...[
+              SizedBox(height: context.m),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton(
+                  onPressed: onTap,
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: cs.onSurface,
+                    side: BorderSide(color: cs.outlineVariant, width: 0.5),
+                    padding: EdgeInsets.symmetric(vertical: context.m * 0.7),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(context.w * 0.035),
+                    ),
                   ),
-                ),
-                child: Text(
-                  ctaLabel,
-                  style: TextStyle(
-                    fontSize: context.captionFont * 1.05,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: -0.1,
+                  child: Text(
+                    ctaLabel!,
+                    style: TextStyle(
+                      fontSize: context.captionFont * 1.05,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: -0.1,
+                    ),
                   ),
                 ),
               ),
-            ),
+            ],
           ],
         ),
       ),

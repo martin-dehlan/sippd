@@ -1,5 +1,8 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../auth/controller/auth.provider.dart';
+import '../../groups/data/models/drinking_partner.model.dart';
+import '../../groups/domain/entities/drinking_partner.entity.dart';
 import '../domain/entities/wine.entity.dart';
 import 'wine.provider.dart';
 
@@ -180,6 +183,69 @@ StatsSpending statsSpending(StatsSpendingRef ref) {
     bestValue: bestValue,
     pricedCount: sameCcy.length,
   );
+}
+
+/// One chapter in the user's wine timeline — a single calendar month with
+/// every wine they rated that month, newest first. Months with zero wines
+/// are skipped entirely (we tell the story they actually lived, not the
+/// blank weeks in between).
+class TimelineMonth {
+  final DateTime month;
+  final List<WineEntity> wines;
+
+  const TimelineMonth({required this.month, required this.wines});
+
+  int get count => wines.length;
+
+  double get avgRating {
+    if (wines.isEmpty) return 0;
+    final sum = wines.fold<double>(0, (acc, w) => acc + w.rating);
+    return sum / wines.length;
+  }
+
+  WineEntity get topWine =>
+      wines.reduce((a, b) => a.rating >= b.rating ? a : b);
+}
+
+/// Top users the caller has co-rated wines with inside shared groups.
+/// Source is `group_wine_ratings` only — solo (private) wines never count
+/// because we have no way to link them to another person without a
+/// canonical wine UUID.
+@riverpod
+Future<List<DrinkingPartnerEntity>> statsDrinkingPartners(
+  StatsDrinkingPartnersRef ref,
+) async {
+  final isAuth = ref.watch(isAuthenticatedProvider);
+  if (!isAuth) return const [];
+  final client = ref.read(supabaseClientProvider);
+  final raw = await client.rpc(
+    'get_top_drinking_partners',
+    params: {'p_limit': 5},
+  );
+  if (raw is! List) return const [];
+  return raw
+      .map((row) => DrinkingPartnerModel.fromJson(
+            Map<String, dynamic>.from(row as Map),
+          ).toEntity())
+      .toList(growable: false);
+}
+
+@riverpod
+List<TimelineMonth> statsTimeline(StatsTimelineRef ref) {
+  final wines = ref.watch(_wineListProvider);
+  if (wines.isEmpty) return const [];
+  final byMonth = <DateTime, List<WineEntity>>{};
+  for (final w in wines) {
+    final key = DateTime(w.createdAt.year, w.createdAt.month);
+    byMonth.putIfAbsent(key, () => []).add(w);
+  }
+  for (final list in byMonth.values) {
+    list.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+  }
+  final keys = byMonth.keys.toList()..sort((a, b) => b.compareTo(a));
+  return keys
+      .map((k) => TimelineMonth(month: k, wines: byMonth[k]!))
+      .toList(growable: false);
 }
 
 @riverpod

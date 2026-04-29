@@ -127,6 +127,48 @@ final statsSpendingProvider = AutoDisposeProvider<StatsSpending>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef StatsSpendingRef = AutoDisposeProviderRef<StatsSpending>;
+String _$statsDrinkingPartnersHash() =>
+    r'c71cc26263e28d3a23db28c1d86b00a7cc759670';
+
+/// Top users the caller has co-rated wines with inside shared groups.
+/// Source is `group_wine_ratings` only — solo (private) wines never count
+/// because we have no way to link them to another person without a
+/// canonical wine UUID.
+///
+/// Copied from [statsDrinkingPartners].
+@ProviderFor(statsDrinkingPartners)
+final statsDrinkingPartnersProvider =
+    AutoDisposeFutureProvider<List<DrinkingPartnerEntity>>.internal(
+      statsDrinkingPartners,
+      name: r'statsDrinkingPartnersProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$statsDrinkingPartnersHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef StatsDrinkingPartnersRef =
+    AutoDisposeFutureProviderRef<List<DrinkingPartnerEntity>>;
+String _$statsTimelineHash() => r'6bfb2645b6d933ce17fceed55599aa845fe89998';
+
+/// See also [statsTimeline].
+@ProviderFor(statsTimeline)
+final statsTimelineProvider = AutoDisposeProvider<List<TimelineMonth>>.internal(
+  statsTimeline,
+  name: r'statsTimelineProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$statsTimelineHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef StatsTimelineRef = AutoDisposeProviderRef<List<TimelineMonth>>;
 String _$statsTypeBreakdownHash() =>
     r'a2f7455c30b3feeb8a4f7a18599c6aac27711cbb';
 

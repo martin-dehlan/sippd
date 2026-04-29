@@ -5,6 +5,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../../../../../common/utils/responsive.dart';
 import '../../../../../../common/widgets/skeleton.widget.dart';
 import '../../../../domain/entities/wine.entity.dart';
+import '../../../widgets/wine_thumb.widget.dart';
 
 class TopWinesList extends StatelessWidget {
   final List<WineEntity> wines;
@@ -83,8 +84,12 @@ class _Row extends StatelessWidget {
         ),
         child: Row(
           children: [
-            _RankBadge(rank: rank),
-            SizedBox(width: context.s),
+            WineThumb(
+              wine: wine,
+              size: context.w * 0.13,
+              cornerOverlay: _RankCorner(rank: rank),
+            ),
+            SizedBox(width: context.s * 1.4),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -124,35 +129,40 @@ class _Row extends StatelessWidget {
   }
 }
 
-class _RankBadge extends StatelessWidget {
+class _RankCorner extends StatelessWidget {
   final int rank;
-  const _RankBadge({required this.rank});
+  const _RankCorner({required this.rank});
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final size = context.w * 0.085;
+    final size = context.w * 0.052;
     final isFirst = rank == 1;
     return Container(
       width: size,
       height: size,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: isFirst ? cs.primary : cs.primaryContainer,
+        color: isFirst ? cs.primary : cs.surfaceContainer,
         shape: BoxShape.circle,
+        border: Border.all(
+          color: cs.surface,
+          width: 1.5,
+        ),
       ),
       child: isFirst
           ? Icon(
               PhosphorIconsFill.crown,
               color: cs.onPrimary,
-              size: size * 0.55,
+              size: size * 0.58,
             )
           : Text(
               rank.toString(),
               style: TextStyle(
-                color: cs.primary,
+                color: cs.onSurface,
                 fontWeight: FontWeight.w800,
-                fontSize: context.captionFont,
+                fontSize: size * 0.52,
+                height: 1,
               ),
             ),
     );
@@ -177,8 +187,12 @@ class _TopWineRowSkeleton extends StatelessWidget {
       ),
       child: Row(
         children: [
-          SkeletonBox.circle(size: context.w * 0.085),
-          SizedBox(width: context.s),
+          SkeletonBox(
+            width: context.w * 0.13,
+            height: context.w * 0.13,
+            radius: context.w * 0.13 * 0.22,
+          ),
+          SizedBox(width: context.s * 1.4),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

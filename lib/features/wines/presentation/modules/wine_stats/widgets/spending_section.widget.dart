@@ -8,6 +8,7 @@ import '../../../../../../common/utils/responsive.dart';
 import '../../../../../../common/widgets/skeleton.widget.dart';
 import '../../../../controller/wine_stats.provider.dart';
 import '../../../../domain/entities/wine.entity.dart';
+import '../../../widgets/wine_thumb.widget.dart';
 
 class SpendingSection extends ConsumerWidget {
   const SpendingSection({super.key});
@@ -149,17 +150,12 @@ class _Highlight extends StatelessWidget {
       ],
       child: Row(
         children: [
-          Container(
-            width: context.w * 0.085,
-            height: context.w * 0.085,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: cs.primary.withValues(alpha: 0.14),
-              borderRadius: BorderRadius.circular(context.w * 0.025),
-            ),
-            child: Icon(icon, color: cs.primary, size: context.w * 0.04),
+          WineThumb(
+            wine: wine,
+            size: context.w * 0.13,
+            cornerOverlay: _IconCorner(icon: icon),
           ),
-          SizedBox(width: context.s),
+          SizedBox(width: context.s * 1.4),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -263,6 +259,28 @@ class _Empty extends StatelessWidget {
   }
 }
 
+class _IconCorner extends StatelessWidget {
+  final IconData icon;
+  const _IconCorner({required this.icon});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final size = context.w * 0.052;
+    return Container(
+      width: size,
+      height: size,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: cs.primary,
+        shape: BoxShape.circle,
+        border: Border.all(color: cs.surface, width: 1.5),
+      ),
+      child: Icon(icon, color: cs.onPrimary, size: size * 0.55),
+    );
+  }
+}
+
 class _HighlightSkeleton extends StatelessWidget {
   const _HighlightSkeleton();
 
@@ -271,11 +289,11 @@ class _HighlightSkeleton extends StatelessWidget {
     return Row(
       children: [
         SkeletonBox(
-          width: context.w * 0.085,
-          height: context.w * 0.085,
-          radius: context.w * 0.025,
+          width: context.w * 0.13,
+          height: context.w * 0.13,
+          radius: context.w * 0.13 * 0.22,
         ),
-        SizedBox(width: context.s),
+        SizedBox(width: context.s * 1.4),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
