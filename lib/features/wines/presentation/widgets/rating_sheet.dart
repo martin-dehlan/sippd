@@ -282,7 +282,7 @@ class _Handle extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     return Padding(
-      padding: EdgeInsets.only(top: context.s),
+      padding: EdgeInsets.only(top: context.m, bottom: context.xs),
       child: Center(
         child: Container(
           width: context.w * 0.1,
