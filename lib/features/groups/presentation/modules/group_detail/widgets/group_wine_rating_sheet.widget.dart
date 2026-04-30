@@ -78,6 +78,10 @@ class _SheetState extends ConsumerState<_Sheet> {
     HapticFeedback.selectionClick();
     try {
       final notes = _notesController.text.trim();
+      // Owners ALSO need a group_wine_ratings row — otherwise drinking
+      // partners / shared bottles can't see them (those features only
+      // count group / tasting context). Personal rating still rides on
+      // wines.rating so the wine_detail summary stays in sync.
       if (_isOwner) {
         final fresh = await ref
                 .read(wineRepositoryProvider)
@@ -91,16 +95,15 @@ class _SheetState extends ConsumerState<_Sheet> {
         await ref.read(wineControllerProvider.notifier).updateWine(updated);
         ref.invalidate(groupWinesProvider(widget.groupId));
         ref.invalidate(wineDetailProvider(widget.wine.id));
-      } else {
-        await ref
-            .read(groupWineRatingControllerProvider.notifier)
-            .upsertRating(
-              groupId: widget.groupId,
-              wineId: widget.wine.id,
-              rating: _myRating!,
-              notes: notes.isEmpty ? null : notes,
-            );
       }
+      await ref
+          .read(groupWineRatingControllerProvider.notifier)
+          .upsertRating(
+            groupId: widget.groupId,
+            wineId: widget.wine.id,
+            rating: _myRating!,
+            notes: notes.isEmpty ? null : notes,
+          );
       ref.invalidate(
           groupWineRatingsProvider(widget.groupId, widget.wine.id));
       if (mounted) {
@@ -127,9 +130,12 @@ class _SheetState extends ConsumerState<_Sheet> {
   }
 
   Future<void> _delete() async {
-    if (_isOwner) return;
     setState(() => _saving = true);
     try {
+      // Removes only the group_wine_ratings row. Owners' personal
+      // wines.rating is left intact — that's still their general
+      // opinion of the wine, even if they no longer want to surface
+      // their group-context rating.
       await ref
           .read(groupWineRatingControllerProvider.notifier)
           .deleteRating(groupId: widget.groupId, wineId: widget.wine.id);
@@ -213,8 +219,7 @@ class _SheetState extends ConsumerState<_Sheet> {
       }
     }
 
-    final hasExistingRating = !_isOwner &&
-        _loaded &&
+    final hasExistingRating = _loaded &&
         ratingsAsync.valueOrNull?.any((r) => r.userId == userId) == true;
 
     final isDirty = _myRating != null &&
