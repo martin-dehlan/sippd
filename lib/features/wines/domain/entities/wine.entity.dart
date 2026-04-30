@@ -25,6 +25,7 @@ class WineEntity with _$WineEntity {
     String? grape,
     String? canonicalGrapeId,
     String? grapeFreetext,
+    String? canonicalWineId,
     String? winery,
     String? nameNorm,
     required String userId,
