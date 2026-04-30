@@ -18,6 +18,7 @@ class ProfileImageService {
       maxWidth: 800,
       maxHeight: 800,
       imageQuality: 85,
+      requestFullMetadata: false,
     );
     if (photo == null) return null;
     return uploadImage(userId: userId, filePath: photo.path);

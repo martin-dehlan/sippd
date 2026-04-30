@@ -40,9 +40,10 @@ class _WinePhotoPickerState extends ConsumerState<WinePhotoPicker> {
       final picker = ImagePicker();
       final photo = await picker.pickImage(
         source: source,
-        maxWidth: 1600,
-        maxHeight: 1600,
-        imageQuality: 85,
+        maxWidth: 1200,
+        maxHeight: 1200,
+        imageQuality: 80,
+        requestFullMetadata: false,
       );
       if (photo == null) return;
 
