@@ -43,12 +43,14 @@ create table if not exists public.wine_ratings_extended (
   updated_at           timestamptz not null default now()
 );
 
-create unique index if not exists wine_ratings_extended_unique_idx
-  on public.wine_ratings_extended (
-    user_id, canonical_wine_id, context,
-    coalesce(group_id::text, ''),
-    coalesce(tasting_id::text, '')
-  );
+-- Plain triple unique — group_id / tasting_id stay as metadata so the
+-- Supabase upsert client can match the onConflict spec without
+-- needing expression-index matching.
+alter table public.wine_ratings_extended
+  drop constraint if exists wine_ratings_extended_user_wine_context_unique;
+alter table public.wine_ratings_extended
+  add constraint wine_ratings_extended_user_wine_context_unique
+  unique (user_id, canonical_wine_id, context);
 
 create index if not exists wine_ratings_extended_canonical_idx
   on public.wine_ratings_extended (canonical_wine_id);
