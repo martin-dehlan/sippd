@@ -1,9 +1,21 @@
 import 'package:flutter/material.dart';
-import '../../../../common/utils/responsive.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../../common/utils/responsive.dart';
+import '../../../../core/routes/app.routes.dart';
+import '../../../paywall/controller/paywall.provider.dart';
+import '../../domain/entities/wine.entity.dart';
+import 'expert_tasting_sheet.dart';
+
+/// Result of dismissing the rating sheet via Save. The Pro toggle and
+/// expert tasting fields persist in their own sheet, so this still
+/// only carries the headline rating value.
 Future<double?> showRatingSheet({
   required BuildContext context,
   required double initial,
+  WineEntity? wine,
 }) {
   return showModalBottomSheet<double>(
     context: context,
@@ -13,25 +25,56 @@ Future<double?> showRatingSheet({
       borderRadius:
           BorderRadius.vertical(top: Radius.circular(context.w * 0.05)),
     ),
-    builder: (ctx) => _RatingSheet(initial: initial),
+    builder: (ctx) => _RatingSheet(initial: initial, wine: wine),
   );
 }
 
-class _RatingSheet extends StatefulWidget {
+class _RatingSheet extends ConsumerStatefulWidget {
   final double initial;
-  const _RatingSheet({required this.initial});
+  final WineEntity? wine;
+  const _RatingSheet({required this.initial, this.wine});
 
   @override
-  State<_RatingSheet> createState() => _RatingSheetState();
+  ConsumerState<_RatingSheet> createState() => _RatingSheetState();
 }
 
-class _RatingSheetState extends State<_RatingSheet> {
+class _RatingSheetState extends ConsumerState<_RatingSheet> {
   late double _value = widget.initial;
+
+  Future<void> _openExpert() async {
+    final wine = widget.wine;
+    if (wine == null || wine.canonicalWineId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Save the wine first — tasting notes attach to it.'),
+        ),
+      );
+      return;
+    }
+    final isPro = ref.read(isProProvider);
+    if (!isPro) {
+      Navigator.pop(context, _value);
+      // ignore: use_build_context_synchronously
+      context.push(
+        AppRoutes.paywall,
+        extra: const {'source': 'expert_tasting'},
+      );
+      return;
+    }
+    // Persist the current rating, then open the expert sheet on top.
+    Navigator.pop(context, _value);
+    if (!mounted) return;
+    // ignore: use_build_context_synchronously
+    await showExpertTastingSheet(context: context, wine: wine);
+  }
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+    final isPro = ref.watch(isProProvider);
+    final canExpert = widget.wine != null;
+
     return Padding(
       padding: EdgeInsets.only(bottom: bottomInset),
       child: SafeArea(
@@ -53,11 +96,24 @@ class _RatingSheetState extends State<_RatingSheet> {
                 ),
               ),
               SizedBox(height: context.m),
-              Text('Rating',
-                  style: TextStyle(
+              Row(
+                children: [
+                  Text(
+                    'Rating',
+                    style: TextStyle(
                       fontSize: context.bodyFont,
                       fontWeight: FontWeight.w600,
-                      color: cs.onSurfaceVariant)),
+                      color: cs.onSurfaceVariant,
+                    ),
+                  ),
+                  const Spacer(),
+                  if (canExpert)
+                    _ProTastingChip(
+                      isPro: isPro,
+                      onTap: _openExpert,
+                    ),
+                ],
+              ),
               SizedBox(height: context.m),
               Center(
                 child: Row(
@@ -65,16 +121,22 @@ class _RatingSheetState extends State<_RatingSheet> {
                   crossAxisAlignment: CrossAxisAlignment.baseline,
                   textBaseline: TextBaseline.alphabetic,
                   children: [
-                    Text(_value.toStringAsFixed(1),
-                        style: TextStyle(
-                            fontSize: context.titleFont * 1.8,
-                            fontWeight: FontWeight.bold,
-                            height: 1)),
+                    Text(
+                      _value.toStringAsFixed(1),
+                      style: TextStyle(
+                        fontSize: context.titleFont * 1.8,
+                        fontWeight: FontWeight.bold,
+                        height: 1,
+                      ),
+                    ),
                     SizedBox(width: context.w * 0.02),
-                    Text('/ 10',
-                        style: TextStyle(
-                            fontSize: context.bodyFont,
-                            color: cs.onSurfaceVariant)),
+                    Text(
+                      '/ 10',
+                      style: TextStyle(
+                        fontSize: context.bodyFont,
+                        color: cs.onSurfaceVariant,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -109,15 +171,70 @@ class _RatingSheetState extends State<_RatingSheet> {
                       borderRadius: BorderRadius.circular(context.w * 0.03),
                     ),
                   ),
-                  child: Text('Save',
-                      style: TextStyle(
-                          fontSize: context.bodyFont,
-                          fontWeight: FontWeight.w600)),
+                  child: Text(
+                    'Save',
+                    style: TextStyle(
+                      fontSize: context.bodyFont,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
               ),
               SizedBox(height: context.s),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ProTastingChip extends StatelessWidget {
+  const _ProTastingChip({required this.isPro, required this.onTap});
+
+  final bool isPro;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: context.w * 0.025,
+          vertical: context.h * 0.006,
+        ),
+        decoration: BoxDecoration(
+          color: cs.primary.withValues(alpha: 0.12),
+          borderRadius: BorderRadius.circular(context.w * 0.04),
+          border: Border.all(
+            color: cs.primary.withValues(alpha: 0.4),
+            width: 1,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              isPro
+                  ? PhosphorIconsFill.notebook
+                  : PhosphorIconsFill.lock,
+              size: context.captionFont * 1.0,
+              color: cs.primary,
+            ),
+            SizedBox(width: context.xs * 0.8),
+            Text(
+              'Tasting notes',
+              style: TextStyle(
+                fontSize: context.captionFont * 0.85,
+                fontWeight: FontWeight.w700,
+                color: cs.primary,
+                letterSpacing: -0.1,
+              ),
+            ),
+          ],
         ),
       ),
     );

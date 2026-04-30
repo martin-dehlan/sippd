@@ -74,6 +74,7 @@ class WineForm extends ConsumerStatefulWidget {
   final Future<void> Function(WineFormData data) onSubmit;
   final ValueChanged<WineFormData>? onChanged;
   final bool autoSave;
+  final WineEntity? wine;
 
   /// When false, the form omits its inline submit button. Host screens
   /// drive submission through a [GlobalKey] and call [WineFormState.submit].
@@ -87,6 +88,7 @@ class WineForm extends ConsumerStatefulWidget {
     this.onChanged,
     this.autoSave = false,
     this.showInlineSubmit = true,
+    this.wine,
   });
 
   @override
@@ -221,7 +223,11 @@ class WineFormState extends ConsumerState<WineForm>
 
   Future<void> _editRating() async {
     FocusScope.of(context).unfocus();
-    final result = await showRatingSheet(context: context, initial: _rating);
+    final result = await showRatingSheet(
+      context: context,
+      initial: _rating,
+      wine: widget.wine,
+    );
     if (!mounted) return;
     if (result == null) return;
     setState(() => _rating = result);

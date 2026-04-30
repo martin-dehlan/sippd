@@ -31,6 +31,7 @@ class WineEditScreen extends ConsumerWidget {
             return memoriesAsync.when(
               data: (memories) => WineForm(
                 autoSave: true,
+                wine: wine,
                 initial: _toFormData(wine, memories),
                 onSubmit: (data) async {
                   final updated = wine.copyWith(
