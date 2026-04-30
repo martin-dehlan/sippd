@@ -9,8 +9,9 @@ import '../models/wine.model.dart';
 class WineRepositoryImpl implements WineRepository {
   final WinesDao _dao;
   final WineSupabaseApi? _api;
+  final String? _userId;
 
-  WineRepositoryImpl(this._dao, [this._api]);
+  WineRepositoryImpl(this._dao, [this._api, this._userId]);
 
   @override
   Future<List<WineEntity>> getWines() async {
@@ -80,13 +81,11 @@ class WineRepositoryImpl implements WineRepository {
 
   Future<void> _syncFromRemote() async {
     if (_api == null) return;
+    final userId = _userId;
+    if (userId == null || userId.isEmpty) return;
     try {
-      final models = await _api.fetchWines(
-        // Get current user wines — userId comes from the API's RLS
-        '', // RLS handles filtering by auth.uid()
-      );
+      final models = await _api.fetchWines(userId);
       final tableData = models.map((m) => m.toEntity().toTableData()).toList();
-      // Upsert doesn't exist on our DAO yet, so insert each
       for (final td in tableData) {
         await _dao.insertWine(td);
       }

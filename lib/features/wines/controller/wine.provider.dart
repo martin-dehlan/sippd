@@ -39,7 +39,8 @@ WineSupabaseApi? wineSupabaseApi(WineSupabaseApiRef ref) {
 WineRepository wineRepository(WineRepositoryRef ref) {
   final db = ref.read(appDatabaseProvider);
   final api = ref.watch(wineSupabaseApiProvider);
-  return WineRepositoryImpl(db.winesDao, api);
+  final userId = ref.watch(currentUserIdProvider);
+  return WineRepositoryImpl(db.winesDao, api, userId);
 }
 
 @riverpod
