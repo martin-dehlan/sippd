@@ -55,5 +55,6 @@ extension WineEntityToTableData on WineEntity {
         visibility: visibility,
         createdAt: createdAt,
         updatedAt: updatedAt,
+        isSynced: true,
       );
 }

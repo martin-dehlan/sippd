@@ -8,4 +8,9 @@ abstract class WineRepository {
   Future<void> deleteWine(String id);
   Stream<List<WineEntity>> watchWines();
   Future<List<WineEntity>> getWinesByType(WineType type);
+
+  /// Re-uploads any wines whose local writes never reached Supabase
+  /// (offline / network errors). Returns the number of wines still
+  /// unsynced after the attempt — 0 means everything is backed up.
+  Future<int> flushPendingSyncs();
 }

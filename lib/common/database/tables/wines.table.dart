@@ -26,6 +26,7 @@ class WinesTable extends Table {
   DateTimeColumn get createdAt =>
       dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get updatedAt => dateTime().nullable()();
+  BoolColumn get isSynced => boolean().withDefault(const Constant(true))();
 
   @override
   Set<Column> get primaryKey => {id};

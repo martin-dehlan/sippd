@@ -27,6 +27,15 @@ class WinesDao extends DatabaseAccessor<AppDatabase> with _$WinesDaoMixin {
     return into(winesTable).insertOnConflictUpdate(wine);
   }
 
+  /// Insert/update with is_synced explicitly false. Used for local writes
+  /// before the remote upload completes.
+  Future<void> insertWineUnsynced(WineTableData wine) {
+    final companion = wine.toCompanion(true).copyWith(
+      isSynced: const Value(false),
+    );
+    return into(winesTable).insertOnConflictUpdate(companion);
+  }
+
   Future<void> insertWines(List<WineTableData> wines) async {
     await batch((batch) {
       batch.insertAllOnConflictUpdate(winesTable, wines);
@@ -39,6 +48,21 @@ class WinesDao extends DatabaseAccessor<AppDatabase> with _$WinesDaoMixin {
 
   Future<void> deleteWine(String id) {
     return (delete(winesTable)..where((w) => w.id.equals(id))).go();
+  }
+
+  Future<List<WineTableData>> getUnsynced() {
+    return (select(winesTable)..where((w) => w.isSynced.equals(false))).get();
+  }
+
+  Future<int> countUnsynced() async {
+    final rows = await getUnsynced();
+    return rows.length;
+  }
+
+  Future<void> markSynced(String id) {
+    return (update(winesTable)..where((w) => w.id.equals(id))).write(
+      const WinesTableCompanion(isSynced: Value(true)),
+    );
   }
 
   Stream<List<WineTableData>> watchAllWines() => select(winesTable).watch();

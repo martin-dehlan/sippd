@@ -27,6 +27,7 @@ import 'features/profile/domain/entities/profile.entity.dart';
 import 'features/push/controller/push.provider.dart';
 import 'features/push/data/push_handler.service.dart';
 import 'features/tastings/controller/tastings.provider.dart';
+import 'features/wines/controller/wine.provider.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -84,10 +85,12 @@ class SippdApp extends ConsumerStatefulWidget {
   ConsumerState<SippdApp> createState() => _SippdAppState();
 }
 
-class _SippdAppState extends ConsumerState<SippdApp> {
+class _SippdAppState extends ConsumerState<SippdApp>
+    with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     // Initialise the local-notification plugin + FCM listeners once.
     ref.read(pushHandlerProvider).init();
     ref.read(deepLinkProvider).init();
@@ -104,7 +107,30 @@ class _SippdAppState extends ConsumerState<SippdApp> {
         },
       );
       ref.read(paywallProvider).identify(bootUser.id);
+      // Re-upload any wines that never made it to Supabase last session
+      // (offline writes, killed app, etc).
+      _flushPendingWineSyncs();
     }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _flushPendingWineSyncs();
+    }
+  }
+
+  void _flushPendingWineSyncs() {
+    if (!mounted) return;
+    if (!ref.read(isAuthenticatedProvider)) return;
+    final repo = ref.read(wineRepositoryProvider);
+    repo.flushPendingSyncs();
   }
 
   @override

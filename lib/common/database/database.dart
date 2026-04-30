@@ -25,7 +25,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -33,8 +33,16 @@ class AppDatabase extends _$AppDatabase {
       await m.createAll();
     },
     onUpgrade: (Migrator m, int from, int to) async {
-      // Beta wipe-and-recreate: schema evolves quickly while pre-launch.
-      // Existing local data is discarded; Supabase re-sync repopulates.
+      if (from == 1 && to == 2) {
+        // Additive: add is_synced column on wines. Mark every existing row
+        // as unsynced so the next flush sweep re-uploads them — Supabase
+        // upsert is idempotent so this is safe and protects users who had
+        // unsynced wines on the device before this column existed.
+        await m.addColumn(winesTable, winesTable.isSynced);
+        await customStatement('UPDATE wines SET is_synced = 0');
+        return;
+      }
+      // Beta wipe-and-recreate fallback for any other path.
       for (final table in allTables) {
         await m.deleteTable(table.actualTableName);
       }

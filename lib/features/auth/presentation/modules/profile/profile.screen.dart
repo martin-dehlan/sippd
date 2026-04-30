@@ -204,6 +204,44 @@ class ProfileScreen extends ConsumerWidget {
                 icon: PhosphorIconsRegular.signOut,
                 label: 'Sign Out',
                 onTap: () async {
+                  // Push any wines that never reached Supabase up first so
+                  // the upcoming clearAll() doesn't destroy unsynced data.
+                  int remaining = 0;
+                  try {
+                    remaining = await ref
+                        .read(wineRepositoryProvider)
+                        .flushPendingSyncs();
+                  } catch (_) {
+                    remaining = -1; // treat as "unknown / risky"
+                  }
+                  if (remaining != 0) {
+                    if (!context.mounted) return;
+                    final proceed = await showDialog<bool>(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: const Text('Some wines aren\'t backed up'),
+                        content: Text(
+                          remaining > 0
+                              ? '$remaining wine${remaining == 1 ? '' : 's'} couldn\'t reach the server. Sign out anyway? They will be lost from this device.'
+                              : 'Could not verify backup state (offline?). Sign out anyway? Unsynced wines may be lost.',
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx, false),
+                            child: const Text('Cancel'),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx, true),
+                            child: Text(
+                              'Sign out anyway',
+                              style: TextStyle(color: cs.error),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                    if (proceed != true) return;
+                  }
                   // Drop this device's FCM registration before the session
                   // dies — otherwise pushes for this account continue to land
                   // on a logged-out device.

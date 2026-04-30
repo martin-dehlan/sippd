@@ -30,15 +30,15 @@ class WineRepositoryImpl implements WineRepository {
   @override
   Future<void> addWine(WineEntity wine) async {
     final normalized = _withNameNorm(wine);
-    await _dao.insertWine(normalized.toTableData());
-    _syncToRemote(normalized);
+    await _dao.insertWineUnsynced(normalized.toTableData());
+    await _trySync(normalized);
   }
 
   @override
   Future<void> updateWine(WineEntity wine) async {
     final normalized = _withNameNorm(wine);
-    await _dao.updateWine(normalized.toTableData());
-    _syncToRemote(normalized);
+    await _dao.insertWineUnsynced(normalized.toTableData());
+    await _trySync(normalized);
   }
 
   WineEntity _withNameNorm(WineEntity wine) =>
@@ -69,13 +69,31 @@ class WineRepositoryImpl implements WineRepository {
     return data.map((td) => td.toEntity()).toList();
   }
 
+  @override
+  Future<int> flushPendingSyncs() async {
+    if (_api == null) return await _dao.countUnsynced();
+    final pending = await _dao.getUnsynced();
+    for (final row in pending) {
+      try {
+        await _api.upsertWine(row.toEntity().toModel());
+        await _dao.markSynced(row.id);
+      } catch (_) {
+        // Stop on first failure — likely no network. Try again later.
+        break;
+      }
+    }
+    return await _dao.countUnsynced();
+  }
+
   // ── Sync helpers ──────────────────────────────────────────
 
-  Future<void> _syncToRemote(WineEntity wine) async {
+  Future<void> _trySync(WineEntity wine) async {
+    if (_api == null) return;
     try {
-      await _api?.upsertWine(wine.toModel());
+      await _api.upsertWine(wine.toModel());
+      await _dao.markSynced(wine.id);
     } catch (_) {
-      // Local write stands; will sync on next fetch
+      // Local write stays unsynced; flushPendingSyncs() will retry.
     }
   }
 
@@ -94,4 +112,3 @@ class WineRepositoryImpl implements WineRepository {
     }
   }
 }
-

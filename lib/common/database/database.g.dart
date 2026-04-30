@@ -234,6 +234,21 @@ class $WinesTableTable extends WinesTable
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _isSyncedMeta = const VerificationMeta(
+    'isSynced',
+  );
+  @override
+  late final GeneratedColumn<bool> isSynced = GeneratedColumn<bool>(
+    'is_synced',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_synced" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -258,6 +273,7 @@ class $WinesTableTable extends WinesTable
     visibility,
     createdAt,
     updatedAt,
+    isSynced,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -413,6 +429,12 @@ class $WinesTableTable extends WinesTable
         updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
       );
     }
+    if (data.containsKey('is_synced')) {
+      context.handle(
+        _isSyncedMeta,
+        isSynced.isAcceptableOrUnknown(data['is_synced']!, _isSyncedMeta),
+      );
+    }
     return context;
   }
 
@@ -510,6 +532,10 @@ class $WinesTableTable extends WinesTable
         DriftSqlType.dateTime,
         data['${effectivePrefix}updated_at'],
       ),
+      isSynced: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_synced'],
+      )!,
     );
   }
 
@@ -542,6 +568,7 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
   final String visibility;
   final DateTime createdAt;
   final DateTime? updatedAt;
+  final bool isSynced;
   const WineTableData({
     required this.id,
     required this.name,
@@ -565,6 +592,7 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
     required this.visibility,
     required this.createdAt,
     this.updatedAt,
+    required this.isSynced,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -619,6 +647,7 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
     if (!nullToAbsent || updatedAt != null) {
       map['updated_at'] = Variable<DateTime>(updatedAt);
     }
+    map['is_synced'] = Variable<bool>(isSynced);
     return map;
   }
 
@@ -674,6 +703,7 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
       updatedAt: updatedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(updatedAt),
+      isSynced: Value(isSynced),
     );
   }
 
@@ -705,6 +735,7 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
       visibility: serializer.fromJson<String>(json['visibility']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime?>(json['updatedAt']),
+      isSynced: serializer.fromJson<bool>(json['isSynced']),
     );
   }
   @override
@@ -733,6 +764,7 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
       'visibility': serializer.toJson<String>(visibility),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime?>(updatedAt),
+      'isSynced': serializer.toJson<bool>(isSynced),
     };
   }
 
@@ -759,6 +791,7 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
     String? visibility,
     DateTime? createdAt,
     Value<DateTime?> updatedAt = const Value.absent(),
+    bool? isSynced,
   }) => WineTableData(
     id: id ?? this.id,
     name: name ?? this.name,
@@ -784,6 +817,7 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
     visibility: visibility ?? this.visibility,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
+    isSynced: isSynced ?? this.isSynced,
   );
   WineTableData copyWithCompanion(WinesTableCompanion data) {
     return WineTableData(
@@ -813,6 +847,7 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
           : this.visibility,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      isSynced: data.isSynced.present ? data.isSynced.value : this.isSynced,
     );
   }
 
@@ -840,7 +875,8 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
           ..write('userId: $userId, ')
           ..write('visibility: $visibility, ')
           ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('isSynced: $isSynced')
           ..write(')'))
         .toString();
   }
@@ -869,6 +905,7 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
     visibility,
     createdAt,
     updatedAt,
+    isSynced,
   ]);
   @override
   bool operator ==(Object other) =>
@@ -895,7 +932,8 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
           other.userId == this.userId &&
           other.visibility == this.visibility &&
           other.createdAt == this.createdAt &&
-          other.updatedAt == this.updatedAt);
+          other.updatedAt == this.updatedAt &&
+          other.isSynced == this.isSynced);
 }
 
 class WinesTableCompanion extends UpdateCompanion<WineTableData> {
@@ -921,6 +959,7 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
   final Value<String> visibility;
   final Value<DateTime> createdAt;
   final Value<DateTime?> updatedAt;
+  final Value<bool> isSynced;
   final Value<int> rowid;
   const WinesTableCompanion({
     this.id = const Value.absent(),
@@ -945,6 +984,7 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
     this.visibility = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
+    this.isSynced = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   WinesTableCompanion.insert({
@@ -970,6 +1010,7 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
     this.visibility = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
+    this.isSynced = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        name = Value(name),
@@ -999,6 +1040,7 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
     Expression<String>? visibility,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
+    Expression<bool>? isSynced,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -1024,6 +1066,7 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
       if (visibility != null) 'visibility': visibility,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
+      if (isSynced != null) 'is_synced': isSynced,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -1051,6 +1094,7 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
     Value<String>? visibility,
     Value<DateTime>? createdAt,
     Value<DateTime?>? updatedAt,
+    Value<bool>? isSynced,
     Value<int>? rowid,
   }) {
     return WinesTableCompanion(
@@ -1076,6 +1120,7 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
       visibility: visibility ?? this.visibility,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      isSynced: isSynced ?? this.isSynced,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -1149,6 +1194,9 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
     if (updatedAt.present) {
       map['updated_at'] = Variable<DateTime>(updatedAt.value);
     }
+    if (isSynced.present) {
+      map['is_synced'] = Variable<bool>(isSynced.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -1180,6 +1228,7 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
           ..write('visibility: $visibility, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
+          ..write('isSynced: $isSynced, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -2584,6 +2633,7 @@ typedef $$WinesTableTableCreateCompanionBuilder =
       Value<String> visibility,
       Value<DateTime> createdAt,
       Value<DateTime?> updatedAt,
+      Value<bool> isSynced,
       Value<int> rowid,
     });
 typedef $$WinesTableTableUpdateCompanionBuilder =
@@ -2610,6 +2660,7 @@ typedef $$WinesTableTableUpdateCompanionBuilder =
       Value<String> visibility,
       Value<DateTime> createdAt,
       Value<DateTime?> updatedAt,
+      Value<bool> isSynced,
       Value<int> rowid,
     });
 
@@ -2729,6 +2780,11 @@ class $$WinesTableTableFilterComposer
 
   ColumnFilters<DateTime> get updatedAt => $composableBuilder(
     column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isSynced => $composableBuilder(
+    column: $table.isSynced,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -2851,6 +2907,11 @@ class $$WinesTableTableOrderingComposer
     column: $table.updatedAt,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<bool> get isSynced => $composableBuilder(
+    column: $table.isSynced,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$WinesTableTableAnnotationComposer
@@ -2931,6 +2992,9 @@ class $$WinesTableTableAnnotationComposer
 
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<bool> get isSynced =>
+      $composableBuilder(column: $table.isSynced, builder: (column) => column);
 }
 
 class $$WinesTableTableTableManager
@@ -2986,6 +3050,7 @@ class $$WinesTableTableTableManager
                 Value<String> visibility = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime?> updatedAt = const Value.absent(),
+                Value<bool> isSynced = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => WinesTableCompanion(
                 id: id,
@@ -3010,6 +3075,7 @@ class $$WinesTableTableTableManager
                 visibility: visibility,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
+                isSynced: isSynced,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -3036,6 +3102,7 @@ class $$WinesTableTableTableManager
                 Value<String> visibility = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime?> updatedAt = const Value.absent(),
+                Value<bool> isSynced = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => WinesTableCompanion.insert(
                 id: id,
@@ -3060,6 +3127,7 @@ class $$WinesTableTableTableManager
                 visibility: visibility,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
+                isSynced: isSynced,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
