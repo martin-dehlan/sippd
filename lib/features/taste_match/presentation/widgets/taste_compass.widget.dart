@@ -3,6 +3,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../common/utils/responsive.dart';
 import '../../domain/entities/taste_compass.entity.dart';
+import 'compass_radar.widget.dart';
 
 class TasteCompassWidget extends StatelessWidget {
   const TasteCompassWidget({
@@ -17,6 +18,23 @@ class TasteCompassWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+
+    // Radar axes: top regions when we have ≥3 distinct regions, fall
+    // back to top countries otherwise. Below 3 axes the radar is
+    // geometrically degenerate and we render nothing — the country
+    // list + palette still cover the bases.
+    final radarSource = compass.topRegions.length >= 3
+        ? compass.topRegions
+        : compass.topCountries;
+    final radarAxes = radarSource
+        .take(6)
+        .map((b) => RadarAxisData(
+              label: b.label,
+              sublabel: '${b.count} · ${b.avgRating.toStringAsFixed(1)}★',
+              value: b.count.toDouble(),
+            ))
+        .toList();
+    final showRadar = radarAxes.length >= 3;
 
     return Container(
       padding: EdgeInsets.all(context.w * 0.045),
@@ -41,23 +59,27 @@ class TasteCompassWidget extends StatelessWidget {
           if (!compass.hasMinimumData)
             _CompassEmpty(totalCount: compass.totalCount)
           else ...[
-            if (compass.topRegions.isNotEmpty) ...[
-              _SectionLabel(label: 'Top regions'),
-              SizedBox(height: context.xs),
-              for (final b in compass.topRegions)
-                _BucketRow(label: b.label, count: b.count, avg: b.avgRating),
+            if (showRadar) ...[
+              SizedBox(height: context.s),
+              CompassRadar(axes: radarAxes),
+              SizedBox(height: context.s),
+            ] else if (compass.topRegions.isNotEmpty ||
+                compass.topCountries.isNotEmpty) ...[
+              _CompactList(
+                buckets: compass.topCountries.isNotEmpty
+                    ? compass.topCountries
+                    : compass.topRegions,
+                heading: compass.topCountries.isNotEmpty
+                    ? 'Top countries'
+                    : 'Top regions',
+              ),
               SizedBox(height: context.m),
             ],
-            if (compass.topCountries.isNotEmpty) ...[
-              _SectionLabel(label: 'Top countries'),
-              SizedBox(height: context.xs),
-              for (final b in compass.topCountries)
-                _BucketRow(label: b.label, count: b.count, avg: b.avgRating),
+            if (showRadar && compass.topCountries.isNotEmpty) ...[
+              _CountryStrip(buckets: compass.topCountries),
               SizedBox(height: context.m),
             ],
             if (compass.typeBreakdown.isNotEmpty) ...[
-              _SectionLabel(label: 'Palette'),
-              SizedBox(height: context.xs),
               _PaletteRow(buckets: compass.typeBreakdown),
               SizedBox(height: context.m),
             ],
@@ -107,74 +129,112 @@ class _CompassEmpty extends StatelessWidget {
   }
 }
 
-class _SectionLabel extends StatelessWidget {
-  const _SectionLabel({required this.label});
+class _CompactList extends StatelessWidget {
+  const _CompactList({required this.buckets, required this.heading});
 
-  final String label;
+  final List<CompassBucket> buckets;
+  final String heading;
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    return Text(
-      label,
-      style: TextStyle(
-        fontSize: context.captionFont * 0.85,
-        fontWeight: FontWeight.w600,
-        color: cs.outline,
-        letterSpacing: 0.6,
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          heading,
+          style: TextStyle(
+            fontSize: context.captionFont * 0.85,
+            fontWeight: FontWeight.w600,
+            color: cs.outline,
+            letterSpacing: 0.6,
+          ),
+        ),
+        SizedBox(height: context.xs),
+        for (final b in buckets)
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: context.xs * 0.6),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    b.label,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: context.bodyFont * 0.95,
+                      color: cs.onSurface,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+                Text(
+                  '${b.count}',
+                  style: TextStyle(
+                    fontSize: context.captionFont,
+                    color: cs.onSurfaceVariant,
+                  ),
+                ),
+                SizedBox(width: context.w * 0.025),
+                Text(
+                  '${b.avgRating.toStringAsFixed(1)} ★',
+                  style: TextStyle(
+                    fontSize: context.captionFont,
+                    color: cs.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+      ],
     );
   }
 }
 
-class _BucketRow extends StatelessWidget {
-  const _BucketRow({
-    required this.label,
-    required this.count,
-    required this.avg,
-  });
+class _CountryStrip extends StatelessWidget {
+  const _CountryStrip({required this.buckets});
 
-  final String label;
-  final int count;
-  final double avg;
+  final List<CompassBucket> buckets;
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: context.xs * 0.6),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              label,
-              style: TextStyle(
-                fontSize: context.bodyFont * 0.95,
-                color: cs.onSurface,
-                fontWeight: FontWeight.w500,
+    return Wrap(
+      spacing: context.w * 0.02,
+      runSpacing: context.w * 0.015,
+      children: [
+        for (final b in buckets.take(6))
+          Container(
+            padding: EdgeInsets.symmetric(
+              horizontal: context.w * 0.025,
+              vertical: context.h * 0.006,
+            ),
+            decoration: BoxDecoration(
+              color: cs.surface,
+              borderRadius: BorderRadius.circular(context.w * 0.04),
+              border: Border.all(color: cs.outlineVariant, width: 0.5),
+            ),
+            child: RichText(
+              text: TextSpan(
+                style: TextStyle(
+                  fontSize: context.captionFont * 0.9,
+                  color: cs.onSurfaceVariant,
+                  fontWeight: FontWeight.w600,
+                ),
+                children: [
+                  TextSpan(text: b.label),
+                  TextSpan(
+                    text: '  ${b.count}',
+                    style: TextStyle(
+                      color: cs.outline,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
               ),
-              overflow: TextOverflow.ellipsis,
             ),
           ),
-          Text(
-            '$count',
-            style: TextStyle(
-              fontSize: context.captionFont,
-              color: cs.onSurfaceVariant,
-            ),
-          ),
-          SizedBox(width: context.w * 0.025),
-          Text(
-            '${avg.toStringAsFixed(1)} ★',
-            style: TextStyle(
-              fontSize: context.captionFont,
-              color: cs.primary,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
+      ],
     );
   }
 }
