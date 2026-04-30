@@ -142,7 +142,7 @@ class _ExpertSheetState extends ConsumerState<_ExpertSheet> {
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        _CompactRow(
+                        TastingCompactRow(
                           label: 'Body',
                           lowLabel: 'light',
                           highLabel: 'full',
@@ -151,7 +151,7 @@ class _ExpertSheetState extends ConsumerState<_ExpertSheet> {
                               setState(() => _draft = _draft.copyWith(body: v)),
                         ),
                         if (_isRed)
-                          _CompactRow(
+                          TastingCompactRow(
                             label: 'Tannin',
                             lowLabel: 'soft',
                             highLabel: 'gripping',
@@ -159,7 +159,7 @@ class _ExpertSheetState extends ConsumerState<_ExpertSheet> {
                             onChanged: (v) => setState(
                                 () => _draft = _draft.copyWith(tannin: v)),
                           ),
-                        _CompactRow(
+                        TastingCompactRow(
                           label: 'Acidity',
                           lowLabel: 'soft',
                           highLabel: 'crisp',
@@ -167,7 +167,7 @@ class _ExpertSheetState extends ConsumerState<_ExpertSheet> {
                           onChanged: (v) => setState(
                               () => _draft = _draft.copyWith(acidity: v)),
                         ),
-                        _CompactRow(
+                        TastingCompactRow(
                           label: 'Sweetness',
                           lowLabel: 'dry',
                           highLabel: 'sweet',
@@ -175,7 +175,7 @@ class _ExpertSheetState extends ConsumerState<_ExpertSheet> {
                           onChanged: (v) => setState(
                               () => _draft = _draft.copyWith(sweetness: v)),
                         ),
-                        _CompactRow(
+                        TastingCompactRow(
                           label: 'Oak',
                           lowLabel: 'unoaked',
                           highLabel: 'heavy',
@@ -184,13 +184,13 @@ class _ExpertSheetState extends ConsumerState<_ExpertSheet> {
                               setState(() => _draft = _draft.copyWith(oak: v)),
                         ),
                         SizedBox(height: context.xs),
-                        _FinishRow(
+                        TastingFinishRow(
                           value: _draft.finish,
                           onChanged: (v) => setState(
                               () => _draft = _draft.copyWith(finish: v)),
                         ),
                         SizedBox(height: context.s),
-                        _AromaSection(
+                        TastingAromaSection(
                           expanded: _aromasExpanded,
                           selected: _draft.aromaTags,
                           onToggleExpand: () => setState(
@@ -311,8 +311,9 @@ class _SheetHeader extends StatelessWidget {
   }
 }
 
-class _CompactRow extends StatelessWidget {
-  const _CompactRow({
+class TastingCompactRow extends StatelessWidget {
+  const TastingCompactRow({
+    super.key,
     required this.label,
     required this.lowLabel,
     required this.highLabel,
@@ -397,8 +398,8 @@ class _CompactRow extends StatelessWidget {
   }
 }
 
-class _FinishRow extends StatelessWidget {
-  const _FinishRow({required this.value, required this.onChanged});
+class TastingFinishRow extends StatelessWidget {
+  const TastingFinishRow({required this.value, required this.onChanged});
 
   final int? value;
   final ValueChanged<int?> onChanged;
@@ -456,8 +457,8 @@ class _FinishRow extends StatelessWidget {
   }
 }
 
-class _AromaSection extends StatelessWidget {
-  const _AromaSection({
+class TastingAromaSection extends StatelessWidget {
+  const TastingAromaSection({
     required this.expanded,
     required this.selected,
     required this.onToggleExpand,
