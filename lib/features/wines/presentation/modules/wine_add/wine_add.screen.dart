@@ -11,6 +11,7 @@ import '../../../../share_cards/presentation/widgets/wine_share_prompt_sheet.dar
 import '../../../controller/wine.provider.dart';
 import '../../../domain/entities/wine.entity.dart';
 import '../../../domain/entities/wine_memory.entity.dart';
+import '../../widgets/canonical_wine_prompt_sheet.dart';
 import '../../widgets/wine_form.widget.dart';
 
 class WineAddScreen extends ConsumerStatefulWidget {
@@ -76,6 +77,47 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
 
     final userId = ref.read(currentUserIdProvider);
     if (userId == null) return;
+
+    // Tier 2 prompt: ask the user before creating a near-duplicate
+    // canonical. Only fires when the suggestion RPC returns fuzzy
+    // candidates (no exact match exists). Decision is recorded so
+    // we never re-prompt the same input pair.
+    final canonicalApi = ref.read(canonicalWineApiProvider);
+    String? linkedCanonicalId;
+    if (canonicalApi != null) {
+      final suggestions = await canonicalApi.suggestMatch(
+        name: data.name,
+        winery: data.winery,
+        vintage: data.vintage,
+      );
+      final fuzzy = suggestions.where((c) => !c.isExact).toList();
+      if (fuzzy.isNotEmpty && mounted) {
+        final result = await showCanonicalWinePromptSheet(
+          context: context,
+          inputName: data.name,
+          inputWinery: data.winery,
+          inputVintage: data.vintage,
+          candidates: fuzzy,
+        );
+        if (result != null) {
+          if (result.isLinked) {
+            linkedCanonicalId = result.linkedCandidateId;
+          }
+          // Record the decision against every candidate the sheet
+          // showed so each one is remembered.
+          for (final c in fuzzy) {
+            await canonicalApi.recordDecision(
+              inputName: data.name,
+              inputWinery: data.winery,
+              inputVintage: data.vintage,
+              candidateId: c.id,
+              linked: result.isLinked && c.id == result.linkedCandidateId,
+            );
+          }
+        }
+      }
+    }
+
     final wineId = const Uuid().v4();
     final wine = WineEntity(
       id: wineId,
@@ -92,6 +134,7 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
       grape: data.grape,
       canonicalGrapeId: data.canonicalGrapeId,
       grapeFreetext: data.grapeFreetext,
+      canonicalWineId: linkedCanonicalId,
       winery: data.winery,
       vintage: data.vintage,
       imageUrl: data.imageUrl,

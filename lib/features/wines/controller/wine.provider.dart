@@ -4,6 +4,7 @@ import '../../../common/services/analytics/analytics.provider.dart';
 import '../../auth/controller/auth.provider.dart';
 import '../../onboarding/controller/onboarding.provider.dart';
 import '../domain/entities/canonical_grape.entity.dart';
+import '../domain/entities/canonical_wine_candidate.entity.dart';
 import '../domain/entities/wine.entity.dart';
 import '../domain/entities/wine_memory.entity.dart';
 import '../domain/repositories/canonical_grape.repository.dart';
@@ -11,6 +12,7 @@ import '../domain/repositories/wine.repository.dart';
 import '../domain/repositories/wine_alias.repository.dart';
 import '../domain/repositories/wine_memory.repository.dart';
 import '../data/data_sources/canonical_grape_supabase.api.dart';
+import '../data/data_sources/canonical_wine.api.dart';
 import '../data/data_sources/wine_alias_supabase.api.dart';
 import '../data/data_sources/wine_image.service.dart';
 import '../data/data_sources/wine_memory_supabase.api.dart';
@@ -140,6 +142,30 @@ Future<CanonicalGrapeEntity?> canonicalGrape(
   String id,
 ) {
   return ref.read(canonicalGrapeRepositoryProvider).getById(id);
+}
+
+@riverpod
+CanonicalWineApi? canonicalWineApi(CanonicalWineApiRef ref) {
+  final isAuth = ref.watch(isAuthenticatedProvider);
+  if (!isAuth) return null;
+  final client = ref.read(supabaseClientProvider);
+  return CanonicalWineApi(client);
+}
+
+/// Looks up Tier 1 / Tier 2 canonical candidates for a wine the user is
+/// about to add or edit. Returns empty list when no API client is
+/// available (signed out) or the input name is too short to match.
+@riverpod
+Future<List<CanonicalWineCandidate>> canonicalWineSuggestions(
+  CanonicalWineSuggestionsRef ref, {
+  required String wineName,
+  String? winery,
+  int? vintage,
+}) async {
+  final api = ref.read(canonicalWineApiProvider);
+  if (api == null) return const [];
+  if (wineName.trim().length < 2) return const [];
+  return api.suggestMatch(name: wineName, winery: winery, vintage: vintage);
 }
 
 // ========================================

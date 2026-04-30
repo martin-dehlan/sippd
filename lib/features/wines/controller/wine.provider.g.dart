@@ -530,6 +530,219 @@ class _CanonicalGrapeProviderElement
   String get id => (origin as CanonicalGrapeProvider).id;
 }
 
+String _$canonicalWineApiHash() => r'b877af96028f5022e7ca58fe9f8c462daddb69b5';
+
+/// See also [canonicalWineApi].
+@ProviderFor(canonicalWineApi)
+final canonicalWineApiProvider =
+    AutoDisposeProvider<CanonicalWineApi?>.internal(
+      canonicalWineApi,
+      name: r'canonicalWineApiProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$canonicalWineApiHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef CanonicalWineApiRef = AutoDisposeProviderRef<CanonicalWineApi?>;
+String _$canonicalWineSuggestionsHash() =>
+    r'e3fc0f2f8fc319791846bb021445bf2782350c22';
+
+/// Looks up Tier 1 / Tier 2 canonical candidates for a wine the user is
+/// about to add or edit. Returns empty list when no API client is
+/// available (signed out) or the input name is too short to match.
+///
+/// Copied from [canonicalWineSuggestions].
+@ProviderFor(canonicalWineSuggestions)
+const canonicalWineSuggestionsProvider = CanonicalWineSuggestionsFamily();
+
+/// Looks up Tier 1 / Tier 2 canonical candidates for a wine the user is
+/// about to add or edit. Returns empty list when no API client is
+/// available (signed out) or the input name is too short to match.
+///
+/// Copied from [canonicalWineSuggestions].
+class CanonicalWineSuggestionsFamily
+    extends Family<AsyncValue<List<CanonicalWineCandidate>>> {
+  /// Looks up Tier 1 / Tier 2 canonical candidates for a wine the user is
+  /// about to add or edit. Returns empty list when no API client is
+  /// available (signed out) or the input name is too short to match.
+  ///
+  /// Copied from [canonicalWineSuggestions].
+  const CanonicalWineSuggestionsFamily();
+
+  /// Looks up Tier 1 / Tier 2 canonical candidates for a wine the user is
+  /// about to add or edit. Returns empty list when no API client is
+  /// available (signed out) or the input name is too short to match.
+  ///
+  /// Copied from [canonicalWineSuggestions].
+  CanonicalWineSuggestionsProvider call({
+    required String wineName,
+    String? winery,
+    int? vintage,
+  }) {
+    return CanonicalWineSuggestionsProvider(
+      wineName: wineName,
+      winery: winery,
+      vintage: vintage,
+    );
+  }
+
+  @override
+  CanonicalWineSuggestionsProvider getProviderOverride(
+    covariant CanonicalWineSuggestionsProvider provider,
+  ) {
+    return call(
+      wineName: provider.wineName,
+      winery: provider.winery,
+      vintage: provider.vintage,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'canonicalWineSuggestionsProvider';
+}
+
+/// Looks up Tier 1 / Tier 2 canonical candidates for a wine the user is
+/// about to add or edit. Returns empty list when no API client is
+/// available (signed out) or the input name is too short to match.
+///
+/// Copied from [canonicalWineSuggestions].
+class CanonicalWineSuggestionsProvider
+    extends AutoDisposeFutureProvider<List<CanonicalWineCandidate>> {
+  /// Looks up Tier 1 / Tier 2 canonical candidates for a wine the user is
+  /// about to add or edit. Returns empty list when no API client is
+  /// available (signed out) or the input name is too short to match.
+  ///
+  /// Copied from [canonicalWineSuggestions].
+  CanonicalWineSuggestionsProvider({
+    required String wineName,
+    String? winery,
+    int? vintage,
+  }) : this._internal(
+         (ref) => canonicalWineSuggestions(
+           ref as CanonicalWineSuggestionsRef,
+           wineName: wineName,
+           winery: winery,
+           vintage: vintage,
+         ),
+         from: canonicalWineSuggestionsProvider,
+         name: r'canonicalWineSuggestionsProvider',
+         debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+             ? null
+             : _$canonicalWineSuggestionsHash,
+         dependencies: CanonicalWineSuggestionsFamily._dependencies,
+         allTransitiveDependencies:
+             CanonicalWineSuggestionsFamily._allTransitiveDependencies,
+         wineName: wineName,
+         winery: winery,
+         vintage: vintage,
+       );
+
+  CanonicalWineSuggestionsProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.wineName,
+    required this.winery,
+    required this.vintage,
+  }) : super.internal();
+
+  final String wineName;
+  final String? winery;
+  final int? vintage;
+
+  @override
+  Override overrideWith(
+    FutureOr<List<CanonicalWineCandidate>> Function(
+      CanonicalWineSuggestionsRef provider,
+    )
+    create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: CanonicalWineSuggestionsProvider._internal(
+        (ref) => create(ref as CanonicalWineSuggestionsRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        wineName: wineName,
+        winery: winery,
+        vintage: vintage,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<List<CanonicalWineCandidate>>
+  createElement() {
+    return _CanonicalWineSuggestionsProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is CanonicalWineSuggestionsProvider &&
+        other.wineName == wineName &&
+        other.winery == winery &&
+        other.vintage == vintage;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, wineName.hashCode);
+    hash = _SystemHash.combine(hash, winery.hashCode);
+    hash = _SystemHash.combine(hash, vintage.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin CanonicalWineSuggestionsRef
+    on AutoDisposeFutureProviderRef<List<CanonicalWineCandidate>> {
+  /// The parameter `wineName` of this provider.
+  String get wineName;
+
+  /// The parameter `winery` of this provider.
+  String? get winery;
+
+  /// The parameter `vintage` of this provider.
+  int? get vintage;
+}
+
+class _CanonicalWineSuggestionsProviderElement
+    extends AutoDisposeFutureProviderElement<List<CanonicalWineCandidate>>
+    with CanonicalWineSuggestionsRef {
+  _CanonicalWineSuggestionsProviderElement(super.provider);
+
+  @override
+  String get wineName => (origin as CanonicalWineSuggestionsProvider).wineName;
+  @override
+  String? get winery => (origin as CanonicalWineSuggestionsProvider).winery;
+  @override
+  int? get vintage => (origin as CanonicalWineSuggestionsProvider).vintage;
+}
+
 String _$wineDetailHash() => r'e16e2db7c1f552d816b73dc417075b660dab01b5';
 
 /// See also [wineDetail].
