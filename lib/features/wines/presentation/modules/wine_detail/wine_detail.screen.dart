@@ -12,11 +12,13 @@ import '../../../../../common/widgets/overflow_menu.widget.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../../auth/controller/auth.provider.dart';
 import '../../../../groups/presentation/widgets/share_wine_sheet.dart';
+import '../../../../paywall/controller/paywall.provider.dart';
 import '../../../../profile/controller/profile.provider.dart';
 import '../../../../share_cards/controller/share_card.provider.dart';
 import '../../../controller/wine.provider.dart';
 import '../../../domain/entities/wine.entity.dart';
 import '../../../domain/entities/wine_memory.entity.dart';
+import '../../widgets/expert_tasting_sheet.dart';
 
 class WineDetailScreen extends ConsumerWidget {
   final String wineId;
@@ -172,6 +174,22 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
                                 AppRoutes.wineEditPath(widget.wine.id),
                               ),
                               onDelete: () => _confirmDelete(context),
+                              onTastingNotes: () {
+                                final isPro = ref.read(isProProvider);
+                                if (!isPro) {
+                                  context.push(
+                                    AppRoutes.paywall,
+                                    extra: const {
+                                      'source': 'expert_tasting',
+                                    },
+                                  );
+                                  return;
+                                }
+                                showExpertTastingSheet(
+                                  context: context,
+                                  wine: widget.wine,
+                                );
+                              },
                             ),
                           ),
                         ],
@@ -311,12 +329,14 @@ class _WineOverflowMenu extends StatelessWidget {
   final VoidCallback onShareImage;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
+  final VoidCallback? onTastingNotes;
 
   const _WineOverflowMenu({
     required this.onShareToGroup,
     required this.onShareImage,
     required this.onEdit,
     required this.onDelete,
+    this.onTastingNotes,
   });
 
   @override
@@ -342,6 +362,12 @@ class _WineOverflowMenu extends StatelessWidget {
             label: 'Edit wine',
             onTap: onEdit,
           ),
+          if (onTastingNotes != null)
+            OverflowMenuItem(
+              icon: PhosphorIconsRegular.notebook,
+              label: 'Tasting notes (Pro)',
+              onTap: onTastingNotes!,
+            ),
           OverflowMenuItem(
             icon: PhosphorIconsRegular.trash,
             label: 'Delete wine',
