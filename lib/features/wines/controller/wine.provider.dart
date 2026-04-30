@@ -3,15 +3,19 @@ import '../../../common/database/database.dart';
 import '../../../common/services/analytics/analytics.provider.dart';
 import '../../auth/controller/auth.provider.dart';
 import '../../onboarding/controller/onboarding.provider.dart';
+import '../domain/entities/canonical_grape.entity.dart';
 import '../domain/entities/wine.entity.dart';
 import '../domain/entities/wine_memory.entity.dart';
+import '../domain/repositories/canonical_grape.repository.dart';
 import '../domain/repositories/wine.repository.dart';
 import '../domain/repositories/wine_alias.repository.dart';
 import '../domain/repositories/wine_memory.repository.dart';
+import '../data/data_sources/canonical_grape_supabase.api.dart';
 import '../data/data_sources/wine_alias_supabase.api.dart';
 import '../data/data_sources/wine_image.service.dart';
 import '../data/data_sources/wine_memory_supabase.api.dart';
 import '../data/data_sources/wine_supabase.api.dart';
+import '../data/repositories/canonical_grape.repository.impl.dart';
 import '../data/repositories/wine.repository.impl.dart';
 import '../data/repositories/wine_alias.repository.impl.dart';
 import '../data/repositories/wine_memory.repository.impl.dart';
@@ -79,6 +83,63 @@ WineMemoryRepository wineMemoryRepository(WineMemoryRepositoryRef ref) {
   final db = ref.read(appDatabaseProvider);
   final api = ref.watch(wineMemorySupabaseApiProvider);
   return WineMemoryRepositoryImpl(db.wineMemoriesDao, api);
+}
+
+@riverpod
+CanonicalGrapeSupabaseApi? canonicalGrapeSupabaseApi(
+  CanonicalGrapeSupabaseApiRef ref,
+) {
+  final isAuth = ref.watch(isAuthenticatedProvider);
+  if (!isAuth) return null;
+  final client = ref.read(supabaseClientProvider);
+  return CanonicalGrapeSupabaseApi(client);
+}
+
+@riverpod
+CanonicalGrapeRepository canonicalGrapeRepository(
+  CanonicalGrapeRepositoryRef ref,
+) {
+  final db = ref.read(appDatabaseProvider);
+  final api = ref.watch(canonicalGrapeSupabaseApiProvider);
+  return CanonicalGrapeRepositoryImpl(db.canonicalGrapeDao, api);
+}
+
+/// Kicks off a remote sync of the canonical catalog the first time the
+/// provider is read. Kept alive so subsequent reads return the cached
+/// future instead of re-syncing on every UI rebuild.
+@Riverpod(keepAlive: true)
+Future<void> canonicalGrapeSync(CanonicalGrapeSyncRef ref) async {
+  final repo = ref.watch(canonicalGrapeRepositoryProvider);
+  await repo.syncFromRemote();
+}
+
+/// Full sorted catalog. Awaits the initial sync so newly-installed apps
+/// see the catalog before the user touches the grape picker.
+@riverpod
+Future<List<CanonicalGrapeEntity>> canonicalGrapesAll(
+  CanonicalGrapesAllRef ref,
+) async {
+  await ref.watch(canonicalGrapeSyncProvider.future);
+  return ref.read(canonicalGrapeRepositoryProvider).getAll();
+}
+
+/// Search results for the typeahead. Empty query returns the full list.
+@riverpod
+Future<List<CanonicalGrapeEntity>> canonicalGrapesSearch(
+  CanonicalGrapesSearchRef ref,
+  String query,
+) async {
+  await ref.watch(canonicalGrapeSyncProvider.future);
+  return ref.read(canonicalGrapeRepositoryProvider).search(query);
+}
+
+/// Single grape lookup used by wine_detail to render the resolved name.
+@riverpod
+Future<CanonicalGrapeEntity?> canonicalGrape(
+  CanonicalGrapeRef ref,
+  String id,
+) {
+  return ref.read(canonicalGrapeRepositoryProvider).getById(id);
 }
 
 // ========================================

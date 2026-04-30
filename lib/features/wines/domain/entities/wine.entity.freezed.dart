@@ -33,6 +33,8 @@ mixin _$WineEntity {
   String? get localImagePath => throw _privateConstructorUsedError;
   int? get vintage => throw _privateConstructorUsedError;
   String? get grape => throw _privateConstructorUsedError;
+  String? get canonicalGrapeId => throw _privateConstructorUsedError;
+  String? get grapeFreetext => throw _privateConstructorUsedError;
   String? get winery => throw _privateConstructorUsedError;
   String? get nameNorm => throw _privateConstructorUsedError;
   String get userId => throw _privateConstructorUsedError;
@@ -71,6 +73,8 @@ abstract class $WineEntityCopyWith<$Res> {
     String? localImagePath,
     int? vintage,
     String? grape,
+    String? canonicalGrapeId,
+    String? grapeFreetext,
     String? winery,
     String? nameNorm,
     String userId,
@@ -111,6 +115,8 @@ class _$WineEntityCopyWithImpl<$Res, $Val extends WineEntity>
     Object? localImagePath = freezed,
     Object? vintage = freezed,
     Object? grape = freezed,
+    Object? canonicalGrapeId = freezed,
+    Object? grapeFreetext = freezed,
     Object? winery = freezed,
     Object? nameNorm = freezed,
     Object? userId = null,
@@ -184,6 +190,14 @@ class _$WineEntityCopyWithImpl<$Res, $Val extends WineEntity>
                 ? _value.grape
                 : grape // ignore: cast_nullable_to_non_nullable
                       as String?,
+            canonicalGrapeId: freezed == canonicalGrapeId
+                ? _value.canonicalGrapeId
+                : canonicalGrapeId // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            grapeFreetext: freezed == grapeFreetext
+                ? _value.grapeFreetext
+                : grapeFreetext // ignore: cast_nullable_to_non_nullable
+                      as String?,
             winery: freezed == winery
                 ? _value.winery
                 : winery // ignore: cast_nullable_to_non_nullable
@@ -240,6 +254,8 @@ abstract class _$$WineEntityImplCopyWith<$Res>
     String? localImagePath,
     int? vintage,
     String? grape,
+    String? canonicalGrapeId,
+    String? grapeFreetext,
     String? winery,
     String? nameNorm,
     String userId,
@@ -279,6 +295,8 @@ class __$$WineEntityImplCopyWithImpl<$Res>
     Object? localImagePath = freezed,
     Object? vintage = freezed,
     Object? grape = freezed,
+    Object? canonicalGrapeId = freezed,
+    Object? grapeFreetext = freezed,
     Object? winery = freezed,
     Object? nameNorm = freezed,
     Object? userId = null,
@@ -352,6 +370,14 @@ class __$$WineEntityImplCopyWithImpl<$Res>
             ? _value.grape
             : grape // ignore: cast_nullable_to_non_nullable
                   as String?,
+        canonicalGrapeId: freezed == canonicalGrapeId
+            ? _value.canonicalGrapeId
+            : canonicalGrapeId // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        grapeFreetext: freezed == grapeFreetext
+            ? _value.grapeFreetext
+            : grapeFreetext // ignore: cast_nullable_to_non_nullable
+                  as String?,
         winery: freezed == winery
             ? _value.winery
             : winery // ignore: cast_nullable_to_non_nullable
@@ -401,6 +427,8 @@ class _$WineEntityImpl implements _WineEntity {
     this.localImagePath,
     this.vintage,
     this.grape,
+    this.canonicalGrapeId,
+    this.grapeFreetext,
     this.winery,
     this.nameNorm,
     required this.userId,
@@ -443,6 +471,10 @@ class _$WineEntityImpl implements _WineEntity {
   @override
   final String? grape;
   @override
+  final String? canonicalGrapeId;
+  @override
+  final String? grapeFreetext;
+  @override
   final String? winery;
   @override
   final String? nameNorm;
@@ -458,7 +490,7 @@ class _$WineEntityImpl implements _WineEntity {
 
   @override
   String toString() {
-    return 'WineEntity(id: $id, name: $name, rating: $rating, type: $type, price: $price, currency: $currency, country: $country, region: $region, location: $location, latitude: $latitude, longitude: $longitude, notes: $notes, imageUrl: $imageUrl, localImagePath: $localImagePath, vintage: $vintage, grape: $grape, winery: $winery, nameNorm: $nameNorm, userId: $userId, visibility: $visibility, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'WineEntity(id: $id, name: $name, rating: $rating, type: $type, price: $price, currency: $currency, country: $country, region: $region, location: $location, latitude: $latitude, longitude: $longitude, notes: $notes, imageUrl: $imageUrl, localImagePath: $localImagePath, vintage: $vintage, grape: $grape, canonicalGrapeId: $canonicalGrapeId, grapeFreetext: $grapeFreetext, winery: $winery, nameNorm: $nameNorm, userId: $userId, visibility: $visibility, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -488,6 +520,10 @@ class _$WineEntityImpl implements _WineEntity {
                 other.localImagePath == localImagePath) &&
             (identical(other.vintage, vintage) || other.vintage == vintage) &&
             (identical(other.grape, grape) || other.grape == grape) &&
+            (identical(other.canonicalGrapeId, canonicalGrapeId) ||
+                other.canonicalGrapeId == canonicalGrapeId) &&
+            (identical(other.grapeFreetext, grapeFreetext) ||
+                other.grapeFreetext == grapeFreetext) &&
             (identical(other.winery, winery) || other.winery == winery) &&
             (identical(other.nameNorm, nameNorm) ||
                 other.nameNorm == nameNorm) &&
@@ -519,6 +555,8 @@ class _$WineEntityImpl implements _WineEntity {
     localImagePath,
     vintage,
     grape,
+    canonicalGrapeId,
+    grapeFreetext,
     winery,
     nameNorm,
     userId,
@@ -554,6 +592,8 @@ abstract class _WineEntity implements WineEntity {
     final String? localImagePath,
     final int? vintage,
     final String? grape,
+    final String? canonicalGrapeId,
+    final String? grapeFreetext,
     final String? winery,
     final String? nameNorm,
     required final String userId,
@@ -594,6 +634,10 @@ abstract class _WineEntity implements WineEntity {
   int? get vintage;
   @override
   String? get grape;
+  @override
+  String? get canonicalGrapeId;
+  @override
+  String? get grapeFreetext;
   @override
   String? get winery;
   @override
