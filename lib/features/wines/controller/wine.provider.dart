@@ -4,6 +4,7 @@ import '../../../common/services/analytics/analytics.provider.dart';
 import '../../auth/controller/auth.provider.dart';
 import '../../onboarding/controller/onboarding.provider.dart';
 import '../domain/entities/canonical_grape.entity.dart';
+import '../domain/entities/canonical_merge_pair.entity.dart';
 import '../domain/entities/canonical_wine_candidate.entity.dart';
 import '../domain/entities/wine.entity.dart';
 import '../domain/entities/wine_memory.entity.dart';
@@ -166,6 +167,29 @@ Future<List<CanonicalWineCandidate>> canonicalWineSuggestions(
   if (api == null) return const [];
   if (wineName.trim().length < 2) return const [];
   return api.suggestMatch(name: wineName, winery: winery, vintage: vintage);
+}
+
+/// Pairs of canonicals the caller can merge. Drives the cleanup
+/// screen in profile settings. Empty when nothing matches the
+/// similarity threshold.
+@riverpod
+class CanonicalMergeCandidates extends _$CanonicalMergeCandidates {
+  @override
+  Future<List<CanonicalMergePair>> build() async {
+    final api = ref.watch(canonicalWineApiProvider);
+    if (api == null) return const [];
+    return api.findMergeCandidates();
+  }
+
+  Future<void> merge({
+    required String loserId,
+    required String winnerId,
+  }) async {
+    final api = ref.read(canonicalWineApiProvider);
+    if (api == null) return;
+    await api.mergeCanonicals(loserId: loserId, winnerId: winnerId);
+    ref.invalidateSelf();
+  }
 }
 
 // ========================================

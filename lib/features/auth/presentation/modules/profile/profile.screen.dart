@@ -154,6 +154,11 @@ class ProfileScreen extends ConsumerWidget {
                 onTap: () => context.push(AppRoutes.profileNotifications),
               ),
               _MenuItem(
+                icon: PhosphorIconsRegular.stack,
+                label: 'Clean up duplicates',
+                onTap: () => context.push(AppRoutes.wineCleanup),
+              ),
+              _MenuItem(
                 icon: PhosphorIconsRegular.sparkle,
                 label: 'Subscription',
                 onTap: () => context.push(AppRoutes.subscription),

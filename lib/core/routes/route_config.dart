@@ -21,6 +21,7 @@ import '../../features/profile/controller/profile.provider.dart';
 import '../../features/profile/presentation/modules/choose_username/choose_username.screen.dart';
 import '../../features/profile/presentation/modules/edit_profile/edit_profile.screen.dart';
 import '../../features/profile/presentation/modules/notification_settings/notification_settings.screen.dart';
+import '../../features/wines/presentation/modules/wine_cleanup/wine_cleanup.screen.dart';
 import '../../features/friends/presentation/modules/friend_profile/friend_profile.screen.dart';
 import '../../features/friends/presentation/modules/friends/friends.screen.dart';
 import '../../features/groups/presentation/modules/group_detail/group_detail.screen.dart';
@@ -275,6 +276,10 @@ GoRouter goRouter(GoRouterRef ref) {
       GoRoute(
         path: AppRoutes.profileNotifications,
         builder: (context, state) => const NotificationSettingsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.wineCleanup,
+        builder: (context, state) => const WineCleanupScreen(),
       ),
 
       // Paywall (shown as a fullscreen page; trigger source passed via extra)

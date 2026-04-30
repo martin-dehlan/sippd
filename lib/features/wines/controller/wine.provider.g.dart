@@ -862,6 +862,31 @@ class _WineDetailProviderElement
   String get wineId => (origin as WineDetailProvider).wineId;
 }
 
+String _$canonicalMergeCandidatesHash() =>
+    r'2ef73e3761dcf6b6a5fca30f3616e7e5dbd9cb6b';
+
+/// Pairs of canonicals the caller can merge. Drives the cleanup
+/// screen in profile settings. Empty when nothing matches the
+/// similarity threshold.
+///
+/// Copied from [CanonicalMergeCandidates].
+@ProviderFor(CanonicalMergeCandidates)
+final canonicalMergeCandidatesProvider =
+    AutoDisposeAsyncNotifierProvider<
+      CanonicalMergeCandidates,
+      List<CanonicalMergePair>
+    >.internal(
+      CanonicalMergeCandidates.new,
+      name: r'canonicalMergeCandidatesProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$canonicalMergeCandidatesHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+typedef _$CanonicalMergeCandidates =
+    AutoDisposeAsyncNotifier<List<CanonicalMergePair>>;
 String _$wineControllerHash() => r'4d35f9c044446e4054756e8cf05997649e8df3af';
 
 /// See also [WineController].

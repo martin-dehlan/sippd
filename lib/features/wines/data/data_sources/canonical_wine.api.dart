@@ -1,5 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../domain/entities/canonical_merge_pair.entity.dart';
 import '../../domain/entities/canonical_wine_candidate.entity.dart';
 
 class CanonicalWineApi {
@@ -53,6 +54,51 @@ class CanonicalWineApi {
         'p_input_vintage': inputVintage,
         'p_candidate_id': candidateId,
         'p_decision': linked ? 'linked' : 'different',
+      },
+    );
+  }
+
+  /// Pairs of canonicals the caller participates in that look similar
+  /// enough to potentially merge. Used by the manual cleanup screen.
+  Future<List<CanonicalMergePair>> findMergeCandidates({
+    double minSimilarity = 0.6,
+    int limit = 50,
+  }) async {
+    final data = await _client.rpc(
+      'find_canonical_merge_candidates',
+      params: {
+        'p_min_similarity': minSimilarity,
+        'p_limit': limit,
+      },
+    );
+    if (data == null) return const [];
+    return (data as List)
+        .map((row) => CanonicalMergePair(
+              loserId: row['loser_id'] as String,
+              winnerId: row['winner_id'] as String,
+              loserName: row['loser_name'] as String,
+              winnerName: row['winner_name'] as String,
+              loserWinery: row['loser_winery'] as String?,
+              winnerWinery: row['winner_winery'] as String?,
+              loserVintage: row['loser_vintage'] as int?,
+              winnerVintage: row['winner_vintage'] as int?,
+              similarity: (row['similarity'] as num).toDouble(),
+            ))
+        .toList();
+  }
+
+  /// Collapses two canonicals into one. The winner stays; every wines
+  /// row pointing at the loser gets repointed at the winner; the
+  /// loser canonical is deleted.
+  Future<void> mergeCanonicals({
+    required String loserId,
+    required String winnerId,
+  }) async {
+    await _client.rpc(
+      'merge_canonical_wines',
+      params: {
+        'p_loser_id': loserId,
+        'p_winner_id': winnerId,
       },
     );
   }

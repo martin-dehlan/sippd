@@ -16,6 +16,7 @@ class AppRoutes {
   static const String profile = '/profile';
   static const String profileEdit = '/profile/edit';
   static const String profileNotifications = '/profile/notifications';
+  static const String wineCleanup = '/profile/wine-cleanup';
 
   // Wine
   static const String wineStats = '/wines/stats';
