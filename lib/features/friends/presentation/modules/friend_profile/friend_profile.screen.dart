@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/stats_card.widget.dart';
 import '../../../../groups/presentation/widgets/friend_actions_sheet.widget.dart';
+import '../../../../taste_match/presentation/widgets/friend_taste_match_section.widget.dart';
 import '../../../../wines/domain/entities/wine.entity.dart';
 import '../../../controller/friends.provider.dart';
 import '../../../domain/entities/friend_profile.entity.dart';
@@ -89,6 +90,15 @@ class _Body extends StatelessWidget {
             data: (wines) => StatsCard(stats: _statsFor(wines)),
             loading: () => StatsCard(stats: _statsFor(const [])),
             error: (_, __) => const SizedBox.shrink(),
+          ),
+        ),
+        SizedBox(height: context.xl),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: padH),
+          child: FriendTasteMatchSection(
+            friendId: profile.id,
+            friendDisplayName:
+                profile.displayName ?? profile.username ?? 'Friend',
           ),
         ),
         SizedBox(height: context.xl),

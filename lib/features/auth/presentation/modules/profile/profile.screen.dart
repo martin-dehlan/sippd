@@ -11,6 +11,8 @@ import '../../../../profile/controller/profile.provider.dart';
 import '../../../../profile/presentation/widgets/profile_avatar.widget.dart';
 import '../../../../profile/presentation/widgets/taste_profile_card.widget.dart';
 import '../../../../push/controller/push.provider.dart';
+import '../../../../taste_match/controller/taste_match.provider.dart';
+import '../../../../taste_match/presentation/widgets/taste_compass.widget.dart';
 import '../../../../wines/controller/wine.provider.dart';
 import '../../../controller/auth.provider.dart';
 import '../email_confirmation/email_confirmation.screen.dart';
@@ -117,7 +119,21 @@ class ProfileScreen extends ConsumerWidget {
               loading: () => const SizedBox.shrink(),
               error: (_, _) => const SizedBox.shrink(),
             ),
-            SizedBox(height: context.xl),
+            SizedBox(height: context.l),
+
+            // Taste compass — own user, free, derived from rated wines
+            if (user != null)
+              ref.watch(tasteCompassProvider(user.id)).when(
+                    data: (compass) => Padding(
+                      padding: EdgeInsets.only(bottom: context.xl),
+                      child: TasteCompassWidget(
+                        compass: compass,
+                        title: 'Your compass',
+                      ),
+                    ),
+                    loading: () => const SizedBox.shrink(),
+                    error: (_, _) => const SizedBox.shrink(),
+                  ),
 
             // ACCOUNT
             if (user != null) ...[
