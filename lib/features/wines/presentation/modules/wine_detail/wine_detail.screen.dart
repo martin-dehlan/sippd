@@ -210,7 +210,7 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
                   widget.wine.notes!.isNotEmpty) ...[
                 SizedBox(height: context.xl),
                 const _SectionHeader(label: 'NOTES'),
-                SizedBox(height: context.s),
+                SizedBox(height: context.m),
                 _NotesBlock(notes: widget.wine.notes!),
               ],
               SizedBox(height: context.xl),
@@ -607,13 +607,31 @@ class _NotesBlock extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: context.paddingH),
-      child: Text(
-        notes,
-        style: TextStyle(
-          fontSize: context.bodyFont,
-          height: 1.5,
-          color: cs.onSurface,
+      padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Container(
+              width: 2,
+              color: cs.outlineVariant,
+            ),
+            SizedBox(width: context.w * 0.035),
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: context.xs),
+                child: Text(
+                  notes,
+                  style: TextStyle(
+                    fontSize: context.bodyFont * 1.02,
+                    height: 1.55,
+                    color: cs.onSurfaceVariant,
+                    letterSpacing: 0.1,
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
