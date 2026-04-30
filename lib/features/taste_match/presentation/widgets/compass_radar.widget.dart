@@ -1,144 +1,215 @@
 import 'dart:math' as math;
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 
 import '../../../../common/utils/responsive.dart';
+import '../../domain/entities/taste_compass.entity.dart';
 
-/// Renders a 3-to-6-axis radar chart for the taste compass. Each axis
-/// is one of the user's top buckets (region or country); the radial
-/// value is the bucket count normalised to the largest bucket. Sub-
-/// label sits under the bucket name and shows the average rating.
+/// Six-axis taste fingerprint. Fixed dimensions so the shape never
+/// degenerates into a sliver and the radar always reads as a compass:
+///
+///   1. Red          — share of red bottles
+///   2. White        — share of white bottles
+///   3. Sparkling    — share of sparkling + rosé (the "fizzy / pale" axis)
+///   4. Old World    — share of EU heritage countries
+///   5. New World    — share of non-EU producers
+///   6. Adventurous  — variety of distinct regions, capped at six
+///
+/// Every value is normalised to 0..1 so the polygon shape encodes the
+/// user's taste lean instead of raw counts. A subtle radial gradient
+/// behind the chart pulls focus to the centre; only one ring + the
+/// outline polygon are drawn so the data shape is the focal point.
 class CompassRadar extends StatelessWidget {
-  const CompassRadar({super.key, required this.axes});
+  const CompassRadar({super.key, required this.compass});
 
-  final List<RadarAxisData> axes;
+  final TasteCompassEntity compass;
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    if (axes.length < 3) {
-      // Radar geometry needs ≥3 axes — caller should branch on this and
-      // render a list instead.
-      return const SizedBox.shrink();
-    }
-
-    final maxValue = axes
-        .map((a) => a.value)
-        .fold<double>(0, (m, v) => v > m ? v : m);
-    if (maxValue <= 0) {
-      return const SizedBox.shrink();
-    }
+    final fingerprint = _buildFingerprint(compass);
+    if (fingerprint.allEmpty) return const SizedBox.shrink();
 
     return AspectRatio(
       aspectRatio: 1,
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: context.w * 0.04),
-        child: CustomPaint(
-          painter: _RadarPainter(
-            axes: axes,
-            maxValue: maxValue,
-            fillColor: cs.primary.withValues(alpha: 0.18),
-            strokeColor: cs.primary,
-            vertexColor: cs.primary,
-            gridColor: cs.outlineVariant,
-            labelColor: cs.onSurface,
-            sublabelColor: cs.onSurfaceVariant,
-            labelFontSize: context.captionFont * 0.95,
-            sublabelFontSize: context.captionFont * 0.8,
-          ),
+      child: CustomPaint(
+        painter: _FingerprintPainter(
+          axes: fingerprint.axes,
+          fillColor: cs.primary.withValues(alpha: 0.22),
+          strokeColor: cs.primary,
+          vertexColor: cs.primary,
+          ringColor: cs.outlineVariant.withValues(alpha: 0.45),
+          haloColor: cs.primary.withValues(alpha: 0.05),
+          labelColor: cs.onSurface,
+          mutedLabelColor: cs.onSurfaceVariant,
+          labelFontSize: context.captionFont,
+          mutedFontSize: context.captionFont * 0.78,
         ),
       ),
     );
   }
 }
 
-class RadarAxisData {
-  const RadarAxisData({
-    required this.label,
-    this.sublabel,
-    required this.value,
-  });
-
+class _Axis {
+  const _Axis({required this.label, required this.value, this.detail});
   final String label;
-  final String? sublabel;
-  final double value;
+  final double value; // 0..1
+  final String? detail;
 }
 
-class _RadarPainter extends CustomPainter {
-  _RadarPainter({
+class _Fingerprint {
+  const _Fingerprint(this.axes);
+  final List<_Axis> axes;
+  bool get allEmpty => axes.every((a) => a.value <= 0);
+}
+
+const _oldWorldCountries = {
+  'france', 'italy', 'spain', 'germany', 'portugal', 'austria',
+  'greece', 'hungary', 'croatia', 'slovenia', 'georgia', 'romania',
+  'bulgaria', 'switzerland', 'czechia', 'czech republic', 'slovakia',
+  'moldova', 'ukraine', 'serbia', 'macedonia', 'cyprus', 'lebanon',
+  'turkey', 'israel',
+};
+const _newWorldCountries = {
+  'united states', 'usa', 'us', 'argentina', 'chile', 'australia',
+  'new zealand', 'south africa', 'canada', 'brazil', 'uruguay',
+  'mexico', 'china', 'japan', 'india',
+};
+
+_Fingerprint _buildFingerprint(TasteCompassEntity c) {
+  final total = c.totalCount;
+  if (total <= 0) {
+    return const _Fingerprint([]);
+  }
+
+  int countOf(String type) => c.typeBreakdown
+      .where((b) => b.label.toLowerCase() == type)
+      .fold<int>(0, (sum, b) => sum + b.count);
+
+  final red = countOf('red');
+  final white = countOf('white');
+  final rose = countOf('rose');
+  final sparkling = countOf('sparkling');
+
+  int countryShare(Set<String> set) => c.topCountries
+      .where((b) => set.contains(b.label.toLowerCase()))
+      .fold<int>(0, (sum, b) => sum + b.count);
+
+  final oldWorld = countryShare(_oldWorldCountries);
+  final newWorld = countryShare(_newWorldCountries);
+
+  final adventurous = (c.topRegions.length / 6).clamp(0.0, 1.0);
+
+  String pct(int n) => total == 0 ? '' : '${(n * 100 / total).round()}%';
+
+  return _Fingerprint([
+    _Axis(
+      label: 'Red',
+      value: red / total,
+      detail: pct(red),
+    ),
+    _Axis(
+      label: 'New world',
+      value: newWorld / total,
+      detail: pct(newWorld),
+    ),
+    _Axis(
+      label: 'Adventurous',
+      value: adventurous,
+      detail: '${c.topRegions.length} regions',
+    ),
+    _Axis(
+      label: 'Sparkling',
+      value: (sparkling + rose) / total,
+      detail: pct(sparkling + rose),
+    ),
+    _Axis(
+      label: 'Old world',
+      value: oldWorld / total,
+      detail: pct(oldWorld),
+    ),
+    _Axis(
+      label: 'White',
+      value: white / total,
+      detail: pct(white),
+    ),
+  ]);
+}
+
+class _FingerprintPainter extends CustomPainter {
+  _FingerprintPainter({
     required this.axes,
-    required this.maxValue,
     required this.fillColor,
     required this.strokeColor,
     required this.vertexColor,
-    required this.gridColor,
+    required this.ringColor,
+    required this.haloColor,
     required this.labelColor,
-    required this.sublabelColor,
+    required this.mutedLabelColor,
     required this.labelFontSize,
-    required this.sublabelFontSize,
+    required this.mutedFontSize,
   });
 
-  final List<RadarAxisData> axes;
-  final double maxValue;
+  final List<_Axis> axes;
   final Color fillColor;
   final Color strokeColor;
   final Color vertexColor;
-  final Color gridColor;
+  final Color ringColor;
+  final Color haloColor;
   final Color labelColor;
-  final Color sublabelColor;
+  final Color mutedLabelColor;
   final double labelFontSize;
-  final double sublabelFontSize;
-
-  static const _gridRings = 4;
+  final double mutedFontSize;
 
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
-    final maxRadius = math.min(size.width, size.height) / 2;
-    // Reserve outer band for labels.
-    final radius = maxRadius * 0.65;
+    // Reserve outer band for labels so they don't hug the polygon.
+    final radius = math.min(size.width, size.height) / 2 * 0.62;
     final n = axes.length;
-    final twoPi = math.pi * 2;
-    final startAngle = -math.pi / 2; // first axis points up
+    if (n < 3) return;
 
-    final gridPaint = Paint()
-      ..color = gridColor
+    final twoPi = math.pi * 2;
+    final startAngle = -math.pi / 2; // first axis at top
+
+    // Soft halo behind centre — gives the dark theme a focal warmth.
+    canvas.drawCircle(
+      center,
+      radius * 1.08,
+      Paint()
+        ..shader = ui.Gradient.radial(
+          center,
+          radius * 1.08,
+          [haloColor, haloColor.withValues(alpha: 0)],
+          [0.0, 1.0],
+        ),
+    );
+
+    // Single subtle outer ring + a half-radius ring as a light scale.
+    final ringPaint = Paint()
+      ..color = ringColor
       ..style = PaintingStyle.stroke
       ..strokeWidth = 0.7;
+    _drawPolygon(canvas, center, radius, n, startAngle, ringPaint);
+    _drawPolygon(canvas, center, radius * 0.5, n, startAngle,
+        Paint()
+          ..color = ringColor.withValues(alpha: ringColor.a * 0.5)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 0.6);
 
-    // Concentric rings — polygons, not circles, so they hug the radar.
-    for (var ring = 1; ring <= _gridRings; ring++) {
-      final r = radius * ring / _gridRings;
-      final path = Path();
-      for (var i = 0; i <= n; i++) {
-        final angle = startAngle + (i % n) * twoPi / n;
-        final p = center + Offset(r * math.cos(angle), r * math.sin(angle));
-        if (i == 0) {
-          path.moveTo(p.dx, p.dy);
-        } else {
-          path.lineTo(p.dx, p.dy);
-        }
-      }
-      canvas.drawPath(path, gridPaint);
-    }
-
-    // Axis lines from centre outward.
-    for (var i = 0; i < n; i++) {
-      final angle = startAngle + i * twoPi / n;
-      final end = center +
-          Offset(radius * math.cos(angle), radius * math.sin(angle));
-      canvas.drawLine(center, end, gridPaint);
-    }
-
-    // Data polygon — filled and stroked.
-    final dataPath = Path();
+    // Data polygon.
     final vertices = <Offset>[];
+    final dataPath = Path();
     for (var i = 0; i < n; i++) {
       final angle = startAngle + i * twoPi / n;
-      final v = (axes[i].value / maxValue).clamp(0.0, 1.0);
-      // Floor at small visible value so single-bucket axes still show.
-      final r = radius * (v == 0 ? 0 : math.max(v, 0.08));
-      final p = center + Offset(r * math.cos(angle), r * math.sin(angle));
+      final v = axes[i].value.clamp(0.0, 1.0);
+      // Lift very small values slightly so they remain visible without
+      // dominating empty axes (which still collapse to centre).
+      final scale = v == 0 ? 0.0 : math.max(v, 0.06);
+      final p = center +
+          Offset(radius * scale * math.cos(angle),
+              radius * scale * math.sin(angle));
       vertices.add(p);
       if (i == 0) {
         dataPath.moveTo(p.dx, p.dy);
@@ -159,83 +230,124 @@ class _RadarPainter extends CustomPainter {
       Paint()
         ..color = strokeColor
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 1.5,
+        ..strokeWidth = 1.6
+        ..strokeJoin = StrokeJoin.round,
     );
 
-    // Vertex dots.
+    // Vertex dots only for non-zero axes — keeps the chart honest.
     final vertexPaint = Paint()
       ..color = vertexColor
       ..style = PaintingStyle.fill;
-    for (final v in vertices) {
-      canvas.drawCircle(v, 3.0, vertexPaint);
+    for (var i = 0; i < n; i++) {
+      if (axes[i].value > 0) {
+        canvas.drawCircle(vertices[i], 3, vertexPaint);
+      }
     }
 
-    // Labels just outside each vertex.
+    // Labels — offset radially outward from the vertex along the axis.
     for (var i = 0; i < n; i++) {
       final angle = startAngle + i * twoPi / n;
       final cosA = math.cos(angle);
       final sinA = math.sin(angle);
-      final labelRadius = radius + 14;
-      final labelCenter =
-          center + Offset(labelRadius * cosA, labelRadius * sinA);
+      final anchor = center +
+          Offset((radius + 16) * cosA, (radius + 16) * sinA);
 
-      final label = _truncate(axes[i].label, 14);
-      final main = TextPainter(
+      final isMuted = axes[i].value <= 0;
+      final mainTp = TextPainter(
         text: TextSpan(
-          text: label,
+          text: axes[i].label,
           style: TextStyle(
             fontSize: labelFontSize,
-            color: labelColor,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w700,
+            color: isMuted ? mutedLabelColor : labelColor,
+            letterSpacing: -0.1,
           ),
         ),
         textDirection: TextDirection.ltr,
+        textAlign: TextAlign.center,
         maxLines: 1,
         ellipsis: '…',
       )..layout(maxWidth: size.width * 0.32);
 
-      final sublabelText = axes[i].sublabel;
-      final sub = sublabelText == null
+      final detailText = axes[i].detail;
+      final detailTp = (detailText == null || detailText.isEmpty)
           ? null
           : (TextPainter(
               text: TextSpan(
-                text: sublabelText,
+                text: detailText,
                 style: TextStyle(
-                  fontSize: sublabelFontSize,
-                  color: sublabelColor,
+                  fontSize: mutedFontSize,
                   fontWeight: FontWeight.w500,
+                  color: mutedLabelColor,
                 ),
               ),
               textDirection: TextDirection.ltr,
               maxLines: 1,
             )..layout(maxWidth: size.width * 0.32));
 
-      // Anchor labels on the axis side: top, sides, bottom — using the
-      // angle to push the label outward from the vertex.
-      final dx = -main.width / 2 + main.width * 0.5 * cosA;
-      final dy = -main.height / 2 + main.height * 0.5 * sinA;
-      final mainOffset =
-          labelCenter.translate(dx, dy - (sub == null ? 0 : sub.height * 0.6));
-      main.paint(canvas, mainOffset);
-      if (sub != null) {
-        final subDx = -sub.width / 2 + sub.width * 0.5 * cosA;
-        final subOffset = labelCenter.translate(
-          subDx,
-          dy + main.height * 0.55 - sub.height * 0.5,
+      // Vertical alignment: top-axis labels sit ABOVE the anchor,
+      // bottom-axis labels BELOW. Side labels sit centred vertically.
+      // Horizontal: left-of-centre labels right-align toward the anchor,
+      // right-of-centre labels left-align. Centre labels (top / bottom)
+      // are simply centred.
+      final mainBlockHeight =
+          mainTp.height + (detailTp == null ? 0 : detailTp.height + 2);
+      final yAnchor =
+          anchor.dy - mainBlockHeight * (sinA < 0 ? 1.0 : (sinA > 0 ? 0 : 0.5));
+      final mainXAnchor = _horizontalAnchor(anchor.dx, mainTp.width, cosA);
+      mainTp.paint(canvas, Offset(mainXAnchor, yAnchor));
+      if (detailTp != null) {
+        final detailX = _horizontalAnchor(anchor.dx, detailTp.width, cosA);
+        detailTp.paint(
+          canvas,
+          Offset(detailX, yAnchor + mainTp.height + 2),
         );
-        sub.paint(canvas, subOffset);
       }
     }
   }
 
-  String _truncate(String s, int max) =>
-      s.length <= max ? s : '${s.substring(0, max - 1)}…';
+  double _horizontalAnchor(double anchorX, double labelWidth, double cosA) {
+    // cosA in (-1..1). Below -0.3 → label sits to the LEFT of anchor
+    // (right-edge aligned). Above 0.3 → label sits to the RIGHT of
+    // anchor (left-edge aligned). In between → centred.
+    if (cosA < -0.3) return anchorX - labelWidth;
+    if (cosA > 0.3) return anchorX;
+    return anchorX - labelWidth / 2;
+  }
+
+  void _drawPolygon(
+    Canvas canvas,
+    Offset center,
+    double radius,
+    int n,
+    double startAngle,
+    Paint paint,
+  ) {
+    final twoPi = math.pi * 2;
+    final path = Path();
+    for (var i = 0; i <= n; i++) {
+      final angle = startAngle + (i % n) * twoPi / n;
+      final p = center +
+          Offset(radius * math.cos(angle), radius * math.sin(angle));
+      if (i == 0) {
+        path.moveTo(p.dx, p.dy);
+      } else {
+        path.lineTo(p.dx, p.dy);
+      }
+    }
+    canvas.drawPath(path, paint);
+  }
 
   @override
-  bool shouldRepaint(covariant _RadarPainter old) =>
-      old.axes != axes ||
-      old.maxValue != maxValue ||
-      old.fillColor != fillColor ||
-      old.strokeColor != strokeColor ||
-      old.gridColor != gridColor;
+  bool shouldRepaint(covariant _FingerprintPainter old) {
+    if (old.axes.length != axes.length) return true;
+    for (var i = 0; i < axes.length; i++) {
+      if (old.axes[i].value != axes[i].value) return true;
+      if (old.axes[i].label != axes[i].label) return true;
+      if (old.axes[i].detail != axes[i].detail) return true;
+    }
+    return old.fillColor != fillColor ||
+        old.strokeColor != strokeColor ||
+        old.ringColor != ringColor;
+  }
 }

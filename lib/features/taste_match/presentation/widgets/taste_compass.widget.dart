@@ -19,23 +19,6 @@ class TasteCompassWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
 
-    // Radar axes: top regions when we have ≥3 distinct regions, fall
-    // back to top countries otherwise. Below 3 axes the radar is
-    // geometrically degenerate and we render nothing — the country
-    // list + palette still cover the bases.
-    final radarSource = compass.topRegions.length >= 3
-        ? compass.topRegions
-        : compass.topCountries;
-    final radarAxes = radarSource
-        .take(6)
-        .map((b) => RadarAxisData(
-              label: b.label,
-              sublabel: '${b.count} · ${b.avgRating.toStringAsFixed(1)}★',
-              value: b.count.toDouble(),
-            ))
-        .toList();
-    final showRadar = radarAxes.length >= 3;
-
     return Container(
       padding: EdgeInsets.all(context.w * 0.045),
       decoration: BoxDecoration(
@@ -59,30 +42,22 @@ class TasteCompassWidget extends StatelessWidget {
           if (!compass.hasMinimumData)
             _CompassEmpty(totalCount: compass.totalCount)
           else ...[
-            if (showRadar) ...[
-              SizedBox(height: context.s),
-              CompassRadar(axes: radarAxes),
-              SizedBox(height: context.s),
-            ] else if (compass.topRegions.isNotEmpty ||
-                compass.topCountries.isNotEmpty) ...[
-              _CompactList(
-                buckets: compass.topCountries.isNotEmpty
-                    ? compass.topCountries
-                    : compass.topRegions,
-                heading: compass.topCountries.isNotEmpty
-                    ? 'Top countries'
-                    : 'Top regions',
+            SizedBox(height: context.xs),
+            CompassRadar(compass: compass),
+            SizedBox(height: context.m),
+            if (compass.topRegions.isNotEmpty)
+              _BucketStrip(
+                heading: 'Top regions',
+                buckets: compass.topRegions,
               ),
-              SizedBox(height: context.m),
+            if (compass.topCountries.isNotEmpty) ...[
+              SizedBox(height: context.s),
+              _BucketStrip(
+                heading: 'Top countries',
+                buckets: compass.topCountries,
+              ),
             ],
-            if (showRadar && compass.topCountries.isNotEmpty) ...[
-              _CountryStrip(buckets: compass.topCountries),
-              SizedBox(height: context.m),
-            ],
-            if (compass.typeBreakdown.isNotEmpty) ...[
-              _PaletteRow(buckets: compass.typeBreakdown),
-              SizedBox(height: context.m),
-            ],
+            SizedBox(height: context.m),
             _Footer(
               totalCount: compass.totalCount,
               overallAvg: compass.overallAvg,
@@ -129,11 +104,14 @@ class _CompassEmpty extends StatelessWidget {
   }
 }
 
-class _CompactList extends StatelessWidget {
-  const _CompactList({required this.buckets, required this.heading});
+/// Horizontal strip of region / country pills under the radar. Each pill
+/// shows the bucket name + avg rating; count is implicit in the radar
+/// shape so it doesn't need to repeat here.
+class _BucketStrip extends StatelessWidget {
+  const _BucketStrip({required this.heading, required this.buckets});
 
-  final List<CompassBucket> buckets;
   final String heading;
+  final List<CompassBucket> buckets;
 
   @override
   Widget build(BuildContext context) {
@@ -142,132 +120,33 @@ class _CompactList extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          heading,
+          heading.toUpperCase(),
           style: TextStyle(
-            fontSize: context.captionFont * 0.85,
-            fontWeight: FontWeight.w600,
+            fontSize: context.captionFont * 0.78,
+            fontWeight: FontWeight.w700,
             color: cs.outline,
-            letterSpacing: 0.6,
+            letterSpacing: 0.9,
           ),
         ),
-        SizedBox(height: context.xs),
-        for (final b in buckets)
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: context.xs * 0.6),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    b.label,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: context.bodyFont * 0.95,
-                      color: cs.onSurface,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-                Text(
-                  '${b.count}',
-                  style: TextStyle(
-                    fontSize: context.captionFont,
-                    color: cs.onSurfaceVariant,
-                  ),
-                ),
-                SizedBox(width: context.w * 0.025),
-                Text(
-                  '${b.avgRating.toStringAsFixed(1)} ★',
-                  style: TextStyle(
-                    fontSize: context.captionFont,
-                    color: cs.primary,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-          ),
+        SizedBox(height: context.xs * 1.2),
+        Wrap(
+          spacing: context.w * 0.02,
+          runSpacing: context.w * 0.018,
+          children: [
+            for (final b in buckets.take(6))
+              _BucketPill(label: b.label, avg: b.avgRating),
+          ],
+        ),
       ],
     );
   }
 }
 
-class _CountryStrip extends StatelessWidget {
-  const _CountryStrip({required this.buckets});
-
-  final List<CompassBucket> buckets;
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return Wrap(
-      spacing: context.w * 0.02,
-      runSpacing: context.w * 0.015,
-      children: [
-        for (final b in buckets.take(6))
-          Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: context.w * 0.025,
-              vertical: context.h * 0.006,
-            ),
-            decoration: BoxDecoration(
-              color: cs.surface,
-              borderRadius: BorderRadius.circular(context.w * 0.04),
-              border: Border.all(color: cs.outlineVariant, width: 0.5),
-            ),
-            child: RichText(
-              text: TextSpan(
-                style: TextStyle(
-                  fontSize: context.captionFont * 0.9,
-                  color: cs.onSurfaceVariant,
-                  fontWeight: FontWeight.w600,
-                ),
-                children: [
-                  TextSpan(text: b.label),
-                  TextSpan(
-                    text: '  ${b.count}',
-                    style: TextStyle(
-                      color: cs.outline,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-      ],
-    );
-  }
-}
-
-class _PaletteRow extends StatelessWidget {
-  const _PaletteRow({required this.buckets});
-
-  final List<CompassBucket> buckets;
-
-  @override
-  Widget build(BuildContext context) {
-    final total = buckets.fold<int>(0, (sum, b) => sum + b.count);
-    if (total == 0) return const SizedBox.shrink();
-
-    return Wrap(
-      spacing: context.w * 0.02,
-      runSpacing: context.w * 0.015,
-      children: [
-        for (final b in buckets)
-          _PalettePill(
-            label: b.label,
-            percent: (b.count * 100 / total).round(),
-          ),
-      ],
-    );
-  }
-}
-
-class _PalettePill extends StatelessWidget {
-  const _PalettePill({required this.label, required this.percent});
+class _BucketPill extends StatelessWidget {
+  const _BucketPill({required this.label, required this.avg});
 
   final String label;
-  final int percent;
+  final double avg;
 
   @override
   Widget build(BuildContext context) {
@@ -275,25 +154,44 @@ class _PalettePill extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: context.w * 0.03,
-        vertical: context.h * 0.008,
+        vertical: context.h * 0.007,
       ),
       decoration: BoxDecoration(
-        color: cs.primaryContainer.withValues(alpha: 0.5),
+        color: cs.surface,
         borderRadius: BorderRadius.circular(context.w * 0.04),
+        border: Border.all(color: cs.outlineVariant, width: 0.6),
       ),
-      child: Text(
-        '${_capitalize(label)} $percent%',
-        style: TextStyle(
-          fontSize: context.captionFont * 0.95,
-          color: cs.onSurface,
-          fontWeight: FontWeight.w600,
-        ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: context.captionFont * 0.95,
+              color: cs.onSurface,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          SizedBox(width: context.w * 0.02),
+          Text(
+            avg.toStringAsFixed(1),
+            style: TextStyle(
+              fontSize: context.captionFont * 0.9,
+              color: cs.primary,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          Text(
+            '★',
+            style: TextStyle(
+              fontSize: context.captionFont * 0.9,
+              color: cs.primary,
+            ),
+          ),
+        ],
       ),
     );
   }
-
-  String _capitalize(String s) =>
-      s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);
 }
 
 class _Footer extends StatelessWidget {
