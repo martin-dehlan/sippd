@@ -1,0 +1,207 @@
+-- Canonical grape catalog. Read-only reference table used to map free-text
+-- grape entries on `wines` to a stable id so taste-match (V2+) and filters
+-- can group bottles by variety regardless of language / synonym.
+--
+-- Aliases are normalized lowercase synonyms. Search compares the user query
+-- (lowercased) against `lower(name)` and array containment on `aliases`.
+
+create table if not exists public.canonical_grape (
+  id          uuid        primary key default gen_random_uuid(),
+  name        text        not null unique,
+  color       text        not null check (color in ('red','white')),
+  aliases     text[]      not null default '{}',
+  created_at  timestamptz not null default now()
+);
+
+create index if not exists canonical_grape_name_lower_idx
+  on public.canonical_grape (lower(name));
+
+create index if not exists canonical_grape_aliases_gin_idx
+  on public.canonical_grape using gin (aliases);
+
+alter table public.canonical_grape enable row level security;
+
+drop policy if exists "canonical_grape_select_all" on public.canonical_grape;
+create policy "canonical_grape_select_all"
+  on public.canonical_grape
+  for select
+  to authenticated
+  using (true);
+
+-- Seed. Lowercase aliases only. Canonical name = most internationally
+-- recognized form; regional / language synonyms go in aliases.
+insert into public.canonical_grape (name, color, aliases) values
+  -- International reds
+  ('Cabernet Sauvignon', 'red', array['cab sauv','cs']),
+  ('Merlot',             'red', array[]::text[]),
+  ('Pinot Noir',         'red', array['pinot nero','spätburgunder','spatburgunder','pinot negro','blauburgunder']),
+  ('Syrah',              'red', array['shiraz']),
+  ('Malbec',             'red', array['côt','cot','auxerrois']),
+  ('Cabernet Franc',     'red', array['bouchet','breton']),
+  ('Grenache',           'red', array['garnacha','cannonau','garnatxa','grenache noir']),
+  ('Mourvèdre',          'red', array['monastrell','mataro']),
+  ('Carignan',           'red', array['mazuelo','cariñena','carinena','samsó','samso']),
+  ('Cinsault',           'red', array['cinsaut']),
+  ('Petit Verdot',       'red', array[]::text[]),
+  ('Petite Sirah',       'red', array['durif']),
+  ('Zinfandel',          'red', array['primitivo','tribidrag','crljenak kaštelanski']),
+  ('Carménère',          'red', array['carmenere','grande vidure']),
+  ('Tannat',             'red', array[]::text[]),
+  ('Marselan',           'red', array[]::text[]),
+  ('Pinot Meunier',      'red', array['meunier','schwarzriesling','müllerrebe']),
+  ('Gamay',              'red', array['gamay noir']),
+
+  -- Italy reds
+  ('Sangiovese',         'red', array['brunello','prugnolo gentile','morellino','nielluccio']),
+  ('Nebbiolo',           'red', array['chiavennasca','spanna','picotendro']),
+  ('Barbera',            'red', array[]::text[]),
+  ('Dolcetto',           'red', array[]::text[]),
+  ('Aglianico',          'red', array[]::text[]),
+  ('Montepulciano',      'red', array[]::text[]),
+  ('Corvina',            'red', array['corvinone']),
+  ('Rondinella',         'red', array[]::text[]),
+  ('Lambrusco',          'red', array[]::text[]),
+  ('Negroamaro',         'red', array['negro amaro']),
+  ('Nero d''Avola',      'red', array['calabrese']),
+  ('Sagrantino',         'red', array[]::text[]),
+  ('Teroldego',          'red', array[]::text[]),
+  ('Lagrein',            'red', array[]::text[]),
+  ('Schiava',            'red', array['vernatsch','trollinger']),
+  ('Refosco',            'red', array[]::text[]),
+  ('Freisa',             'red', array[]::text[]),
+  ('Bonarda',            'red', array['croatina']),
+  ('Brachetto',          'red', array[]::text[]),
+  ('Frappato',           'red', array[]::text[]),
+
+  -- Spain reds
+  ('Tempranillo',        'red', array['tinta roriz','tinto fino','tinta del país','aragonez','aragones','cencibel','ull de llebre']),
+  ('Mencía',             'red', array['mencia','jaen']),
+  ('Bobal',              'red', array[]::text[]),
+  ('Graciano',           'red', array[]::text[]),
+  ('Garnacha Tintorera', 'red', array['alicante bouschet']),
+  ('Listán Negro',       'red', array['listan negro']),
+
+  -- Portugal reds
+  ('Touriga Nacional',   'red', array[]::text[]),
+  ('Touriga Franca',     'red', array['touriga francesa']),
+  ('Tinta Barroca',      'red', array[]::text[]),
+  ('Trincadeira',        'red', array['tinta amarela']),
+  ('Castelão',           'red', array['castelao','periquita']),
+  ('Baga',               'red', array[]::text[]),
+
+  -- Germany / Austria reds
+  ('Dornfelder',         'red', array[]::text[]),
+  ('Blaufränkisch',      'red', array['blaufrankisch','lemberger','kékfrankos','kekfrankos','frankovka','modra frankinja']),
+  ('Zweigelt',           'red', array[]::text[]),
+  ('Sankt Laurent',      'red', array['st. laurent','st laurent','svatovavřinecké']),
+  ('Portugieser',        'red', array['blauer portugieser']),
+
+  -- South Africa / New World
+  ('Pinotage',           'red', array[]::text[]),
+
+  -- Greece / E. Europe
+  ('Xinomavro',          'red', array[]::text[]),
+  ('Agiorgitiko',        'red', array['agiorgitico']),
+  ('Saperavi',           'red', array[]::text[]),
+  ('Kadarka',            'red', array[]::text[]),
+
+  -- Other reds
+  ('Tinta de Toro',      'red', array[]::text[]),
+  ('Pais',               'red', array['país','mission','listán prieto']),
+  ('Concord',             'red', array[]::text[]),
+
+  -- International whites
+  ('Chardonnay',         'white', array['morillon']),
+  ('Sauvignon Blanc',    'white', array['fumé blanc','fume blanc','sauvignon']),
+  ('Riesling',           'white', array['rheinriesling','johannisberger']),
+  ('Pinot Gris',         'white', array['pinot grigio','grauburgunder','ruländer','rulander','malvoisie','szürkebarát']),
+  ('Pinot Blanc',        'white', array['pinot bianco','weißburgunder','weissburgunder','klevner','beli pinot']),
+  ('Gewürztraminer',     'white', array['gewurztraminer','traminer','traminac']),
+  ('Chenin Blanc',       'white', array['steen','pineau de la loire']),
+  ('Sémillon',           'white', array['semillon']),
+  ('Viognier',           'white', array[]::text[]),
+  ('Muscat Blanc',       'white', array['moscato bianco','muscat blanc à petits grains','muscat à petits grains']),
+  ('Muscat of Alexandria','white', array['moscatel de alejandría','zibibbo']),
+  ('Muscat Ottonel',     'white', array[]::text[]),
+  ('Marsanne',           'white', array[]::text[]),
+  ('Roussanne',          'white', array[]::text[]),
+  ('Picpoul',            'white', array['piquepoul','picapoll']),
+  ('Bourboulenc',        'white', array[]::text[]),
+  ('Aligoté',            'white', array['aligote']),
+  ('Ugni Blanc',         'white', array['trebbiano toscano']),
+  ('Colombard',          'white', array[]::text[]),
+  ('Folle Blanche',      'white', array[]::text[]),
+  ('Petit Manseng',      'white', array[]::text[]),
+  ('Gros Manseng',       'white', array[]::text[]),
+  ('Mauzac',             'white', array[]::text[]),
+
+  -- Italy whites
+  ('Garganega',          'white', array[]::text[]),
+  ('Trebbiano',          'white', array['ugni blanc','procanico']),
+  ('Vermentino',         'white', array['rolle','favorita','pigato']),
+  ('Friulano',           'white', array['sauvignonasse','tocai friulano']),
+  ('Cortese',            'white', array[]::text[]),
+  ('Greco',              'white', array['greco di tufo']),
+  ('Falanghina',         'white', array[]::text[]),
+  ('Fiano',              'white', array[]::text[]),
+  ('Verdicchio',         'white', array[]::text[]),
+  ('Pecorino',           'white', array[]::text[]),
+  ('Grechetto',          'white', array[]::text[]),
+  ('Arneis',             'white', array[]::text[]),
+  ('Glera',              'white', array['prosecco']),
+  ('Ribolla Gialla',     'white', array['rebula']),
+  ('Malvasia',           'white', array['malvasia bianca','malvazija']),
+
+  -- Spain / Portugal whites
+  ('Albariño',           'white', array['alvarinho','albarino']),
+  ('Verdejo',            'white', array[]::text[]),
+  ('Godello',            'white', array[]::text[]),
+  ('Loureiro',           'white', array[]::text[]),
+  ('Treixadura',         'white', array['trajadura']),
+  ('Macabeo',            'white', array['viura','macabeu']),
+  ('Xarel·lo',           'white', array['xarello','xarel-lo','pansà blanca']),
+  ('Parellada',          'white', array[]::text[]),
+  ('Pedro Ximénez',      'white', array['pedro ximenez','px']),
+  ('Palomino',           'white', array['listán blanco','listan blanco']),
+  ('Encruzado',          'white', array[]::text[]),
+  ('Antão Vaz',          'white', array['antao vaz']),
+  ('Arinto',             'white', array['pedernã','pederna']),
+  ('Fernão Pires',       'white', array['fernao pires','maria gomes']),
+  ('Bical',              'white', array[]::text[]),
+  ('Verdelho',           'white', array['gouveio']),
+  ('Sercial',            'white', array['esgana cão']),
+
+  -- Germany / Austria whites
+  ('Müller-Thurgau',     'white', array['muller-thurgau','rivaner']),
+  ('Silvaner',           'white', array['sylvaner','grüner silvaner']),
+  ('Scheurebe',          'white', array['sämling 88']),
+  ('Bacchus',            'white', array[]::text[]),
+  ('Kerner',             'white', array[]::text[]),
+  ('Elbling',            'white', array[]::text[]),
+  ('Ortega',             'white', array[]::text[]),
+  ('Huxelrebe',          'white', array[]::text[]),
+  ('Faberrebe',          'white', array['faber']),
+  ('Grüner Veltliner',   'white', array['gruner veltliner','veltliner']),
+  ('Roter Veltliner',    'white', array[]::text[]),
+  ('Welschriesling',     'white', array['riesling italico','olasz rizling','laški rizling','laski rizling','grasevina','graševina']),
+  ('Neuburger',          'white', array[]::text[]),
+
+  -- E. Europe / Greece whites
+  ('Furmint',            'white', array['šipon','sipon','mosler']),
+  ('Hárslevelű',         'white', array['harslevelu','lipovina']),
+  ('Irsai Olivér',       'white', array['irsai oliver']),
+  ('Assyrtiko',          'white', array[]::text[]),
+  ('Moschofilero',       'white', array[]::text[]),
+  ('Roditis',            'white', array[]::text[]),
+  ('Robola',             'white', array[]::text[]),
+  ('Vidiano',            'white', array[]::text[]),
+  ('Savatiano',          'white', array[]::text[]),
+  ('Rkatsiteli',         'white', array[]::text[]),
+
+  -- N. America / hybrids
+  ('Vidal Blanc',        'white', array['vidal']),
+  ('Seyval Blanc',       'white', array[]::text[]),
+
+  -- Sparkling-region naming aliases handled via base grapes above
+  ('Champagne Blend',    'white', array[]::text[])
+on conflict (name) do nothing;
