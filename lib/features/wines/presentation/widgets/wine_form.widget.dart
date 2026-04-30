@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -14,7 +15,9 @@ import '../../../../common/widgets/text_input_sheet.dart';
 import '../../../../common/widgets/year_picker_sheet.dart';
 import '../../../locations/domain/entities/location.entity.dart';
 import '../../../locations/presentation/widgets/location_search_sheet.dart';
+import '../../controller/wine.provider.dart';
 import '../../domain/entities/wine.entity.dart';
+import 'grape_picker_sheet.dart';
 import 'rating_sheet.dart';
 import 'wine_country_picker.widget.dart';
 import 'wine_memories_editor.widget.dart';
@@ -27,7 +30,15 @@ class WineFormData {
   final WineType type;
   final double? price;
   final int? vintage;
+
+  /// Display string for the legacy `grape` column. Always set to the
+  /// canonical name (when [canonicalGrapeId] is set) or to the user's
+  /// free-text entry — kept around so older readers still render
+  /// something while the canonical id rolls out.
   final String? grape;
+  final String? canonicalGrapeId;
+  final String? grapeFreetext;
+
   final String? winery;
   final String? country;
   final String? region;
@@ -44,6 +55,8 @@ class WineFormData {
     this.price,
     this.vintage,
     this.grape,
+    this.canonicalGrapeId,
+    this.grapeFreetext,
     this.winery,
     this.country,
     this.region,
@@ -55,7 +68,7 @@ class WineFormData {
   });
 }
 
-class WineForm extends StatefulWidget {
+class WineForm extends ConsumerStatefulWidget {
   final WineFormData? initial;
   final String submitLabel;
   final Future<void> Function(WineFormData data) onSubmit;
@@ -77,10 +90,10 @@ class WineForm extends StatefulWidget {
   });
 
   @override
-  State<WineForm> createState() => WineFormState();
+  ConsumerState<WineForm> createState() => WineFormState();
 }
 
-class WineFormState extends State<WineForm>
+class WineFormState extends ConsumerState<WineForm>
     with SingleTickerProviderStateMixin {
   /// Public submit hook for parents that host the action button outside
   /// the form (e.g. floating action button).
@@ -98,7 +111,9 @@ class WineFormState extends State<WineForm>
 
   double? _price;
   int? _vintage;
-  String? _grape;
+  String? _grapeDisplay;
+  String? _canonicalGrapeId;
+  String? _grapeFreetext;
   String? _winery;
   String? _country;
   String? _region;
@@ -132,7 +147,9 @@ class WineFormState extends State<WineForm>
       _type = init.type;
       _price = init.price;
       _vintage = init.vintage;
-      _grape = init.grape;
+      _canonicalGrapeId = init.canonicalGrapeId;
+      _grapeFreetext = init.grapeFreetext;
+      _grapeDisplay = init.grape;
       _winery = init.winery;
       _country = init.country;
       _region = init.region;
@@ -169,7 +186,9 @@ class WineFormState extends State<WineForm>
         type: _type,
         price: _price,
         vintage: _vintage,
-        grape: _grape,
+        grape: _grapeDisplay,
+        canonicalGrapeId: _canonicalGrapeId,
+        grapeFreetext: _grapeFreetext,
         winery: _winery,
         country: _country,
         region: _region,
@@ -239,18 +258,40 @@ class WineFormState extends State<WineForm>
     _scheduleAutoSave();
   }
 
+  /// Display label for the grape chip — resolves canonical_grape_id via
+  /// the cached catalog. Falls back to the user's free-text entry, then
+  /// the legacy grape string carried in from the wine row.
+  String? _resolvedGrapeLabel() {
+    final id = _canonicalGrapeId;
+    if (id != null) {
+      final asyncGrape = ref.watch(canonicalGrapeProvider(id));
+      return asyncGrape.valueOrNull?.name ?? _grapeDisplay;
+    }
+    return _grapeFreetext ?? _grapeDisplay;
+  }
+
   Future<void> _editGrape() async {
     FocusScope.of(context).unfocus();
-    final result = await showTextInputSheet(
+    final result = await showGrapePickerSheet(
       context: context,
-      title: 'Grape variety',
-      initial: _grape,
-      hint: 'e.g. Merlot',
+      initialCanonicalId: _canonicalGrapeId,
+      initialFreetext: _grapeFreetext ??
+          (_canonicalGrapeId == null ? _grapeDisplay : null),
     );
     if (!mounted) return;
     FocusManager.instance.primaryFocus?.unfocus();
     if (result == null) return;
-    setState(() => _grape = result.isEmpty ? null : result);
+    setState(() {
+      if (result.isCanonical) {
+        _canonicalGrapeId = result.id;
+        _grapeFreetext = null;
+        _grapeDisplay = result.name;
+      } else {
+        _canonicalGrapeId = null;
+        _grapeFreetext = result.freetext;
+        _grapeDisplay = result.freetext;
+      }
+    });
     _scheduleAutoSave();
   }
 
@@ -407,7 +448,7 @@ class WineFormState extends State<WineForm>
         ),
         SizedBox(height: context.l),
         WineFormChipsRow(
-          grape: _grape,
+          grape: _resolvedGrapeLabel(),
           vintage: _vintage,
           notes: _notes,
           winery: _winery,

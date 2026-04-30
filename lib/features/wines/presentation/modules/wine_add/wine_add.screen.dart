@@ -90,6 +90,8 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
       longitude: data.location?.lng,
       notes: data.notes,
       grape: data.grape,
+      canonicalGrapeId: data.canonicalGrapeId,
+      grapeFreetext: data.grapeFreetext,
       winery: data.winery,
       vintage: data.vintage,
       imageUrl: data.imageUrl,

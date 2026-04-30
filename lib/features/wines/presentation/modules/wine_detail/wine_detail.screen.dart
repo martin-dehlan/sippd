@@ -184,7 +184,9 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
                 type: widget.wine.type,
                 winery: widget.wine.winery,
                 vintage: widget.wine.vintage,
-                grape: widget.wine.grape,
+                canonicalGrapeId: widget.wine.canonicalGrapeId,
+                grapeFreetext: widget.wine.grapeFreetext,
+                legacyGrape: widget.wine.grape,
               ),
               SizedBox(height: context.xl),
               Padding(
@@ -501,21 +503,25 @@ class _StatItem extends StatelessWidget {
   }
 }
 
-class _MetaLine extends StatelessWidget {
+class _MetaLine extends ConsumerWidget {
   final WineType type;
   final String? winery;
   final int? vintage;
-  final String? grape;
+  final String? canonicalGrapeId;
+  final String? grapeFreetext;
+  final String? legacyGrape;
 
   const _MetaLine({
     required this.type,
     required this.winery,
     required this.vintage,
-    required this.grape,
+    required this.canonicalGrapeId,
+    required this.grapeFreetext,
+    required this.legacyGrape,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
     final typeLabel = switch (type) {
       WineType.red => 'Red',
@@ -524,22 +530,53 @@ class _MetaLine extends StatelessWidget {
       WineType.sparkling => 'Sparkling',
     };
 
-    final parts = <String>[
+    String? grapeText;
+    bool grapeIsCustom = false;
+    if (canonicalGrapeId != null) {
+      final asyncGrape = ref.watch(canonicalGrapeProvider(canonicalGrapeId!));
+      grapeText = asyncGrape.valueOrNull?.name ?? legacyGrape;
+    } else if (grapeFreetext != null && grapeFreetext!.isNotEmpty) {
+      grapeText = grapeFreetext;
+      grapeIsCustom = true;
+    } else if (legacyGrape != null && legacyGrape!.isNotEmpty) {
+      grapeText = legacyGrape;
+      grapeIsCustom = true;
+    }
+
+    final fixedParts = <String>[
       typeLabel,
       if (winery != null && winery!.isNotEmpty) winery!,
       if (vintage != null) vintage.toString(),
-      if (grape != null && grape!.isNotEmpty) grape!,
     ];
 
     final spans = <InlineSpan>[];
-    for (var i = 0; i < parts.length; i++) {
+    for (var i = 0; i < fixedParts.length; i++) {
       if (i > 0) {
         spans.add(TextSpan(
           text: '  ·  ',
           style: TextStyle(color: cs.outline),
         ));
       }
-      spans.add(TextSpan(text: parts[i]));
+      spans.add(TextSpan(text: fixedParts[i]));
+    }
+    if (grapeText != null) {
+      if (spans.isNotEmpty) {
+        spans.add(TextSpan(
+          text: '  ·  ',
+          style: TextStyle(color: cs.outline),
+        ));
+      }
+      spans.add(TextSpan(text: grapeText));
+      if (grapeIsCustom) {
+        spans.add(TextSpan(
+          text: '  custom',
+          style: TextStyle(
+            color: cs.outline,
+            fontSize: context.captionFont * 0.85,
+            fontStyle: FontStyle.italic,
+          ),
+        ));
+      }
     }
 
     return Padding(
