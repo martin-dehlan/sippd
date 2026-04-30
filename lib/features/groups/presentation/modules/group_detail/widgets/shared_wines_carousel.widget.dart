@@ -473,8 +473,10 @@ class _WineCard extends ConsumerWidget {
             _RatingFooter(
               ratings: ratingsAsync.valueOrNull ?? const [],
               fallback: wine.rating,
-              onDetails: () =>
-                  context.push(AppRoutes.wineDetailPath(wine.id)),
+              onDetails: () => context.push(
+                AppRoutes.wineDetailPath(wine.id),
+                extra: wine,
+              ),
             ),
           ],
         ),

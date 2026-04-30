@@ -28,6 +28,7 @@ import '../../features/groups/presentation/modules/group_list/group_list.screen.
 import '../../features/tastings/presentation/modules/tasting_create/tasting_create.screen.dart';
 import '../../features/tastings/presentation/modules/tasting_detail/tasting_detail.screen.dart';
 import '../../features/tastings/presentation/modules/tasting_edit/tasting_edit.screen.dart';
+import '../../features/wines/domain/entities/wine.entity.dart';
 import '../../features/wines/presentation/modules/wine_list/wine_list.screen.dart';
 import '../../features/wines/presentation/modules/wine_add/wine_add.screen.dart';
 import '../../features/wines/presentation/modules/wine_stats/wine_stats.screen.dart';
@@ -223,7 +224,11 @@ GoRouter goRouter(GoRouterRef ref) {
         path: AppRoutes.wineDetail,
         builder: (context, state) {
           final id = state.pathParameters['id']!;
-          return WineDetailScreen(wineId: id);
+          final extra = state.extra;
+          return WineDetailScreen(
+            wineId: id,
+            initial: extra is WineEntity ? extra : null,
+          );
         },
       ),
       GoRoute(

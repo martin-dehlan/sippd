@@ -10,6 +10,7 @@ import 'package:latlong2/latlong.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/overflow_menu.widget.dart';
 import '../../../../../core/routes/app.routes.dart';
+import '../../../../auth/controller/auth.provider.dart';
 import '../../../../groups/presentation/widgets/share_wine_sheet.dart';
 import '../../../../profile/controller/profile.provider.dart';
 import '../../../../share_cards/controller/share_card.provider.dart';
@@ -19,31 +20,58 @@ import '../../../domain/entities/wine_memory.entity.dart';
 
 class WineDetailScreen extends ConsumerWidget {
   final String wineId;
+  final WineEntity? initial;
 
-  const WineDetailScreen({super.key, required this.wineId});
+  const WineDetailScreen({super.key, required this.wineId, this.initial});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final wineAsync = ref.watch(wineDetailProvider(wineId));
+    final currentUserId = ref.watch(currentUserIdProvider);
 
     return Scaffold(
       body: wineAsync.when(
         data: (wine) {
-          if (wine == null) {
+          // Local lookup may miss for wines owned by other group members.
+          // Fall back to the entity passed via go_router extra.
+          final resolved = wine ?? initial;
+          if (resolved == null) {
             return const Center(child: Text('Wine not found'));
           }
+          final isOwner = resolved.userId == currentUserId;
           return WineDetailBody(
-            wine: wine,
-            onDelete: () async {
-              await ref
-                  .read(wineControllerProvider.notifier)
-                  .deleteWine(wineId);
-              if (context.mounted) Navigator.pop(context);
-            },
+            wine: resolved,
+            isOwner: isOwner,
+            onDelete: isOwner
+                ? () async {
+                    await ref
+                        .read(wineControllerProvider.notifier)
+                        .deleteWine(wineId);
+                    if (context.mounted) Navigator.pop(context);
+                  }
+                : null,
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Error: $e')),
+        loading: () {
+          if (initial != null) {
+            return WineDetailBody(
+              wine: initial!,
+              isOwner: initial!.userId == currentUserId,
+              onDelete: null,
+            );
+          }
+          return const Center(child: CircularProgressIndicator());
+        },
+        error: (e, _) {
+          if (initial != null) {
+            return WineDetailBody(
+              wine: initial!,
+              isOwner: initial!.userId == currentUserId,
+              onDelete: null,
+            );
+          }
+          return Center(child: Text('Error: $e'));
+        },
       ),
       floatingActionButton: const _FloatingBackButton(),
       floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
@@ -53,11 +81,13 @@ class WineDetailScreen extends ConsumerWidget {
 
 class WineDetailBody extends ConsumerStatefulWidget {
   final WineEntity wine;
-  final VoidCallback onDelete;
+  final bool isOwner;
+  final VoidCallback? onDelete;
 
   const WineDetailBody({
     super.key,
     required this.wine,
+    required this.isOwner,
     required this.onDelete,
   });
 
@@ -112,40 +142,41 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Expanded(child: _NameTitle(name: widget.wine.name)),
-                  Padding(
-                    padding: EdgeInsets.only(right: context.paddingH * 0.7),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Consumer(
-                          builder: (context, ref, _) => _WineOverflowMenu(
-                            onShareToGroup: () => showShareWineSheet(
-                              context: context,
-                              wineId: widget.wine.id,
+                  if (widget.isOwner)
+                    Padding(
+                      padding: EdgeInsets.only(right: context.paddingH * 0.7),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Consumer(
+                            builder: (context, ref, _) => _WineOverflowMenu(
+                              onShareToGroup: () => showShareWineSheet(
+                                context: context,
+                                wineId: widget.wine.id,
+                              ),
+                              onShareImage: () {
+                                final username = ref
+                                    .read(currentProfileProvider)
+                                    .valueOrNull
+                                    ?.username;
+                                ref
+                                    .read(shareCardProvider)
+                                    .shareWineRatingCard(
+                                      context: context,
+                                      wine: widget.wine,
+                                      username: username,
+                                      source: 'wine_detail',
+                                    );
+                              },
+                              onEdit: () => context.push(
+                                AppRoutes.wineEditPath(widget.wine.id),
+                              ),
+                              onDelete: () => _confirmDelete(context),
                             ),
-                            onShareImage: () {
-                              final username = ref
-                                  .read(currentProfileProvider)
-                                  .valueOrNull
-                                  ?.username;
-                              ref
-                                  .read(shareCardProvider)
-                                  .shareWineRatingCard(
-                                    context: context,
-                                    wine: widget.wine,
-                                    username: username,
-                                    source: 'wine_detail',
-                                  );
-                            },
-                            onEdit: () => context.push(
-                              AppRoutes.wineEditPath(widget.wine.id),
-                            ),
-                            onDelete: () => _confirmDelete(context),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
                 ],
               ),
               SizedBox(height: context.s),
@@ -219,7 +250,7 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
         ],
       ),
     );
-    if (confirmed == true) widget.onDelete();
+    if (confirmed == true) widget.onDelete?.call();
   }
 }
 
