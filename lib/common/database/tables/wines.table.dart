@@ -20,6 +20,7 @@ class WinesTable extends Table {
   TextColumn get grape => text().nullable()();
   TextColumn get canonicalGrapeId => text().nullable()();
   TextColumn get grapeFreetext => text().nullable()();
+  TextColumn get canonicalWineId => text().nullable()();
   TextColumn get winery => text().nullable()();
   TextColumn get nameNorm => text().nullable()();
   TextColumn get userId => text()();

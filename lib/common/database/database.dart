@@ -34,7 +34,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -42,7 +42,7 @@ class AppDatabase extends _$AppDatabase {
       await m.createAll();
     },
     onUpgrade: (Migrator m, int from, int to) async {
-      if (from == 1 && to == 2) {
+      if (from == 1) {
         // Additive: keep existing wines, add canonical grape columns +
         // new catalog table. Backfill grape_freetext from the legacy
         // free-text column so old rows show up the same way until the
@@ -54,13 +54,13 @@ class AppDatabase extends _$AppDatabase {
           "UPDATE wines SET grape_freetext = grape "
           "WHERE grape IS NOT NULL AND grape != '' AND grape_freetext IS NULL",
         );
-        return;
       }
-      // Beta fallback: wipe-and-recreate for any other upgrade path.
-      for (final table in allTables) {
-        await m.deleteTable(table.actualTableName);
+      if (from <= 2) {
+        // Adds the canonical_wine_id FK column. The actual canonical
+        // catalog stays server-side — only the FK lives locally so
+        // wines round-trip cleanly to and from Supabase.
+        await m.addColumn(winesTable, winesTable.canonicalWineId);
       }
-      await m.createAll();
     },
   );
 

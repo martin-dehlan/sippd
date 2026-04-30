@@ -192,6 +192,17 @@ class $WinesTableTable extends WinesTable
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _canonicalWineIdMeta = const VerificationMeta(
+    'canonicalWineId',
+  );
+  @override
+  late final GeneratedColumn<String> canonicalWineId = GeneratedColumn<String>(
+    'canonical_wine_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _wineryMeta = const VerificationMeta('winery');
   @override
   late final GeneratedColumn<String> winery = GeneratedColumn<String>(
@@ -276,6 +287,7 @@ class $WinesTableTable extends WinesTable
     grape,
     canonicalGrapeId,
     grapeFreetext,
+    canonicalWineId,
     winery,
     nameNorm,
     userId,
@@ -417,6 +429,15 @@ class $WinesTableTable extends WinesTable
         ),
       );
     }
+    if (data.containsKey('canonical_wine_id')) {
+      context.handle(
+        _canonicalWineIdMeta,
+        canonicalWineId.isAcceptableOrUnknown(
+          data['canonical_wine_id']!,
+          _canonicalWineIdMeta,
+        ),
+      );
+    }
     if (data.containsKey('winery')) {
       context.handle(
         _wineryMeta,
@@ -536,6 +557,10 @@ class $WinesTableTable extends WinesTable
         DriftSqlType.string,
         data['${effectivePrefix}grape_freetext'],
       ),
+      canonicalWineId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}canonical_wine_id'],
+      ),
       winery: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}winery'],
@@ -588,6 +613,7 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
   final String? grape;
   final String? canonicalGrapeId;
   final String? grapeFreetext;
+  final String? canonicalWineId;
   final String? winery;
   final String? nameNorm;
   final String userId;
@@ -613,6 +639,7 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
     this.grape,
     this.canonicalGrapeId,
     this.grapeFreetext,
+    this.canonicalWineId,
     this.winery,
     this.nameNorm,
     required this.userId,
@@ -666,6 +693,9 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
     }
     if (!nullToAbsent || grapeFreetext != null) {
       map['grape_freetext'] = Variable<String>(grapeFreetext);
+    }
+    if (!nullToAbsent || canonicalWineId != null) {
+      map['canonical_wine_id'] = Variable<String>(canonicalWineId);
     }
     if (!nullToAbsent || winery != null) {
       map['winery'] = Variable<String>(winery);
@@ -728,6 +758,9 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
       grapeFreetext: grapeFreetext == null && nullToAbsent
           ? const Value.absent()
           : Value(grapeFreetext),
+      canonicalWineId: canonicalWineId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(canonicalWineId),
       winery: winery == null && nullToAbsent
           ? const Value.absent()
           : Value(winery),
@@ -767,6 +800,7 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
       grape: serializer.fromJson<String?>(json['grape']),
       canonicalGrapeId: serializer.fromJson<String?>(json['canonicalGrapeId']),
       grapeFreetext: serializer.fromJson<String?>(json['grapeFreetext']),
+      canonicalWineId: serializer.fromJson<String?>(json['canonicalWineId']),
       winery: serializer.fromJson<String?>(json['winery']),
       nameNorm: serializer.fromJson<String?>(json['nameNorm']),
       userId: serializer.fromJson<String>(json['userId']),
@@ -797,6 +831,7 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
       'grape': serializer.toJson<String?>(grape),
       'canonicalGrapeId': serializer.toJson<String?>(canonicalGrapeId),
       'grapeFreetext': serializer.toJson<String?>(grapeFreetext),
+      'canonicalWineId': serializer.toJson<String?>(canonicalWineId),
       'winery': serializer.toJson<String?>(winery),
       'nameNorm': serializer.toJson<String?>(nameNorm),
       'userId': serializer.toJson<String>(userId),
@@ -825,6 +860,7 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
     Value<String?> grape = const Value.absent(),
     Value<String?> canonicalGrapeId = const Value.absent(),
     Value<String?> grapeFreetext = const Value.absent(),
+    Value<String?> canonicalWineId = const Value.absent(),
     Value<String?> winery = const Value.absent(),
     Value<String?> nameNorm = const Value.absent(),
     String? userId,
@@ -856,6 +892,9 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
     grapeFreetext: grapeFreetext.present
         ? grapeFreetext.value
         : this.grapeFreetext,
+    canonicalWineId: canonicalWineId.present
+        ? canonicalWineId.value
+        : this.canonicalWineId,
     winery: winery.present ? winery.value : this.winery,
     nameNorm: nameNorm.present ? nameNorm.value : this.nameNorm,
     userId: userId ?? this.userId,
@@ -889,6 +928,9 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
       grapeFreetext: data.grapeFreetext.present
           ? data.grapeFreetext.value
           : this.grapeFreetext,
+      canonicalWineId: data.canonicalWineId.present
+          ? data.canonicalWineId.value
+          : this.canonicalWineId,
       winery: data.winery.present ? data.winery.value : this.winery,
       nameNorm: data.nameNorm.present ? data.nameNorm.value : this.nameNorm,
       userId: data.userId.present ? data.userId.value : this.userId,
@@ -921,6 +963,7 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
           ..write('grape: $grape, ')
           ..write('canonicalGrapeId: $canonicalGrapeId, ')
           ..write('grapeFreetext: $grapeFreetext, ')
+          ..write('canonicalWineId: $canonicalWineId, ')
           ..write('winery: $winery, ')
           ..write('nameNorm: $nameNorm, ')
           ..write('userId: $userId, ')
@@ -951,6 +994,7 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
     grape,
     canonicalGrapeId,
     grapeFreetext,
+    canonicalWineId,
     winery,
     nameNorm,
     userId,
@@ -980,6 +1024,7 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
           other.grape == this.grape &&
           other.canonicalGrapeId == this.canonicalGrapeId &&
           other.grapeFreetext == this.grapeFreetext &&
+          other.canonicalWineId == this.canonicalWineId &&
           other.winery == this.winery &&
           other.nameNorm == this.nameNorm &&
           other.userId == this.userId &&
@@ -1007,6 +1052,7 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
   final Value<String?> grape;
   final Value<String?> canonicalGrapeId;
   final Value<String?> grapeFreetext;
+  final Value<String?> canonicalWineId;
   final Value<String?> winery;
   final Value<String?> nameNorm;
   final Value<String> userId;
@@ -1033,6 +1079,7 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
     this.grape = const Value.absent(),
     this.canonicalGrapeId = const Value.absent(),
     this.grapeFreetext = const Value.absent(),
+    this.canonicalWineId = const Value.absent(),
     this.winery = const Value.absent(),
     this.nameNorm = const Value.absent(),
     this.userId = const Value.absent(),
@@ -1060,6 +1107,7 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
     this.grape = const Value.absent(),
     this.canonicalGrapeId = const Value.absent(),
     this.grapeFreetext = const Value.absent(),
+    this.canonicalWineId = const Value.absent(),
     this.winery = const Value.absent(),
     this.nameNorm = const Value.absent(),
     required String userId,
@@ -1091,6 +1139,7 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
     Expression<String>? grape,
     Expression<String>? canonicalGrapeId,
     Expression<String>? grapeFreetext,
+    Expression<String>? canonicalWineId,
     Expression<String>? winery,
     Expression<String>? nameNorm,
     Expression<String>? userId,
@@ -1118,6 +1167,7 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
       if (grape != null) 'grape': grape,
       if (canonicalGrapeId != null) 'canonical_grape_id': canonicalGrapeId,
       if (grapeFreetext != null) 'grape_freetext': grapeFreetext,
+      if (canonicalWineId != null) 'canonical_wine_id': canonicalWineId,
       if (winery != null) 'winery': winery,
       if (nameNorm != null) 'name_norm': nameNorm,
       if (userId != null) 'user_id': userId,
@@ -1147,6 +1197,7 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
     Value<String?>? grape,
     Value<String?>? canonicalGrapeId,
     Value<String?>? grapeFreetext,
+    Value<String?>? canonicalWineId,
     Value<String?>? winery,
     Value<String?>? nameNorm,
     Value<String>? userId,
@@ -1174,6 +1225,7 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
       grape: grape ?? this.grape,
       canonicalGrapeId: canonicalGrapeId ?? this.canonicalGrapeId,
       grapeFreetext: grapeFreetext ?? this.grapeFreetext,
+      canonicalWineId: canonicalWineId ?? this.canonicalWineId,
       winery: winery ?? this.winery,
       nameNorm: nameNorm ?? this.nameNorm,
       userId: userId ?? this.userId,
@@ -1241,6 +1293,9 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
     if (grapeFreetext.present) {
       map['grape_freetext'] = Variable<String>(grapeFreetext.value);
     }
+    if (canonicalWineId.present) {
+      map['canonical_wine_id'] = Variable<String>(canonicalWineId.value);
+    }
     if (winery.present) {
       map['winery'] = Variable<String>(winery.value);
     }
@@ -1286,6 +1341,7 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
           ..write('grape: $grape, ')
           ..write('canonicalGrapeId: $canonicalGrapeId, ')
           ..write('grapeFreetext: $grapeFreetext, ')
+          ..write('canonicalWineId: $canonicalWineId, ')
           ..write('winery: $winery, ')
           ..write('nameNorm: $nameNorm, ')
           ..write('userId: $userId, ')
@@ -3012,6 +3068,7 @@ typedef $$WinesTableTableCreateCompanionBuilder =
       Value<String?> grape,
       Value<String?> canonicalGrapeId,
       Value<String?> grapeFreetext,
+      Value<String?> canonicalWineId,
       Value<String?> winery,
       Value<String?> nameNorm,
       required String userId,
@@ -3040,6 +3097,7 @@ typedef $$WinesTableTableUpdateCompanionBuilder =
       Value<String?> grape,
       Value<String?> canonicalGrapeId,
       Value<String?> grapeFreetext,
+      Value<String?> canonicalWineId,
       Value<String?> winery,
       Value<String?> nameNorm,
       Value<String> userId,
@@ -3145,6 +3203,11 @@ class $$WinesTableTableFilterComposer
 
   ColumnFilters<String> get grapeFreetext => $composableBuilder(
     column: $table.grapeFreetext,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get canonicalWineId => $composableBuilder(
+    column: $table.canonicalWineId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3278,6 +3341,11 @@ class $$WinesTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get canonicalWineId => $composableBuilder(
+    column: $table.canonicalWineId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get winery => $composableBuilder(
     column: $table.winery,
     builder: (column) => ColumnOrderings(column),
@@ -3378,6 +3446,11 @@ class $$WinesTableTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<String> get canonicalWineId => $composableBuilder(
+    column: $table.canonicalWineId,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<String> get winery =>
       $composableBuilder(column: $table.winery, builder: (column) => column);
 
@@ -3448,6 +3521,7 @@ class $$WinesTableTableTableManager
                 Value<String?> grape = const Value.absent(),
                 Value<String?> canonicalGrapeId = const Value.absent(),
                 Value<String?> grapeFreetext = const Value.absent(),
+                Value<String?> canonicalWineId = const Value.absent(),
                 Value<String?> winery = const Value.absent(),
                 Value<String?> nameNorm = const Value.absent(),
                 Value<String> userId = const Value.absent(),
@@ -3474,6 +3548,7 @@ class $$WinesTableTableTableManager
                 grape: grape,
                 canonicalGrapeId: canonicalGrapeId,
                 grapeFreetext: grapeFreetext,
+                canonicalWineId: canonicalWineId,
                 winery: winery,
                 nameNorm: nameNorm,
                 userId: userId,
@@ -3502,6 +3577,7 @@ class $$WinesTableTableTableManager
                 Value<String?> grape = const Value.absent(),
                 Value<String?> canonicalGrapeId = const Value.absent(),
                 Value<String?> grapeFreetext = const Value.absent(),
+                Value<String?> canonicalWineId = const Value.absent(),
                 Value<String?> winery = const Value.absent(),
                 Value<String?> nameNorm = const Value.absent(),
                 required String userId,
@@ -3528,6 +3604,7 @@ class $$WinesTableTableTableManager
                 grape: grape,
                 canonicalGrapeId: canonicalGrapeId,
                 grapeFreetext: grapeFreetext,
+                canonicalWineId: canonicalWineId,
                 winery: winery,
                 nameNorm: nameNorm,
                 userId: userId,
