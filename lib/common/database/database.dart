@@ -5,10 +5,12 @@ import 'tables/wines.table.dart';
 import 'tables/wine_memories.table.dart';
 import 'tables/wine_aliases.table.dart';
 import 'tables/notification_prefs.table.dart';
+import 'tables/canonical_grape.table.dart';
 import 'daos/wines.dao.dart';
 import 'daos/wine_memories.dao.dart';
 import 'daos/wine_aliases.dao.dart';
 import 'daos/notification_prefs.dao.dart';
+import 'daos/canonical_grape.dao.dart';
 
 part 'database.g.dart';
 
@@ -18,14 +20,21 @@ part 'database.g.dart';
     WineMemoriesTable,
     WineAliasesTable,
     NotificationPrefsTable,
+    CanonicalGrapeTable,
   ],
-  daos: [WinesDao, WineMemoriesDao, WineAliasesDao, NotificationPrefsDao],
+  daos: [
+    WinesDao,
+    WineMemoriesDao,
+    WineAliasesDao,
+    NotificationPrefsDao,
+    CanonicalGrapeDao,
+  ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -33,8 +42,21 @@ class AppDatabase extends _$AppDatabase {
       await m.createAll();
     },
     onUpgrade: (Migrator m, int from, int to) async {
-      // Beta wipe-and-recreate: schema evolves quickly while pre-launch.
-      // Existing local data is discarded; Supabase re-sync repopulates.
+      if (from == 1 && to == 2) {
+        // Additive: keep existing wines, add canonical grape columns +
+        // new catalog table. Backfill grape_freetext from the legacy
+        // free-text column so old rows show up the same way until the
+        // user re-edits and picks a canonical variety.
+        await m.addColumn(winesTable, winesTable.canonicalGrapeId);
+        await m.addColumn(winesTable, winesTable.grapeFreetext);
+        await m.createTable(canonicalGrapeTable);
+        await customStatement(
+          "UPDATE wines SET grape_freetext = grape "
+          "WHERE grape IS NOT NULL AND grape != '' AND grape_freetext IS NULL",
+        );
+        return;
+      }
+      // Beta fallback: wipe-and-recreate for any other upgrade path.
       for (final table in allTables) {
         await m.deleteTable(table.actualTableName);
       }

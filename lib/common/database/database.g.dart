@@ -170,6 +170,28 @@ class $WinesTableTable extends WinesTable
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _canonicalGrapeIdMeta = const VerificationMeta(
+    'canonicalGrapeId',
+  );
+  @override
+  late final GeneratedColumn<String> canonicalGrapeId = GeneratedColumn<String>(
+    'canonical_grape_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _grapeFreetextMeta = const VerificationMeta(
+    'grapeFreetext',
+  );
+  @override
+  late final GeneratedColumn<String> grapeFreetext = GeneratedColumn<String>(
+    'grape_freetext',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _wineryMeta = const VerificationMeta('winery');
   @override
   late final GeneratedColumn<String> winery = GeneratedColumn<String>(
@@ -252,6 +274,8 @@ class $WinesTableTable extends WinesTable
     localImagePath,
     vintage,
     grape,
+    canonicalGrapeId,
+    grapeFreetext,
     winery,
     nameNorm,
     userId,
@@ -375,6 +399,24 @@ class $WinesTableTable extends WinesTable
         grape.isAcceptableOrUnknown(data['grape']!, _grapeMeta),
       );
     }
+    if (data.containsKey('canonical_grape_id')) {
+      context.handle(
+        _canonicalGrapeIdMeta,
+        canonicalGrapeId.isAcceptableOrUnknown(
+          data['canonical_grape_id']!,
+          _canonicalGrapeIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('grape_freetext')) {
+      context.handle(
+        _grapeFreetextMeta,
+        grapeFreetext.isAcceptableOrUnknown(
+          data['grape_freetext']!,
+          _grapeFreetextMeta,
+        ),
+      );
+    }
     if (data.containsKey('winery')) {
       context.handle(
         _wineryMeta,
@@ -486,6 +528,14 @@ class $WinesTableTable extends WinesTable
         DriftSqlType.string,
         data['${effectivePrefix}grape'],
       ),
+      canonicalGrapeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}canonical_grape_id'],
+      ),
+      grapeFreetext: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}grape_freetext'],
+      ),
       winery: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}winery'],
@@ -536,6 +586,8 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
   final String? localImagePath;
   final int? vintage;
   final String? grape;
+  final String? canonicalGrapeId;
+  final String? grapeFreetext;
   final String? winery;
   final String? nameNorm;
   final String userId;
@@ -559,6 +611,8 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
     this.localImagePath,
     this.vintage,
     this.grape,
+    this.canonicalGrapeId,
+    this.grapeFreetext,
     this.winery,
     this.nameNorm,
     required this.userId,
@@ -606,6 +660,12 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
     }
     if (!nullToAbsent || grape != null) {
       map['grape'] = Variable<String>(grape);
+    }
+    if (!nullToAbsent || canonicalGrapeId != null) {
+      map['canonical_grape_id'] = Variable<String>(canonicalGrapeId);
+    }
+    if (!nullToAbsent || grapeFreetext != null) {
+      map['grape_freetext'] = Variable<String>(grapeFreetext);
     }
     if (!nullToAbsent || winery != null) {
       map['winery'] = Variable<String>(winery);
@@ -662,6 +722,12 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
       grape: grape == null && nullToAbsent
           ? const Value.absent()
           : Value(grape),
+      canonicalGrapeId: canonicalGrapeId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(canonicalGrapeId),
+      grapeFreetext: grapeFreetext == null && nullToAbsent
+          ? const Value.absent()
+          : Value(grapeFreetext),
       winery: winery == null && nullToAbsent
           ? const Value.absent()
           : Value(winery),
@@ -699,6 +765,8 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
       localImagePath: serializer.fromJson<String?>(json['localImagePath']),
       vintage: serializer.fromJson<int?>(json['vintage']),
       grape: serializer.fromJson<String?>(json['grape']),
+      canonicalGrapeId: serializer.fromJson<String?>(json['canonicalGrapeId']),
+      grapeFreetext: serializer.fromJson<String?>(json['grapeFreetext']),
       winery: serializer.fromJson<String?>(json['winery']),
       nameNorm: serializer.fromJson<String?>(json['nameNorm']),
       userId: serializer.fromJson<String>(json['userId']),
@@ -727,6 +795,8 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
       'localImagePath': serializer.toJson<String?>(localImagePath),
       'vintage': serializer.toJson<int?>(vintage),
       'grape': serializer.toJson<String?>(grape),
+      'canonicalGrapeId': serializer.toJson<String?>(canonicalGrapeId),
+      'grapeFreetext': serializer.toJson<String?>(grapeFreetext),
       'winery': serializer.toJson<String?>(winery),
       'nameNorm': serializer.toJson<String?>(nameNorm),
       'userId': serializer.toJson<String>(userId),
@@ -753,6 +823,8 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
     Value<String?> localImagePath = const Value.absent(),
     Value<int?> vintage = const Value.absent(),
     Value<String?> grape = const Value.absent(),
+    Value<String?> canonicalGrapeId = const Value.absent(),
+    Value<String?> grapeFreetext = const Value.absent(),
     Value<String?> winery = const Value.absent(),
     Value<String?> nameNorm = const Value.absent(),
     String? userId,
@@ -778,6 +850,12 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
         : this.localImagePath,
     vintage: vintage.present ? vintage.value : this.vintage,
     grape: grape.present ? grape.value : this.grape,
+    canonicalGrapeId: canonicalGrapeId.present
+        ? canonicalGrapeId.value
+        : this.canonicalGrapeId,
+    grapeFreetext: grapeFreetext.present
+        ? grapeFreetext.value
+        : this.grapeFreetext,
     winery: winery.present ? winery.value : this.winery,
     nameNorm: nameNorm.present ? nameNorm.value : this.nameNorm,
     userId: userId ?? this.userId,
@@ -805,6 +883,12 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
           : this.localImagePath,
       vintage: data.vintage.present ? data.vintage.value : this.vintage,
       grape: data.grape.present ? data.grape.value : this.grape,
+      canonicalGrapeId: data.canonicalGrapeId.present
+          ? data.canonicalGrapeId.value
+          : this.canonicalGrapeId,
+      grapeFreetext: data.grapeFreetext.present
+          ? data.grapeFreetext.value
+          : this.grapeFreetext,
       winery: data.winery.present ? data.winery.value : this.winery,
       nameNorm: data.nameNorm.present ? data.nameNorm.value : this.nameNorm,
       userId: data.userId.present ? data.userId.value : this.userId,
@@ -835,6 +919,8 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
           ..write('localImagePath: $localImagePath, ')
           ..write('vintage: $vintage, ')
           ..write('grape: $grape, ')
+          ..write('canonicalGrapeId: $canonicalGrapeId, ')
+          ..write('grapeFreetext: $grapeFreetext, ')
           ..write('winery: $winery, ')
           ..write('nameNorm: $nameNorm, ')
           ..write('userId: $userId, ')
@@ -863,6 +949,8 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
     localImagePath,
     vintage,
     grape,
+    canonicalGrapeId,
+    grapeFreetext,
     winery,
     nameNorm,
     userId,
@@ -890,6 +978,8 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
           other.localImagePath == this.localImagePath &&
           other.vintage == this.vintage &&
           other.grape == this.grape &&
+          other.canonicalGrapeId == this.canonicalGrapeId &&
+          other.grapeFreetext == this.grapeFreetext &&
           other.winery == this.winery &&
           other.nameNorm == this.nameNorm &&
           other.userId == this.userId &&
@@ -915,6 +1005,8 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
   final Value<String?> localImagePath;
   final Value<int?> vintage;
   final Value<String?> grape;
+  final Value<String?> canonicalGrapeId;
+  final Value<String?> grapeFreetext;
   final Value<String?> winery;
   final Value<String?> nameNorm;
   final Value<String> userId;
@@ -939,6 +1031,8 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
     this.localImagePath = const Value.absent(),
     this.vintage = const Value.absent(),
     this.grape = const Value.absent(),
+    this.canonicalGrapeId = const Value.absent(),
+    this.grapeFreetext = const Value.absent(),
     this.winery = const Value.absent(),
     this.nameNorm = const Value.absent(),
     this.userId = const Value.absent(),
@@ -964,6 +1058,8 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
     this.localImagePath = const Value.absent(),
     this.vintage = const Value.absent(),
     this.grape = const Value.absent(),
+    this.canonicalGrapeId = const Value.absent(),
+    this.grapeFreetext = const Value.absent(),
     this.winery = const Value.absent(),
     this.nameNorm = const Value.absent(),
     required String userId,
@@ -993,6 +1089,8 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
     Expression<String>? localImagePath,
     Expression<int>? vintage,
     Expression<String>? grape,
+    Expression<String>? canonicalGrapeId,
+    Expression<String>? grapeFreetext,
     Expression<String>? winery,
     Expression<String>? nameNorm,
     Expression<String>? userId,
@@ -1018,6 +1116,8 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
       if (localImagePath != null) 'local_image_path': localImagePath,
       if (vintage != null) 'vintage': vintage,
       if (grape != null) 'grape': grape,
+      if (canonicalGrapeId != null) 'canonical_grape_id': canonicalGrapeId,
+      if (grapeFreetext != null) 'grape_freetext': grapeFreetext,
       if (winery != null) 'winery': winery,
       if (nameNorm != null) 'name_norm': nameNorm,
       if (userId != null) 'user_id': userId,
@@ -1045,6 +1145,8 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
     Value<String?>? localImagePath,
     Value<int?>? vintage,
     Value<String?>? grape,
+    Value<String?>? canonicalGrapeId,
+    Value<String?>? grapeFreetext,
     Value<String?>? winery,
     Value<String?>? nameNorm,
     Value<String>? userId,
@@ -1070,6 +1172,8 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
       localImagePath: localImagePath ?? this.localImagePath,
       vintage: vintage ?? this.vintage,
       grape: grape ?? this.grape,
+      canonicalGrapeId: canonicalGrapeId ?? this.canonicalGrapeId,
+      grapeFreetext: grapeFreetext ?? this.grapeFreetext,
       winery: winery ?? this.winery,
       nameNorm: nameNorm ?? this.nameNorm,
       userId: userId ?? this.userId,
@@ -1131,6 +1235,12 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
     if (grape.present) {
       map['grape'] = Variable<String>(grape.value);
     }
+    if (canonicalGrapeId.present) {
+      map['canonical_grape_id'] = Variable<String>(canonicalGrapeId.value);
+    }
+    if (grapeFreetext.present) {
+      map['grape_freetext'] = Variable<String>(grapeFreetext.value);
+    }
     if (winery.present) {
       map['winery'] = Variable<String>(winery.value);
     }
@@ -1174,6 +1284,8 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
           ..write('localImagePath: $localImagePath, ')
           ..write('vintage: $vintage, ')
           ..write('grape: $grape, ')
+          ..write('canonicalGrapeId: $canonicalGrapeId, ')
+          ..write('grapeFreetext: $grapeFreetext, ')
           ..write('winery: $winery, ')
           ..write('nameNorm: $nameNorm, ')
           ..write('userId: $userId, ')
@@ -2527,6 +2639,320 @@ class NotificationPrefsTableCompanion
   }
 }
 
+class $CanonicalGrapeTableTable extends CanonicalGrapeTable
+    with TableInfo<$CanonicalGrapeTableTable, CanonicalGrapeTableData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CanonicalGrapeTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _colorMeta = const VerificationMeta('color');
+  @override
+  late final GeneratedColumn<String> color = GeneratedColumn<String>(
+    'color',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<List<String>, String> aliases =
+      GeneratedColumn<String>(
+        'aliases',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant(''),
+      ).withConverter<List<String>>(
+        $CanonicalGrapeTableTable.$converteraliases,
+      );
+  @override
+  List<GeneratedColumn> get $columns => [id, name, color, aliases];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'canonical_grape';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CanonicalGrapeTableData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('color')) {
+      context.handle(
+        _colorMeta,
+        color.isAcceptableOrUnknown(data['color']!, _colorMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_colorMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  CanonicalGrapeTableData map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CanonicalGrapeTableData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      color: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}color'],
+      )!,
+      aliases: $CanonicalGrapeTableTable.$converteraliases.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}aliases'],
+        )!,
+      ),
+    );
+  }
+
+  @override
+  $CanonicalGrapeTableTable createAlias(String alias) {
+    return $CanonicalGrapeTableTable(attachedDatabase, alias);
+  }
+
+  static TypeConverter<List<String>, String> $converteraliases =
+      const AliasesConverter();
+}
+
+class CanonicalGrapeTableData extends DataClass
+    implements Insertable<CanonicalGrapeTableData> {
+  final String id;
+  final String name;
+  final String color;
+  final List<String> aliases;
+  const CanonicalGrapeTableData({
+    required this.id,
+    required this.name,
+    required this.color,
+    required this.aliases,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['name'] = Variable<String>(name);
+    map['color'] = Variable<String>(color);
+    {
+      map['aliases'] = Variable<String>(
+        $CanonicalGrapeTableTable.$converteraliases.toSql(aliases),
+      );
+    }
+    return map;
+  }
+
+  CanonicalGrapeTableCompanion toCompanion(bool nullToAbsent) {
+    return CanonicalGrapeTableCompanion(
+      id: Value(id),
+      name: Value(name),
+      color: Value(color),
+      aliases: Value(aliases),
+    );
+  }
+
+  factory CanonicalGrapeTableData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CanonicalGrapeTableData(
+      id: serializer.fromJson<String>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      color: serializer.fromJson<String>(json['color']),
+      aliases: serializer.fromJson<List<String>>(json['aliases']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'name': serializer.toJson<String>(name),
+      'color': serializer.toJson<String>(color),
+      'aliases': serializer.toJson<List<String>>(aliases),
+    };
+  }
+
+  CanonicalGrapeTableData copyWith({
+    String? id,
+    String? name,
+    String? color,
+    List<String>? aliases,
+  }) => CanonicalGrapeTableData(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    color: color ?? this.color,
+    aliases: aliases ?? this.aliases,
+  );
+  CanonicalGrapeTableData copyWithCompanion(CanonicalGrapeTableCompanion data) {
+    return CanonicalGrapeTableData(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      color: data.color.present ? data.color.value : this.color,
+      aliases: data.aliases.present ? data.aliases.value : this.aliases,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CanonicalGrapeTableData(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('color: $color, ')
+          ..write('aliases: $aliases')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, name, color, aliases);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CanonicalGrapeTableData &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.color == this.color &&
+          other.aliases == this.aliases);
+}
+
+class CanonicalGrapeTableCompanion
+    extends UpdateCompanion<CanonicalGrapeTableData> {
+  final Value<String> id;
+  final Value<String> name;
+  final Value<String> color;
+  final Value<List<String>> aliases;
+  final Value<int> rowid;
+  const CanonicalGrapeTableCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.color = const Value.absent(),
+    this.aliases = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  CanonicalGrapeTableCompanion.insert({
+    required String id,
+    required String name,
+    required String color,
+    this.aliases = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       name = Value(name),
+       color = Value(color);
+  static Insertable<CanonicalGrapeTableData> custom({
+    Expression<String>? id,
+    Expression<String>? name,
+    Expression<String>? color,
+    Expression<String>? aliases,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (color != null) 'color': color,
+      if (aliases != null) 'aliases': aliases,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  CanonicalGrapeTableCompanion copyWith({
+    Value<String>? id,
+    Value<String>? name,
+    Value<String>? color,
+    Value<List<String>>? aliases,
+    Value<int>? rowid,
+  }) {
+    return CanonicalGrapeTableCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      color: color ?? this.color,
+      aliases: aliases ?? this.aliases,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (color.present) {
+      map['color'] = Variable<String>(color.value);
+    }
+    if (aliases.present) {
+      map['aliases'] = Variable<String>(
+        $CanonicalGrapeTableTable.$converteraliases.toSql(aliases.value),
+      );
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CanonicalGrapeTableCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('color: $color, ')
+          ..write('aliases: $aliases, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -2538,6 +2964,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   );
   late final $NotificationPrefsTableTable notificationPrefsTable =
       $NotificationPrefsTableTable(this);
+  late final $CanonicalGrapeTableTable canonicalGrapeTable =
+      $CanonicalGrapeTableTable(this);
   late final WinesDao winesDao = WinesDao(this as AppDatabase);
   late final WineMemoriesDao wineMemoriesDao = WineMemoriesDao(
     this as AppDatabase,
@@ -2546,6 +2974,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     this as AppDatabase,
   );
   late final NotificationPrefsDao notificationPrefsDao = NotificationPrefsDao(
+    this as AppDatabase,
+  );
+  late final CanonicalGrapeDao canonicalGrapeDao = CanonicalGrapeDao(
     this as AppDatabase,
   );
   @override
@@ -2557,6 +2988,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     wineMemoriesTable,
     wineAliasesTable,
     notificationPrefsTable,
+    canonicalGrapeTable,
   ];
 }
 
@@ -2578,6 +3010,8 @@ typedef $$WinesTableTableCreateCompanionBuilder =
       Value<String?> localImagePath,
       Value<int?> vintage,
       Value<String?> grape,
+      Value<String?> canonicalGrapeId,
+      Value<String?> grapeFreetext,
       Value<String?> winery,
       Value<String?> nameNorm,
       required String userId,
@@ -2604,6 +3038,8 @@ typedef $$WinesTableTableUpdateCompanionBuilder =
       Value<String?> localImagePath,
       Value<int?> vintage,
       Value<String?> grape,
+      Value<String?> canonicalGrapeId,
+      Value<String?> grapeFreetext,
       Value<String?> winery,
       Value<String?> nameNorm,
       Value<String> userId,
@@ -2699,6 +3135,16 @@ class $$WinesTableTableFilterComposer
 
   ColumnFilters<String> get grape => $composableBuilder(
     column: $table.grape,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get canonicalGrapeId => $composableBuilder(
+    column: $table.canonicalGrapeId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get grapeFreetext => $composableBuilder(
+    column: $table.grapeFreetext,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2822,6 +3268,16 @@ class $$WinesTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get canonicalGrapeId => $composableBuilder(
+    column: $table.canonicalGrapeId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get grapeFreetext => $composableBuilder(
+    column: $table.grapeFreetext,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get winery => $composableBuilder(
     column: $table.winery,
     builder: (column) => ColumnOrderings(column),
@@ -2912,6 +3368,16 @@ class $$WinesTableTableAnnotationComposer
   GeneratedColumn<String> get grape =>
       $composableBuilder(column: $table.grape, builder: (column) => column);
 
+  GeneratedColumn<String> get canonicalGrapeId => $composableBuilder(
+    column: $table.canonicalGrapeId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get grapeFreetext => $composableBuilder(
+    column: $table.grapeFreetext,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<String> get winery =>
       $composableBuilder(column: $table.winery, builder: (column) => column);
 
@@ -2980,6 +3446,8 @@ class $$WinesTableTableTableManager
                 Value<String?> localImagePath = const Value.absent(),
                 Value<int?> vintage = const Value.absent(),
                 Value<String?> grape = const Value.absent(),
+                Value<String?> canonicalGrapeId = const Value.absent(),
+                Value<String?> grapeFreetext = const Value.absent(),
                 Value<String?> winery = const Value.absent(),
                 Value<String?> nameNorm = const Value.absent(),
                 Value<String> userId = const Value.absent(),
@@ -3004,6 +3472,8 @@ class $$WinesTableTableTableManager
                 localImagePath: localImagePath,
                 vintage: vintage,
                 grape: grape,
+                canonicalGrapeId: canonicalGrapeId,
+                grapeFreetext: grapeFreetext,
                 winery: winery,
                 nameNorm: nameNorm,
                 userId: userId,
@@ -3030,6 +3500,8 @@ class $$WinesTableTableTableManager
                 Value<String?> localImagePath = const Value.absent(),
                 Value<int?> vintage = const Value.absent(),
                 Value<String?> grape = const Value.absent(),
+                Value<String?> canonicalGrapeId = const Value.absent(),
+                Value<String?> grapeFreetext = const Value.absent(),
                 Value<String?> winery = const Value.absent(),
                 Value<String?> nameNorm = const Value.absent(),
                 required String userId,
@@ -3054,6 +3526,8 @@ class $$WinesTableTableTableManager
                 localImagePath: localImagePath,
                 vintage: vintage,
                 grape: grape,
+                canonicalGrapeId: canonicalGrapeId,
+                grapeFreetext: grapeFreetext,
                 winery: winery,
                 nameNorm: nameNorm,
                 userId: userId,
@@ -3821,6 +4295,204 @@ typedef $$NotificationPrefsTableTableProcessedTableManager =
       NotificationPrefsTableData,
       PrefetchHooks Function()
     >;
+typedef $$CanonicalGrapeTableTableCreateCompanionBuilder =
+    CanonicalGrapeTableCompanion Function({
+      required String id,
+      required String name,
+      required String color,
+      Value<List<String>> aliases,
+      Value<int> rowid,
+    });
+typedef $$CanonicalGrapeTableTableUpdateCompanionBuilder =
+    CanonicalGrapeTableCompanion Function({
+      Value<String> id,
+      Value<String> name,
+      Value<String> color,
+      Value<List<String>> aliases,
+      Value<int> rowid,
+    });
+
+class $$CanonicalGrapeTableTableFilterComposer
+    extends Composer<_$AppDatabase, $CanonicalGrapeTableTable> {
+  $$CanonicalGrapeTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get color => $composableBuilder(
+    column: $table.color,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<List<String>, List<String>, String>
+  get aliases => $composableBuilder(
+    column: $table.aliases,
+    builder: (column) => ColumnWithTypeConverterFilters(column),
+  );
+}
+
+class $$CanonicalGrapeTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $CanonicalGrapeTableTable> {
+  $$CanonicalGrapeTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get color => $composableBuilder(
+    column: $table.color,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get aliases => $composableBuilder(
+    column: $table.aliases,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$CanonicalGrapeTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CanonicalGrapeTableTable> {
+  $$CanonicalGrapeTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get color =>
+      $composableBuilder(column: $table.color, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<List<String>, String> get aliases =>
+      $composableBuilder(column: $table.aliases, builder: (column) => column);
+}
+
+class $$CanonicalGrapeTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $CanonicalGrapeTableTable,
+          CanonicalGrapeTableData,
+          $$CanonicalGrapeTableTableFilterComposer,
+          $$CanonicalGrapeTableTableOrderingComposer,
+          $$CanonicalGrapeTableTableAnnotationComposer,
+          $$CanonicalGrapeTableTableCreateCompanionBuilder,
+          $$CanonicalGrapeTableTableUpdateCompanionBuilder,
+          (
+            CanonicalGrapeTableData,
+            BaseReferences<
+              _$AppDatabase,
+              $CanonicalGrapeTableTable,
+              CanonicalGrapeTableData
+            >,
+          ),
+          CanonicalGrapeTableData,
+          PrefetchHooks Function()
+        > {
+  $$CanonicalGrapeTableTableTableManager(
+    _$AppDatabase db,
+    $CanonicalGrapeTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CanonicalGrapeTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CanonicalGrapeTableTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$CanonicalGrapeTableTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String> color = const Value.absent(),
+                Value<List<String>> aliases = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CanonicalGrapeTableCompanion(
+                id: id,
+                name: name,
+                color: color,
+                aliases: aliases,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String name,
+                required String color,
+                Value<List<String>> aliases = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CanonicalGrapeTableCompanion.insert(
+                id: id,
+                name: name,
+                color: color,
+                aliases: aliases,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$CanonicalGrapeTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $CanonicalGrapeTableTable,
+      CanonicalGrapeTableData,
+      $$CanonicalGrapeTableTableFilterComposer,
+      $$CanonicalGrapeTableTableOrderingComposer,
+      $$CanonicalGrapeTableTableAnnotationComposer,
+      $$CanonicalGrapeTableTableCreateCompanionBuilder,
+      $$CanonicalGrapeTableTableUpdateCompanionBuilder,
+      (
+        CanonicalGrapeTableData,
+        BaseReferences<
+          _$AppDatabase,
+          $CanonicalGrapeTableTable,
+          CanonicalGrapeTableData
+        >,
+      ),
+      CanonicalGrapeTableData,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -3836,4 +4508,6 @@ class $AppDatabaseManager {
         _db,
         _db.notificationPrefsTable,
       );
+  $$CanonicalGrapeTableTableTableManager get canonicalGrapeTable =>
+      $$CanonicalGrapeTableTableTableManager(_db, _db.canonicalGrapeTable);
 }
