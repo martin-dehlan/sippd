@@ -14,6 +14,11 @@ class TasteMatchModel with _$TasteMatchModel {
     @JsonKey(name: 'my_total') @Default(0) int myTotal,
     @JsonKey(name: 'their_total') @Default(0) int theirTotal,
     String? reason,
+    @JsonKey(name: 'bucket_score') int? bucketScore,
+    @JsonKey(name: 'dna_score') int? dnaScore,
+    @JsonKey(name: 'same_canonical_pairs') @Default(0) int sameCanonicalPairs,
+    @JsonKey(name: 'agree_pairs') @Default(0) int agreePairs,
+    @JsonKey(name: 'disagree_pairs') @Default(0) int disagreePairs,
   }) = _TasteMatchModel;
 
   factory TasteMatchModel.fromJson(Map<String, dynamic> json) =>
@@ -28,6 +33,11 @@ extension TasteMatchModelX on TasteMatchModel {
         myTotal: myTotal,
         theirTotal: theirTotal,
         reason: _reasonFromString(reason),
+        bucketScore: bucketScore,
+        dnaScore: dnaScore,
+        sameCanonicalPairs: sameCanonicalPairs,
+        agreePairs: agreePairs,
+        disagreePairs: disagreePairs,
       );
 }
 

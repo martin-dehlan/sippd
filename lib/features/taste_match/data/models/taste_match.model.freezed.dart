@@ -30,6 +30,16 @@ mixin _$TasteMatchModel {
   @JsonKey(name: 'their_total')
   int get theirTotal => throw _privateConstructorUsedError;
   String? get reason => throw _privateConstructorUsedError;
+  @JsonKey(name: 'bucket_score')
+  int? get bucketScore => throw _privateConstructorUsedError;
+  @JsonKey(name: 'dna_score')
+  int? get dnaScore => throw _privateConstructorUsedError;
+  @JsonKey(name: 'same_canonical_pairs')
+  int get sameCanonicalPairs => throw _privateConstructorUsedError;
+  @JsonKey(name: 'agree_pairs')
+  int get agreePairs => throw _privateConstructorUsedError;
+  @JsonKey(name: 'disagree_pairs')
+  int get disagreePairs => throw _privateConstructorUsedError;
 
   /// Serializes this TasteMatchModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -55,6 +65,11 @@ abstract class $TasteMatchModelCopyWith<$Res> {
     @JsonKey(name: 'my_total') int myTotal,
     @JsonKey(name: 'their_total') int theirTotal,
     String? reason,
+    @JsonKey(name: 'bucket_score') int? bucketScore,
+    @JsonKey(name: 'dna_score') int? dnaScore,
+    @JsonKey(name: 'same_canonical_pairs') int sameCanonicalPairs,
+    @JsonKey(name: 'agree_pairs') int agreePairs,
+    @JsonKey(name: 'disagree_pairs') int disagreePairs,
   });
 }
 
@@ -79,6 +94,11 @@ class _$TasteMatchModelCopyWithImpl<$Res, $Val extends TasteMatchModel>
     Object? myTotal = null,
     Object? theirTotal = null,
     Object? reason = freezed,
+    Object? bucketScore = freezed,
+    Object? dnaScore = freezed,
+    Object? sameCanonicalPairs = null,
+    Object? agreePairs = null,
+    Object? disagreePairs = null,
   }) {
     return _then(
       _value.copyWith(
@@ -106,6 +126,26 @@ class _$TasteMatchModelCopyWithImpl<$Res, $Val extends TasteMatchModel>
                 ? _value.reason
                 : reason // ignore: cast_nullable_to_non_nullable
                       as String?,
+            bucketScore: freezed == bucketScore
+                ? _value.bucketScore
+                : bucketScore // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            dnaScore: freezed == dnaScore
+                ? _value.dnaScore
+                : dnaScore // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            sameCanonicalPairs: null == sameCanonicalPairs
+                ? _value.sameCanonicalPairs
+                : sameCanonicalPairs // ignore: cast_nullable_to_non_nullable
+                      as int,
+            agreePairs: null == agreePairs
+                ? _value.agreePairs
+                : agreePairs // ignore: cast_nullable_to_non_nullable
+                      as int,
+            disagreePairs: null == disagreePairs
+                ? _value.disagreePairs
+                : disagreePairs // ignore: cast_nullable_to_non_nullable
+                      as int,
           )
           as $Val,
     );
@@ -128,6 +168,11 @@ abstract class _$$TasteMatchModelImplCopyWith<$Res>
     @JsonKey(name: 'my_total') int myTotal,
     @JsonKey(name: 'their_total') int theirTotal,
     String? reason,
+    @JsonKey(name: 'bucket_score') int? bucketScore,
+    @JsonKey(name: 'dna_score') int? dnaScore,
+    @JsonKey(name: 'same_canonical_pairs') int sameCanonicalPairs,
+    @JsonKey(name: 'agree_pairs') int agreePairs,
+    @JsonKey(name: 'disagree_pairs') int disagreePairs,
   });
 }
 
@@ -151,6 +196,11 @@ class __$$TasteMatchModelImplCopyWithImpl<$Res>
     Object? myTotal = null,
     Object? theirTotal = null,
     Object? reason = freezed,
+    Object? bucketScore = freezed,
+    Object? dnaScore = freezed,
+    Object? sameCanonicalPairs = null,
+    Object? agreePairs = null,
+    Object? disagreePairs = null,
   }) {
     return _then(
       _$TasteMatchModelImpl(
@@ -178,6 +228,26 @@ class __$$TasteMatchModelImplCopyWithImpl<$Res>
             ? _value.reason
             : reason // ignore: cast_nullable_to_non_nullable
                   as String?,
+        bucketScore: freezed == bucketScore
+            ? _value.bucketScore
+            : bucketScore // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        dnaScore: freezed == dnaScore
+            ? _value.dnaScore
+            : dnaScore // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        sameCanonicalPairs: null == sameCanonicalPairs
+            ? _value.sameCanonicalPairs
+            : sameCanonicalPairs // ignore: cast_nullable_to_non_nullable
+                  as int,
+        agreePairs: null == agreePairs
+            ? _value.agreePairs
+            : agreePairs // ignore: cast_nullable_to_non_nullable
+                  as int,
+        disagreePairs: null == disagreePairs
+            ? _value.disagreePairs
+            : disagreePairs // ignore: cast_nullable_to_non_nullable
+                  as int,
       ),
     );
   }
@@ -193,6 +263,11 @@ class _$TasteMatchModelImpl implements _TasteMatchModel {
     @JsonKey(name: 'my_total') this.myTotal = 0,
     @JsonKey(name: 'their_total') this.theirTotal = 0,
     this.reason,
+    @JsonKey(name: 'bucket_score') this.bucketScore,
+    @JsonKey(name: 'dna_score') this.dnaScore,
+    @JsonKey(name: 'same_canonical_pairs') this.sameCanonicalPairs = 0,
+    @JsonKey(name: 'agree_pairs') this.agreePairs = 0,
+    @JsonKey(name: 'disagree_pairs') this.disagreePairs = 0,
   });
 
   factory _$TasteMatchModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -213,10 +288,25 @@ class _$TasteMatchModelImpl implements _TasteMatchModel {
   final int theirTotal;
   @override
   final String? reason;
+  @override
+  @JsonKey(name: 'bucket_score')
+  final int? bucketScore;
+  @override
+  @JsonKey(name: 'dna_score')
+  final int? dnaScore;
+  @override
+  @JsonKey(name: 'same_canonical_pairs')
+  final int sameCanonicalPairs;
+  @override
+  @JsonKey(name: 'agree_pairs')
+  final int agreePairs;
+  @override
+  @JsonKey(name: 'disagree_pairs')
+  final int disagreePairs;
 
   @override
   String toString() {
-    return 'TasteMatchModel(score: $score, confidence: $confidence, overlapCount: $overlapCount, myTotal: $myTotal, theirTotal: $theirTotal, reason: $reason)';
+    return 'TasteMatchModel(score: $score, confidence: $confidence, overlapCount: $overlapCount, myTotal: $myTotal, theirTotal: $theirTotal, reason: $reason, bucketScore: $bucketScore, dnaScore: $dnaScore, sameCanonicalPairs: $sameCanonicalPairs, agreePairs: $agreePairs, disagreePairs: $disagreePairs)';
   }
 
   @override
@@ -232,7 +322,17 @@ class _$TasteMatchModelImpl implements _TasteMatchModel {
             (identical(other.myTotal, myTotal) || other.myTotal == myTotal) &&
             (identical(other.theirTotal, theirTotal) ||
                 other.theirTotal == theirTotal) &&
-            (identical(other.reason, reason) || other.reason == reason));
+            (identical(other.reason, reason) || other.reason == reason) &&
+            (identical(other.bucketScore, bucketScore) ||
+                other.bucketScore == bucketScore) &&
+            (identical(other.dnaScore, dnaScore) ||
+                other.dnaScore == dnaScore) &&
+            (identical(other.sameCanonicalPairs, sameCanonicalPairs) ||
+                other.sameCanonicalPairs == sameCanonicalPairs) &&
+            (identical(other.agreePairs, agreePairs) ||
+                other.agreePairs == agreePairs) &&
+            (identical(other.disagreePairs, disagreePairs) ||
+                other.disagreePairs == disagreePairs));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -245,6 +345,11 @@ class _$TasteMatchModelImpl implements _TasteMatchModel {
     myTotal,
     theirTotal,
     reason,
+    bucketScore,
+    dnaScore,
+    sameCanonicalPairs,
+    agreePairs,
+    disagreePairs,
   );
 
   /// Create a copy of TasteMatchModel
@@ -272,6 +377,11 @@ abstract class _TasteMatchModel implements TasteMatchModel {
     @JsonKey(name: 'my_total') final int myTotal,
     @JsonKey(name: 'their_total') final int theirTotal,
     final String? reason,
+    @JsonKey(name: 'bucket_score') final int? bucketScore,
+    @JsonKey(name: 'dna_score') final int? dnaScore,
+    @JsonKey(name: 'same_canonical_pairs') final int sameCanonicalPairs,
+    @JsonKey(name: 'agree_pairs') final int agreePairs,
+    @JsonKey(name: 'disagree_pairs') final int disagreePairs,
   }) = _$TasteMatchModelImpl;
 
   factory _TasteMatchModel.fromJson(Map<String, dynamic> json) =
@@ -292,6 +402,21 @@ abstract class _TasteMatchModel implements TasteMatchModel {
   int get theirTotal;
   @override
   String? get reason;
+  @override
+  @JsonKey(name: 'bucket_score')
+  int? get bucketScore;
+  @override
+  @JsonKey(name: 'dna_score')
+  int? get dnaScore;
+  @override
+  @JsonKey(name: 'same_canonical_pairs')
+  int get sameCanonicalPairs;
+  @override
+  @JsonKey(name: 'agree_pairs')
+  int get agreePairs;
+  @override
+  @JsonKey(name: 'disagree_pairs')
+  int get disagreePairs;
 
   /// Create a copy of TasteMatchModel
   /// with the given fields replaced by the non-null parameter values.

@@ -15,6 +15,11 @@ _$TasteMatchModelImpl _$$TasteMatchModelImplFromJson(
   myTotal: (json['my_total'] as num?)?.toInt() ?? 0,
   theirTotal: (json['their_total'] as num?)?.toInt() ?? 0,
   reason: json['reason'] as String?,
+  bucketScore: (json['bucket_score'] as num?)?.toInt(),
+  dnaScore: (json['dna_score'] as num?)?.toInt(),
+  sameCanonicalPairs: (json['same_canonical_pairs'] as num?)?.toInt() ?? 0,
+  agreePairs: (json['agree_pairs'] as num?)?.toInt() ?? 0,
+  disagreePairs: (json['disagree_pairs'] as num?)?.toInt() ?? 0,
 );
 
 Map<String, dynamic> _$$TasteMatchModelImplToJson(
@@ -26,4 +31,9 @@ Map<String, dynamic> _$$TasteMatchModelImplToJson(
   'my_total': instance.myTotal,
   'their_total': instance.theirTotal,
   'reason': instance.reason,
+  'bucket_score': instance.bucketScore,
+  'dna_score': instance.dnaScore,
+  'same_canonical_pairs': instance.sameCanonicalPairs,
+  'agree_pairs': instance.agreePairs,
+  'disagree_pairs': instance.disagreePairs,
 };

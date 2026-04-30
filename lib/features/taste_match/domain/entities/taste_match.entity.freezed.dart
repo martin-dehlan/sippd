@@ -23,6 +23,11 @@ mixin _$TasteMatchEntity {
   int get myTotal => throw _privateConstructorUsedError;
   int get theirTotal => throw _privateConstructorUsedError;
   MatchUnavailableReason? get reason => throw _privateConstructorUsedError;
+  int? get bucketScore => throw _privateConstructorUsedError;
+  int? get dnaScore => throw _privateConstructorUsedError;
+  int get sameCanonicalPairs => throw _privateConstructorUsedError;
+  int get agreePairs => throw _privateConstructorUsedError;
+  int get disagreePairs => throw _privateConstructorUsedError;
 
   /// Create a copy of TasteMatchEntity
   /// with the given fields replaced by the non-null parameter values.
@@ -45,6 +50,11 @@ abstract class $TasteMatchEntityCopyWith<$Res> {
     int myTotal,
     int theirTotal,
     MatchUnavailableReason? reason,
+    int? bucketScore,
+    int? dnaScore,
+    int sameCanonicalPairs,
+    int agreePairs,
+    int disagreePairs,
   });
 }
 
@@ -69,6 +79,11 @@ class _$TasteMatchEntityCopyWithImpl<$Res, $Val extends TasteMatchEntity>
     Object? myTotal = null,
     Object? theirTotal = null,
     Object? reason = freezed,
+    Object? bucketScore = freezed,
+    Object? dnaScore = freezed,
+    Object? sameCanonicalPairs = null,
+    Object? agreePairs = null,
+    Object? disagreePairs = null,
   }) {
     return _then(
       _value.copyWith(
@@ -96,6 +111,26 @@ class _$TasteMatchEntityCopyWithImpl<$Res, $Val extends TasteMatchEntity>
                 ? _value.reason
                 : reason // ignore: cast_nullable_to_non_nullable
                       as MatchUnavailableReason?,
+            bucketScore: freezed == bucketScore
+                ? _value.bucketScore
+                : bucketScore // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            dnaScore: freezed == dnaScore
+                ? _value.dnaScore
+                : dnaScore // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            sameCanonicalPairs: null == sameCanonicalPairs
+                ? _value.sameCanonicalPairs
+                : sameCanonicalPairs // ignore: cast_nullable_to_non_nullable
+                      as int,
+            agreePairs: null == agreePairs
+                ? _value.agreePairs
+                : agreePairs // ignore: cast_nullable_to_non_nullable
+                      as int,
+            disagreePairs: null == disagreePairs
+                ? _value.disagreePairs
+                : disagreePairs // ignore: cast_nullable_to_non_nullable
+                      as int,
           )
           as $Val,
     );
@@ -118,6 +153,11 @@ abstract class _$$TasteMatchEntityImplCopyWith<$Res>
     int myTotal,
     int theirTotal,
     MatchUnavailableReason? reason,
+    int? bucketScore,
+    int? dnaScore,
+    int sameCanonicalPairs,
+    int agreePairs,
+    int disagreePairs,
   });
 }
 
@@ -141,6 +181,11 @@ class __$$TasteMatchEntityImplCopyWithImpl<$Res>
     Object? myTotal = null,
     Object? theirTotal = null,
     Object? reason = freezed,
+    Object? bucketScore = freezed,
+    Object? dnaScore = freezed,
+    Object? sameCanonicalPairs = null,
+    Object? agreePairs = null,
+    Object? disagreePairs = null,
   }) {
     return _then(
       _$TasteMatchEntityImpl(
@@ -168,6 +213,26 @@ class __$$TasteMatchEntityImplCopyWithImpl<$Res>
             ? _value.reason
             : reason // ignore: cast_nullable_to_non_nullable
                   as MatchUnavailableReason?,
+        bucketScore: freezed == bucketScore
+            ? _value.bucketScore
+            : bucketScore // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        dnaScore: freezed == dnaScore
+            ? _value.dnaScore
+            : dnaScore // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        sameCanonicalPairs: null == sameCanonicalPairs
+            ? _value.sameCanonicalPairs
+            : sameCanonicalPairs // ignore: cast_nullable_to_non_nullable
+                  as int,
+        agreePairs: null == agreePairs
+            ? _value.agreePairs
+            : agreePairs // ignore: cast_nullable_to_non_nullable
+                  as int,
+        disagreePairs: null == disagreePairs
+            ? _value.disagreePairs
+            : disagreePairs // ignore: cast_nullable_to_non_nullable
+                  as int,
       ),
     );
   }
@@ -183,6 +248,11 @@ class _$TasteMatchEntityImpl extends _TasteMatchEntity {
     this.myTotal = 0,
     this.theirTotal = 0,
     this.reason,
+    this.bucketScore,
+    this.dnaScore,
+    this.sameCanonicalPairs = 0,
+    this.agreePairs = 0,
+    this.disagreePairs = 0,
   }) : super._();
 
   @override
@@ -200,10 +270,23 @@ class _$TasteMatchEntityImpl extends _TasteMatchEntity {
   final int theirTotal;
   @override
   final MatchUnavailableReason? reason;
+  @override
+  final int? bucketScore;
+  @override
+  final int? dnaScore;
+  @override
+  @JsonKey()
+  final int sameCanonicalPairs;
+  @override
+  @JsonKey()
+  final int agreePairs;
+  @override
+  @JsonKey()
+  final int disagreePairs;
 
   @override
   String toString() {
-    return 'TasteMatchEntity(score: $score, confidence: $confidence, overlapCount: $overlapCount, myTotal: $myTotal, theirTotal: $theirTotal, reason: $reason)';
+    return 'TasteMatchEntity(score: $score, confidence: $confidence, overlapCount: $overlapCount, myTotal: $myTotal, theirTotal: $theirTotal, reason: $reason, bucketScore: $bucketScore, dnaScore: $dnaScore, sameCanonicalPairs: $sameCanonicalPairs, agreePairs: $agreePairs, disagreePairs: $disagreePairs)';
   }
 
   @override
@@ -219,7 +302,17 @@ class _$TasteMatchEntityImpl extends _TasteMatchEntity {
             (identical(other.myTotal, myTotal) || other.myTotal == myTotal) &&
             (identical(other.theirTotal, theirTotal) ||
                 other.theirTotal == theirTotal) &&
-            (identical(other.reason, reason) || other.reason == reason));
+            (identical(other.reason, reason) || other.reason == reason) &&
+            (identical(other.bucketScore, bucketScore) ||
+                other.bucketScore == bucketScore) &&
+            (identical(other.dnaScore, dnaScore) ||
+                other.dnaScore == dnaScore) &&
+            (identical(other.sameCanonicalPairs, sameCanonicalPairs) ||
+                other.sameCanonicalPairs == sameCanonicalPairs) &&
+            (identical(other.agreePairs, agreePairs) ||
+                other.agreePairs == agreePairs) &&
+            (identical(other.disagreePairs, disagreePairs) ||
+                other.disagreePairs == disagreePairs));
   }
 
   @override
@@ -231,6 +324,11 @@ class _$TasteMatchEntityImpl extends _TasteMatchEntity {
     myTotal,
     theirTotal,
     reason,
+    bucketScore,
+    dnaScore,
+    sameCanonicalPairs,
+    agreePairs,
+    disagreePairs,
   );
 
   /// Create a copy of TasteMatchEntity
@@ -253,6 +351,11 @@ abstract class _TasteMatchEntity extends TasteMatchEntity {
     final int myTotal,
     final int theirTotal,
     final MatchUnavailableReason? reason,
+    final int? bucketScore,
+    final int? dnaScore,
+    final int sameCanonicalPairs,
+    final int agreePairs,
+    final int disagreePairs,
   }) = _$TasteMatchEntityImpl;
   const _TasteMatchEntity._() : super._();
 
@@ -268,6 +371,16 @@ abstract class _TasteMatchEntity extends TasteMatchEntity {
   int get theirTotal;
   @override
   MatchUnavailableReason? get reason;
+  @override
+  int? get bucketScore;
+  @override
+  int? get dnaScore;
+  @override
+  int get sameCanonicalPairs;
+  @override
+  int get agreePairs;
+  @override
+  int get disagreePairs;
 
   /// Create a copy of TasteMatchEntity
   /// with the given fields replaced by the non-null parameter values.

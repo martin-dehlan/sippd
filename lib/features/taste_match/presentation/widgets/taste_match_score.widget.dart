@@ -61,13 +61,17 @@ class TasteMatchScoreWidget extends StatelessWidget {
           _ConfidenceBadge(confidence: confidence),
           SizedBox(height: context.xs),
           Text(
-            _supportingText(confidence, match.overlapCount),
+            _supportingText(match),
             style: TextStyle(
               fontSize: context.captionFont,
               color: cs.onSurfaceVariant,
               height: 1.4,
             ),
           ),
+          if (match.hasDna || match.sameCanonicalPairs > 0) ...[
+            SizedBox(height: context.s),
+            _Breakdown(match: match),
+          ],
         ],
       ),
     );
@@ -84,9 +88,14 @@ class TasteMatchScoreWidget extends StatelessWidget {
     }
   }
 
-  String _supportingText(MatchConfidence c, int overlap) {
+  String _supportingText(TasteMatchEntity m) {
+    final c = m.confidence!;
+    final overlap = m.overlapCount;
+    final dnaPart = m.hasDna
+        ? ' + WSET style overlap'
+        : '';
     final base = 'Based on $overlap shared region/type bucket'
-        '${overlap == 1 ? '' : 's'}.';
+        '${overlap == 1 ? '' : 's'}$dnaPart.';
     switch (c) {
       case MatchConfidence.high:
         return '$base Strong signal.';
@@ -95,6 +104,92 @@ class TasteMatchScoreWidget extends StatelessWidget {
       case MatchConfidence.low:
         return '$base Early signal — keep rating to sharpen this.';
     }
+  }
+}
+
+class _Breakdown extends StatelessWidget {
+  const _Breakdown({required this.match});
+
+  final TasteMatchEntity match;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Container(
+      padding: EdgeInsets.all(context.s),
+      decoration: BoxDecoration(
+        color: cs.surface,
+        borderRadius: BorderRadius.circular(context.w * 0.025),
+        border: Border.all(color: cs.outlineVariant.withValues(alpha: 0.6),
+            width: 0.6),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (match.bucketScore != null && match.dnaScore != null) ...[
+            _BreakdownRow(
+              label: 'Region & type fit',
+              value: '${match.bucketScore!}%',
+            ),
+            SizedBox(height: context.xs * 0.6),
+            _BreakdownRow(
+              label: 'Style DNA fit',
+              value: '${match.dnaScore!}%',
+            ),
+          ],
+          if (match.sameCanonicalPairs > 0) ...[
+            if (match.bucketScore != null) SizedBox(height: context.xs * 0.6),
+            _BreakdownRow(
+              label: 'Same wines rated',
+              value: '${match.sameCanonicalPairs} '
+                  '(${match.agreePairs} aligned, '
+                  '${match.disagreePairs} disagreed)',
+              accent: match.agreePairs > match.disagreePairs
+                  ? cs.primary
+                  : cs.error,
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _BreakdownRow extends StatelessWidget {
+  const _BreakdownRow({
+    required this.label,
+    required this.value,
+    this.accent,
+  });
+
+  final String label;
+  final String value;
+  final Color? accent;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: context.captionFont * 0.95,
+              color: cs.onSurfaceVariant,
+            ),
+          ),
+        ),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: context.captionFont * 0.95,
+            fontWeight: FontWeight.w700,
+            color: accent ?? cs.onSurface,
+          ),
+        ),
+      ],
+    );
   }
 }
 

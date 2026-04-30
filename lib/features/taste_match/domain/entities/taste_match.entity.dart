@@ -19,9 +19,15 @@ class TasteMatchEntity with _$TasteMatchEntity {
     @Default(0) int myTotal,
     @Default(0) int theirTotal,
     MatchUnavailableReason? reason,
+    int? bucketScore,
+    int? dnaScore,
+    @Default(0) int sameCanonicalPairs,
+    @Default(0) int agreePairs,
+    @Default(0) int disagreePairs,
   }) = _TasteMatchEntity;
 
   const TasteMatchEntity._();
 
   bool get hasScore => score != null && confidence != null;
+  bool get hasDna => dnaScore != null;
 }
