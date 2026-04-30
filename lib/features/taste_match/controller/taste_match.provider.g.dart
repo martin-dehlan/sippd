@@ -407,5 +407,246 @@ class _TasteMatchProviderElement
   String get otherUserId => (origin as TasteMatchProvider).otherUserId;
 }
 
+String _$userTopGrapesHash() => r'61130672021011e64d35717de9f4ae4016ccd41a';
+
+/// See also [userTopGrapes].
+@ProviderFor(userTopGrapes)
+const userTopGrapesProvider = UserTopGrapesFamily();
+
+/// See also [userTopGrapes].
+class UserTopGrapesFamily extends Family<AsyncValue<List<UserGrapeShare>>> {
+  /// See also [userTopGrapes].
+  const UserTopGrapesFamily();
+
+  /// See also [userTopGrapes].
+  UserTopGrapesProvider call(String userId) {
+    return UserTopGrapesProvider(userId);
+  }
+
+  @override
+  UserTopGrapesProvider getProviderOverride(
+    covariant UserTopGrapesProvider provider,
+  ) {
+    return call(provider.userId);
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'userTopGrapesProvider';
+}
+
+/// See also [userTopGrapes].
+class UserTopGrapesProvider
+    extends AutoDisposeFutureProvider<List<UserGrapeShare>> {
+  /// See also [userTopGrapes].
+  UserTopGrapesProvider(String userId)
+    : this._internal(
+        (ref) => userTopGrapes(ref as UserTopGrapesRef, userId),
+        from: userTopGrapesProvider,
+        name: r'userTopGrapesProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$userTopGrapesHash,
+        dependencies: UserTopGrapesFamily._dependencies,
+        allTransitiveDependencies:
+            UserTopGrapesFamily._allTransitiveDependencies,
+        userId: userId,
+      );
+
+  UserTopGrapesProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.userId,
+  }) : super.internal();
+
+  final String userId;
+
+  @override
+  Override overrideWith(
+    FutureOr<List<UserGrapeShare>> Function(UserTopGrapesRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: UserTopGrapesProvider._internal(
+        (ref) => create(ref as UserTopGrapesRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        userId: userId,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<List<UserGrapeShare>> createElement() {
+    return _UserTopGrapesProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is UserTopGrapesProvider && other.userId == userId;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, userId.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin UserTopGrapesRef on AutoDisposeFutureProviderRef<List<UserGrapeShare>> {
+  /// The parameter `userId` of this provider.
+  String get userId;
+}
+
+class _UserTopGrapesProviderElement
+    extends AutoDisposeFutureProviderElement<List<UserGrapeShare>>
+    with UserTopGrapesRef {
+  _UserTopGrapesProviderElement(super.provider);
+
+  @override
+  String get userId => (origin as UserTopGrapesProvider).userId;
+}
+
+String _$userStyleDnaHash() => r'1b6ac7f02b6423c68857cb8bac2534c65adaa490';
+
+/// See also [userStyleDna].
+@ProviderFor(userStyleDna)
+const userStyleDnaProvider = UserStyleDnaFamily();
+
+/// See also [userStyleDna].
+class UserStyleDnaFamily extends Family<AsyncValue<UserStyleDna>> {
+  /// See also [userStyleDna].
+  const UserStyleDnaFamily();
+
+  /// See also [userStyleDna].
+  UserStyleDnaProvider call(String userId) {
+    return UserStyleDnaProvider(userId);
+  }
+
+  @override
+  UserStyleDnaProvider getProviderOverride(
+    covariant UserStyleDnaProvider provider,
+  ) {
+    return call(provider.userId);
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'userStyleDnaProvider';
+}
+
+/// See also [userStyleDna].
+class UserStyleDnaProvider extends AutoDisposeFutureProvider<UserStyleDna> {
+  /// See also [userStyleDna].
+  UserStyleDnaProvider(String userId)
+    : this._internal(
+        (ref) => userStyleDna(ref as UserStyleDnaRef, userId),
+        from: userStyleDnaProvider,
+        name: r'userStyleDnaProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$userStyleDnaHash,
+        dependencies: UserStyleDnaFamily._dependencies,
+        allTransitiveDependencies:
+            UserStyleDnaFamily._allTransitiveDependencies,
+        userId: userId,
+      );
+
+  UserStyleDnaProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.userId,
+  }) : super.internal();
+
+  final String userId;
+
+  @override
+  Override overrideWith(
+    FutureOr<UserStyleDna> Function(UserStyleDnaRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: UserStyleDnaProvider._internal(
+        (ref) => create(ref as UserStyleDnaRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        userId: userId,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<UserStyleDna> createElement() {
+    return _UserStyleDnaProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is UserStyleDnaProvider && other.userId == userId;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, userId.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin UserStyleDnaRef on AutoDisposeFutureProviderRef<UserStyleDna> {
+  /// The parameter `userId` of this provider.
+  String get userId;
+}
+
+class _UserStyleDnaProviderElement
+    extends AutoDisposeFutureProviderElement<UserStyleDna>
+    with UserStyleDnaRef {
+  _UserStyleDnaProviderElement(super.provider);
+
+  @override
+  String get userId => (origin as UserStyleDnaProvider).userId;
+}
+
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

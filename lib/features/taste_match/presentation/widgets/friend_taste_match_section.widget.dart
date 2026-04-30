@@ -59,6 +59,11 @@ class FriendTasteMatchSection extends ConsumerWidget {
           data: (compass) => TasteCompassWidget(
             compass: compass,
             title: '${friendDisplayName.split(' ').first}\'s compass',
+            userId: friendId,
+            // Friend section is itself Pro-gated above; once we get
+            // here the caller is Pro, so all modes are unlocked
+            // without a per-mode lock affordance.
+            allowProGated: false,
           ),
           loading: () => const _LoadingCard(),
           error: (_, _) => const SizedBox.shrink(),

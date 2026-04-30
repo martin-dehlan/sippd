@@ -8,6 +8,8 @@ import '../data/models/taste_match.model.dart';
 import '../domain/entities/shared_bottle.entity.dart';
 import '../domain/entities/taste_compass.entity.dart';
 import '../domain/entities/taste_match.entity.dart';
+import '../domain/entities/user_grape_share.entity.dart';
+import '../domain/entities/user_style_dna.entity.dart';
 
 part 'taste_match.provider.g.dart';
 
@@ -50,4 +52,28 @@ Future<TasteMatchEntity> tasteMatch(
   final api = ref.watch(tasteMatchApiProvider);
   final model = await api.getMatch(otherUserId);
   return model.toEntity();
+}
+
+@riverpod
+Future<List<UserGrapeShare>> userTopGrapes(
+  UserTopGrapesRef ref,
+  String userId,
+) async {
+  final isAuth = ref.watch(isAuthenticatedProvider);
+  if (!isAuth) return const [];
+  final api = ref.watch(tasteMatchApiProvider);
+  return api.getTopGrapes(userId);
+}
+
+@riverpod
+Future<UserStyleDna> userStyleDna(
+  UserStyleDnaRef ref,
+  String userId,
+) async {
+  final isAuth = ref.watch(isAuthenticatedProvider);
+  if (!isAuth) {
+    return const UserStyleDna(values: {}, attributedCount: 0, confidence: 0);
+  }
+  final api = ref.watch(tasteMatchApiProvider);
+  return api.getStyleDna(userId);
 }

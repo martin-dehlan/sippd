@@ -439,6 +439,11 @@ class _Slider extends StatelessWidget {
         trackHeight: context.xs * 2.2,
         activeTrackColor: cs.primary,
         inactiveTrackColor: cs.surfaceContainer,
+        // Match enabled colors so the brief disabled flash during save
+        // doesn't visibly recolor the track / thumb.
+        disabledActiveTrackColor: cs.primary,
+        disabledInactiveTrackColor: cs.surfaceContainer,
+        disabledThumbColor: cs.primary,
         thumbColor: cs.primary,
         overlayColor: cs.primary.withValues(alpha: 0.12),
         thumbShape: RoundSliderThumbShape(

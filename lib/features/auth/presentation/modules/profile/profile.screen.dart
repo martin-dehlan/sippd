@@ -129,6 +129,7 @@ class ProfileScreen extends ConsumerWidget {
                       child: TasteCompassWidget(
                         compass: compass,
                         title: 'Your compass',
+                        userId: user.id,
                       ),
                     ),
                     loading: () => const SizedBox.shrink(),
