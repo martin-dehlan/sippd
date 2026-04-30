@@ -201,7 +201,9 @@ class WineFormState extends State<WineForm>
   }
 
   Future<void> _editRating() async {
+    FocusScope.of(context).unfocus();
     final result = await showRatingSheet(context: context, initial: _rating);
+    if (!mounted) return;
     if (result == null) return;
     setState(() => _rating = result);
     _scheduleAutoSave();
@@ -226,10 +228,12 @@ class WineFormState extends State<WineForm>
   }
 
   Future<void> _editVintage() async {
+    FocusScope.of(context).unfocus();
     final result = await showYearPickerSheet(
       context: context,
       initial: _vintage,
     );
+    if (!mounted) return;
     if (result == null) return;
     setState(() => _vintage = result.year);
     _scheduleAutoSave();
@@ -282,6 +286,7 @@ class WineFormState extends State<WineForm>
   }
 
   void _editOrigin() {
+    FocusScope.of(context).unfocus();
     showWineCountryPicker(
       context: context,
       selected: _country,
