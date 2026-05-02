@@ -176,6 +176,26 @@ class WineCardImage extends StatelessWidget {
                           fit: BoxFit.cover,
                           width: double.infinity,
                           height: double.infinity,
+                          errorBuilder: (_, __, ___) => Center(
+                            child: Icon(
+                              PhosphorIconsRegular.wine,
+                              size: size * 0.4,
+                              color: cs.onSurface.withValues(alpha: 0.35),
+                            ),
+                          ),
+                          frameBuilder: (_, child, frame, wasSync) {
+                            if (frame == null && !wasSync) {
+                              return Center(
+                                child: Icon(
+                                  PhosphorIconsRegular.wine,
+                                  size: size * 0.4,
+                                  color:
+                                      cs.onSurface.withValues(alpha: 0.35),
+                                ),
+                              );
+                            }
+                            return child;
+                          },
                         ),
                       )
                     : Center(

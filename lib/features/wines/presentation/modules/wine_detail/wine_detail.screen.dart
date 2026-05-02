@@ -418,7 +418,25 @@ class _WineImage extends StatelessWidget {
             ? ClipRRect(
                 borderRadius: BorderRadius.circular(context.w * 0.05),
                 child: SizedBox.expand(
-                  child: Image.network(wine.imageUrl!, fit: BoxFit.cover),
+                  child: Image.network(
+                    wine.imageUrl!,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Icon(
+                      PhosphorIconsRegular.wine,
+                      size: context.w * 0.25,
+                      color: typeColor.withValues(alpha: 0.6),
+                    ),
+                    frameBuilder: (_, child, frame, wasSync) {
+                      if (frame == null && !wasSync) {
+                        return Icon(
+                          PhosphorIconsRegular.wine,
+                          size: context.w * 0.25,
+                          color: typeColor.withValues(alpha: 0.6),
+                        );
+                      }
+                      return child;
+                    },
+                  ),
                 ),
               )
             : Icon(
@@ -557,16 +575,13 @@ class _MetaLine extends ConsumerWidget {
     };
 
     String? grapeText;
-    bool grapeIsCustom = false;
     if (canonicalGrapeId != null) {
       final asyncGrape = ref.watch(canonicalGrapeProvider(canonicalGrapeId!));
       grapeText = asyncGrape.valueOrNull?.name ?? legacyGrape;
     } else if (grapeFreetext != null && grapeFreetext!.isNotEmpty) {
       grapeText = grapeFreetext;
-      grapeIsCustom = true;
     } else if (legacyGrape != null && legacyGrape!.isNotEmpty) {
       grapeText = legacyGrape;
-      grapeIsCustom = true;
     }
 
     final fixedParts = <String>[
@@ -593,16 +608,6 @@ class _MetaLine extends ConsumerWidget {
         ));
       }
       spans.add(TextSpan(text: grapeText));
-      if (grapeIsCustom) {
-        spans.add(TextSpan(
-          text: '  custom',
-          style: TextStyle(
-            color: cs.outline,
-            fontSize: context.captionFont * 0.85,
-            fontStyle: FontStyle.italic,
-          ),
-        ));
-      }
     }
 
     return Padding(
@@ -868,9 +873,14 @@ class _MemoryThumb extends StatelessWidget {
       return Image.file(File(m.localImagePath!), fit: BoxFit.cover);
     }
     if (m.imageUrl != null) {
-      return Image.network(m.imageUrl!, fit: BoxFit.cover);
+      return Image.network(
+        m.imageUrl!,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) =>
+            Icon(PhosphorIconsRegular.image, color: cs.outline),
+      );
     }
-    return Icon(PhosphorIconsRegular.imageBroken, color: cs.outline);
+    return Icon(PhosphorIconsRegular.image, color: cs.outline);
   }
 }
 
@@ -969,9 +979,17 @@ class _MemoryViewerState extends State<_MemoryViewer> {
       return Image.file(File(m.localImagePath!), fit: BoxFit.contain);
     }
     if (m.imageUrl != null) {
-      return Image.network(m.imageUrl!, fit: BoxFit.contain);
+      return Image.network(
+        m.imageUrl!,
+        fit: BoxFit.contain,
+        errorBuilder: (_, __, ___) => const Icon(
+          PhosphorIconsRegular.image,
+          color: Colors.white,
+          size: 80,
+        ),
+      );
     }
-    return const Icon(PhosphorIconsRegular.imageBroken,
+    return const Icon(PhosphorIconsRegular.image,
         color: Colors.white, size: 80);
   }
 }

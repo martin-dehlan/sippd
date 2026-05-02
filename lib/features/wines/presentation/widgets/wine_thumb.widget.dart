@@ -58,7 +58,23 @@ class WineThumb extends StatelessWidget {
             ),
             clipBehavior: Clip.antiAlias,
             child: image != null
-                ? Image(image: image, fit: BoxFit.cover)
+                ? Image(
+                    image: image,
+                    fit: BoxFit.cover,
+                    // Broken URL / 404 / expired storage — fall back to
+                    // the typographic monogram instead of Flutter's
+                    // default red-X broken-image glyph.
+                    errorBuilder: (_, __, ___) =>
+                        _Typographic(wine: wine, size: size),
+                    // While the network image is in flight, show the
+                    // monogram so the row never flashes empty.
+                    frameBuilder: (_, child, frame, wasSync) {
+                      if (frame == null && !wasSync) {
+                        return _Typographic(wine: wine, size: size);
+                      }
+                      return child;
+                    },
+                  )
                 : _Typographic(wine: wine, size: size),
           ),
           if (cornerOverlay != null)

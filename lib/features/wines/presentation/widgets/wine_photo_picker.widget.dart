@@ -151,10 +151,23 @@ class _PreviewImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     if (localPath != null) {
       return Image.file(File(localPath!), fit: BoxFit.cover);
     }
-    return Image.network(imageUrl!, fit: BoxFit.cover);
+    return Image.network(
+      imageUrl!,
+      fit: BoxFit.cover,
+      errorBuilder: (_, __, ___) => Container(
+        color: cs.surfaceContainer,
+        alignment: Alignment.center,
+        child: Icon(
+          PhosphorIconsRegular.wine,
+          size: 40,
+          color: cs.onSurfaceVariant.withValues(alpha: 0.5),
+        ),
+      ),
+    );
   }
 }
 

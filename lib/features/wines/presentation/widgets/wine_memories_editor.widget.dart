@@ -200,9 +200,17 @@ class _MemoryThumb extends StatelessWidget {
             if (memory.localImagePath != null)
               Image.file(File(memory.localImagePath!), fit: BoxFit.cover)
             else if (memory.imageUrl != null)
-              Image.network(memory.imageUrl!, fit: BoxFit.cover)
+              Image.network(
+                memory.imageUrl!,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => Icon(
+                  PhosphorIconsRegular.image,
+                  color: cs.outline,
+                  size: size * 0.4,
+                ),
+              )
             else
-              Icon(PhosphorIconsRegular.imageBroken,
+              Icon(PhosphorIconsRegular.image,
                   color: cs.outline, size: size * 0.4),
             Positioned(
               top: context.xs,
