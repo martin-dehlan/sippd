@@ -137,6 +137,12 @@ class _SharedWinesCarouselState extends ConsumerState<SharedWinesCarousel> {
     final winesAsync = ref.watch(groupWinesProvider(widget.groupId));
 
     return winesAsync.when(
+      // Keep showing the previous wine list while a save / refresh is
+      // in flight — without this, every group_wines_provider invalidate
+      // (owner-rates-own-wine path) flashes the whole carousel back
+      // through the skeleton state.
+      skipLoadingOnReload: true,
+      skipLoadingOnRefresh: true,
       data: (wines) {
         if (wines.isEmpty) {
           return _EmptyShared(
