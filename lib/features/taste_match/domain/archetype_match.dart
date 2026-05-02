@@ -59,6 +59,9 @@ class ArchetypeMatch {
   final double confidence;
 
   bool get isTentative => confidence < 0.5;
+
+  /// True while we don't have enough signal to commit to an archetype.
+  bool get isNewcomer => archetype.id == 'curious_newcomer';
 }
 
 const _archetypes = <Archetype>[
@@ -124,10 +127,10 @@ const _archetypes = <Archetype>[
     contextualBonus: _sparklingShare,
   ),
   Archetype(
-    id: 'old_world_curious',
-    name: 'Old-World Curious',
-    tagline: 'European heritage producers shape your palate.',
-    icon: PhosphorIconsRegular.castleTurret,
+    id: 'classic_structure',
+    name: 'Classic Structure',
+    tagline: 'Restrained, food-aligned wines with bright acidity.',
+    icon: PhosphorIconsRegular.bookOpen,
     color: Color(0xFFD08F5C),
     targetVector: {
       'body': 0.55, 'tannin': 0.55, 'acidity': 0.7,
@@ -137,12 +140,12 @@ const _archetypes = <Archetype>[
       'body': 0.1, 'tannin': 0.1, 'acidity': 0.2,
       'sweetness': 0.05, 'oak': 0.15, 'intensity': 0.1,
     },
-    contextualBonus: _oldWorldShare,
+    contextualBonus: _coolClimateShare,
   ),
   Archetype(
-    id: 'new_world_bold',
-    name: 'New-World Bold',
-    tagline: 'Big-fruit, oak-friendly bottles from the Americas + south.',
+    id: 'sun_ripened_bold',
+    name: 'Sun-Ripened Bold',
+    tagline: 'Big fruit, oak-friendly wines from sun-soaked vineyards.',
     icon: PhosphorIconsRegular.sun,
     color: Color(0xFF4FC3B0),
     targetVector: {
@@ -153,7 +156,7 @@ const _archetypes = <Archetype>[
       'body': 0.2, 'tannin': 0.15, 'acidity': 0.05,
       'sweetness': 0.1, 'oak': 0.25, 'intensity': 0.1,
     },
-    contextualBonus: _newWorldShare,
+    contextualBonus: _warmClimateShare,
   ),
   Archetype(
     id: 'dessert_off_dry',
@@ -289,17 +292,20 @@ double _maxPossibleDistance(Archetype a) {
   return math.sqrt(sumSquared);
 }
 
-const _oldWorldCountries = {
-  'france', 'italy', 'spain', 'germany', 'portugal', 'austria',
-  'greece', 'hungary', 'croatia', 'slovenia', 'georgia', 'romania',
-  'bulgaria', 'switzerland', 'czechia', 'czech republic', 'slovakia',
-  'moldova', 'ukraine', 'serbia', 'macedonia', 'cyprus', 'lebanon',
-  'turkey', 'israel',
+// Climate-based grouping describes wine character (acidity vs ripeness),
+// not geopolitical heritage. Approximation at country granularity — fine
+// for a small contextual nudge (capped at +0.15).
+const _coolClimateCountries = {
+  'france', 'germany', 'austria', 'switzerland', 'new zealand',
+  'czechia', 'czech republic', 'slovakia', 'hungary', 'slovenia',
+  'england', 'united kingdom', 'uk', 'belgium', 'luxembourg',
+  'canada', 'romania', 'moldova', 'ukraine', 'georgia',
 };
-const _newWorldCountries = {
-  'united states', 'usa', 'us', 'argentina', 'chile', 'australia',
-  'new zealand', 'south africa', 'canada', 'brazil', 'uruguay',
-  'mexico', 'china', 'japan', 'india',
+const _warmClimateCountries = {
+  'spain', 'portugal', 'italy', 'greece', 'croatia', 'cyprus',
+  'lebanon', 'turkey', 'israel', 'argentina', 'chile', 'australia',
+  'south africa', 'united states', 'usa', 'us', 'mexico', 'brazil',
+  'uruguay', 'china', 'japan', 'india',
 };
 
 double _sparklingShare(TasteCompassEntity c) {
@@ -315,19 +321,19 @@ double _sparklingShare(TasteCompassEntity c) {
   return (share * 0.3).clamp(0.0, 0.15);
 }
 
-double _oldWorldShare(TasteCompassEntity c) {
+double _coolClimateShare(TasteCompassEntity c) {
   if (c.totalCount == 0) return 0;
   final n = c.topCountries
-      .where((b) => _oldWorldCountries.contains(b.label.toLowerCase()))
+      .where((b) => _coolClimateCountries.contains(b.label.toLowerCase()))
       .fold<int>(0, (s, b) => s + b.count);
   final share = n / c.totalCount;
   return (share * 0.25).clamp(0.0, 0.15);
 }
 
-double _newWorldShare(TasteCompassEntity c) {
+double _warmClimateShare(TasteCompassEntity c) {
   if (c.totalCount == 0) return 0;
   final n = c.topCountries
-      .where((b) => _newWorldCountries.contains(b.label.toLowerCase()))
+      .where((b) => _warmClimateCountries.contains(b.label.toLowerCase()))
       .fold<int>(0, (s, b) => s + b.count);
   final share = n / c.totalCount;
   return (share * 0.25).clamp(0.0, 0.15);

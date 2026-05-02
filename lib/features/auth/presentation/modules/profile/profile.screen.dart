@@ -5,14 +5,11 @@ import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../../common/utils/responsive.dart';
-import '../../../../../common/widgets/stats_card.widget.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../../profile/controller/profile.provider.dart';
 import '../../../../profile/presentation/widgets/profile_avatar.widget.dart';
-import '../../../../profile/presentation/widgets/taste_profile_card.widget.dart';
 import '../../../../push/controller/push.provider.dart';
-import '../../../../taste_match/controller/taste_match.provider.dart';
-import '../../../../taste_match/presentation/widgets/taste_compass.widget.dart';
+import '../../../../taste_match/presentation/widgets/wine_personality_hero.widget.dart';
 import '../../../../wines/controller/wine.provider.dart';
 import '../../../controller/auth.provider.dart';
 import '../email_confirmation/email_confirmation.screen.dart';
@@ -30,7 +27,6 @@ class ProfileScreen extends ConsumerWidget {
     final cs = Theme.of(context).colorScheme;
     final user = authState.valueOrNull;
     final profile = ref.watch(currentProfileProvider).valueOrNull;
-    final winesAsync = ref.watch(wineControllerProvider);
 
     final headlineName =
         profile?.username ??
@@ -85,56 +81,19 @@ class ProfileScreen extends ConsumerWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(height: context.m),
-                  const TasteMetaLine(),
                 ],
               ),
             ),
             SizedBox(height: context.l),
 
-            // Stats
-            winesAsync.when(
-              data: (wines) {
-                final countries = wines
-                    .where((w) => w.country != null)
-                    .map((w) => w.country)
-                    .toSet()
-                    .length;
-                final avg = wines.isEmpty
-                    ? '—'
-                    : (wines.map((w) => w.rating).reduce((a, b) => a + b) /
-                              wines.length)
-                          .toStringAsFixed(1);
-                return StatsCard(
-                  stats: [
-                    (label: 'Wines', value: wines.length.toString()),
-                    (label: 'Avg', value: avg),
-                    (
-                      label: countries == 1 ? 'Country' : 'Countries',
-                      value: countries.toString(),
-                    ),
-                  ],
-                );
-              },
-              loading: () => const SizedBox.shrink(),
-              error: (_, _) => const SizedBox.shrink(),
-            ),
-            SizedBox(height: context.l),
-
-            // Taste compass — own user, free, derived from rated wines
-            if (user != null)
-              ref.watch(tasteCompassProvider(user.id)).when(
-                    data: (compass) => Padding(
-                      padding: EdgeInsets.only(bottom: context.xl),
-                      child: TasteCompassWidget(
-                        compass: compass,
-                        title: 'Your compass',
-                        userId: user.id,
-                      ),
-                    ),
-                    loading: () => const SizedBox.shrink(),
-                    error: (_, _) => const SizedBox.shrink(),
-                  ),
+            // Identity zone — wine personality + traits.
+            // Numerical stats live on the dedicated stats screen.
+            if (user != null) ...[
+              WinePersonalityHero(userId: user.id),
+              SizedBox(height: context.s),
+              _ViewStatsLink(),
+              SizedBox(height: context.l),
+            ],
 
             // ACCOUNT
             if (user != null) ...[
@@ -402,6 +361,38 @@ class _ConfirmDeleteDialogState extends State<_ConfirmDeleteDialog> {
           child: const Text('Delete'),
         ),
       ],
+    );
+  }
+}
+
+class _ViewStatsLink extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () => context.push(AppRoutes.wineStats),
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: context.s),
+        child: Row(
+          children: [
+            Text(
+              'View full stats',
+              style: TextStyle(
+                fontSize: context.bodyFont,
+                fontWeight: FontWeight.w600,
+                color: cs.onSurface,
+              ),
+            ),
+            SizedBox(width: context.w * 0.015),
+            Icon(
+              PhosphorIconsRegular.arrowRight,
+              size: context.bodyFont * 0.95,
+              color: cs.onSurface,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

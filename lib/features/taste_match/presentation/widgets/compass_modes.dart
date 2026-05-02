@@ -85,17 +85,18 @@ const _dnaColors = {
   'intensity': Color(0xFF4FC3B0),
 };
 
-const _oldWorldCountries = {
+const _europeanCountries = {
   'france', 'italy', 'spain', 'germany', 'portugal', 'austria',
-  'greece', 'hungary', 'croatia', 'slovenia', 'georgia', 'romania',
+  'greece', 'hungary', 'croatia', 'slovenia', 'romania',
   'bulgaria', 'switzerland', 'czechia', 'czech republic', 'slovakia',
-  'moldova', 'ukraine', 'serbia', 'macedonia', 'cyprus', 'lebanon',
-  'turkey', 'israel',
+  'moldova', 'ukraine', 'serbia', 'macedonia', 'cyprus', 'england',
+  'united kingdom', 'uk', 'belgium', 'luxembourg', 'netherlands',
+  'denmark', 'sweden', 'norway', 'finland', 'poland', 'ireland',
 };
 
 String _continentForCountry(String country) {
   final c = country.toLowerCase().trim();
-  if (_oldWorldCountries.contains(c)) return 'europe';
+  if (_europeanCountries.contains(c)) return 'europe';
   if ({'united states', 'usa', 'us', 'canada', 'mexico'}.contains(c)) {
     return 'north america';
   }
