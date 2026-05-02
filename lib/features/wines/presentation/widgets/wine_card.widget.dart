@@ -178,19 +178,19 @@ class WineCardImage extends StatelessWidget {
                           height: double.infinity,
                           errorBuilder: (_, __, ___) => Center(
                             child: Icon(
-                              PhosphorIconsRegular.wine,
-                              size: size * 0.4,
-                              color: cs.onSurface.withValues(alpha: 0.35),
+                              PhosphorIconsThin.wine,
+                              size: size * 0.42,
+                              color: cs.onSurfaceVariant.withValues(alpha: 0.45),
                             ),
                           ),
                           frameBuilder: (_, child, frame, wasSync) {
                             if (frame == null && !wasSync) {
                               return Center(
                                 child: Icon(
-                                  PhosphorIconsRegular.wine,
-                                  size: size * 0.4,
+                                  PhosphorIconsThin.wine,
+                                  size: size * 0.42,
                                   color:
-                                      cs.onSurface.withValues(alpha: 0.35),
+                                      cs.onSurfaceVariant.withValues(alpha: 0.45),
                                 ),
                               );
                             }
@@ -200,9 +200,10 @@ class WineCardImage extends StatelessWidget {
                       )
                     : Center(
                         child: Icon(
-                          PhosphorIconsRegular.wine,
-                          size: size * 0.4,
-                          color: cs.onSurface.withValues(alpha: 0.35),
+                          PhosphorIconsThin.wine,
+                          size: size * 0.42,
+                          color:
+                              cs.onSurfaceVariant.withValues(alpha: 0.45),
                         ),
                       ),
               ),
