@@ -5,10 +5,14 @@ part 'app_error.freezed.dart';
 @freezed
 class AppError with _$AppError {
   const factory AppError.network({
-    required String message,
+    @Default('Network unavailable.') String message,
     int? statusCode,
     String? endpoint,
   }) = NetworkError;
+
+  /// Convenience for "device has no connection." Same shape as
+  /// [AppError.network] so error views can treat them identically.
+  const factory AppError.offline() = OfflineError;
 
   const factory AppError.database({
     required String message,
