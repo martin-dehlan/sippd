@@ -83,26 +83,55 @@ Future<List<GroupWineRatingEntity>> groupWineRatings(
       (p as Map<String, dynamic>)['id'] as String: p,
   };
 
+  return mergeGroupRatings(
+    groupId: groupId,
+    canonicalWineId: canonicalWineId,
+    ownerId: ownerId,
+    ownerRating: ownerRating,
+    ownerUpdatedAt: ownerUpdated,
+    memberModels: memberModels,
+    profilesById: profiles.cast<String, Map<String, dynamic>>(),
+  );
+}
+
+/// Pure merge: combine the owner's personal rating with the
+/// `group_wine_ratings` member rows, attach profile info, sort by
+/// recency. Extracted so the merge rules can be tested without
+/// standing up a Supabase client.
+List<GroupWineRatingEntity> mergeGroupRatings({
+  required String groupId,
+  required String canonicalWineId,
+  required String? ownerId,
+  required double? ownerRating,
+  required DateTime? ownerUpdatedAt,
+  required List<GroupWineRatingModel> memberModels,
+  required Map<String, Map<String, dynamic>> profilesById,
+}) {
   final list = <GroupWineRatingEntity>[];
   if (ownerId != null && ownerRating != null) {
+    final p = profilesById[ownerId];
     list.add(GroupWineRatingEntity(
       groupId: groupId,
       canonicalWineId: canonicalWineId,
       userId: ownerId,
       rating: ownerRating,
-      updatedAt: ownerUpdated ?? DateTime.now(),
-      username: profiles[ownerId]?['username'] as String?,
-      displayName: profiles[ownerId]?['display_name'] as String?,
-      avatarUrl: profiles[ownerId]?['avatar_url'] as String?,
+      updatedAt: ownerUpdatedAt ?? DateTime.now(),
+      username: p?['username'] as String?,
+      displayName: p?['display_name'] as String?,
+      avatarUrl: p?['avatar_url'] as String?,
       isOwner: true,
     ));
   }
-  list.addAll(memberModels.map((m) => m.toEntity(
-        username: profiles[m.userId]?['username'] as String?,
-        displayName: profiles[m.userId]?['display_name'] as String?,
-        avatarUrl: profiles[m.userId]?['avatar_url'] as String?,
-      )));
-
+  list.addAll(memberModels
+      .where((m) => m.userId != ownerId)
+      .map((m) {
+    final p = profilesById[m.userId];
+    return m.toEntity(
+      username: p?['username'] as String?,
+      displayName: p?['display_name'] as String?,
+      avatarUrl: p?['avatar_url'] as String?,
+    );
+  }));
   list.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
   return list;
 }
@@ -179,36 +208,61 @@ Future<Map<String, int>> groupWineRanks(
       .eq('group_id', groupId)
       .inFilter('canonical_wine_id', canonicalIds)) as List;
 
+  return computeGroupWineRanks(
+    wines: wines,
+    memberRatings: [
+      for (final row in ratingRows)
+        MemberRatingRow(
+          canonicalWineId:
+              (row as Map<String, dynamic>)['canonical_wine_id'] as String,
+          userId: row['user_id'] as String,
+          rating: (row['rating'] as num).toDouble(),
+        ),
+    ],
+  );
+}
+
+/// Single member rating extracted into a value type so [computeGroupWineRanks]
+/// can be tested without mocking Supabase row shapes.
+class MemberRatingRow {
+  const MemberRatingRow({
+    required this.canonicalWineId,
+    required this.userId,
+    required this.rating,
+  });
+  final String canonicalWineId;
+  final String userId;
+  final double rating;
+}
+
+/// Pure rank computation. Owner rating (from each wine's local row)
+/// counts exactly once; member rows from the same owner are dropped to
+/// avoid double-counting. Ties share a rank.
+Map<String, int> computeGroupWineRanks({
+  required List<WineEntity> wines,
+  required List<MemberRatingRow> memberRatings,
+}) {
   final ownerByCanonical = <String, String>{
     for (final w in wines)
       if (w.canonicalWineId != null) w.canonicalWineId!: w.userId,
   };
-
-  // Owner rating counts once (from wines.rating); member ratings
-  // excluded if from the owner so we don't double-count.
   final perWine = <String, List<double>>{};
   for (final w in wines) {
     final cid = w.canonicalWineId;
     if (cid == null) continue;
     perWine[cid] = [w.rating];
   }
-  for (final row in ratingRows) {
-    final m = row as Map<String, dynamic>;
-    final cid = m['canonical_wine_id'] as String;
-    final userId = m['user_id'] as String;
-    if (userId == ownerByCanonical[cid]) continue;
-    perWine.putIfAbsent(cid, () => []).add((m['rating'] as num).toDouble());
+  for (final r in memberRatings) {
+    if (r.userId == ownerByCanonical[r.canonicalWineId]) continue;
+    perWine.putIfAbsent(r.canonicalWineId, () => []).add(r.rating);
   }
-
   final avgByWine = <String, double>{
     for (final e in perWine.entries)
       if (e.value.isNotEmpty)
         e.key: e.value.reduce((a, b) => a + b) / e.value.length,
   };
-
   final sorted = avgByWine.entries.toList()
     ..sort((a, b) => b.value.compareTo(a.value));
-
   final ranks = <String, int>{};
   int prevRank = 0;
   double? prevAvg;
