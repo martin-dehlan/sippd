@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../common/utils/responsive.dart';
+import '../../../../common/widgets/inline_error.widget.dart';
 import '../../../auth/controller/auth.provider.dart';
 import '../../data/data_sources/expert_tasting.api.dart';
 import '../../domain/entities/expert_tasting.entity.dart';
@@ -65,6 +66,7 @@ class _ExpertSheetState extends ConsumerState<_ExpertSheet> {
   ExpertTastingEntity _draft = const ExpertTastingEntity();
   bool _loading = true;
   bool _saving = false;
+  Object? _saveError;
   bool _aromasExpanded = false;
 
   @override
@@ -86,7 +88,10 @@ class _ExpertSheetState extends ConsumerState<_ExpertSheet> {
   }
 
   Future<void> _save() async {
-    setState(() => _saving = true);
+    setState(() {
+      _saving = true;
+      _saveError = null;
+    });
     HapticFeedback.lightImpact();
     final api = ExpertTastingApi(ref.read(supabaseClientProvider));
     try {
@@ -96,11 +101,7 @@ class _ExpertSheetState extends ConsumerState<_ExpertSheet> {
       );
       if (mounted) Navigator.pop(context);
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed: $e')),
-        );
-      }
+      if (mounted) setState(() => _saveError = e);
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -110,7 +111,6 @@ class _ExpertSheetState extends ConsumerState<_ExpertSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
     return Padding(
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -211,34 +211,11 @@ class _ExpertSheetState extends ConsumerState<_ExpertSheet> {
                   ),
                 ),
                 SizedBox(height: context.m),
-                SizedBox(
-                  width: double.infinity,
-                  height: context.h * 0.06,
-                  child: FilledButton(
-                    onPressed: _saving ? null : _save,
-                    style: FilledButton.styleFrom(
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(context.w * 0.04),
-                      ),
-                    ),
-                    child: _saving
-                        ? SizedBox(
-                            width: context.w * 0.05,
-                            height: context.w * 0.05,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: cs.onPrimary,
-                            ),
-                          )
-                        : Text(
-                            'Save',
-                            style: TextStyle(
-                              fontSize: context.bodyFont,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                  ),
+                RetryActionButton(
+                  idleLabel: 'Save',
+                  loading: _saving,
+                  error: _saveError,
+                  onPressed: _save,
                 ),
               ],
             ],

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../../common/utils/responsive.dart';
+import '../../../../../common/widgets/error_view.widget.dart';
 import '../../../controller/wine.provider.dart';
 import '../../../domain/entities/canonical_merge_pair.entity.dart';
 
@@ -37,13 +38,11 @@ class WineCleanupScreen extends ConsumerWidget {
       body: candidatesAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(
-          child: Padding(
-            padding: EdgeInsets.all(context.l),
-            child: Text(
-              "Couldn't load duplicates: $e",
-              textAlign: TextAlign.center,
-              style: TextStyle(color: cs.error),
-            ),
+          child: ErrorView(
+            title: "Couldn't load duplicates",
+            onRetry: () =>
+                ref.invalidate(canonicalMergeCandidatesProvider),
+            error: e,
           ),
         ),
         data: (pairs) => pairs.isEmpty
