@@ -45,21 +45,6 @@ class _ShareWineSheetState extends ConsumerState<_ShareWineSheet> {
 
     setState(() => _busyGroupId = group.id);
     try {
-      final aliasRepo = ref.read(wineAliasRepositoryProvider);
-      final canonical = await aliasRepo.resolveCanonical(
-        userId: userId,
-        localWineId: widget.wineId,
-      );
-
-      if (canonical != widget.wineId) {
-        await ref.read(groupControllerProvider.notifier).shareCanonicalToGroup(
-              groupId: group.id,
-              canonicalWineId: canonical,
-            );
-        _finish(group);
-        return;
-      }
-
       final wine =
           await ref.read(wineRepositoryProvider).getWineById(widget.wineId);
       if (wine == null) return;
@@ -86,13 +71,9 @@ class _ShareWineSheetState extends ConsumerState<_ShareWineSheet> {
 
       switch (result.choice) {
         case ShareMatchChoice.same:
+          // Candidate's id is the canonical_wine.id (catalog identity).
           final c = result.canonical;
           if (c == null) return;
-          await aliasRepo.link(
-            userId: userId,
-            localWineId: widget.wineId,
-            canonicalWineId: c.id,
-          );
           await groupCtrl.shareCanonicalToGroup(
             groupId: group.id,
             canonicalWineId: c.id,

@@ -6,7 +6,7 @@ part 'group_wine_rating.entity.freezed.dart';
 class GroupWineRatingEntity with _$GroupWineRatingEntity {
   const factory GroupWineRatingEntity({
     required String groupId,
-    required String wineId,
+    required String canonicalWineId,
     required String userId,
     required double rating,
     String? notes,

@@ -23,8 +23,8 @@ GroupWineRatingModel _$GroupWineRatingModelFromJson(Map<String, dynamic> json) {
 mixin _$GroupWineRatingModel {
   @JsonKey(name: 'group_id')
   String get groupId => throw _privateConstructorUsedError;
-  @JsonKey(name: 'wine_id')
-  String get wineId => throw _privateConstructorUsedError;
+  @JsonKey(name: 'canonical_wine_id')
+  String get canonicalWineId => throw _privateConstructorUsedError;
   @JsonKey(name: 'user_id')
   String get userId => throw _privateConstructorUsedError;
   double get rating => throw _privateConstructorUsedError;
@@ -51,7 +51,7 @@ abstract class $GroupWineRatingModelCopyWith<$Res> {
   @useResult
   $Res call({
     @JsonKey(name: 'group_id') String groupId,
-    @JsonKey(name: 'wine_id') String wineId,
+    @JsonKey(name: 'canonical_wine_id') String canonicalWineId,
     @JsonKey(name: 'user_id') String userId,
     double rating,
     String? notes,
@@ -78,7 +78,7 @@ class _$GroupWineRatingModelCopyWithImpl<
   @override
   $Res call({
     Object? groupId = null,
-    Object? wineId = null,
+    Object? canonicalWineId = null,
     Object? userId = null,
     Object? rating = null,
     Object? notes = freezed,
@@ -90,9 +90,9 @@ class _$GroupWineRatingModelCopyWithImpl<
                 ? _value.groupId
                 : groupId // ignore: cast_nullable_to_non_nullable
                       as String,
-            wineId: null == wineId
-                ? _value.wineId
-                : wineId // ignore: cast_nullable_to_non_nullable
+            canonicalWineId: null == canonicalWineId
+                ? _value.canonicalWineId
+                : canonicalWineId // ignore: cast_nullable_to_non_nullable
                       as String,
             userId: null == userId
                 ? _value.userId
@@ -127,7 +127,7 @@ abstract class _$$GroupWineRatingModelImplCopyWith<$Res>
   @useResult
   $Res call({
     @JsonKey(name: 'group_id') String groupId,
-    @JsonKey(name: 'wine_id') String wineId,
+    @JsonKey(name: 'canonical_wine_id') String canonicalWineId,
     @JsonKey(name: 'user_id') String userId,
     double rating,
     String? notes,
@@ -150,7 +150,7 @@ class __$$GroupWineRatingModelImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? groupId = null,
-    Object? wineId = null,
+    Object? canonicalWineId = null,
     Object? userId = null,
     Object? rating = null,
     Object? notes = freezed,
@@ -162,9 +162,9 @@ class __$$GroupWineRatingModelImplCopyWithImpl<$Res>
             ? _value.groupId
             : groupId // ignore: cast_nullable_to_non_nullable
                   as String,
-        wineId: null == wineId
-            ? _value.wineId
-            : wineId // ignore: cast_nullable_to_non_nullable
+        canonicalWineId: null == canonicalWineId
+            ? _value.canonicalWineId
+            : canonicalWineId // ignore: cast_nullable_to_non_nullable
                   as String,
         userId: null == userId
             ? _value.userId
@@ -192,7 +192,7 @@ class __$$GroupWineRatingModelImplCopyWithImpl<$Res>
 class _$GroupWineRatingModelImpl implements _GroupWineRatingModel {
   const _$GroupWineRatingModelImpl({
     @JsonKey(name: 'group_id') required this.groupId,
-    @JsonKey(name: 'wine_id') required this.wineId,
+    @JsonKey(name: 'canonical_wine_id') required this.canonicalWineId,
     @JsonKey(name: 'user_id') required this.userId,
     required this.rating,
     this.notes,
@@ -206,8 +206,8 @@ class _$GroupWineRatingModelImpl implements _GroupWineRatingModel {
   @JsonKey(name: 'group_id')
   final String groupId;
   @override
-  @JsonKey(name: 'wine_id')
-  final String wineId;
+  @JsonKey(name: 'canonical_wine_id')
+  final String canonicalWineId;
   @override
   @JsonKey(name: 'user_id')
   final String userId;
@@ -221,7 +221,7 @@ class _$GroupWineRatingModelImpl implements _GroupWineRatingModel {
 
   @override
   String toString() {
-    return 'GroupWineRatingModel(groupId: $groupId, wineId: $wineId, userId: $userId, rating: $rating, notes: $notes, updatedAt: $updatedAt)';
+    return 'GroupWineRatingModel(groupId: $groupId, canonicalWineId: $canonicalWineId, userId: $userId, rating: $rating, notes: $notes, updatedAt: $updatedAt)';
   }
 
   @override
@@ -230,7 +230,8 @@ class _$GroupWineRatingModelImpl implements _GroupWineRatingModel {
         (other.runtimeType == runtimeType &&
             other is _$GroupWineRatingModelImpl &&
             (identical(other.groupId, groupId) || other.groupId == groupId) &&
-            (identical(other.wineId, wineId) || other.wineId == wineId) &&
+            (identical(other.canonicalWineId, canonicalWineId) ||
+                other.canonicalWineId == canonicalWineId) &&
             (identical(other.userId, userId) || other.userId == userId) &&
             (identical(other.rating, rating) || other.rating == rating) &&
             (identical(other.notes, notes) || other.notes == notes) &&
@@ -243,7 +244,7 @@ class _$GroupWineRatingModelImpl implements _GroupWineRatingModel {
   int get hashCode => Object.hash(
     runtimeType,
     groupId,
-    wineId,
+    canonicalWineId,
     userId,
     rating,
     notes,
@@ -271,7 +272,7 @@ class _$GroupWineRatingModelImpl implements _GroupWineRatingModel {
 abstract class _GroupWineRatingModel implements GroupWineRatingModel {
   const factory _GroupWineRatingModel({
     @JsonKey(name: 'group_id') required final String groupId,
-    @JsonKey(name: 'wine_id') required final String wineId,
+    @JsonKey(name: 'canonical_wine_id') required final String canonicalWineId,
     @JsonKey(name: 'user_id') required final String userId,
     required final double rating,
     final String? notes,
@@ -285,8 +286,8 @@ abstract class _GroupWineRatingModel implements GroupWineRatingModel {
   @JsonKey(name: 'group_id')
   String get groupId;
   @override
-  @JsonKey(name: 'wine_id')
-  String get wineId;
+  @JsonKey(name: 'canonical_wine_id')
+  String get canonicalWineId;
   @override
   @JsonKey(name: 'user_id')
   String get userId;

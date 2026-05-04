@@ -35,9 +35,10 @@ class WinePickerSheet extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
     final winesAsync = ref.watch(wineControllerProvider);
-    final sharedIds =
+    final sharedCanonicalIds =
         ref.watch(groupWinesProvider(groupId)).valueOrNull
-                ?.map((w) => w.id)
+                ?.map((w) => w.canonicalWineId)
+                .whereType<String>()
                 .toSet() ??
             const <String>{};
 
@@ -75,7 +76,7 @@ class WinePickerSheet extends ConsumerWidget {
                 data: (wines) => _PickerList(
                   groupId: groupId,
                   wines: wines,
-                  sharedIds: sharedIds,
+                  sharedCanonicalIds: sharedCanonicalIds,
                 ),
                 loading: () =>
                     const Center(child: CircularProgressIndicator()),
@@ -96,12 +97,12 @@ class WinePickerSheet extends ConsumerWidget {
 class _PickerList extends ConsumerStatefulWidget {
   final String groupId;
   final List<WineEntity> wines;
-  final Set<String> sharedIds;
+  final Set<String> sharedCanonicalIds;
 
   const _PickerList({
     required this.groupId,
     required this.wines,
-    required this.sharedIds,
+    required this.sharedCanonicalIds,
   });
 
   @override
@@ -109,38 +110,11 @@ class _PickerList extends ConsumerStatefulWidget {
 }
 
 class _PickerListState extends ConsumerState<_PickerList> {
-  final _aliasByLocal = <String, String>{};
-  bool _aliasesLoaded = false;
   String? _busyWineId;
 
-  @override
-  void initState() {
-    super.initState();
-    _loadAliases();
-  }
-
-  Future<void> _loadAliases() async {
-    final userId = ref.read(currentUserIdProvider);
-    if (userId == null) {
-      setState(() => _aliasesLoaded = true);
-      return;
-    }
-    final aliasRepo = ref.read(wineAliasRepositoryProvider);
-    for (final w in widget.wines) {
-      final canonical = await aliasRepo.resolveCanonical(
-        userId: userId,
-        localWineId: w.id,
-      );
-      if (canonical != w.id) {
-        _aliasByLocal[w.id] = canonical;
-      }
-    }
-    if (mounted) setState(() => _aliasesLoaded = true);
-  }
-
   bool _isShared(WineEntity wine) {
-    final canonical = _aliasByLocal[wine.id] ?? wine.id;
-    return widget.sharedIds.contains(canonical);
+    final cid = wine.canonicalWineId;
+    return cid != null && widget.sharedCanonicalIds.contains(cid);
   }
 
   Future<void> _onPick(WineEntity wine) async {
@@ -149,12 +123,6 @@ class _PickerListState extends ConsumerState<_PickerList> {
     if (userId == null) return;
     setState(() => _busyWineId = wine.id);
     try {
-      final canonicalExisting = _aliasByLocal[wine.id];
-      if (canonicalExisting != null) {
-        await _shareCanonical(canonicalExisting);
-        return;
-      }
-
       final groupCtrl = ref.read(groupControllerProvider.notifier);
       final candidates = await groupCtrl.findShareMatchCandidates(
         groupId: widget.groupId,
@@ -178,12 +146,6 @@ class _PickerListState extends ConsumerState<_PickerList> {
         case ShareMatchChoice.same:
           final canonical = result.canonical;
           if (canonical == null) return;
-          await ref.read(wineAliasRepositoryProvider).link(
-                userId: userId,
-                localWineId: wine.id,
-                canonicalWineId: canonical.id,
-              );
-          _aliasByLocal[wine.id] = canonical.id;
           await _shareCanonical(canonical.id, openRatingFor: canonical);
         case ShareMatchChoice.different:
           await _shareAsOwn(wine);
@@ -227,9 +189,6 @@ class _PickerListState extends ConsumerState<_PickerList> {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    if (!_aliasesLoaded) {
-      return const Center(child: CircularProgressIndicator());
-    }
     if (widget.wines.isEmpty) {
       return Padding(
         padding: EdgeInsets.symmetric(vertical: context.l),
