@@ -138,6 +138,41 @@ void main() {
     expect(find.text('GROUP AVG'), findsOneWidget);
   });
 
+  testWidgets('renders without layout overflow on a small viewport',
+      (tester) async {
+    // iPhone SE 1st gen height (568pt) — the original
+    // SizedBox(h * 0.32) gave ~182px which couldn't fit 3 StatItems.
+    // After the IntrinsicHeight + tighter spacing fix this should
+    // render cleanly with no rendering exception.
+    tester.view.physicalSize = const Size(320 * 2, 568 * 2);
+    tester.view.devicePixelRatio = 2.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          groupWinesProvider('g-1')
+              .overrideWith((ref) async => [sampleWine()]),
+          groupWineRatingsProvider('g-1', 'cw-1')
+              .overrideWith((ref) async => const <GroupWineRatingEntity>[]),
+          groupWineShareDetailsProvider('g-1', 'cw-1')
+              .overrideWith((ref) async => null),
+        ],
+        child: MaterialApp(
+          home: GroupWineDetailScreen(
+            groupId: 'g-1',
+            canonicalWineId: 'cw-1',
+            initial: sampleWine(),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull,
+        reason: 'no RenderFlex overflow on a small viewport');
+  });
+
   testWidgets('shows loading spinner when initial is null and remote empty',
       (tester) async {
     useIPhoneViewport(tester);

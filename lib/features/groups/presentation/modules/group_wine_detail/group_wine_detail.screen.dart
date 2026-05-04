@@ -81,19 +81,27 @@ class _Body extends ConsumerWidget {
           SizedBox(height: context.xl),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: context.paddingH),
-            child: SizedBox(
-              height: context.h * 0.32,
-              child: Row(
-                children: [
-                  Expanded(flex: 5, child: WineDetailImage(wine: wine)),
-                  Expanded(
-                    flex: 4,
-                    child: _GroupStatsColumn(
-                      wine: wine,
-                      ratings: ratingsAsync.valueOrNull ?? const [],
+            // Lower-bound the row height so the wine image always
+            // gets enough room, but let the stats column shrink the
+            // upper bound to its natural size on tall phones.
+            // IntrinsicHeight prevents the small-viewport overflow
+            // where a fixed h * 0.32 (=192px on iPhone SE 1st gen)
+            // wasn't enough room for three StatItems + spacing.
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: context.h * 0.28),
+              child: IntrinsicHeight(
+                child: Row(
+                  children: [
+                    Expanded(flex: 5, child: WineDetailImage(wine: wine)),
+                    Expanded(
+                      flex: 4,
+                      child: _GroupStatsColumn(
+                        wine: wine,
+                        ratings: ratingsAsync.valueOrNull ?? const [],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -142,19 +150,19 @@ class _GroupStatsColumn extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisSize: MainAxisSize.min,
         children: [
           _StatItem(
             label: 'Group avg',
             value: hasRatings ? avg.toStringAsFixed(1) : '–',
             unit: '/ 10',
           ),
-          SizedBox(height: context.l),
+          SizedBox(height: context.m),
           _StatItem(
             label: hasRatings ? 'Ratings' : 'No ratings',
             value: hasRatings ? ratings.length.toString() : '0',
-            unit: hasRatings ? null : null,
           ),
-          SizedBox(height: context.l),
+          SizedBox(height: context.m),
           if (wine.region != null)
             _StatItem(label: 'Region', value: wine.region!, isText: true)
           else if (wine.country != null)
