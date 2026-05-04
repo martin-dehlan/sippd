@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../../common/utils/responsive.dart';
+import '../../../../../common/widgets/error_view.widget.dart';
 import '../../../../../common/widgets/stats_card.widget.dart';
 import '../../../../groups/presentation/widgets/friend_actions_sheet.widget.dart';
 import '../../../../taste_match/presentation/widgets/friend_taste_match_section.widget.dart';
@@ -121,15 +122,10 @@ class _Body extends StatelessWidget {
             padding: EdgeInsets.all(context.l),
             child: const Center(child: CircularProgressIndicator()),
           ),
-          error: (_, __) => Padding(
-            padding: EdgeInsets.symmetric(horizontal: padH),
-            child: Text(
-              'Could not load wines',
-              style: TextStyle(
-                fontSize: context.captionFont,
-                color: Theme.of(context).colorScheme.error,
-              ),
-            ),
+          error: (e, __) => ErrorView(
+            title: "Couldn't load wines",
+            compact: true,
+            error: e,
           ),
         ),
         SizedBox(height: context.xl * 2),

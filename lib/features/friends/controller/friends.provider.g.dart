@@ -24,7 +24,7 @@ final friendsRepositoryProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef FriendsRepositoryRef = AutoDisposeProviderRef<FriendsRepository?>;
-String _$friendsListHash() => r'7f5f3e294b916da3de2f33c070973fbd23f5adb5';
+String _$friendsListHash() => r'25536ec44fa271d085fd53d71e9952a970bd9834';
 
 /// See also [friendsList].
 @ProviderFor(friendsList)
@@ -44,7 +44,7 @@ final friendsListProvider =
 typedef FriendsListRef =
     AutoDisposeStreamProviderRef<List<FriendProfileEntity>>;
 String _$incomingFriendRequestsHash() =>
-    r'8a24d8cfc3ed4b740fe8e1ba05d86971f66027fa';
+    r'87493116e8a2c986e157b544dcde5b83c1870016';
 
 /// See also [incomingFriendRequests].
 @ProviderFor(incomingFriendRequests)
@@ -64,7 +64,7 @@ final incomingFriendRequestsProvider =
 typedef IncomingFriendRequestsRef =
     AutoDisposeStreamProviderRef<List<FriendRequestEntity>>;
 String _$outgoingFriendRequestsHash() =>
-    r'5117332095253dda870b5efb8fd83ddd2c9543eb';
+    r'4172bcaaa46b6b2a65268ebfc9a9b3c99204f55f';
 
 /// See also [outgoingFriendRequests].
 @ProviderFor(outgoingFriendRequests)
@@ -100,7 +100,7 @@ final friendWinesApiProvider = AutoDisposeProvider<FriendWinesApi?>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef FriendWinesApiRef = AutoDisposeProviderRef<FriendWinesApi?>;
-String _$friendWinesHash() => r'0ce33479f4ec34213463938272068827ff8c4a22';
+String _$friendWinesHash() => r'890d0d27e9a54c5bf853570d6950a97d2b6e0226';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -257,7 +257,7 @@ final activityApiProvider = AutoDisposeProvider<ActivityApi?>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef ActivityApiRef = AutoDisposeProviderRef<ActivityApi?>;
-String _$activityFeedHash() => r'b1fd9a397d8c60838b7cf8489ce11ab1004a3f4e';
+String _$activityFeedHash() => r'b1977880a268e2ae0d1e5021738093aabc513251';
 
 /// See also [activityFeed].
 @ProviderFor(activityFeed)
