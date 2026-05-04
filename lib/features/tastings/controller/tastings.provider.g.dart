@@ -285,7 +285,7 @@ class _TastingDetailProviderElement
   String get tastingId => (origin as TastingDetailProvider).tastingId;
 }
 
-String _$tastingWinesHash() => r'95a9ca1e46ea099f6c0fd21330e4080475ec471b';
+String _$tastingWinesHash() => r'5fe5793e576b8c118be7a7b2edffd2d33d705ee8';
 
 /// See also [tastingWines].
 @ProviderFor(tastingWines)

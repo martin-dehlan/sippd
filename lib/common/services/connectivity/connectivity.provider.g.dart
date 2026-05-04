@@ -6,13 +6,15 @@ part of 'connectivity.provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$isOnlineHash() => r'684f7935b48ab692efa666715cd90d4c19f1a028';
+String _$isOnlineHash() => r'4dba3cd611abffd329580d087dce9b5fd9facc4d';
 
-/// Synchronous accessor for the common case. Returns `false` while the
-/// first probe resolves — we'd rather show offline UI for one frame
-/// than fire a doomed request. Watch this in widgets and providers
-/// instead of [connectivityStateProvider] directly when you don't
-/// need the AsyncValue.
+/// Synchronous accessor for the common case. Defaults to `true` while
+/// the first probe resolves — iOS simulator's connectivity_plus
+/// occasionally reports `none` despite an active WiFi connection,
+/// which used to strand the user on an offline error screen on cold
+/// start. The 8s [kNetTimeout] surfaces real offline cases via the
+/// individual network call, so an optimistic default is safer than
+/// trusting the radio probe alone.
 ///
 /// Copied from [isOnline].
 @ProviderFor(isOnline)
