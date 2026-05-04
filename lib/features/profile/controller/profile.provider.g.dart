@@ -42,7 +42,7 @@ final profileImageServiceProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef ProfileImageServiceRef = AutoDisposeProviderRef<ProfileImageService?>;
-String _$currentProfileHash() => r'996922c57154a9e4193f71ff627f6f466a9118da';
+String _$currentProfileHash() => r'a0afbcb215e0511041ea85a3cdc2d515ffe3266c';
 
 /// Local-first profile stream. Drift is the source of truth — the
 /// returned stream tracks the cached row so the router and profile UI

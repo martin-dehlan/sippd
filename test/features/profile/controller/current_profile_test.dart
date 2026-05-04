@@ -138,5 +138,30 @@ void main() {
       await Future<void>.delayed(Duration.zero);
       c.dispose();
     });
+
+    test(
+        'background fetch survives container disposal mid-flight '
+        '(no disposed-ref crash)', () async {
+      // Slow API so the fire-and-forget is still pending when we
+      // dispose. With the old ref.read inside the closure, this
+      // would throw "Tried to read a provider from a disposed
+      // ProviderContainer" and become an unhandled async error.
+      when(() => profileApi.fetchMyProfile()).thenAnswer(
+        (_) async {
+          await Future<void>.delayed(const Duration(milliseconds: 20));
+          return null;
+        },
+      );
+
+      final c = container();
+      // Trigger the provider build (which schedules the fire-and-forget).
+      c.read(currentProfileProvider);
+      // Dispose immediately — the background fetch is still in flight.
+      c.dispose();
+      // Give the fire-and-forget time to complete on the disposed
+      // container. If it throws, this test fails via the zoned
+      // unhandled-error path.
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+    });
   });
 }

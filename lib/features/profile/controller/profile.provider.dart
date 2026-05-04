@@ -39,17 +39,29 @@ Stream<ProfileEntity?> currentProfile(CurrentProfileRef ref) {
 
   final dao = ref.watch(appDatabaseProvider).profilesDao;
 
-  // Fire-and-forget: pull fresh row + persist. Errors are swallowed so
-  // offline / slow networks never throw on the consuming UI; the local
-  // stream keeps serving the cached row.
+  // Capture the dependencies BEFORE the fire-and-forget runs so the
+  // background work can finish even if [ref] is invalidated mid-flight
+  // (sign-out, hot reload). Reading providers off a disposed ref
+  // throws — the captured api + dao remain valid because they're
+  // owned by the wider ProviderContainer.
+  final api = ref.read(profileApiProvider);
+  final analytics = ref.read(analyticsProvider);
+
+  // Fire-and-forget: pull fresh row + persist. Any error is swallowed
+  // (offline, disposed-ref, unexpected) so the consuming UI never
+  // throws — the local stream keeps serving the cached row.
   Future(() async {
     try {
-      final fresh = await ref.read(profileApiProvider).fetchMyProfile();
+      final fresh = await api.fetchMyProfile();
       if (fresh != null) {
         await dao.upsert(fresh.toTableData());
       }
     } catch (e) {
-      ref.read(analyticsProvider).syncFailed('profile_fetch', error: e);
+      try {
+        analytics.syncFailed('profile_fetch', error: e);
+      } catch (_) {
+        // Telemetry itself failed — nothing else to do.
+      }
     }
   });
 
