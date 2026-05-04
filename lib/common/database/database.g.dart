@@ -170,6 +170,39 @@ class $WinesTableTable extends WinesTable
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _canonicalGrapeIdMeta = const VerificationMeta(
+    'canonicalGrapeId',
+  );
+  @override
+  late final GeneratedColumn<String> canonicalGrapeId = GeneratedColumn<String>(
+    'canonical_grape_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _grapeFreetextMeta = const VerificationMeta(
+    'grapeFreetext',
+  );
+  @override
+  late final GeneratedColumn<String> grapeFreetext = GeneratedColumn<String>(
+    'grape_freetext',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _canonicalWineIdMeta = const VerificationMeta(
+    'canonicalWineId',
+  );
+  @override
+  late final GeneratedColumn<String> canonicalWineId = GeneratedColumn<String>(
+    'canonical_wine_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _wineryMeta = const VerificationMeta('winery');
   @override
   late final GeneratedColumn<String> winery = GeneratedColumn<String>(
@@ -252,6 +285,9 @@ class $WinesTableTable extends WinesTable
     localImagePath,
     vintage,
     grape,
+    canonicalGrapeId,
+    grapeFreetext,
+    canonicalWineId,
     winery,
     nameNorm,
     userId,
@@ -375,6 +411,33 @@ class $WinesTableTable extends WinesTable
         grape.isAcceptableOrUnknown(data['grape']!, _grapeMeta),
       );
     }
+    if (data.containsKey('canonical_grape_id')) {
+      context.handle(
+        _canonicalGrapeIdMeta,
+        canonicalGrapeId.isAcceptableOrUnknown(
+          data['canonical_grape_id']!,
+          _canonicalGrapeIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('grape_freetext')) {
+      context.handle(
+        _grapeFreetextMeta,
+        grapeFreetext.isAcceptableOrUnknown(
+          data['grape_freetext']!,
+          _grapeFreetextMeta,
+        ),
+      );
+    }
+    if (data.containsKey('canonical_wine_id')) {
+      context.handle(
+        _canonicalWineIdMeta,
+        canonicalWineId.isAcceptableOrUnknown(
+          data['canonical_wine_id']!,
+          _canonicalWineIdMeta,
+        ),
+      );
+    }
     if (data.containsKey('winery')) {
       context.handle(
         _wineryMeta,
@@ -486,6 +549,18 @@ class $WinesTableTable extends WinesTable
         DriftSqlType.string,
         data['${effectivePrefix}grape'],
       ),
+      canonicalGrapeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}canonical_grape_id'],
+      ),
+      grapeFreetext: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}grape_freetext'],
+      ),
+      canonicalWineId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}canonical_wine_id'],
+      ),
       winery: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}winery'],
@@ -536,6 +611,9 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
   final String? localImagePath;
   final int? vintage;
   final String? grape;
+  final String? canonicalGrapeId;
+  final String? grapeFreetext;
+  final String? canonicalWineId;
   final String? winery;
   final String? nameNorm;
   final String userId;
@@ -559,6 +637,9 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
     this.localImagePath,
     this.vintage,
     this.grape,
+    this.canonicalGrapeId,
+    this.grapeFreetext,
+    this.canonicalWineId,
     this.winery,
     this.nameNorm,
     required this.userId,
@@ -606,6 +687,15 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
     }
     if (!nullToAbsent || grape != null) {
       map['grape'] = Variable<String>(grape);
+    }
+    if (!nullToAbsent || canonicalGrapeId != null) {
+      map['canonical_grape_id'] = Variable<String>(canonicalGrapeId);
+    }
+    if (!nullToAbsent || grapeFreetext != null) {
+      map['grape_freetext'] = Variable<String>(grapeFreetext);
+    }
+    if (!nullToAbsent || canonicalWineId != null) {
+      map['canonical_wine_id'] = Variable<String>(canonicalWineId);
     }
     if (!nullToAbsent || winery != null) {
       map['winery'] = Variable<String>(winery);
@@ -662,6 +752,15 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
       grape: grape == null && nullToAbsent
           ? const Value.absent()
           : Value(grape),
+      canonicalGrapeId: canonicalGrapeId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(canonicalGrapeId),
+      grapeFreetext: grapeFreetext == null && nullToAbsent
+          ? const Value.absent()
+          : Value(grapeFreetext),
+      canonicalWineId: canonicalWineId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(canonicalWineId),
       winery: winery == null && nullToAbsent
           ? const Value.absent()
           : Value(winery),
@@ -699,6 +798,9 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
       localImagePath: serializer.fromJson<String?>(json['localImagePath']),
       vintage: serializer.fromJson<int?>(json['vintage']),
       grape: serializer.fromJson<String?>(json['grape']),
+      canonicalGrapeId: serializer.fromJson<String?>(json['canonicalGrapeId']),
+      grapeFreetext: serializer.fromJson<String?>(json['grapeFreetext']),
+      canonicalWineId: serializer.fromJson<String?>(json['canonicalWineId']),
       winery: serializer.fromJson<String?>(json['winery']),
       nameNorm: serializer.fromJson<String?>(json['nameNorm']),
       userId: serializer.fromJson<String>(json['userId']),
@@ -727,6 +829,9 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
       'localImagePath': serializer.toJson<String?>(localImagePath),
       'vintage': serializer.toJson<int?>(vintage),
       'grape': serializer.toJson<String?>(grape),
+      'canonicalGrapeId': serializer.toJson<String?>(canonicalGrapeId),
+      'grapeFreetext': serializer.toJson<String?>(grapeFreetext),
+      'canonicalWineId': serializer.toJson<String?>(canonicalWineId),
       'winery': serializer.toJson<String?>(winery),
       'nameNorm': serializer.toJson<String?>(nameNorm),
       'userId': serializer.toJson<String>(userId),
@@ -753,6 +858,9 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
     Value<String?> localImagePath = const Value.absent(),
     Value<int?> vintage = const Value.absent(),
     Value<String?> grape = const Value.absent(),
+    Value<String?> canonicalGrapeId = const Value.absent(),
+    Value<String?> grapeFreetext = const Value.absent(),
+    Value<String?> canonicalWineId = const Value.absent(),
     Value<String?> winery = const Value.absent(),
     Value<String?> nameNorm = const Value.absent(),
     String? userId,
@@ -778,6 +886,15 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
         : this.localImagePath,
     vintage: vintage.present ? vintage.value : this.vintage,
     grape: grape.present ? grape.value : this.grape,
+    canonicalGrapeId: canonicalGrapeId.present
+        ? canonicalGrapeId.value
+        : this.canonicalGrapeId,
+    grapeFreetext: grapeFreetext.present
+        ? grapeFreetext.value
+        : this.grapeFreetext,
+    canonicalWineId: canonicalWineId.present
+        ? canonicalWineId.value
+        : this.canonicalWineId,
     winery: winery.present ? winery.value : this.winery,
     nameNorm: nameNorm.present ? nameNorm.value : this.nameNorm,
     userId: userId ?? this.userId,
@@ -805,6 +922,15 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
           : this.localImagePath,
       vintage: data.vintage.present ? data.vintage.value : this.vintage,
       grape: data.grape.present ? data.grape.value : this.grape,
+      canonicalGrapeId: data.canonicalGrapeId.present
+          ? data.canonicalGrapeId.value
+          : this.canonicalGrapeId,
+      grapeFreetext: data.grapeFreetext.present
+          ? data.grapeFreetext.value
+          : this.grapeFreetext,
+      canonicalWineId: data.canonicalWineId.present
+          ? data.canonicalWineId.value
+          : this.canonicalWineId,
       winery: data.winery.present ? data.winery.value : this.winery,
       nameNorm: data.nameNorm.present ? data.nameNorm.value : this.nameNorm,
       userId: data.userId.present ? data.userId.value : this.userId,
@@ -835,6 +961,9 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
           ..write('localImagePath: $localImagePath, ')
           ..write('vintage: $vintage, ')
           ..write('grape: $grape, ')
+          ..write('canonicalGrapeId: $canonicalGrapeId, ')
+          ..write('grapeFreetext: $grapeFreetext, ')
+          ..write('canonicalWineId: $canonicalWineId, ')
           ..write('winery: $winery, ')
           ..write('nameNorm: $nameNorm, ')
           ..write('userId: $userId, ')
@@ -863,6 +992,9 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
     localImagePath,
     vintage,
     grape,
+    canonicalGrapeId,
+    grapeFreetext,
+    canonicalWineId,
     winery,
     nameNorm,
     userId,
@@ -890,6 +1022,9 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
           other.localImagePath == this.localImagePath &&
           other.vintage == this.vintage &&
           other.grape == this.grape &&
+          other.canonicalGrapeId == this.canonicalGrapeId &&
+          other.grapeFreetext == this.grapeFreetext &&
+          other.canonicalWineId == this.canonicalWineId &&
           other.winery == this.winery &&
           other.nameNorm == this.nameNorm &&
           other.userId == this.userId &&
@@ -915,6 +1050,9 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
   final Value<String?> localImagePath;
   final Value<int?> vintage;
   final Value<String?> grape;
+  final Value<String?> canonicalGrapeId;
+  final Value<String?> grapeFreetext;
+  final Value<String?> canonicalWineId;
   final Value<String?> winery;
   final Value<String?> nameNorm;
   final Value<String> userId;
@@ -939,6 +1077,9 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
     this.localImagePath = const Value.absent(),
     this.vintage = const Value.absent(),
     this.grape = const Value.absent(),
+    this.canonicalGrapeId = const Value.absent(),
+    this.grapeFreetext = const Value.absent(),
+    this.canonicalWineId = const Value.absent(),
     this.winery = const Value.absent(),
     this.nameNorm = const Value.absent(),
     this.userId = const Value.absent(),
@@ -964,6 +1105,9 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
     this.localImagePath = const Value.absent(),
     this.vintage = const Value.absent(),
     this.grape = const Value.absent(),
+    this.canonicalGrapeId = const Value.absent(),
+    this.grapeFreetext = const Value.absent(),
+    this.canonicalWineId = const Value.absent(),
     this.winery = const Value.absent(),
     this.nameNorm = const Value.absent(),
     required String userId,
@@ -993,6 +1137,9 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
     Expression<String>? localImagePath,
     Expression<int>? vintage,
     Expression<String>? grape,
+    Expression<String>? canonicalGrapeId,
+    Expression<String>? grapeFreetext,
+    Expression<String>? canonicalWineId,
     Expression<String>? winery,
     Expression<String>? nameNorm,
     Expression<String>? userId,
@@ -1018,6 +1165,9 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
       if (localImagePath != null) 'local_image_path': localImagePath,
       if (vintage != null) 'vintage': vintage,
       if (grape != null) 'grape': grape,
+      if (canonicalGrapeId != null) 'canonical_grape_id': canonicalGrapeId,
+      if (grapeFreetext != null) 'grape_freetext': grapeFreetext,
+      if (canonicalWineId != null) 'canonical_wine_id': canonicalWineId,
       if (winery != null) 'winery': winery,
       if (nameNorm != null) 'name_norm': nameNorm,
       if (userId != null) 'user_id': userId,
@@ -1045,6 +1195,9 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
     Value<String?>? localImagePath,
     Value<int?>? vintage,
     Value<String?>? grape,
+    Value<String?>? canonicalGrapeId,
+    Value<String?>? grapeFreetext,
+    Value<String?>? canonicalWineId,
     Value<String?>? winery,
     Value<String?>? nameNorm,
     Value<String>? userId,
@@ -1070,6 +1223,9 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
       localImagePath: localImagePath ?? this.localImagePath,
       vintage: vintage ?? this.vintage,
       grape: grape ?? this.grape,
+      canonicalGrapeId: canonicalGrapeId ?? this.canonicalGrapeId,
+      grapeFreetext: grapeFreetext ?? this.grapeFreetext,
+      canonicalWineId: canonicalWineId ?? this.canonicalWineId,
       winery: winery ?? this.winery,
       nameNorm: nameNorm ?? this.nameNorm,
       userId: userId ?? this.userId,
@@ -1131,6 +1287,15 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
     if (grape.present) {
       map['grape'] = Variable<String>(grape.value);
     }
+    if (canonicalGrapeId.present) {
+      map['canonical_grape_id'] = Variable<String>(canonicalGrapeId.value);
+    }
+    if (grapeFreetext.present) {
+      map['grape_freetext'] = Variable<String>(grapeFreetext.value);
+    }
+    if (canonicalWineId.present) {
+      map['canonical_wine_id'] = Variable<String>(canonicalWineId.value);
+    }
     if (winery.present) {
       map['winery'] = Variable<String>(winery.value);
     }
@@ -1174,6 +1339,9 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
           ..write('localImagePath: $localImagePath, ')
           ..write('vintage: $vintage, ')
           ..write('grape: $grape, ')
+          ..write('canonicalGrapeId: $canonicalGrapeId, ')
+          ..write('grapeFreetext: $grapeFreetext, ')
+          ..write('canonicalWineId: $canonicalWineId, ')
           ..write('winery: $winery, ')
           ..write('nameNorm: $nameNorm, ')
           ..write('userId: $userId, ')
@@ -2527,6 +2695,1373 @@ class NotificationPrefsTableCompanion
   }
 }
 
+class $CanonicalGrapeTableTable extends CanonicalGrapeTable
+    with TableInfo<$CanonicalGrapeTableTable, CanonicalGrapeTableData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CanonicalGrapeTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _colorMeta = const VerificationMeta('color');
+  @override
+  late final GeneratedColumn<String> color = GeneratedColumn<String>(
+    'color',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<List<String>, String> aliases =
+      GeneratedColumn<String>(
+        'aliases',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant(''),
+      ).withConverter<List<String>>(
+        $CanonicalGrapeTableTable.$converteraliases,
+      );
+  @override
+  List<GeneratedColumn> get $columns => [id, name, color, aliases];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'canonical_grape';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CanonicalGrapeTableData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('color')) {
+      context.handle(
+        _colorMeta,
+        color.isAcceptableOrUnknown(data['color']!, _colorMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_colorMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  CanonicalGrapeTableData map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CanonicalGrapeTableData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      color: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}color'],
+      )!,
+      aliases: $CanonicalGrapeTableTable.$converteraliases.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}aliases'],
+        )!,
+      ),
+    );
+  }
+
+  @override
+  $CanonicalGrapeTableTable createAlias(String alias) {
+    return $CanonicalGrapeTableTable(attachedDatabase, alias);
+  }
+
+  static TypeConverter<List<String>, String> $converteraliases =
+      const AliasesConverter();
+}
+
+class CanonicalGrapeTableData extends DataClass
+    implements Insertable<CanonicalGrapeTableData> {
+  final String id;
+  final String name;
+  final String color;
+  final List<String> aliases;
+  const CanonicalGrapeTableData({
+    required this.id,
+    required this.name,
+    required this.color,
+    required this.aliases,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['name'] = Variable<String>(name);
+    map['color'] = Variable<String>(color);
+    {
+      map['aliases'] = Variable<String>(
+        $CanonicalGrapeTableTable.$converteraliases.toSql(aliases),
+      );
+    }
+    return map;
+  }
+
+  CanonicalGrapeTableCompanion toCompanion(bool nullToAbsent) {
+    return CanonicalGrapeTableCompanion(
+      id: Value(id),
+      name: Value(name),
+      color: Value(color),
+      aliases: Value(aliases),
+    );
+  }
+
+  factory CanonicalGrapeTableData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CanonicalGrapeTableData(
+      id: serializer.fromJson<String>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      color: serializer.fromJson<String>(json['color']),
+      aliases: serializer.fromJson<List<String>>(json['aliases']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'name': serializer.toJson<String>(name),
+      'color': serializer.toJson<String>(color),
+      'aliases': serializer.toJson<List<String>>(aliases),
+    };
+  }
+
+  CanonicalGrapeTableData copyWith({
+    String? id,
+    String? name,
+    String? color,
+    List<String>? aliases,
+  }) => CanonicalGrapeTableData(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    color: color ?? this.color,
+    aliases: aliases ?? this.aliases,
+  );
+  CanonicalGrapeTableData copyWithCompanion(CanonicalGrapeTableCompanion data) {
+    return CanonicalGrapeTableData(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      color: data.color.present ? data.color.value : this.color,
+      aliases: data.aliases.present ? data.aliases.value : this.aliases,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CanonicalGrapeTableData(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('color: $color, ')
+          ..write('aliases: $aliases')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, name, color, aliases);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CanonicalGrapeTableData &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.color == this.color &&
+          other.aliases == this.aliases);
+}
+
+class CanonicalGrapeTableCompanion
+    extends UpdateCompanion<CanonicalGrapeTableData> {
+  final Value<String> id;
+  final Value<String> name;
+  final Value<String> color;
+  final Value<List<String>> aliases;
+  final Value<int> rowid;
+  const CanonicalGrapeTableCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.color = const Value.absent(),
+    this.aliases = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  CanonicalGrapeTableCompanion.insert({
+    required String id,
+    required String name,
+    required String color,
+    this.aliases = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       name = Value(name),
+       color = Value(color);
+  static Insertable<CanonicalGrapeTableData> custom({
+    Expression<String>? id,
+    Expression<String>? name,
+    Expression<String>? color,
+    Expression<String>? aliases,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (color != null) 'color': color,
+      if (aliases != null) 'aliases': aliases,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  CanonicalGrapeTableCompanion copyWith({
+    Value<String>? id,
+    Value<String>? name,
+    Value<String>? color,
+    Value<List<String>>? aliases,
+    Value<int>? rowid,
+  }) {
+    return CanonicalGrapeTableCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      color: color ?? this.color,
+      aliases: aliases ?? this.aliases,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (color.present) {
+      map['color'] = Variable<String>(color.value);
+    }
+    if (aliases.present) {
+      map['aliases'] = Variable<String>(
+        $CanonicalGrapeTableTable.$converteraliases.toSql(aliases.value),
+      );
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CanonicalGrapeTableCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('color: $color, ')
+          ..write('aliases: $aliases, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ProfilesTableTable extends ProfilesTable
+    with TableInfo<$ProfilesTableTable, ProfileTableData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ProfilesTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _usernameMeta = const VerificationMeta(
+    'username',
+  );
+  @override
+  late final GeneratedColumn<String> username = GeneratedColumn<String>(
+    'username',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _displayNameMeta = const VerificationMeta(
+    'displayName',
+  );
+  @override
+  late final GeneratedColumn<String> displayName = GeneratedColumn<String>(
+    'display_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _avatarUrlMeta = const VerificationMeta(
+    'avatarUrl',
+  );
+  @override
+  late final GeneratedColumn<String> avatarUrl = GeneratedColumn<String>(
+    'avatar_url',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _onboardingCompletedMeta =
+      const VerificationMeta('onboardingCompleted');
+  @override
+  late final GeneratedColumn<bool> onboardingCompleted = GeneratedColumn<bool>(
+    'onboarding_completed',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("onboarding_completed" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _tasteLevelMeta = const VerificationMeta(
+    'tasteLevel',
+  );
+  @override
+  late final GeneratedColumn<String> tasteLevel = GeneratedColumn<String>(
+    'taste_level',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _goalsCsvMeta = const VerificationMeta(
+    'goalsCsv',
+  );
+  @override
+  late final GeneratedColumn<String> goalsCsv = GeneratedColumn<String>(
+    'goals_csv',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _stylesCsvMeta = const VerificationMeta(
+    'stylesCsv',
+  );
+  @override
+  late final GeneratedColumn<String> stylesCsv = GeneratedColumn<String>(
+    'styles_csv',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _drinkFrequencyMeta = const VerificationMeta(
+    'drinkFrequency',
+  );
+  @override
+  late final GeneratedColumn<String> drinkFrequency = GeneratedColumn<String>(
+    'drink_frequency',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _tasteEmojiMeta = const VerificationMeta(
+    'tasteEmoji',
+  );
+  @override
+  late final GeneratedColumn<String> tasteEmoji = GeneratedColumn<String>(
+    'taste_emoji',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    username,
+    displayName,
+    avatarUrl,
+    onboardingCompleted,
+    tasteLevel,
+    goalsCsv,
+    stylesCsv,
+    drinkFrequency,
+    tasteEmoji,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'profiles';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ProfileTableData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('username')) {
+      context.handle(
+        _usernameMeta,
+        username.isAcceptableOrUnknown(data['username']!, _usernameMeta),
+      );
+    }
+    if (data.containsKey('display_name')) {
+      context.handle(
+        _displayNameMeta,
+        displayName.isAcceptableOrUnknown(
+          data['display_name']!,
+          _displayNameMeta,
+        ),
+      );
+    }
+    if (data.containsKey('avatar_url')) {
+      context.handle(
+        _avatarUrlMeta,
+        avatarUrl.isAcceptableOrUnknown(data['avatar_url']!, _avatarUrlMeta),
+      );
+    }
+    if (data.containsKey('onboarding_completed')) {
+      context.handle(
+        _onboardingCompletedMeta,
+        onboardingCompleted.isAcceptableOrUnknown(
+          data['onboarding_completed']!,
+          _onboardingCompletedMeta,
+        ),
+      );
+    }
+    if (data.containsKey('taste_level')) {
+      context.handle(
+        _tasteLevelMeta,
+        tasteLevel.isAcceptableOrUnknown(data['taste_level']!, _tasteLevelMeta),
+      );
+    }
+    if (data.containsKey('goals_csv')) {
+      context.handle(
+        _goalsCsvMeta,
+        goalsCsv.isAcceptableOrUnknown(data['goals_csv']!, _goalsCsvMeta),
+      );
+    }
+    if (data.containsKey('styles_csv')) {
+      context.handle(
+        _stylesCsvMeta,
+        stylesCsv.isAcceptableOrUnknown(data['styles_csv']!, _stylesCsvMeta),
+      );
+    }
+    if (data.containsKey('drink_frequency')) {
+      context.handle(
+        _drinkFrequencyMeta,
+        drinkFrequency.isAcceptableOrUnknown(
+          data['drink_frequency']!,
+          _drinkFrequencyMeta,
+        ),
+      );
+    }
+    if (data.containsKey('taste_emoji')) {
+      context.handle(
+        _tasteEmojiMeta,
+        tasteEmoji.isAcceptableOrUnknown(data['taste_emoji']!, _tasteEmojiMeta),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ProfileTableData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ProfileTableData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      username: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}username'],
+      ),
+      displayName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}display_name'],
+      ),
+      avatarUrl: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}avatar_url'],
+      ),
+      onboardingCompleted: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}onboarding_completed'],
+      )!,
+      tasteLevel: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}taste_level'],
+      ),
+      goalsCsv: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}goals_csv'],
+      )!,
+      stylesCsv: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}styles_csv'],
+      )!,
+      drinkFrequency: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}drink_frequency'],
+      ),
+      tasteEmoji: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}taste_emoji'],
+      ),
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $ProfilesTableTable createAlias(String alias) {
+    return $ProfilesTableTable(attachedDatabase, alias);
+  }
+}
+
+class ProfileTableData extends DataClass
+    implements Insertable<ProfileTableData> {
+  final String id;
+  final String? username;
+  final String? displayName;
+  final String? avatarUrl;
+  final bool onboardingCompleted;
+  final String? tasteLevel;
+  final String goalsCsv;
+  final String stylesCsv;
+  final String? drinkFrequency;
+  final String? tasteEmoji;
+  final DateTime updatedAt;
+  const ProfileTableData({
+    required this.id,
+    this.username,
+    this.displayName,
+    this.avatarUrl,
+    required this.onboardingCompleted,
+    this.tasteLevel,
+    required this.goalsCsv,
+    required this.stylesCsv,
+    this.drinkFrequency,
+    this.tasteEmoji,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    if (!nullToAbsent || username != null) {
+      map['username'] = Variable<String>(username);
+    }
+    if (!nullToAbsent || displayName != null) {
+      map['display_name'] = Variable<String>(displayName);
+    }
+    if (!nullToAbsent || avatarUrl != null) {
+      map['avatar_url'] = Variable<String>(avatarUrl);
+    }
+    map['onboarding_completed'] = Variable<bool>(onboardingCompleted);
+    if (!nullToAbsent || tasteLevel != null) {
+      map['taste_level'] = Variable<String>(tasteLevel);
+    }
+    map['goals_csv'] = Variable<String>(goalsCsv);
+    map['styles_csv'] = Variable<String>(stylesCsv);
+    if (!nullToAbsent || drinkFrequency != null) {
+      map['drink_frequency'] = Variable<String>(drinkFrequency);
+    }
+    if (!nullToAbsent || tasteEmoji != null) {
+      map['taste_emoji'] = Variable<String>(tasteEmoji);
+    }
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  ProfilesTableCompanion toCompanion(bool nullToAbsent) {
+    return ProfilesTableCompanion(
+      id: Value(id),
+      username: username == null && nullToAbsent
+          ? const Value.absent()
+          : Value(username),
+      displayName: displayName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(displayName),
+      avatarUrl: avatarUrl == null && nullToAbsent
+          ? const Value.absent()
+          : Value(avatarUrl),
+      onboardingCompleted: Value(onboardingCompleted),
+      tasteLevel: tasteLevel == null && nullToAbsent
+          ? const Value.absent()
+          : Value(tasteLevel),
+      goalsCsv: Value(goalsCsv),
+      stylesCsv: Value(stylesCsv),
+      drinkFrequency: drinkFrequency == null && nullToAbsent
+          ? const Value.absent()
+          : Value(drinkFrequency),
+      tasteEmoji: tasteEmoji == null && nullToAbsent
+          ? const Value.absent()
+          : Value(tasteEmoji),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory ProfileTableData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ProfileTableData(
+      id: serializer.fromJson<String>(json['id']),
+      username: serializer.fromJson<String?>(json['username']),
+      displayName: serializer.fromJson<String?>(json['displayName']),
+      avatarUrl: serializer.fromJson<String?>(json['avatarUrl']),
+      onboardingCompleted: serializer.fromJson<bool>(
+        json['onboardingCompleted'],
+      ),
+      tasteLevel: serializer.fromJson<String?>(json['tasteLevel']),
+      goalsCsv: serializer.fromJson<String>(json['goalsCsv']),
+      stylesCsv: serializer.fromJson<String>(json['stylesCsv']),
+      drinkFrequency: serializer.fromJson<String?>(json['drinkFrequency']),
+      tasteEmoji: serializer.fromJson<String?>(json['tasteEmoji']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'username': serializer.toJson<String?>(username),
+      'displayName': serializer.toJson<String?>(displayName),
+      'avatarUrl': serializer.toJson<String?>(avatarUrl),
+      'onboardingCompleted': serializer.toJson<bool>(onboardingCompleted),
+      'tasteLevel': serializer.toJson<String?>(tasteLevel),
+      'goalsCsv': serializer.toJson<String>(goalsCsv),
+      'stylesCsv': serializer.toJson<String>(stylesCsv),
+      'drinkFrequency': serializer.toJson<String?>(drinkFrequency),
+      'tasteEmoji': serializer.toJson<String?>(tasteEmoji),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  ProfileTableData copyWith({
+    String? id,
+    Value<String?> username = const Value.absent(),
+    Value<String?> displayName = const Value.absent(),
+    Value<String?> avatarUrl = const Value.absent(),
+    bool? onboardingCompleted,
+    Value<String?> tasteLevel = const Value.absent(),
+    String? goalsCsv,
+    String? stylesCsv,
+    Value<String?> drinkFrequency = const Value.absent(),
+    Value<String?> tasteEmoji = const Value.absent(),
+    DateTime? updatedAt,
+  }) => ProfileTableData(
+    id: id ?? this.id,
+    username: username.present ? username.value : this.username,
+    displayName: displayName.present ? displayName.value : this.displayName,
+    avatarUrl: avatarUrl.present ? avatarUrl.value : this.avatarUrl,
+    onboardingCompleted: onboardingCompleted ?? this.onboardingCompleted,
+    tasteLevel: tasteLevel.present ? tasteLevel.value : this.tasteLevel,
+    goalsCsv: goalsCsv ?? this.goalsCsv,
+    stylesCsv: stylesCsv ?? this.stylesCsv,
+    drinkFrequency: drinkFrequency.present
+        ? drinkFrequency.value
+        : this.drinkFrequency,
+    tasteEmoji: tasteEmoji.present ? tasteEmoji.value : this.tasteEmoji,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  ProfileTableData copyWithCompanion(ProfilesTableCompanion data) {
+    return ProfileTableData(
+      id: data.id.present ? data.id.value : this.id,
+      username: data.username.present ? data.username.value : this.username,
+      displayName: data.displayName.present
+          ? data.displayName.value
+          : this.displayName,
+      avatarUrl: data.avatarUrl.present ? data.avatarUrl.value : this.avatarUrl,
+      onboardingCompleted: data.onboardingCompleted.present
+          ? data.onboardingCompleted.value
+          : this.onboardingCompleted,
+      tasteLevel: data.tasteLevel.present
+          ? data.tasteLevel.value
+          : this.tasteLevel,
+      goalsCsv: data.goalsCsv.present ? data.goalsCsv.value : this.goalsCsv,
+      stylesCsv: data.stylesCsv.present ? data.stylesCsv.value : this.stylesCsv,
+      drinkFrequency: data.drinkFrequency.present
+          ? data.drinkFrequency.value
+          : this.drinkFrequency,
+      tasteEmoji: data.tasteEmoji.present
+          ? data.tasteEmoji.value
+          : this.tasteEmoji,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ProfileTableData(')
+          ..write('id: $id, ')
+          ..write('username: $username, ')
+          ..write('displayName: $displayName, ')
+          ..write('avatarUrl: $avatarUrl, ')
+          ..write('onboardingCompleted: $onboardingCompleted, ')
+          ..write('tasteLevel: $tasteLevel, ')
+          ..write('goalsCsv: $goalsCsv, ')
+          ..write('stylesCsv: $stylesCsv, ')
+          ..write('drinkFrequency: $drinkFrequency, ')
+          ..write('tasteEmoji: $tasteEmoji, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    username,
+    displayName,
+    avatarUrl,
+    onboardingCompleted,
+    tasteLevel,
+    goalsCsv,
+    stylesCsv,
+    drinkFrequency,
+    tasteEmoji,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ProfileTableData &&
+          other.id == this.id &&
+          other.username == this.username &&
+          other.displayName == this.displayName &&
+          other.avatarUrl == this.avatarUrl &&
+          other.onboardingCompleted == this.onboardingCompleted &&
+          other.tasteLevel == this.tasteLevel &&
+          other.goalsCsv == this.goalsCsv &&
+          other.stylesCsv == this.stylesCsv &&
+          other.drinkFrequency == this.drinkFrequency &&
+          other.tasteEmoji == this.tasteEmoji &&
+          other.updatedAt == this.updatedAt);
+}
+
+class ProfilesTableCompanion extends UpdateCompanion<ProfileTableData> {
+  final Value<String> id;
+  final Value<String?> username;
+  final Value<String?> displayName;
+  final Value<String?> avatarUrl;
+  final Value<bool> onboardingCompleted;
+  final Value<String?> tasteLevel;
+  final Value<String> goalsCsv;
+  final Value<String> stylesCsv;
+  final Value<String?> drinkFrequency;
+  final Value<String?> tasteEmoji;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const ProfilesTableCompanion({
+    this.id = const Value.absent(),
+    this.username = const Value.absent(),
+    this.displayName = const Value.absent(),
+    this.avatarUrl = const Value.absent(),
+    this.onboardingCompleted = const Value.absent(),
+    this.tasteLevel = const Value.absent(),
+    this.goalsCsv = const Value.absent(),
+    this.stylesCsv = const Value.absent(),
+    this.drinkFrequency = const Value.absent(),
+    this.tasteEmoji = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ProfilesTableCompanion.insert({
+    required String id,
+    this.username = const Value.absent(),
+    this.displayName = const Value.absent(),
+    this.avatarUrl = const Value.absent(),
+    this.onboardingCompleted = const Value.absent(),
+    this.tasteLevel = const Value.absent(),
+    this.goalsCsv = const Value.absent(),
+    this.stylesCsv = const Value.absent(),
+    this.drinkFrequency = const Value.absent(),
+    this.tasteEmoji = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id);
+  static Insertable<ProfileTableData> custom({
+    Expression<String>? id,
+    Expression<String>? username,
+    Expression<String>? displayName,
+    Expression<String>? avatarUrl,
+    Expression<bool>? onboardingCompleted,
+    Expression<String>? tasteLevel,
+    Expression<String>? goalsCsv,
+    Expression<String>? stylesCsv,
+    Expression<String>? drinkFrequency,
+    Expression<String>? tasteEmoji,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (username != null) 'username': username,
+      if (displayName != null) 'display_name': displayName,
+      if (avatarUrl != null) 'avatar_url': avatarUrl,
+      if (onboardingCompleted != null)
+        'onboarding_completed': onboardingCompleted,
+      if (tasteLevel != null) 'taste_level': tasteLevel,
+      if (goalsCsv != null) 'goals_csv': goalsCsv,
+      if (stylesCsv != null) 'styles_csv': stylesCsv,
+      if (drinkFrequency != null) 'drink_frequency': drinkFrequency,
+      if (tasteEmoji != null) 'taste_emoji': tasteEmoji,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ProfilesTableCompanion copyWith({
+    Value<String>? id,
+    Value<String?>? username,
+    Value<String?>? displayName,
+    Value<String?>? avatarUrl,
+    Value<bool>? onboardingCompleted,
+    Value<String?>? tasteLevel,
+    Value<String>? goalsCsv,
+    Value<String>? stylesCsv,
+    Value<String?>? drinkFrequency,
+    Value<String?>? tasteEmoji,
+    Value<DateTime>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return ProfilesTableCompanion(
+      id: id ?? this.id,
+      username: username ?? this.username,
+      displayName: displayName ?? this.displayName,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
+      onboardingCompleted: onboardingCompleted ?? this.onboardingCompleted,
+      tasteLevel: tasteLevel ?? this.tasteLevel,
+      goalsCsv: goalsCsv ?? this.goalsCsv,
+      stylesCsv: stylesCsv ?? this.stylesCsv,
+      drinkFrequency: drinkFrequency ?? this.drinkFrequency,
+      tasteEmoji: tasteEmoji ?? this.tasteEmoji,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (username.present) {
+      map['username'] = Variable<String>(username.value);
+    }
+    if (displayName.present) {
+      map['display_name'] = Variable<String>(displayName.value);
+    }
+    if (avatarUrl.present) {
+      map['avatar_url'] = Variable<String>(avatarUrl.value);
+    }
+    if (onboardingCompleted.present) {
+      map['onboarding_completed'] = Variable<bool>(onboardingCompleted.value);
+    }
+    if (tasteLevel.present) {
+      map['taste_level'] = Variable<String>(tasteLevel.value);
+    }
+    if (goalsCsv.present) {
+      map['goals_csv'] = Variable<String>(goalsCsv.value);
+    }
+    if (stylesCsv.present) {
+      map['styles_csv'] = Variable<String>(stylesCsv.value);
+    }
+    if (drinkFrequency.present) {
+      map['drink_frequency'] = Variable<String>(drinkFrequency.value);
+    }
+    if (tasteEmoji.present) {
+      map['taste_emoji'] = Variable<String>(tasteEmoji.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ProfilesTableCompanion(')
+          ..write('id: $id, ')
+          ..write('username: $username, ')
+          ..write('displayName: $displayName, ')
+          ..write('avatarUrl: $avatarUrl, ')
+          ..write('onboardingCompleted: $onboardingCompleted, ')
+          ..write('tasteLevel: $tasteLevel, ')
+          ..write('goalsCsv: $goalsCsv, ')
+          ..write('stylesCsv: $stylesCsv, ')
+          ..write('drinkFrequency: $drinkFrequency, ')
+          ..write('tasteEmoji: $tasteEmoji, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $PendingImageUploadsTableTable extends PendingImageUploadsTable
+    with TableInfo<$PendingImageUploadsTableTable, PendingImageUploadData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PendingImageUploadsTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _wineIdMeta = const VerificationMeta('wineId');
+  @override
+  late final GeneratedColumn<String> wineId = GeneratedColumn<String>(
+    'wine_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _localPathMeta = const VerificationMeta(
+    'localPath',
+  );
+  @override
+  late final GeneratedColumn<String> localPath = GeneratedColumn<String>(
+    'local_path',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _attemptsMeta = const VerificationMeta(
+    'attempts',
+  );
+  @override
+  late final GeneratedColumn<int> attempts = GeneratedColumn<int>(
+    'attempts',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _lastErrorAtMeta = const VerificationMeta(
+    'lastErrorAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastErrorAt = GeneratedColumn<DateTime>(
+    'last_error_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _queuedAtMeta = const VerificationMeta(
+    'queuedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> queuedAt = GeneratedColumn<DateTime>(
+    'queued_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    wineId,
+    localPath,
+    attempts,
+    lastErrorAt,
+    queuedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'pending_image_uploads';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<PendingImageUploadData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('wine_id')) {
+      context.handle(
+        _wineIdMeta,
+        wineId.isAcceptableOrUnknown(data['wine_id']!, _wineIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_wineIdMeta);
+    }
+    if (data.containsKey('local_path')) {
+      context.handle(
+        _localPathMeta,
+        localPath.isAcceptableOrUnknown(data['local_path']!, _localPathMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_localPathMeta);
+    }
+    if (data.containsKey('attempts')) {
+      context.handle(
+        _attemptsMeta,
+        attempts.isAcceptableOrUnknown(data['attempts']!, _attemptsMeta),
+      );
+    }
+    if (data.containsKey('last_error_at')) {
+      context.handle(
+        _lastErrorAtMeta,
+        lastErrorAt.isAcceptableOrUnknown(
+          data['last_error_at']!,
+          _lastErrorAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('queued_at')) {
+      context.handle(
+        _queuedAtMeta,
+        queuedAt.isAcceptableOrUnknown(data['queued_at']!, _queuedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {wineId};
+  @override
+  PendingImageUploadData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PendingImageUploadData(
+      wineId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}wine_id'],
+      )!,
+      localPath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}local_path'],
+      )!,
+      attempts: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}attempts'],
+      )!,
+      lastErrorAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_error_at'],
+      ),
+      queuedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}queued_at'],
+      )!,
+    );
+  }
+
+  @override
+  $PendingImageUploadsTableTable createAlias(String alias) {
+    return $PendingImageUploadsTableTable(attachedDatabase, alias);
+  }
+}
+
+class PendingImageUploadData extends DataClass
+    implements Insertable<PendingImageUploadData> {
+  final String wineId;
+  final String localPath;
+  final int attempts;
+  final DateTime? lastErrorAt;
+  final DateTime queuedAt;
+  const PendingImageUploadData({
+    required this.wineId,
+    required this.localPath,
+    required this.attempts,
+    this.lastErrorAt,
+    required this.queuedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['wine_id'] = Variable<String>(wineId);
+    map['local_path'] = Variable<String>(localPath);
+    map['attempts'] = Variable<int>(attempts);
+    if (!nullToAbsent || lastErrorAt != null) {
+      map['last_error_at'] = Variable<DateTime>(lastErrorAt);
+    }
+    map['queued_at'] = Variable<DateTime>(queuedAt);
+    return map;
+  }
+
+  PendingImageUploadsTableCompanion toCompanion(bool nullToAbsent) {
+    return PendingImageUploadsTableCompanion(
+      wineId: Value(wineId),
+      localPath: Value(localPath),
+      attempts: Value(attempts),
+      lastErrorAt: lastErrorAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastErrorAt),
+      queuedAt: Value(queuedAt),
+    );
+  }
+
+  factory PendingImageUploadData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PendingImageUploadData(
+      wineId: serializer.fromJson<String>(json['wineId']),
+      localPath: serializer.fromJson<String>(json['localPath']),
+      attempts: serializer.fromJson<int>(json['attempts']),
+      lastErrorAt: serializer.fromJson<DateTime?>(json['lastErrorAt']),
+      queuedAt: serializer.fromJson<DateTime>(json['queuedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'wineId': serializer.toJson<String>(wineId),
+      'localPath': serializer.toJson<String>(localPath),
+      'attempts': serializer.toJson<int>(attempts),
+      'lastErrorAt': serializer.toJson<DateTime?>(lastErrorAt),
+      'queuedAt': serializer.toJson<DateTime>(queuedAt),
+    };
+  }
+
+  PendingImageUploadData copyWith({
+    String? wineId,
+    String? localPath,
+    int? attempts,
+    Value<DateTime?> lastErrorAt = const Value.absent(),
+    DateTime? queuedAt,
+  }) => PendingImageUploadData(
+    wineId: wineId ?? this.wineId,
+    localPath: localPath ?? this.localPath,
+    attempts: attempts ?? this.attempts,
+    lastErrorAt: lastErrorAt.present ? lastErrorAt.value : this.lastErrorAt,
+    queuedAt: queuedAt ?? this.queuedAt,
+  );
+  PendingImageUploadData copyWithCompanion(
+    PendingImageUploadsTableCompanion data,
+  ) {
+    return PendingImageUploadData(
+      wineId: data.wineId.present ? data.wineId.value : this.wineId,
+      localPath: data.localPath.present ? data.localPath.value : this.localPath,
+      attempts: data.attempts.present ? data.attempts.value : this.attempts,
+      lastErrorAt: data.lastErrorAt.present
+          ? data.lastErrorAt.value
+          : this.lastErrorAt,
+      queuedAt: data.queuedAt.present ? data.queuedAt.value : this.queuedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PendingImageUploadData(')
+          ..write('wineId: $wineId, ')
+          ..write('localPath: $localPath, ')
+          ..write('attempts: $attempts, ')
+          ..write('lastErrorAt: $lastErrorAt, ')
+          ..write('queuedAt: $queuedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(wineId, localPath, attempts, lastErrorAt, queuedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PendingImageUploadData &&
+          other.wineId == this.wineId &&
+          other.localPath == this.localPath &&
+          other.attempts == this.attempts &&
+          other.lastErrorAt == this.lastErrorAt &&
+          other.queuedAt == this.queuedAt);
+}
+
+class PendingImageUploadsTableCompanion
+    extends UpdateCompanion<PendingImageUploadData> {
+  final Value<String> wineId;
+  final Value<String> localPath;
+  final Value<int> attempts;
+  final Value<DateTime?> lastErrorAt;
+  final Value<DateTime> queuedAt;
+  final Value<int> rowid;
+  const PendingImageUploadsTableCompanion({
+    this.wineId = const Value.absent(),
+    this.localPath = const Value.absent(),
+    this.attempts = const Value.absent(),
+    this.lastErrorAt = const Value.absent(),
+    this.queuedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  PendingImageUploadsTableCompanion.insert({
+    required String wineId,
+    required String localPath,
+    this.attempts = const Value.absent(),
+    this.lastErrorAt = const Value.absent(),
+    this.queuedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : wineId = Value(wineId),
+       localPath = Value(localPath);
+  static Insertable<PendingImageUploadData> custom({
+    Expression<String>? wineId,
+    Expression<String>? localPath,
+    Expression<int>? attempts,
+    Expression<DateTime>? lastErrorAt,
+    Expression<DateTime>? queuedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (wineId != null) 'wine_id': wineId,
+      if (localPath != null) 'local_path': localPath,
+      if (attempts != null) 'attempts': attempts,
+      if (lastErrorAt != null) 'last_error_at': lastErrorAt,
+      if (queuedAt != null) 'queued_at': queuedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  PendingImageUploadsTableCompanion copyWith({
+    Value<String>? wineId,
+    Value<String>? localPath,
+    Value<int>? attempts,
+    Value<DateTime?>? lastErrorAt,
+    Value<DateTime>? queuedAt,
+    Value<int>? rowid,
+  }) {
+    return PendingImageUploadsTableCompanion(
+      wineId: wineId ?? this.wineId,
+      localPath: localPath ?? this.localPath,
+      attempts: attempts ?? this.attempts,
+      lastErrorAt: lastErrorAt ?? this.lastErrorAt,
+      queuedAt: queuedAt ?? this.queuedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (wineId.present) {
+      map['wine_id'] = Variable<String>(wineId.value);
+    }
+    if (localPath.present) {
+      map['local_path'] = Variable<String>(localPath.value);
+    }
+    if (attempts.present) {
+      map['attempts'] = Variable<int>(attempts.value);
+    }
+    if (lastErrorAt.present) {
+      map['last_error_at'] = Variable<DateTime>(lastErrorAt.value);
+    }
+    if (queuedAt.present) {
+      map['queued_at'] = Variable<DateTime>(queuedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PendingImageUploadsTableCompanion(')
+          ..write('wineId: $wineId, ')
+          ..write('localPath: $localPath, ')
+          ..write('attempts: $attempts, ')
+          ..write('lastErrorAt: $lastErrorAt, ')
+          ..write('queuedAt: $queuedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -2538,6 +4073,11 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   );
   late final $NotificationPrefsTableTable notificationPrefsTable =
       $NotificationPrefsTableTable(this);
+  late final $CanonicalGrapeTableTable canonicalGrapeTable =
+      $CanonicalGrapeTableTable(this);
+  late final $ProfilesTableTable profilesTable = $ProfilesTableTable(this);
+  late final $PendingImageUploadsTableTable pendingImageUploadsTable =
+      $PendingImageUploadsTableTable(this);
   late final WinesDao winesDao = WinesDao(this as AppDatabase);
   late final WineMemoriesDao wineMemoriesDao = WineMemoriesDao(
     this as AppDatabase,
@@ -2548,6 +4088,12 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final NotificationPrefsDao notificationPrefsDao = NotificationPrefsDao(
     this as AppDatabase,
   );
+  late final CanonicalGrapeDao canonicalGrapeDao = CanonicalGrapeDao(
+    this as AppDatabase,
+  );
+  late final ProfilesDao profilesDao = ProfilesDao(this as AppDatabase);
+  late final PendingImageUploadsDao pendingImageUploadsDao =
+      PendingImageUploadsDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2557,6 +4103,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     wineMemoriesTable,
     wineAliasesTable,
     notificationPrefsTable,
+    canonicalGrapeTable,
+    profilesTable,
+    pendingImageUploadsTable,
   ];
 }
 
@@ -2578,6 +4127,9 @@ typedef $$WinesTableTableCreateCompanionBuilder =
       Value<String?> localImagePath,
       Value<int?> vintage,
       Value<String?> grape,
+      Value<String?> canonicalGrapeId,
+      Value<String?> grapeFreetext,
+      Value<String?> canonicalWineId,
       Value<String?> winery,
       Value<String?> nameNorm,
       required String userId,
@@ -2604,6 +4156,9 @@ typedef $$WinesTableTableUpdateCompanionBuilder =
       Value<String?> localImagePath,
       Value<int?> vintage,
       Value<String?> grape,
+      Value<String?> canonicalGrapeId,
+      Value<String?> grapeFreetext,
+      Value<String?> canonicalWineId,
       Value<String?> winery,
       Value<String?> nameNorm,
       Value<String> userId,
@@ -2699,6 +4254,21 @@ class $$WinesTableTableFilterComposer
 
   ColumnFilters<String> get grape => $composableBuilder(
     column: $table.grape,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get canonicalGrapeId => $composableBuilder(
+    column: $table.canonicalGrapeId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get grapeFreetext => $composableBuilder(
+    column: $table.grapeFreetext,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get canonicalWineId => $composableBuilder(
+    column: $table.canonicalWineId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2822,6 +4392,21 @@ class $$WinesTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get canonicalGrapeId => $composableBuilder(
+    column: $table.canonicalGrapeId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get grapeFreetext => $composableBuilder(
+    column: $table.grapeFreetext,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get canonicalWineId => $composableBuilder(
+    column: $table.canonicalWineId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get winery => $composableBuilder(
     column: $table.winery,
     builder: (column) => ColumnOrderings(column),
@@ -2912,6 +4497,21 @@ class $$WinesTableTableAnnotationComposer
   GeneratedColumn<String> get grape =>
       $composableBuilder(column: $table.grape, builder: (column) => column);
 
+  GeneratedColumn<String> get canonicalGrapeId => $composableBuilder(
+    column: $table.canonicalGrapeId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get grapeFreetext => $composableBuilder(
+    column: $table.grapeFreetext,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get canonicalWineId => $composableBuilder(
+    column: $table.canonicalWineId,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<String> get winery =>
       $composableBuilder(column: $table.winery, builder: (column) => column);
 
@@ -2980,6 +4580,9 @@ class $$WinesTableTableTableManager
                 Value<String?> localImagePath = const Value.absent(),
                 Value<int?> vintage = const Value.absent(),
                 Value<String?> grape = const Value.absent(),
+                Value<String?> canonicalGrapeId = const Value.absent(),
+                Value<String?> grapeFreetext = const Value.absent(),
+                Value<String?> canonicalWineId = const Value.absent(),
                 Value<String?> winery = const Value.absent(),
                 Value<String?> nameNorm = const Value.absent(),
                 Value<String> userId = const Value.absent(),
@@ -3004,6 +4607,9 @@ class $$WinesTableTableTableManager
                 localImagePath: localImagePath,
                 vintage: vintage,
                 grape: grape,
+                canonicalGrapeId: canonicalGrapeId,
+                grapeFreetext: grapeFreetext,
+                canonicalWineId: canonicalWineId,
                 winery: winery,
                 nameNorm: nameNorm,
                 userId: userId,
@@ -3030,6 +4636,9 @@ class $$WinesTableTableTableManager
                 Value<String?> localImagePath = const Value.absent(),
                 Value<int?> vintage = const Value.absent(),
                 Value<String?> grape = const Value.absent(),
+                Value<String?> canonicalGrapeId = const Value.absent(),
+                Value<String?> grapeFreetext = const Value.absent(),
+                Value<String?> canonicalWineId = const Value.absent(),
                 Value<String?> winery = const Value.absent(),
                 Value<String?> nameNorm = const Value.absent(),
                 required String userId,
@@ -3054,6 +4663,9 @@ class $$WinesTableTableTableManager
                 localImagePath: localImagePath,
                 vintage: vintage,
                 grape: grape,
+                canonicalGrapeId: canonicalGrapeId,
+                grapeFreetext: grapeFreetext,
+                canonicalWineId: canonicalWineId,
                 winery: winery,
                 nameNorm: nameNorm,
                 userId: userId,
@@ -3821,6 +5433,753 @@ typedef $$NotificationPrefsTableTableProcessedTableManager =
       NotificationPrefsTableData,
       PrefetchHooks Function()
     >;
+typedef $$CanonicalGrapeTableTableCreateCompanionBuilder =
+    CanonicalGrapeTableCompanion Function({
+      required String id,
+      required String name,
+      required String color,
+      Value<List<String>> aliases,
+      Value<int> rowid,
+    });
+typedef $$CanonicalGrapeTableTableUpdateCompanionBuilder =
+    CanonicalGrapeTableCompanion Function({
+      Value<String> id,
+      Value<String> name,
+      Value<String> color,
+      Value<List<String>> aliases,
+      Value<int> rowid,
+    });
+
+class $$CanonicalGrapeTableTableFilterComposer
+    extends Composer<_$AppDatabase, $CanonicalGrapeTableTable> {
+  $$CanonicalGrapeTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get color => $composableBuilder(
+    column: $table.color,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<List<String>, List<String>, String>
+  get aliases => $composableBuilder(
+    column: $table.aliases,
+    builder: (column) => ColumnWithTypeConverterFilters(column),
+  );
+}
+
+class $$CanonicalGrapeTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $CanonicalGrapeTableTable> {
+  $$CanonicalGrapeTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get color => $composableBuilder(
+    column: $table.color,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get aliases => $composableBuilder(
+    column: $table.aliases,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$CanonicalGrapeTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CanonicalGrapeTableTable> {
+  $$CanonicalGrapeTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get color =>
+      $composableBuilder(column: $table.color, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<List<String>, String> get aliases =>
+      $composableBuilder(column: $table.aliases, builder: (column) => column);
+}
+
+class $$CanonicalGrapeTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $CanonicalGrapeTableTable,
+          CanonicalGrapeTableData,
+          $$CanonicalGrapeTableTableFilterComposer,
+          $$CanonicalGrapeTableTableOrderingComposer,
+          $$CanonicalGrapeTableTableAnnotationComposer,
+          $$CanonicalGrapeTableTableCreateCompanionBuilder,
+          $$CanonicalGrapeTableTableUpdateCompanionBuilder,
+          (
+            CanonicalGrapeTableData,
+            BaseReferences<
+              _$AppDatabase,
+              $CanonicalGrapeTableTable,
+              CanonicalGrapeTableData
+            >,
+          ),
+          CanonicalGrapeTableData,
+          PrefetchHooks Function()
+        > {
+  $$CanonicalGrapeTableTableTableManager(
+    _$AppDatabase db,
+    $CanonicalGrapeTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CanonicalGrapeTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CanonicalGrapeTableTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$CanonicalGrapeTableTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String> color = const Value.absent(),
+                Value<List<String>> aliases = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CanonicalGrapeTableCompanion(
+                id: id,
+                name: name,
+                color: color,
+                aliases: aliases,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String name,
+                required String color,
+                Value<List<String>> aliases = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CanonicalGrapeTableCompanion.insert(
+                id: id,
+                name: name,
+                color: color,
+                aliases: aliases,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$CanonicalGrapeTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $CanonicalGrapeTableTable,
+      CanonicalGrapeTableData,
+      $$CanonicalGrapeTableTableFilterComposer,
+      $$CanonicalGrapeTableTableOrderingComposer,
+      $$CanonicalGrapeTableTableAnnotationComposer,
+      $$CanonicalGrapeTableTableCreateCompanionBuilder,
+      $$CanonicalGrapeTableTableUpdateCompanionBuilder,
+      (
+        CanonicalGrapeTableData,
+        BaseReferences<
+          _$AppDatabase,
+          $CanonicalGrapeTableTable,
+          CanonicalGrapeTableData
+        >,
+      ),
+      CanonicalGrapeTableData,
+      PrefetchHooks Function()
+    >;
+typedef $$ProfilesTableTableCreateCompanionBuilder =
+    ProfilesTableCompanion Function({
+      required String id,
+      Value<String?> username,
+      Value<String?> displayName,
+      Value<String?> avatarUrl,
+      Value<bool> onboardingCompleted,
+      Value<String?> tasteLevel,
+      Value<String> goalsCsv,
+      Value<String> stylesCsv,
+      Value<String?> drinkFrequency,
+      Value<String?> tasteEmoji,
+      Value<DateTime> updatedAt,
+      Value<int> rowid,
+    });
+typedef $$ProfilesTableTableUpdateCompanionBuilder =
+    ProfilesTableCompanion Function({
+      Value<String> id,
+      Value<String?> username,
+      Value<String?> displayName,
+      Value<String?> avatarUrl,
+      Value<bool> onboardingCompleted,
+      Value<String?> tasteLevel,
+      Value<String> goalsCsv,
+      Value<String> stylesCsv,
+      Value<String?> drinkFrequency,
+      Value<String?> tasteEmoji,
+      Value<DateTime> updatedAt,
+      Value<int> rowid,
+    });
+
+class $$ProfilesTableTableFilterComposer
+    extends Composer<_$AppDatabase, $ProfilesTableTable> {
+  $$ProfilesTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get username => $composableBuilder(
+    column: $table.username,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get displayName => $composableBuilder(
+    column: $table.displayName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get avatarUrl => $composableBuilder(
+    column: $table.avatarUrl,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get onboardingCompleted => $composableBuilder(
+    column: $table.onboardingCompleted,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get tasteLevel => $composableBuilder(
+    column: $table.tasteLevel,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get goalsCsv => $composableBuilder(
+    column: $table.goalsCsv,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get stylesCsv => $composableBuilder(
+    column: $table.stylesCsv,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get drinkFrequency => $composableBuilder(
+    column: $table.drinkFrequency,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get tasteEmoji => $composableBuilder(
+    column: $table.tasteEmoji,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$ProfilesTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $ProfilesTableTable> {
+  $$ProfilesTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get username => $composableBuilder(
+    column: $table.username,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get displayName => $composableBuilder(
+    column: $table.displayName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get avatarUrl => $composableBuilder(
+    column: $table.avatarUrl,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get onboardingCompleted => $composableBuilder(
+    column: $table.onboardingCompleted,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get tasteLevel => $composableBuilder(
+    column: $table.tasteLevel,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get goalsCsv => $composableBuilder(
+    column: $table.goalsCsv,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get stylesCsv => $composableBuilder(
+    column: $table.stylesCsv,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get drinkFrequency => $composableBuilder(
+    column: $table.drinkFrequency,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get tasteEmoji => $composableBuilder(
+    column: $table.tasteEmoji,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ProfilesTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ProfilesTableTable> {
+  $$ProfilesTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get username =>
+      $composableBuilder(column: $table.username, builder: (column) => column);
+
+  GeneratedColumn<String> get displayName => $composableBuilder(
+    column: $table.displayName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get avatarUrl =>
+      $composableBuilder(column: $table.avatarUrl, builder: (column) => column);
+
+  GeneratedColumn<bool> get onboardingCompleted => $composableBuilder(
+    column: $table.onboardingCompleted,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get tasteLevel => $composableBuilder(
+    column: $table.tasteLevel,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get goalsCsv =>
+      $composableBuilder(column: $table.goalsCsv, builder: (column) => column);
+
+  GeneratedColumn<String> get stylesCsv =>
+      $composableBuilder(column: $table.stylesCsv, builder: (column) => column);
+
+  GeneratedColumn<String> get drinkFrequency => $composableBuilder(
+    column: $table.drinkFrequency,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get tasteEmoji => $composableBuilder(
+    column: $table.tasteEmoji,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$ProfilesTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ProfilesTableTable,
+          ProfileTableData,
+          $$ProfilesTableTableFilterComposer,
+          $$ProfilesTableTableOrderingComposer,
+          $$ProfilesTableTableAnnotationComposer,
+          $$ProfilesTableTableCreateCompanionBuilder,
+          $$ProfilesTableTableUpdateCompanionBuilder,
+          (
+            ProfileTableData,
+            BaseReferences<
+              _$AppDatabase,
+              $ProfilesTableTable,
+              ProfileTableData
+            >,
+          ),
+          ProfileTableData,
+          PrefetchHooks Function()
+        > {
+  $$ProfilesTableTableTableManager(_$AppDatabase db, $ProfilesTableTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ProfilesTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ProfilesTableTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ProfilesTableTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String?> username = const Value.absent(),
+                Value<String?> displayName = const Value.absent(),
+                Value<String?> avatarUrl = const Value.absent(),
+                Value<bool> onboardingCompleted = const Value.absent(),
+                Value<String?> tasteLevel = const Value.absent(),
+                Value<String> goalsCsv = const Value.absent(),
+                Value<String> stylesCsv = const Value.absent(),
+                Value<String?> drinkFrequency = const Value.absent(),
+                Value<String?> tasteEmoji = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ProfilesTableCompanion(
+                id: id,
+                username: username,
+                displayName: displayName,
+                avatarUrl: avatarUrl,
+                onboardingCompleted: onboardingCompleted,
+                tasteLevel: tasteLevel,
+                goalsCsv: goalsCsv,
+                stylesCsv: stylesCsv,
+                drinkFrequency: drinkFrequency,
+                tasteEmoji: tasteEmoji,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                Value<String?> username = const Value.absent(),
+                Value<String?> displayName = const Value.absent(),
+                Value<String?> avatarUrl = const Value.absent(),
+                Value<bool> onboardingCompleted = const Value.absent(),
+                Value<String?> tasteLevel = const Value.absent(),
+                Value<String> goalsCsv = const Value.absent(),
+                Value<String> stylesCsv = const Value.absent(),
+                Value<String?> drinkFrequency = const Value.absent(),
+                Value<String?> tasteEmoji = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ProfilesTableCompanion.insert(
+                id: id,
+                username: username,
+                displayName: displayName,
+                avatarUrl: avatarUrl,
+                onboardingCompleted: onboardingCompleted,
+                tasteLevel: tasteLevel,
+                goalsCsv: goalsCsv,
+                stylesCsv: stylesCsv,
+                drinkFrequency: drinkFrequency,
+                tasteEmoji: tasteEmoji,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$ProfilesTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ProfilesTableTable,
+      ProfileTableData,
+      $$ProfilesTableTableFilterComposer,
+      $$ProfilesTableTableOrderingComposer,
+      $$ProfilesTableTableAnnotationComposer,
+      $$ProfilesTableTableCreateCompanionBuilder,
+      $$ProfilesTableTableUpdateCompanionBuilder,
+      (
+        ProfileTableData,
+        BaseReferences<_$AppDatabase, $ProfilesTableTable, ProfileTableData>,
+      ),
+      ProfileTableData,
+      PrefetchHooks Function()
+    >;
+typedef $$PendingImageUploadsTableTableCreateCompanionBuilder =
+    PendingImageUploadsTableCompanion Function({
+      required String wineId,
+      required String localPath,
+      Value<int> attempts,
+      Value<DateTime?> lastErrorAt,
+      Value<DateTime> queuedAt,
+      Value<int> rowid,
+    });
+typedef $$PendingImageUploadsTableTableUpdateCompanionBuilder =
+    PendingImageUploadsTableCompanion Function({
+      Value<String> wineId,
+      Value<String> localPath,
+      Value<int> attempts,
+      Value<DateTime?> lastErrorAt,
+      Value<DateTime> queuedAt,
+      Value<int> rowid,
+    });
+
+class $$PendingImageUploadsTableTableFilterComposer
+    extends Composer<_$AppDatabase, $PendingImageUploadsTableTable> {
+  $$PendingImageUploadsTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get wineId => $composableBuilder(
+    column: $table.wineId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get localPath => $composableBuilder(
+    column: $table.localPath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get attempts => $composableBuilder(
+    column: $table.attempts,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastErrorAt => $composableBuilder(
+    column: $table.lastErrorAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get queuedAt => $composableBuilder(
+    column: $table.queuedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$PendingImageUploadsTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $PendingImageUploadsTableTable> {
+  $$PendingImageUploadsTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get wineId => $composableBuilder(
+    column: $table.wineId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get localPath => $composableBuilder(
+    column: $table.localPath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get attempts => $composableBuilder(
+    column: $table.attempts,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastErrorAt => $composableBuilder(
+    column: $table.lastErrorAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get queuedAt => $composableBuilder(
+    column: $table.queuedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$PendingImageUploadsTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $PendingImageUploadsTableTable> {
+  $$PendingImageUploadsTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get wineId =>
+      $composableBuilder(column: $table.wineId, builder: (column) => column);
+
+  GeneratedColumn<String> get localPath =>
+      $composableBuilder(column: $table.localPath, builder: (column) => column);
+
+  GeneratedColumn<int> get attempts =>
+      $composableBuilder(column: $table.attempts, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastErrorAt => $composableBuilder(
+    column: $table.lastErrorAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get queuedAt =>
+      $composableBuilder(column: $table.queuedAt, builder: (column) => column);
+}
+
+class $$PendingImageUploadsTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $PendingImageUploadsTableTable,
+          PendingImageUploadData,
+          $$PendingImageUploadsTableTableFilterComposer,
+          $$PendingImageUploadsTableTableOrderingComposer,
+          $$PendingImageUploadsTableTableAnnotationComposer,
+          $$PendingImageUploadsTableTableCreateCompanionBuilder,
+          $$PendingImageUploadsTableTableUpdateCompanionBuilder,
+          (
+            PendingImageUploadData,
+            BaseReferences<
+              _$AppDatabase,
+              $PendingImageUploadsTableTable,
+              PendingImageUploadData
+            >,
+          ),
+          PendingImageUploadData,
+          PrefetchHooks Function()
+        > {
+  $$PendingImageUploadsTableTableTableManager(
+    _$AppDatabase db,
+    $PendingImageUploadsTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PendingImageUploadsTableTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$PendingImageUploadsTableTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$PendingImageUploadsTableTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> wineId = const Value.absent(),
+                Value<String> localPath = const Value.absent(),
+                Value<int> attempts = const Value.absent(),
+                Value<DateTime?> lastErrorAt = const Value.absent(),
+                Value<DateTime> queuedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => PendingImageUploadsTableCompanion(
+                wineId: wineId,
+                localPath: localPath,
+                attempts: attempts,
+                lastErrorAt: lastErrorAt,
+                queuedAt: queuedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String wineId,
+                required String localPath,
+                Value<int> attempts = const Value.absent(),
+                Value<DateTime?> lastErrorAt = const Value.absent(),
+                Value<DateTime> queuedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => PendingImageUploadsTableCompanion.insert(
+                wineId: wineId,
+                localPath: localPath,
+                attempts: attempts,
+                lastErrorAt: lastErrorAt,
+                queuedAt: queuedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$PendingImageUploadsTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $PendingImageUploadsTableTable,
+      PendingImageUploadData,
+      $$PendingImageUploadsTableTableFilterComposer,
+      $$PendingImageUploadsTableTableOrderingComposer,
+      $$PendingImageUploadsTableTableAnnotationComposer,
+      $$PendingImageUploadsTableTableCreateCompanionBuilder,
+      $$PendingImageUploadsTableTableUpdateCompanionBuilder,
+      (
+        PendingImageUploadData,
+        BaseReferences<
+          _$AppDatabase,
+          $PendingImageUploadsTableTable,
+          PendingImageUploadData
+        >,
+      ),
+      PendingImageUploadData,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -3835,5 +6194,14 @@ class $AppDatabaseManager {
       $$NotificationPrefsTableTableTableManager(
         _db,
         _db.notificationPrefsTable,
+      );
+  $$CanonicalGrapeTableTableTableManager get canonicalGrapeTable =>
+      $$CanonicalGrapeTableTableTableManager(_db, _db.canonicalGrapeTable);
+  $$ProfilesTableTableTableManager get profilesTable =>
+      $$ProfilesTableTableTableManager(_db, _db.profilesTable);
+  $$PendingImageUploadsTableTableTableManager get pendingImageUploadsTable =>
+      $$PendingImageUploadsTableTableTableManager(
+        _db,
+        _db.pendingImageUploadsTable,
       );
 }

@@ -17,8 +17,11 @@ extension ResponsiveContext on BuildContext {
   double get paddingV => h * 0.03;
 
   // Fonts
+  double get displayFont => w * 0.11;
   double get titleFont => w * 0.07;
   double get headingFont => w * 0.05;
   double get bodyFont => w * 0.04;
   double get captionFont => w * 0.035;
 }
+
+const tabularFigures = <FontFeature>[FontFeature.tabularFigures()];

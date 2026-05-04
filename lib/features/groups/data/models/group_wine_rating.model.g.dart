@@ -10,7 +10,7 @@ _$GroupWineRatingModelImpl _$$GroupWineRatingModelImplFromJson(
   Map<String, dynamic> json,
 ) => _$GroupWineRatingModelImpl(
   groupId: json['group_id'] as String,
-  wineId: json['wine_id'] as String,
+  canonicalWineId: json['canonical_wine_id'] as String,
   userId: json['user_id'] as String,
   rating: (json['rating'] as num).toDouble(),
   notes: json['notes'] as String?,
@@ -21,7 +21,7 @@ Map<String, dynamic> _$$GroupWineRatingModelImplToJson(
   _$GroupWineRatingModelImpl instance,
 ) => <String, dynamic>{
   'group_id': instance.groupId,
-  'wine_id': instance.wineId,
+  'canonical_wine_id': instance.canonicalWineId,
   'user_id': instance.userId,
   'rating': instance.rating,
   'notes': instance.notes,

@@ -20,6 +20,20 @@ class WineSupabaseApi {
     await _client.from('wines').upsert(wine.toJson());
   }
 
+  /// Reads back a single wine after upsert. Used by the repo to capture
+  /// fields populated by server-side triggers (canonical_wine_id,
+  /// name_norm) that wouldn't otherwise reach the local Drift row until
+  /// the next full refetch.
+  Future<WineModel?> fetchWineById(String id) async {
+    final row = await _client
+        .from('wines')
+        .select()
+        .eq('id', id)
+        .maybeSingle();
+    if (row == null) return null;
+    return WineModel.fromJson(row);
+  }
+
   Future<void> deleteWine(String id) async {
     await _client.from('wines').delete().eq('id', id);
   }

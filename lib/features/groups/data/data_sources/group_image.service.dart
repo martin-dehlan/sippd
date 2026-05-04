@@ -19,7 +19,8 @@ class GroupImageService {
       source: source,
       maxWidth: 1200,
       maxHeight: 1200,
-      imageQuality: 85,
+      imageQuality: 80,
+      requestFullMetadata: false,
     );
     if (photo == null) return null;
     return uploadImage(groupId: groupId, filePath: photo.path);

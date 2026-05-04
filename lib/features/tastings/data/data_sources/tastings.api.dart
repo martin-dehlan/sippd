@@ -1,6 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../friends/data/models/friend_profile.model.dart';
-import '../../../wines/data/models/wine.model.dart';
+import '../../../wines/domain/entities/wine.entity.dart';
 import '../models/tasting.model.dart';
 
 class TastingAttendeeRow {
@@ -70,42 +70,102 @@ class TastingsApi {
     return TastingModel.fromJson(inserted);
   }
 
+  /// Adds personal [wineIds] (wines.id) to a tasting flight. Resolves
+  /// each one's canonical_wine_id and stores the catalog identity, so
+  /// the flight survives the original sharer deleting their personal
+  /// log row.
   Future<void> addWines(String tastingId, List<String> wineIds) async {
     if (wineIds.isEmpty) return;
-    final rows = [
-      for (var i = 0; i < wineIds.length; i++)
-        {
-          'tasting_id': tastingId,
-          'wine_id': wineIds[i],
-          'position': i,
-        },
-    ];
+    final winesRows = (await _client
+        .from('wines')
+        .select('id, canonical_wine_id')
+        .inFilter('id', wineIds)) as List;
+    final canonicalById = <String, String>{
+      for (final r in winesRows)
+        if ((r as Map<String, dynamic>)['canonical_wine_id'] != null)
+          r['id'] as String: r['canonical_wine_id'] as String,
+    };
+    final rows = <Map<String, dynamic>>[];
+    for (var i = 0; i < wineIds.length; i++) {
+      final cid = canonicalById[wineIds[i]];
+      if (cid == null) continue;
+      rows.add({
+        'tasting_id': tastingId,
+        'canonical_wine_id': cid,
+        'position': i,
+      });
+    }
+    if (rows.isEmpty) return;
     await _client.from('tasting_wines').insert(rows);
   }
 
-  Future<List<WineModel>> fetchWines(String tastingId) async {
+  /// Returns the bottles in [tastingId] in flight order. Entities are
+  /// catalog-keyed: `id` is the canonical_wine.id. Image URLs are
+  /// hydrated from the original sharer's `wines` row (RLS policy
+  /// `wines_select_shared` lets group members read these by
+  /// canonical_wine_id) so other attendees see the photo too.
+  Future<List<WineEntity>> fetchWines(String tastingId) async {
     final joinRows = (await _client
         .from('tasting_wines')
-        .select('wine_id, position')
+        .select('canonical_wine_id, position')
         .eq('tasting_id', tastingId)
         .order('position', ascending: true)) as List;
     if (joinRows.isEmpty) return const [];
-    final wineIds = joinRows
-        .map((j) => (j as Map<String, dynamic>)['wine_id'] as String)
+    final canonicalIds = joinRows
+        .map((j) => (j as Map<String, dynamic>)['canonical_wine_id'] as String)
         .toList();
+    final canonicalRows = (await _client
+        .from('canonical_wine')
+        .select('id, name, winery, region, country, type, vintage')
+        .inFilter('id', canonicalIds)) as List;
     final wineRows = (await _client
         .from('wines')
-        .select()
-        .inFilter('id', wineIds)) as List;
-    final byId = {
-      for (final r in wineRows)
-        (r as Map<String, dynamic>)['id'] as String:
-            WineModel.fromJson(r),
-    };
-    return wineIds
+        .select('canonical_wine_id, image_url, updated_at')
+        .inFilter('canonical_wine_id', canonicalIds)
+        .not('image_url', 'is', null)) as List;
+    final imageUrlByCanonical = <String, String>{};
+    for (final r in wineRows) {
+      final m = r as Map<String, dynamic>;
+      final cid = m['canonical_wine_id'] as String;
+      final url = m['image_url'] as String?;
+      if (url == null || url.isEmpty) continue;
+      imageUrlByCanonical.putIfAbsent(cid, () => url);
+    }
+    final now = DateTime.now();
+    final byId = <String, WineEntity>{};
+    for (final raw in canonicalRows) {
+      final r = raw as Map<String, dynamic>;
+      final id = r['id'] as String;
+      byId[id] = _canonicalToEntity(r, now, imageUrlByCanonical[id]);
+    }
+    return canonicalIds
         .map((id) => byId[id])
-        .whereType<WineModel>()
+        .whereType<WineEntity>()
         .toList();
+  }
+
+  static WineEntity _canonicalToEntity(
+      Map<String, dynamic> r, DateTime now, String? imageUrl) {
+    final id = r['id'] as String;
+    final rawType = r['type'] as String?;
+    final type = WineType.values
+            .where((t) => t.name == rawType)
+            .firstOrNull ??
+        WineType.red;
+    return WineEntity(
+      id: id,
+      name: (r['name'] as String?) ?? 'Unknown',
+      rating: 0,
+      type: type,
+      country: r['country'] as String?,
+      region: r['region'] as String?,
+      winery: r['winery'] as String?,
+      vintage: r['vintage'] as int?,
+      imageUrl: imageUrl,
+      canonicalWineId: id,
+      userId: '',
+      createdAt: now,
+    );
   }
 
   Future<List<TastingAttendeeRow>> fetchAttendees(String tastingId) async {
@@ -149,12 +209,12 @@ class TastingsApi {
     });
   }
 
-  Future<void> removeWine(String tastingId, String wineId) async {
+  Future<void> removeWine(String tastingId, String canonicalWineId) async {
     await _client
         .from('tasting_wines')
         .delete()
         .eq('tasting_id', tastingId)
-        .eq('wine_id', wineId);
+        .eq('canonical_wine_id', canonicalWineId);
   }
 
   Future<void> deleteTasting(String id) async {

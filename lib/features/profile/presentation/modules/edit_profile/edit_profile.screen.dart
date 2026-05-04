@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../../common/utils/responsive.dart';
+import '../../../../../common/widgets/inline_error.widget.dart';
 import '../../../../auth/controller/auth.provider.dart';
 import '../../../controller/profile.provider.dart';
 import '../../widgets/profile_avatar.widget.dart';
@@ -40,6 +41,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   bool _loadedInitial = false;
   bool _saving = false;
   bool _uploadingAvatar = false;
+  Object? _saveError;
+  Object? _avatarError;
   String? _avatarUrl;
 
   static final _validUsernameRe = RegExp(r'^[a-z0-9._]+$');
@@ -133,7 +136,10 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   }
 
   Future<void> _removeAvatar() async {
-    setState(() => _uploadingAvatar = true);
+    setState(() {
+      _uploadingAvatar = true;
+      _avatarError = null;
+    });
     try {
       final service = ref.read(profileImageServiceProvider);
       if (_avatarUrl != null && service != null) {
@@ -142,11 +148,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       await ref.read(profileControllerProvider.notifier).setAvatarUrl(null);
       if (mounted) setState(() => _avatarUrl = null);
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Failed: $e')));
-      }
+      if (mounted) setState(() => _avatarError = e);
     } finally {
       if (mounted) setState(() => _uploadingAvatar = false);
     }
@@ -173,18 +175,17 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       return;
     }
 
-    setState(() => _saving = true);
+    setState(() {
+      _saving = true;
+      _saveError = null;
+    });
     try {
       final notifier = ref.read(profileControllerProvider.notifier);
       if (usernameChanged) await notifier.setUsername(typedUsername);
       if (nameChanged) await notifier.setDisplayName(typedName);
       if (mounted) context.pop();
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Save failed: $e')));
-      }
+      if (mounted) setState(() => _saveError = e);
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -239,6 +240,18 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 onTap: _pickAvatar,
               ),
             ),
+            if (_avatarError != null)
+              Center(
+                child: InlineFieldError(
+                  error: _avatarError,
+                  fallback: "Couldn't update photo. Try again.",
+                ),
+              ),
+            if (_saveError != null)
+              InlineFieldError(
+                error: _saveError,
+                fallback: "Couldn't save changes. Try again.",
+              ),
             SizedBox(height: context.xl),
             _SectionHeader(text: 'Profile'),
             SizedBox(height: context.m),

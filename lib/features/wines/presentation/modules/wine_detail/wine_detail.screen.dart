@@ -5,45 +5,75 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:latlong2/latlong.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/overflow_menu.widget.dart';
 import '../../../../../core/routes/app.routes.dart';
+import '../../../../auth/controller/auth.provider.dart';
 import '../../../../groups/presentation/widgets/share_wine_sheet.dart';
+import '../../../../paywall/controller/paywall.provider.dart';
 import '../../../../profile/controller/profile.provider.dart';
 import '../../../../share_cards/controller/share_card.provider.dart';
 import '../../../controller/wine.provider.dart';
 import '../../../domain/entities/wine.entity.dart';
 import '../../../domain/entities/wine_memory.entity.dart';
+import '../../widgets/expert_tasting_sheet.dart';
+import '../../widgets/wine_detail_blocks.widget.dart';
 
 class WineDetailScreen extends ConsumerWidget {
   final String wineId;
+  final WineEntity? initial;
 
-  const WineDetailScreen({super.key, required this.wineId});
+  const WineDetailScreen({super.key, required this.wineId, this.initial});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final wineAsync = ref.watch(wineDetailProvider(wineId));
+    final currentUserId = ref.watch(currentUserIdProvider);
 
     return Scaffold(
       body: wineAsync.when(
         data: (wine) {
-          if (wine == null) {
+          // Local lookup may miss for wines owned by other group members.
+          // Fall back to the entity passed via go_router extra.
+          final resolved = wine ?? initial;
+          if (resolved == null) {
             return const Center(child: Text('Wine not found'));
           }
+          final isOwner = resolved.userId == currentUserId;
           return WineDetailBody(
-            wine: wine,
-            onDelete: () async {
-              await ref
-                  .read(wineControllerProvider.notifier)
-                  .deleteWine(wineId);
-              if (context.mounted) Navigator.pop(context);
-            },
+            wine: resolved,
+            isOwner: isOwner,
+            onDelete: isOwner
+                ? () async {
+                    await ref
+                        .read(wineControllerProvider.notifier)
+                        .deleteWine(wineId);
+                    if (context.mounted) Navigator.pop(context);
+                  }
+                : null,
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Error: $e')),
+        loading: () {
+          if (initial != null) {
+            return WineDetailBody(
+              wine: initial!,
+              isOwner: initial!.userId == currentUserId,
+              onDelete: null,
+            );
+          }
+          return const Center(child: CircularProgressIndicator());
+        },
+        error: (e, _) {
+          if (initial != null) {
+            return WineDetailBody(
+              wine: initial!,
+              isOwner: initial!.userId == currentUserId,
+              onDelete: null,
+            );
+          }
+          return Center(child: Text('Error: $e'));
+        },
       ),
       floatingActionButton: const _FloatingBackButton(),
       floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
@@ -53,11 +83,13 @@ class WineDetailScreen extends ConsumerWidget {
 
 class WineDetailBody extends ConsumerStatefulWidget {
   final WineEntity wine;
-  final VoidCallback onDelete;
+  final bool isOwner;
+  final VoidCallback? onDelete;
 
   const WineDetailBody({
     super.key,
     required this.wine,
+    required this.isOwner,
     required this.onDelete,
   });
 
@@ -111,49 +143,68 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
               Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Expanded(child: _NameTitle(name: widget.wine.name)),
-                  Padding(
-                    padding: EdgeInsets.only(right: context.paddingH * 0.7),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Consumer(
-                          builder: (context, ref, _) => _WineOverflowMenu(
-                            onShareToGroup: () => showShareWineSheet(
-                              context: context,
-                              wineId: widget.wine.id,
-                            ),
-                            onShareImage: () {
-                              final username = ref
-                                  .read(currentProfileProvider)
-                                  .valueOrNull
-                                  ?.username;
-                              ref
-                                  .read(shareCardProvider)
-                                  .shareWineRatingCard(
-                                    context: context,
-                                    wine: widget.wine,
-                                    username: username,
-                                    source: 'wine_detail',
+                  Expanded(child: WineDetailTitle(name: widget.wine.name)),
+                  if (widget.isOwner)
+                    Padding(
+                      padding: EdgeInsets.only(right: context.paddingH * 0.7),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Consumer(
+                            builder: (context, ref, _) => _WineOverflowMenu(
+                              onShareToGroup: () => showShareWineSheet(
+                                context: context,
+                                wineId: widget.wine.id,
+                              ),
+                              onShareImage: () {
+                                final username = ref
+                                    .read(currentProfileProvider)
+                                    .valueOrNull
+                                    ?.username;
+                                ref
+                                    .read(shareCardProvider)
+                                    .shareWineRatingCard(
+                                      context: context,
+                                      wine: widget.wine,
+                                      username: username,
+                                      source: 'wine_detail',
+                                    );
+                              },
+                              onEdit: () => context.push(
+                                AppRoutes.wineEditPath(widget.wine.id),
+                              ),
+                              onDelete: () => _confirmDelete(context),
+                              onTastingNotes: () {
+                                final isPro = ref.read(isProProvider);
+                                if (!isPro) {
+                                  context.push(
+                                    AppRoutes.paywall,
+                                    extra: const {
+                                      'source': 'expert_tasting',
+                                    },
                                   );
-                            },
-                            onEdit: () => context.push(
-                              AppRoutes.wineEditPath(widget.wine.id),
+                                  return;
+                                }
+                                showExpertTastingSheet(
+                                  context: context,
+                                  wine: widget.wine,
+                                );
+                              },
                             ),
-                            onDelete: () => _confirmDelete(context),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
                 ],
               ),
               SizedBox(height: context.s),
-              _MetaLine(
+              WineDetailMetaLine(
                 type: widget.wine.type,
                 winery: widget.wine.winery,
                 vintage: widget.wine.vintage,
-                grape: widget.wine.grape,
+                canonicalGrapeId: widget.wine.canonicalGrapeId,
+                grapeFreetext: widget.wine.grapeFreetext,
+                legacyGrape: widget.wine.grape,
               ),
               SizedBox(height: context.xl),
               Padding(
@@ -164,7 +215,7 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
                     children: [
                       Expanded(
                           flex: 5,
-                          child: _WineImage(wine: widget.wine)),
+                          child: WineDetailImage(wine: widget.wine)),
                       Expanded(
                           flex: 4,
                           child: _StatsColumn(wine: widget.wine)),
@@ -176,12 +227,12 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
               if (widget.wine.notes != null &&
                   widget.wine.notes!.isNotEmpty) ...[
                 SizedBox(height: context.xl),
-                const _SectionHeader(label: 'NOTES'),
-                SizedBox(height: context.s),
+                const WineDetailSectionHeader(label: 'NOTES'),
+                SizedBox(height: context.m),
                 _NotesBlock(notes: widget.wine.notes!),
               ],
               SizedBox(height: context.xl),
-              const _SectionHeader(label: 'PLACE'),
+              const WineDetailSectionHeader(label: 'PLACE'),
               SizedBox(height: context.s),
               SizedBox(
                 height: context.h * 0.28,
@@ -219,7 +270,7 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
         ],
       ),
     );
-    if (confirmed == true) widget.onDelete();
+    if (confirmed == true) widget.onDelete?.call();
   }
 }
 
@@ -246,44 +297,19 @@ class _FloatingBackButton extends StatelessWidget {
   }
 }
 
-class _NameTitle extends StatelessWidget {
-  final String name;
-  const _NameTitle({required this.name});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(
-        left: context.paddingH * 1.3,
-        right: context.paddingH * 1.3,
-      ),
-      child: Text(
-        name.toUpperCase(),
-        textAlign: TextAlign.left,
-        maxLines: 2,
-        overflow: TextOverflow.ellipsis,
-        style: GoogleFonts.playfairDisplay(
-          fontSize: context.titleFont * 1.2,
-          fontWeight: FontWeight.w800,
-          letterSpacing: -0.5,
-          height: 1.05,
-        ),
-      ),
-    );
-  }
-}
-
 class _WineOverflowMenu extends StatelessWidget {
   final VoidCallback onShareToGroup;
   final VoidCallback onShareImage;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
+  final VoidCallback? onTastingNotes;
 
   const _WineOverflowMenu({
     required this.onShareToGroup,
     required this.onShareImage,
     required this.onEdit,
     required this.onDelete,
+    this.onTastingNotes,
   });
 
   @override
@@ -309,6 +335,12 @@ class _WineOverflowMenu extends StatelessWidget {
             label: 'Edit wine',
             onTap: onEdit,
           ),
+          if (onTastingNotes != null)
+            OverflowMenuItem(
+              icon: PhosphorIconsRegular.notebook,
+              label: 'Tasting notes (Pro)',
+              onTap: onTastingNotes!,
+            ),
           OverflowMenuItem(
             icon: PhosphorIconsRegular.trash,
             label: 'Delete wine',
@@ -316,57 +348,6 @@ class _WineOverflowMenu extends StatelessWidget {
             onTap: onDelete,
           ),
         ],
-      ],
-    );
-  }
-}
-
-class _WineImage extends StatelessWidget {
-  final WineEntity wine;
-  const _WineImage({required this.wine});
-
-  @override
-  Widget build(BuildContext context) {
-    final typeColor = switch (wine.type) {
-      WineType.red => const Color(0xFF8B2252),
-      WineType.white => const Color(0xFFB8A04A),
-      WineType.rose => const Color(0xFFB5658A),
-      WineType.sparkling => const Color(0xFFB8923B),
-    };
-
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        Positioned.fill(
-          child: Center(
-            child: Container(
-              width: context.w * 0.35,
-              height: context.w * 0.35,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: typeColor.withValues(alpha: 0.3),
-                    blurRadius: 60,
-                    spreadRadius: 20,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-        wine.imageUrl != null
-            ? ClipRRect(
-                borderRadius: BorderRadius.circular(context.w * 0.05),
-                child: SizedBox.expand(
-                  child: Image.network(wine.imageUrl!, fit: BoxFit.cover),
-                ),
-              )
-            : Icon(
-                PhosphorIconsRegular.wine,
-                size: context.w * 0.25,
-                color: typeColor.withValues(alpha: 0.6),
-              ),
       ],
     );
   }
@@ -470,67 +451,6 @@ class _StatItem extends StatelessWidget {
   }
 }
 
-class _MetaLine extends StatelessWidget {
-  final WineType type;
-  final String? winery;
-  final int? vintage;
-  final String? grape;
-
-  const _MetaLine({
-    required this.type,
-    required this.winery,
-    required this.vintage,
-    required this.grape,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    final typeLabel = switch (type) {
-      WineType.red => 'Red',
-      WineType.white => 'White',
-      WineType.rose => 'Rosé',
-      WineType.sparkling => 'Sparkling',
-    };
-
-    final parts = <String>[
-      typeLabel,
-      if (winery != null && winery!.isNotEmpty) winery!,
-      if (vintage != null) vintage.toString(),
-      if (grape != null && grape!.isNotEmpty) grape!,
-    ];
-
-    final spans = <InlineSpan>[];
-    for (var i = 0; i < parts.length; i++) {
-      if (i > 0) {
-        spans.add(TextSpan(
-          text: '  ·  ',
-          style: TextStyle(color: cs.outline),
-        ));
-      }
-      spans.add(TextSpan(text: parts[i]));
-    }
-
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
-      child: Text.rich(
-        TextSpan(
-          style: TextStyle(
-            fontSize: context.bodyFont * 0.95,
-            fontWeight: FontWeight.w500,
-            letterSpacing: 0.1,
-            height: 1.4,
-            color: cs.onSurfaceVariant,
-          ),
-          children: spans,
-        ),
-        maxLines: 2,
-        overflow: TextOverflow.ellipsis,
-      ),
-    );
-  }
-}
-
 class _NotesBlock extends StatelessWidget {
   final String notes;
   const _NotesBlock({required this.notes});
@@ -539,13 +459,31 @@ class _NotesBlock extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: context.paddingH),
-      child: Text(
-        notes,
-        style: TextStyle(
-          fontSize: context.bodyFont,
-          height: 1.5,
-          color: cs.onSurface,
+      padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Container(
+              width: 2,
+              color: cs.outlineVariant,
+            ),
+            SizedBox(width: context.w * 0.035),
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: context.xs),
+                child: Text(
+                  notes,
+                  style: TextStyle(
+                    fontSize: context.bodyFont * 1.02,
+                    height: 1.55,
+                    color: cs.onSurfaceVariant,
+                    letterSpacing: 0.1,
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -651,28 +589,6 @@ class _PlaceSection extends StatelessWidget {
   }
 }
 
-class _SectionHeader extends StatelessWidget {
-  final String label;
-  const _SectionHeader({required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
-      child: Text(
-        label,
-        style: TextStyle(
-          fontSize: context.captionFont * 0.95,
-          fontWeight: FontWeight.w700,
-          color: cs.onSurface.withValues(alpha: 0.72),
-          letterSpacing: 1.2,
-        ),
-      ),
-    );
-  }
-}
-
 class _MemoriesSection extends ConsumerWidget {
   final String wineId;
   const _MemoriesSection({required this.wineId});
@@ -756,9 +672,14 @@ class _MemoryThumb extends StatelessWidget {
       return Image.file(File(m.localImagePath!), fit: BoxFit.cover);
     }
     if (m.imageUrl != null) {
-      return Image.network(m.imageUrl!, fit: BoxFit.cover);
+      return Image.network(
+        m.imageUrl!,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) =>
+            Icon(PhosphorIconsRegular.image, color: cs.outline),
+      );
     }
-    return Icon(PhosphorIconsRegular.imageBroken, color: cs.outline);
+    return Icon(PhosphorIconsRegular.image, color: cs.outline);
   }
 }
 
@@ -857,9 +778,17 @@ class _MemoryViewerState extends State<_MemoryViewer> {
       return Image.file(File(m.localImagePath!), fit: BoxFit.contain);
     }
     if (m.imageUrl != null) {
-      return Image.network(m.imageUrl!, fit: BoxFit.contain);
+      return Image.network(
+        m.imageUrl!,
+        fit: BoxFit.contain,
+        errorBuilder: (_, __, ___) => const Icon(
+          PhosphorIconsRegular.image,
+          color: Colors.white,
+          size: 80,
+        ),
+      );
     }
-    return const Icon(PhosphorIconsRegular.imageBroken,
+    return const Icon(PhosphorIconsRegular.image,
         color: Colors.white, size: 80);
   }
 }

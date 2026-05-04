@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../../common/utils/responsive.dart';
+import '../../../../../common/widgets/inline_error.widget.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../controller/auth.provider.dart';
 
@@ -34,6 +35,7 @@ class _EmailConfirmationScreenState
   Timer? _timer;
   int _secondsLeft = 0;
   bool _isSending = false;
+  Object? _resendError;
 
   @override
   void dispose() {
@@ -60,7 +62,10 @@ class _EmailConfirmationScreenState
 
   Future<void> _resend() async {
     if (_secondsLeft > 0 || _isSending) return;
-    setState(() => _isSending = true);
+    setState(() {
+      _isSending = true;
+      _resendError = null;
+    });
     try {
       final auth = ref.read(authControllerProvider.notifier);
       if (_isReset) {
@@ -78,12 +83,7 @@ class _EmailConfirmationScreenState
       );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.toString()),
-          backgroundColor: Theme.of(context).colorScheme.error,
-        ),
-      );
+      setState(() => _resendError = e);
     } finally {
       if (mounted) setState(() => _isSending = false);
     }
@@ -180,6 +180,11 @@ class _EmailConfirmationScreenState
                         ),
                       ),
                     ),
+                    if (_resendError != null)
+                      InlineFieldError(
+                        error: _resendError,
+                        fallback: "Couldn't send. Try again in a moment.",
+                      ),
                   ],
                 ),
               ),

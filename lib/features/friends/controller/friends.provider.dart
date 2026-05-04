@@ -1,5 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import '../../../common/errors/app_error.dart';
 import '../../../common/services/analytics/analytics.provider.dart';
+import '../../../common/services/connectivity/connectivity.provider.dart';
 import '../../auth/controller/auth.provider.dart';
 import '../../wines/domain/entities/wine.entity.dart';
 import '../data/data_sources/activity.api.dart';
@@ -27,6 +29,9 @@ FriendsRepository? friendsRepository(FriendsRepositoryRef ref) {
 Stream<List<FriendProfileEntity>> friendsList(FriendsListRef ref) {
   final repo = ref.watch(friendsRepositoryProvider);
   if (repo == null) return Stream.value(const []);
+  if (!ref.watch(isOnlineProvider)) {
+    return Stream.error(const AppError.offline());
+  }
   return repo.watchFriends();
 }
 
@@ -35,6 +40,9 @@ Stream<List<FriendRequestEntity>> incomingFriendRequests(
     IncomingFriendRequestsRef ref) {
   final repo = ref.watch(friendsRepositoryProvider);
   if (repo == null) return Stream.value(const []);
+  if (!ref.watch(isOnlineProvider)) {
+    return Stream.error(const AppError.offline());
+  }
   return repo.watchIncomingRequests();
 }
 
@@ -43,6 +51,9 @@ Stream<List<FriendRequestEntity>> outgoingFriendRequests(
     OutgoingFriendRequestsRef ref) {
   final repo = ref.watch(friendsRepositoryProvider);
   if (repo == null) return Stream.value(const []);
+  if (!ref.watch(isOnlineProvider)) {
+    return Stream.error(const AppError.offline());
+  }
   return repo.watchOutgoingRequests();
 }
 
@@ -59,7 +70,10 @@ Future<List<WineEntity>> friendWines(
     FriendWinesRef ref, String friendId) async {
   final api = ref.watch(friendWinesApiProvider);
   if (api == null) return const [];
-  final models = await api.fetchFriendWines(friendId);
+  ref.requireOnline();
+  final models = await api
+      .fetchFriendWines(friendId)
+      .withNetTimeout();
   return models.map((m) => m.toEntity()).toList();
 }
 
@@ -75,7 +89,9 @@ ActivityApi? activityApi(ActivityApiRef ref) {
 Future<List<ActivityItemEntity>> activityFeed(ActivityFeedRef ref) async {
   final api = ref.watch(activityApiProvider);
   if (api == null) return const [];
-  final raw = await api.fetchRecent();
+  ref.requireOnline();
+  final raw =
+      await api.fetchRecent().withNetTimeout();
   return raw
       .map((r) => ActivityItemEntity(
             wine: r.wine.toEntity(),

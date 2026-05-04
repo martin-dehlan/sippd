@@ -1,6 +1,8 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import '../../../common/services/analytics/analytics.provider.dart';
 import '../../auth/controller/auth.provider.dart';
 import '../../onboarding/domain/onboarding_answers.dart';
+import '../../wines/controller/wine.provider.dart';
 import '../data/data_sources/profile.api.dart';
 import '../data/data_sources/profile_image.service.dart';
 import '../data/models/profile.model.dart';
@@ -20,16 +22,50 @@ ProfileImageService? profileImageService(ProfileImageServiceRef ref) {
   return ProfileImageService(ref.watch(supabaseClientProvider));
 }
 
+/// Local-first profile stream. Drift is the source of truth — the
+/// returned stream tracks the cached row so the router and profile UI
+/// render immediately on cold start, including offline. A background
+/// task pulls the latest from Supabase and writes it back to Drift,
+/// which causes the watch stream to emit the fresh value. On network
+/// failure the local row is served unchanged.
 @riverpod
 Stream<ProfileEntity?> currentProfile(CurrentProfileRef ref) {
   final authed = ref.watch(isAuthenticatedProvider);
-  if (!authed) {
-    return Stream.value(null);
-  }
-  return ref
-      .watch(profileApiProvider)
-      .watchMyProfile()
-      .map((m) => m?.toEntity());
+  if (!authed) return Stream.value(null);
+
+  final client = ref.watch(supabaseClientProvider);
+  final uid = client.auth.currentUser?.id;
+  if (uid == null) return Stream.value(null);
+
+  final dao = ref.watch(appDatabaseProvider).profilesDao;
+
+  // Capture the dependencies BEFORE the fire-and-forget runs so the
+  // background work can finish even if [ref] is invalidated mid-flight
+  // (sign-out, hot reload). Reading providers off a disposed ref
+  // throws — the captured api + dao remain valid because they're
+  // owned by the wider ProviderContainer.
+  final api = ref.read(profileApiProvider);
+  final analytics = ref.read(analyticsProvider);
+
+  // Fire-and-forget: pull fresh row + persist. Any error is swallowed
+  // (offline, disposed-ref, unexpected) so the consuming UI never
+  // throws — the local stream keeps serving the cached row.
+  Future(() async {
+    try {
+      final fresh = await api.fetchMyProfile();
+      if (fresh != null) {
+        await dao.upsert(fresh.toTableData());
+      }
+    } catch (e) {
+      try {
+        analytics.syncFailed('profile_fetch', error: e);
+      } catch (_) {
+        // Telemetry itself failed — nothing else to do.
+      }
+    }
+  });
+
+  return dao.watchById(uid).map((row) => row?.toModel().toEntity());
 }
 
 @riverpod
@@ -41,9 +77,23 @@ class ProfileController extends _$ProfileController {
     return ref.read(profileApiProvider).isUsernameAvailable(username);
   }
 
+  /// Refetches the row from Supabase and writes it to Drift. The
+  /// [currentProfileProvider] watch stream emits the new value
+  /// automatically — no [Ref.invalidate] needed (which would tear down
+  /// the stream and momentarily yield stale data).
+  Future<void> _syncBack() async {
+    final fresh = await ref.read(profileApiProvider).fetchMyProfile();
+    if (fresh != null) {
+      await ref
+          .read(appDatabaseProvider)
+          .profilesDao
+          .upsert(fresh.toTableData());
+    }
+  }
+
   Future<void> setUsername(String username) async {
     await ref.read(profileApiProvider).updateUsername(username);
-    ref.invalidate(currentProfileProvider);
+    await _syncBack();
   }
 
   Future<void> setDisplayName(String? displayName) async {
@@ -51,23 +101,24 @@ class ProfileController extends _$ProfileController {
     await ref
         .read(profileApiProvider)
         .updateDisplayName(clean == null || clean.isEmpty ? null : clean);
-    ref.invalidate(currentProfileProvider);
+    await _syncBack();
   }
 
   Future<void> setAvatarUrl(String? avatarUrl) async {
     await ref.read(profileApiProvider).updateAvatarUrl(avatarUrl);
-    ref.invalidate(currentProfileProvider);
+    await _syncBack();
   }
 
   Future<void> markOnboardingCompleted() async {
     await ref.read(profileApiProvider).markOnboardingCompleted();
-    ref.invalidate(currentProfileProvider);
+    await _syncBack();
   }
 
-  /// Atomic write of all onboarding outputs. Single invalidate at the end so
-  /// the router only refreshes once with the final consistent profile state
-  /// (username + onboarding_completed both true), preventing the Gate-2b
-  /// flicker that would briefly redirect to /onboarding.
+  /// Atomic write of all onboarding outputs. Single sync-back at the end
+  /// so the watch stream only emits once with the final consistent
+  /// profile state (username + onboarding_completed both true),
+  /// preventing the Gate-2b flicker that would briefly redirect to
+  /// /onboarding.
   Future<void> seedFromOnboarding({
     required String username,
     String? displayName,
@@ -80,21 +131,21 @@ class ProfileController extends _$ProfileController {
           displayName: displayName,
           answers: answers,
         );
-    ref.invalidate(currentProfileProvider);
+    await _syncBack();
   }
 
   Future<void> updateTasteProfile(OnboardingAnswers answers) async {
     await ref.read(profileApiProvider).updateTasteProfile(answers);
-    // No explicit invalidate: the realtime stream echoes the UPDATE on
-    // its own. Invalidating here disposes the stream and during the
-    // loading window Riverpod hands callers the *previous* AsyncValue,
-    // which would briefly clobber the optimistic state set in
-    // `OnboardingAnswersController._save` and produce a snap-back
-    // flicker on every taste-toggle button.
+    await _syncBack();
   }
 
   Future<void> deleteAccount() async {
+    final uid =
+        ref.read(supabaseClientProvider).auth.currentUser?.id;
     await ref.read(profileApiProvider).deleteMyAccount();
+    if (uid != null) {
+      await ref.read(appDatabaseProvider).profilesDao.deleteById(uid);
+    }
     // Server cascade wiped data. Route sign-out through AuthController so
     // the onboarding SharedPreferences buffer is cleared too — otherwise
     // a deleted account's taste answers would leak to the next user on

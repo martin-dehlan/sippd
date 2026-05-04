@@ -16,6 +16,7 @@ class AppRoutes {
   static const String profile = '/profile';
   static const String profileEdit = '/profile/edit';
   static const String profileNotifications = '/profile/notifications';
+  static const String wineCleanup = '/profile/wine-cleanup';
 
   // Wine
   static const String wineStats = '/wines/stats';
@@ -28,6 +29,9 @@ class AppRoutes {
   // Groups
   static const String groupDetail = '/groups/:id';
   static String groupDetailPath(String id) => '/groups/$id';
+  static const String groupWineDetail = '/groups/:id/wines/:cid';
+  static String groupWineDetailPath(String groupId, String canonicalWineId) =>
+      '/groups/$groupId/wines/$canonicalWineId';
 
   // Friends
   static const String friends = '/friends';

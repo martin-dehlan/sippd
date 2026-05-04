@@ -50,9 +50,10 @@ class _WineMemoriesEditorState extends ConsumerState<WineMemoriesEditor> {
       final picker = ImagePicker();
       final photo = await picker.pickImage(
         source: source,
-        maxWidth: 1600,
-        maxHeight: 1600,
-        imageQuality: 85,
+        maxWidth: 1200,
+        maxHeight: 1200,
+        imageQuality: 80,
+        requestFullMetadata: false,
       );
       if (photo == null) return;
 
@@ -199,9 +200,17 @@ class _MemoryThumb extends StatelessWidget {
             if (memory.localImagePath != null)
               Image.file(File(memory.localImagePath!), fit: BoxFit.cover)
             else if (memory.imageUrl != null)
-              Image.network(memory.imageUrl!, fit: BoxFit.cover)
+              Image.network(
+                memory.imageUrl!,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => Icon(
+                  PhosphorIconsRegular.image,
+                  color: cs.outline,
+                  size: size * 0.4,
+                ),
+              )
             else
-              Icon(PhosphorIconsRegular.imageBroken,
+              Icon(PhosphorIconsRegular.image,
                   color: cs.outline, size: size * 0.4),
             Positioned(
               top: context.xs,

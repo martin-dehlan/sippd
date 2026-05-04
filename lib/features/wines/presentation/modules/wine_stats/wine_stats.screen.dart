@@ -15,7 +15,7 @@ import 'widgets/stats_empty_hero.widget.dart';
 import 'widgets/stats_hero.widget.dart';
 import 'widgets/stats_pro_lock.widget.dart';
 import 'widgets/stats_section_empty.widget.dart';
-import 'widgets/tally_bars.widget.dart';
+import 'widgets/region_skyline.widget.dart';
 import 'widgets/top_wines_list.widget.dart';
 import 'widgets/wine_locations_map.widget.dart';
 import 'widgets/wine_timeline.widget.dart';
@@ -193,7 +193,7 @@ class WineStatsScreen extends ConsumerWidget {
                             ctaLabel: 'Edit a wine',
                             onTap: () => context.pop(),
                           )
-                        : TallyBars(items: regions, maxItems: 8),
+                        : RegionSkyline(items: regions),
                   ),
                 ] else ...[
                   SliverToBoxAdapter(

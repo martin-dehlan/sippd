@@ -17,11 +17,11 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$AppError {
-  String get message => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(String message, int? statusCode, String? endpoint)
     network,
+    required TResult Function() offline,
     required TResult Function(String message, String? table) database,
     required TResult Function(String message, String? field) validation,
     required TResult Function(
@@ -38,6 +38,7 @@ mixin _$AppError {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(String message, int? statusCode, String? endpoint)?
     network,
+    TResult? Function()? offline,
     TResult? Function(String message, String? table)? database,
     TResult? Function(String message, String? field)? validation,
     TResult? Function(String message, String? resourceType, String? resourceId)?
@@ -50,6 +51,7 @@ mixin _$AppError {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(String message, int? statusCode, String? endpoint)?
     network,
+    TResult Function()? offline,
     TResult Function(String message, String? table)? database,
     TResult Function(String message, String? field)? validation,
     TResult Function(String message, String? resourceType, String? resourceId)?
@@ -62,6 +64,7 @@ mixin _$AppError {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(NetworkError value) network,
+    required TResult Function(OfflineError value) offline,
     required TResult Function(DatabaseError value) database,
     required TResult Function(ValidationError value) validation,
     required TResult Function(NotFoundError value) notFound,
@@ -72,6 +75,7 @@ mixin _$AppError {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(NetworkError value)? network,
+    TResult? Function(OfflineError value)? offline,
     TResult? Function(DatabaseError value)? database,
     TResult? Function(ValidationError value)? validation,
     TResult? Function(NotFoundError value)? notFound,
@@ -82,6 +86,7 @@ mixin _$AppError {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(NetworkError value)? network,
+    TResult Function(OfflineError value)? offline,
     TResult Function(DatabaseError value)? database,
     TResult Function(ValidationError value)? validation,
     TResult Function(NotFoundError value)? notFound,
@@ -90,20 +95,12 @@ mixin _$AppError {
     TResult Function(UnknownError value)? unknown,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
-
-  /// Create a copy of AppError
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $AppErrorCopyWith<AppError> get copyWith =>
-      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
 abstract class $AppErrorCopyWith<$Res> {
   factory $AppErrorCopyWith(AppError value, $Res Function(AppError) then) =
       _$AppErrorCopyWithImpl<$Res, AppError>;
-  @useResult
-  $Res call({String message});
 }
 
 /// @nodoc
@@ -118,29 +115,14 @@ class _$AppErrorCopyWithImpl<$Res, $Val extends AppError>
 
   /// Create a copy of AppError
   /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({Object? message = null}) {
-    return _then(
-      _value.copyWith(
-            message: null == message
-                ? _value.message
-                : message // ignore: cast_nullable_to_non_nullable
-                      as String,
-          )
-          as $Val,
-    );
-  }
 }
 
 /// @nodoc
-abstract class _$$NetworkErrorImplCopyWith<$Res>
-    implements $AppErrorCopyWith<$Res> {
+abstract class _$$NetworkErrorImplCopyWith<$Res> {
   factory _$$NetworkErrorImplCopyWith(
     _$NetworkErrorImpl value,
     $Res Function(_$NetworkErrorImpl) then,
   ) = __$$NetworkErrorImplCopyWithImpl<$Res>;
-  @override
   @useResult
   $Res call({String message, int? statusCode, String? endpoint});
 }
@@ -186,12 +168,13 @@ class __$$NetworkErrorImplCopyWithImpl<$Res>
 
 class _$NetworkErrorImpl implements NetworkError {
   const _$NetworkErrorImpl({
-    required this.message,
+    this.message = 'Network unavailable.',
     this.statusCode,
     this.endpoint,
   });
 
   @override
+  @JsonKey()
   final String message;
   @override
   final int? statusCode;
@@ -231,6 +214,7 @@ class _$NetworkErrorImpl implements NetworkError {
   TResult when<TResult extends Object?>({
     required TResult Function(String message, int? statusCode, String? endpoint)
     network,
+    required TResult Function() offline,
     required TResult Function(String message, String? table) database,
     required TResult Function(String message, String? field) validation,
     required TResult Function(
@@ -251,6 +235,7 @@ class _$NetworkErrorImpl implements NetworkError {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(String message, int? statusCode, String? endpoint)?
     network,
+    TResult? Function()? offline,
     TResult? Function(String message, String? table)? database,
     TResult? Function(String message, String? field)? validation,
     TResult? Function(String message, String? resourceType, String? resourceId)?
@@ -267,6 +252,7 @@ class _$NetworkErrorImpl implements NetworkError {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(String message, int? statusCode, String? endpoint)?
     network,
+    TResult Function()? offline,
     TResult Function(String message, String? table)? database,
     TResult Function(String message, String? field)? validation,
     TResult Function(String message, String? resourceType, String? resourceId)?
@@ -286,6 +272,7 @@ class _$NetworkErrorImpl implements NetworkError {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(NetworkError value) network,
+    required TResult Function(OfflineError value) offline,
     required TResult Function(DatabaseError value) database,
     required TResult Function(ValidationError value) validation,
     required TResult Function(NotFoundError value) notFound,
@@ -300,6 +287,7 @@ class _$NetworkErrorImpl implements NetworkError {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(NetworkError value)? network,
+    TResult? Function(OfflineError value)? offline,
     TResult? Function(DatabaseError value)? database,
     TResult? Function(ValidationError value)? validation,
     TResult? Function(NotFoundError value)? notFound,
@@ -314,6 +302,7 @@ class _$NetworkErrorImpl implements NetworkError {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(NetworkError value)? network,
+    TResult Function(OfflineError value)? offline,
     TResult Function(DatabaseError value)? database,
     TResult Function(ValidationError value)? validation,
     TResult Function(NotFoundError value)? notFound,
@@ -331,32 +320,181 @@ class _$NetworkErrorImpl implements NetworkError {
 
 abstract class NetworkError implements AppError {
   const factory NetworkError({
-    required final String message,
+    final String message,
     final int? statusCode,
     final String? endpoint,
   }) = _$NetworkErrorImpl;
 
-  @override
   String get message;
   int? get statusCode;
   String? get endpoint;
 
   /// Create a copy of AppError
   /// with the given fields replaced by the non-null parameter values.
-  @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$NetworkErrorImplCopyWith<_$NetworkErrorImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$DatabaseErrorImplCopyWith<$Res>
-    implements $AppErrorCopyWith<$Res> {
+abstract class _$$OfflineErrorImplCopyWith<$Res> {
+  factory _$$OfflineErrorImplCopyWith(
+    _$OfflineErrorImpl value,
+    $Res Function(_$OfflineErrorImpl) then,
+  ) = __$$OfflineErrorImplCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$OfflineErrorImplCopyWithImpl<$Res>
+    extends _$AppErrorCopyWithImpl<$Res, _$OfflineErrorImpl>
+    implements _$$OfflineErrorImplCopyWith<$Res> {
+  __$$OfflineErrorImplCopyWithImpl(
+    _$OfflineErrorImpl _value,
+    $Res Function(_$OfflineErrorImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of AppError
+  /// with the given fields replaced by the non-null parameter values.
+}
+
+/// @nodoc
+
+class _$OfflineErrorImpl implements OfflineError {
+  const _$OfflineErrorImpl();
+
+  @override
+  String toString() {
+    return 'AppError.offline()';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _$OfflineErrorImpl);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(String message, int? statusCode, String? endpoint)
+    network,
+    required TResult Function() offline,
+    required TResult Function(String message, String? table) database,
+    required TResult Function(String message, String? field) validation,
+    required TResult Function(
+      String message,
+      String? resourceType,
+      String? resourceId,
+    )
+    notFound,
+    required TResult Function(String message) unauthorized,
+    required TResult Function(String message, int? statusCode) serverError,
+    required TResult Function(String message, Object? originalError) unknown,
+  }) {
+    return offline();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(String message, int? statusCode, String? endpoint)?
+    network,
+    TResult? Function()? offline,
+    TResult? Function(String message, String? table)? database,
+    TResult? Function(String message, String? field)? validation,
+    TResult? Function(String message, String? resourceType, String? resourceId)?
+    notFound,
+    TResult? Function(String message)? unauthorized,
+    TResult? Function(String message, int? statusCode)? serverError,
+    TResult? Function(String message, Object? originalError)? unknown,
+  }) {
+    return offline?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(String message, int? statusCode, String? endpoint)?
+    network,
+    TResult Function()? offline,
+    TResult Function(String message, String? table)? database,
+    TResult Function(String message, String? field)? validation,
+    TResult Function(String message, String? resourceType, String? resourceId)?
+    notFound,
+    TResult Function(String message)? unauthorized,
+    TResult Function(String message, int? statusCode)? serverError,
+    TResult Function(String message, Object? originalError)? unknown,
+    required TResult orElse(),
+  }) {
+    if (offline != null) {
+      return offline();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(NetworkError value) network,
+    required TResult Function(OfflineError value) offline,
+    required TResult Function(DatabaseError value) database,
+    required TResult Function(ValidationError value) validation,
+    required TResult Function(NotFoundError value) notFound,
+    required TResult Function(UnauthorizedError value) unauthorized,
+    required TResult Function(ServerError value) serverError,
+    required TResult Function(UnknownError value) unknown,
+  }) {
+    return offline(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(NetworkError value)? network,
+    TResult? Function(OfflineError value)? offline,
+    TResult? Function(DatabaseError value)? database,
+    TResult? Function(ValidationError value)? validation,
+    TResult? Function(NotFoundError value)? notFound,
+    TResult? Function(UnauthorizedError value)? unauthorized,
+    TResult? Function(ServerError value)? serverError,
+    TResult? Function(UnknownError value)? unknown,
+  }) {
+    return offline?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(NetworkError value)? network,
+    TResult Function(OfflineError value)? offline,
+    TResult Function(DatabaseError value)? database,
+    TResult Function(ValidationError value)? validation,
+    TResult Function(NotFoundError value)? notFound,
+    TResult Function(UnauthorizedError value)? unauthorized,
+    TResult Function(ServerError value)? serverError,
+    TResult Function(UnknownError value)? unknown,
+    required TResult orElse(),
+  }) {
+    if (offline != null) {
+      return offline(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class OfflineError implements AppError {
+  const factory OfflineError() = _$OfflineErrorImpl;
+}
+
+/// @nodoc
+abstract class _$$DatabaseErrorImplCopyWith<$Res> {
   factory _$$DatabaseErrorImplCopyWith(
     _$DatabaseErrorImpl value,
     $Res Function(_$DatabaseErrorImpl) then,
   ) = __$$DatabaseErrorImplCopyWithImpl<$Res>;
-  @override
   @useResult
   $Res call({String message, String? table});
 }
@@ -430,6 +568,7 @@ class _$DatabaseErrorImpl implements DatabaseError {
   TResult when<TResult extends Object?>({
     required TResult Function(String message, int? statusCode, String? endpoint)
     network,
+    required TResult Function() offline,
     required TResult Function(String message, String? table) database,
     required TResult Function(String message, String? field) validation,
     required TResult Function(
@@ -450,6 +589,7 @@ class _$DatabaseErrorImpl implements DatabaseError {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(String message, int? statusCode, String? endpoint)?
     network,
+    TResult? Function()? offline,
     TResult? Function(String message, String? table)? database,
     TResult? Function(String message, String? field)? validation,
     TResult? Function(String message, String? resourceType, String? resourceId)?
@@ -466,6 +606,7 @@ class _$DatabaseErrorImpl implements DatabaseError {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(String message, int? statusCode, String? endpoint)?
     network,
+    TResult Function()? offline,
     TResult Function(String message, String? table)? database,
     TResult Function(String message, String? field)? validation,
     TResult Function(String message, String? resourceType, String? resourceId)?
@@ -485,6 +626,7 @@ class _$DatabaseErrorImpl implements DatabaseError {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(NetworkError value) network,
+    required TResult Function(OfflineError value) offline,
     required TResult Function(DatabaseError value) database,
     required TResult Function(ValidationError value) validation,
     required TResult Function(NotFoundError value) notFound,
@@ -499,6 +641,7 @@ class _$DatabaseErrorImpl implements DatabaseError {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(NetworkError value)? network,
+    TResult? Function(OfflineError value)? offline,
     TResult? Function(DatabaseError value)? database,
     TResult? Function(ValidationError value)? validation,
     TResult? Function(NotFoundError value)? notFound,
@@ -513,6 +656,7 @@ class _$DatabaseErrorImpl implements DatabaseError {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(NetworkError value)? network,
+    TResult Function(OfflineError value)? offline,
     TResult Function(DatabaseError value)? database,
     TResult Function(ValidationError value)? validation,
     TResult Function(NotFoundError value)? notFound,
@@ -534,26 +678,22 @@ abstract class DatabaseError implements AppError {
     final String? table,
   }) = _$DatabaseErrorImpl;
 
-  @override
   String get message;
   String? get table;
 
   /// Create a copy of AppError
   /// with the given fields replaced by the non-null parameter values.
-  @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$DatabaseErrorImplCopyWith<_$DatabaseErrorImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$ValidationErrorImplCopyWith<$Res>
-    implements $AppErrorCopyWith<$Res> {
+abstract class _$$ValidationErrorImplCopyWith<$Res> {
   factory _$$ValidationErrorImplCopyWith(
     _$ValidationErrorImpl value,
     $Res Function(_$ValidationErrorImpl) then,
   ) = __$$ValidationErrorImplCopyWithImpl<$Res>;
-  @override
   @useResult
   $Res call({String message, String? field});
 }
@@ -630,6 +770,7 @@ class _$ValidationErrorImpl implements ValidationError {
   TResult when<TResult extends Object?>({
     required TResult Function(String message, int? statusCode, String? endpoint)
     network,
+    required TResult Function() offline,
     required TResult Function(String message, String? table) database,
     required TResult Function(String message, String? field) validation,
     required TResult Function(
@@ -650,6 +791,7 @@ class _$ValidationErrorImpl implements ValidationError {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(String message, int? statusCode, String? endpoint)?
     network,
+    TResult? Function()? offline,
     TResult? Function(String message, String? table)? database,
     TResult? Function(String message, String? field)? validation,
     TResult? Function(String message, String? resourceType, String? resourceId)?
@@ -666,6 +808,7 @@ class _$ValidationErrorImpl implements ValidationError {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(String message, int? statusCode, String? endpoint)?
     network,
+    TResult Function()? offline,
     TResult Function(String message, String? table)? database,
     TResult Function(String message, String? field)? validation,
     TResult Function(String message, String? resourceType, String? resourceId)?
@@ -685,6 +828,7 @@ class _$ValidationErrorImpl implements ValidationError {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(NetworkError value) network,
+    required TResult Function(OfflineError value) offline,
     required TResult Function(DatabaseError value) database,
     required TResult Function(ValidationError value) validation,
     required TResult Function(NotFoundError value) notFound,
@@ -699,6 +843,7 @@ class _$ValidationErrorImpl implements ValidationError {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(NetworkError value)? network,
+    TResult? Function(OfflineError value)? offline,
     TResult? Function(DatabaseError value)? database,
     TResult? Function(ValidationError value)? validation,
     TResult? Function(NotFoundError value)? notFound,
@@ -713,6 +858,7 @@ class _$ValidationErrorImpl implements ValidationError {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(NetworkError value)? network,
+    TResult Function(OfflineError value)? offline,
     TResult Function(DatabaseError value)? database,
     TResult Function(ValidationError value)? validation,
     TResult Function(NotFoundError value)? notFound,
@@ -734,26 +880,22 @@ abstract class ValidationError implements AppError {
     final String? field,
   }) = _$ValidationErrorImpl;
 
-  @override
   String get message;
   String? get field;
 
   /// Create a copy of AppError
   /// with the given fields replaced by the non-null parameter values.
-  @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$ValidationErrorImplCopyWith<_$ValidationErrorImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$NotFoundErrorImplCopyWith<$Res>
-    implements $AppErrorCopyWith<$Res> {
+abstract class _$$NotFoundErrorImplCopyWith<$Res> {
   factory _$$NotFoundErrorImplCopyWith(
     _$NotFoundErrorImpl value,
     $Res Function(_$NotFoundErrorImpl) then,
   ) = __$$NotFoundErrorImplCopyWithImpl<$Res>;
-  @override
   @useResult
   $Res call({String message, String? resourceType, String? resourceId});
 }
@@ -845,6 +987,7 @@ class _$NotFoundErrorImpl implements NotFoundError {
   TResult when<TResult extends Object?>({
     required TResult Function(String message, int? statusCode, String? endpoint)
     network,
+    required TResult Function() offline,
     required TResult Function(String message, String? table) database,
     required TResult Function(String message, String? field) validation,
     required TResult Function(
@@ -865,6 +1008,7 @@ class _$NotFoundErrorImpl implements NotFoundError {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(String message, int? statusCode, String? endpoint)?
     network,
+    TResult? Function()? offline,
     TResult? Function(String message, String? table)? database,
     TResult? Function(String message, String? field)? validation,
     TResult? Function(String message, String? resourceType, String? resourceId)?
@@ -881,6 +1025,7 @@ class _$NotFoundErrorImpl implements NotFoundError {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(String message, int? statusCode, String? endpoint)?
     network,
+    TResult Function()? offline,
     TResult Function(String message, String? table)? database,
     TResult Function(String message, String? field)? validation,
     TResult Function(String message, String? resourceType, String? resourceId)?
@@ -900,6 +1045,7 @@ class _$NotFoundErrorImpl implements NotFoundError {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(NetworkError value) network,
+    required TResult Function(OfflineError value) offline,
     required TResult Function(DatabaseError value) database,
     required TResult Function(ValidationError value) validation,
     required TResult Function(NotFoundError value) notFound,
@@ -914,6 +1060,7 @@ class _$NotFoundErrorImpl implements NotFoundError {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(NetworkError value)? network,
+    TResult? Function(OfflineError value)? offline,
     TResult? Function(DatabaseError value)? database,
     TResult? Function(ValidationError value)? validation,
     TResult? Function(NotFoundError value)? notFound,
@@ -928,6 +1075,7 @@ class _$NotFoundErrorImpl implements NotFoundError {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(NetworkError value)? network,
+    TResult Function(OfflineError value)? offline,
     TResult Function(DatabaseError value)? database,
     TResult Function(ValidationError value)? validation,
     TResult Function(NotFoundError value)? notFound,
@@ -950,27 +1098,23 @@ abstract class NotFoundError implements AppError {
     final String? resourceId,
   }) = _$NotFoundErrorImpl;
 
-  @override
   String get message;
   String? get resourceType;
   String? get resourceId;
 
   /// Create a copy of AppError
   /// with the given fields replaced by the non-null parameter values.
-  @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$NotFoundErrorImplCopyWith<_$NotFoundErrorImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$UnauthorizedErrorImplCopyWith<$Res>
-    implements $AppErrorCopyWith<$Res> {
+abstract class _$$UnauthorizedErrorImplCopyWith<$Res> {
   factory _$$UnauthorizedErrorImplCopyWith(
     _$UnauthorizedErrorImpl value,
     $Res Function(_$UnauthorizedErrorImpl) then,
   ) = __$$UnauthorizedErrorImplCopyWithImpl<$Res>;
-  @override
   @useResult
   $Res call({String message});
 }
@@ -1040,6 +1184,7 @@ class _$UnauthorizedErrorImpl implements UnauthorizedError {
   TResult when<TResult extends Object?>({
     required TResult Function(String message, int? statusCode, String? endpoint)
     network,
+    required TResult Function() offline,
     required TResult Function(String message, String? table) database,
     required TResult Function(String message, String? field) validation,
     required TResult Function(
@@ -1060,6 +1205,7 @@ class _$UnauthorizedErrorImpl implements UnauthorizedError {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(String message, int? statusCode, String? endpoint)?
     network,
+    TResult? Function()? offline,
     TResult? Function(String message, String? table)? database,
     TResult? Function(String message, String? field)? validation,
     TResult? Function(String message, String? resourceType, String? resourceId)?
@@ -1076,6 +1222,7 @@ class _$UnauthorizedErrorImpl implements UnauthorizedError {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(String message, int? statusCode, String? endpoint)?
     network,
+    TResult Function()? offline,
     TResult Function(String message, String? table)? database,
     TResult Function(String message, String? field)? validation,
     TResult Function(String message, String? resourceType, String? resourceId)?
@@ -1095,6 +1242,7 @@ class _$UnauthorizedErrorImpl implements UnauthorizedError {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(NetworkError value) network,
+    required TResult Function(OfflineError value) offline,
     required TResult Function(DatabaseError value) database,
     required TResult Function(ValidationError value) validation,
     required TResult Function(NotFoundError value) notFound,
@@ -1109,6 +1257,7 @@ class _$UnauthorizedErrorImpl implements UnauthorizedError {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(NetworkError value)? network,
+    TResult? Function(OfflineError value)? offline,
     TResult? Function(DatabaseError value)? database,
     TResult? Function(ValidationError value)? validation,
     TResult? Function(NotFoundError value)? notFound,
@@ -1123,6 +1272,7 @@ class _$UnauthorizedErrorImpl implements UnauthorizedError {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(NetworkError value)? network,
+    TResult Function(OfflineError value)? offline,
     TResult Function(DatabaseError value)? database,
     TResult Function(ValidationError value)? validation,
     TResult Function(NotFoundError value)? notFound,
@@ -1142,25 +1292,21 @@ abstract class UnauthorizedError implements AppError {
   const factory UnauthorizedError({required final String message}) =
       _$UnauthorizedErrorImpl;
 
-  @override
   String get message;
 
   /// Create a copy of AppError
   /// with the given fields replaced by the non-null parameter values.
-  @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$UnauthorizedErrorImplCopyWith<_$UnauthorizedErrorImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$ServerErrorImplCopyWith<$Res>
-    implements $AppErrorCopyWith<$Res> {
+abstract class _$$ServerErrorImplCopyWith<$Res> {
   factory _$$ServerErrorImplCopyWith(
     _$ServerErrorImpl value,
     $Res Function(_$ServerErrorImpl) then,
   ) = __$$ServerErrorImplCopyWithImpl<$Res>;
-  @override
   @useResult
   $Res call({String message, int? statusCode});
 }
@@ -1235,6 +1381,7 @@ class _$ServerErrorImpl implements ServerError {
   TResult when<TResult extends Object?>({
     required TResult Function(String message, int? statusCode, String? endpoint)
     network,
+    required TResult Function() offline,
     required TResult Function(String message, String? table) database,
     required TResult Function(String message, String? field) validation,
     required TResult Function(
@@ -1255,6 +1402,7 @@ class _$ServerErrorImpl implements ServerError {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(String message, int? statusCode, String? endpoint)?
     network,
+    TResult? Function()? offline,
     TResult? Function(String message, String? table)? database,
     TResult? Function(String message, String? field)? validation,
     TResult? Function(String message, String? resourceType, String? resourceId)?
@@ -1271,6 +1419,7 @@ class _$ServerErrorImpl implements ServerError {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(String message, int? statusCode, String? endpoint)?
     network,
+    TResult Function()? offline,
     TResult Function(String message, String? table)? database,
     TResult Function(String message, String? field)? validation,
     TResult Function(String message, String? resourceType, String? resourceId)?
@@ -1290,6 +1439,7 @@ class _$ServerErrorImpl implements ServerError {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(NetworkError value) network,
+    required TResult Function(OfflineError value) offline,
     required TResult Function(DatabaseError value) database,
     required TResult Function(ValidationError value) validation,
     required TResult Function(NotFoundError value) notFound,
@@ -1304,6 +1454,7 @@ class _$ServerErrorImpl implements ServerError {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(NetworkError value)? network,
+    TResult? Function(OfflineError value)? offline,
     TResult? Function(DatabaseError value)? database,
     TResult? Function(ValidationError value)? validation,
     TResult? Function(NotFoundError value)? notFound,
@@ -1318,6 +1469,7 @@ class _$ServerErrorImpl implements ServerError {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(NetworkError value)? network,
+    TResult Function(OfflineError value)? offline,
     TResult Function(DatabaseError value)? database,
     TResult Function(ValidationError value)? validation,
     TResult Function(NotFoundError value)? notFound,
@@ -1339,26 +1491,22 @@ abstract class ServerError implements AppError {
     final int? statusCode,
   }) = _$ServerErrorImpl;
 
-  @override
   String get message;
   int? get statusCode;
 
   /// Create a copy of AppError
   /// with the given fields replaced by the non-null parameter values.
-  @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$ServerErrorImplCopyWith<_$ServerErrorImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$UnknownErrorImplCopyWith<$Res>
-    implements $AppErrorCopyWith<$Res> {
+abstract class _$$UnknownErrorImplCopyWith<$Res> {
   factory _$$UnknownErrorImplCopyWith(
     _$UnknownErrorImpl value,
     $Res Function(_$UnknownErrorImpl) then,
   ) = __$$UnknownErrorImplCopyWithImpl<$Res>;
-  @override
   @useResult
   $Res call({String message, Object? originalError});
 }
@@ -1438,6 +1586,7 @@ class _$UnknownErrorImpl implements UnknownError {
   TResult when<TResult extends Object?>({
     required TResult Function(String message, int? statusCode, String? endpoint)
     network,
+    required TResult Function() offline,
     required TResult Function(String message, String? table) database,
     required TResult Function(String message, String? field) validation,
     required TResult Function(
@@ -1458,6 +1607,7 @@ class _$UnknownErrorImpl implements UnknownError {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(String message, int? statusCode, String? endpoint)?
     network,
+    TResult? Function()? offline,
     TResult? Function(String message, String? table)? database,
     TResult? Function(String message, String? field)? validation,
     TResult? Function(String message, String? resourceType, String? resourceId)?
@@ -1474,6 +1624,7 @@ class _$UnknownErrorImpl implements UnknownError {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(String message, int? statusCode, String? endpoint)?
     network,
+    TResult Function()? offline,
     TResult Function(String message, String? table)? database,
     TResult Function(String message, String? field)? validation,
     TResult Function(String message, String? resourceType, String? resourceId)?
@@ -1493,6 +1644,7 @@ class _$UnknownErrorImpl implements UnknownError {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(NetworkError value) network,
+    required TResult Function(OfflineError value) offline,
     required TResult Function(DatabaseError value) database,
     required TResult Function(ValidationError value) validation,
     required TResult Function(NotFoundError value) notFound,
@@ -1507,6 +1659,7 @@ class _$UnknownErrorImpl implements UnknownError {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(NetworkError value)? network,
+    TResult? Function(OfflineError value)? offline,
     TResult? Function(DatabaseError value)? database,
     TResult? Function(ValidationError value)? validation,
     TResult? Function(NotFoundError value)? notFound,
@@ -1521,6 +1674,7 @@ class _$UnknownErrorImpl implements UnknownError {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(NetworkError value)? network,
+    TResult Function(OfflineError value)? offline,
     TResult Function(DatabaseError value)? database,
     TResult Function(ValidationError value)? validation,
     TResult Function(NotFoundError value)? notFound,
@@ -1542,13 +1696,11 @@ abstract class UnknownError implements AppError {
     final Object? originalError,
   }) = _$UnknownErrorImpl;
 
-  @override
   String get message;
   Object? get originalError;
 
   /// Create a copy of AppError
   /// with the given fields replaced by the non-null parameter values.
-  @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$UnknownErrorImplCopyWith<_$UnknownErrorImpl> get copyWith =>
       throw _privateConstructorUsedError;

@@ -167,9 +167,9 @@ async function resolvePush(
     if (recipients.length === 0) return null;
     const [{ data: wine }, { data: group }, { data: sharer }] = await Promise.all([
       admin
-        .from('wines')
+        .from('canonical_wine')
         .select('name, winery')
-        .eq('id', record.wine_id)
+        .eq('id', record.canonical_wine_id)
         .maybeSingle(),
       admin
         .from('groups')
@@ -196,9 +196,9 @@ async function resolvePush(
       data: {
         type: 'group_wine_shared',
         group_id: record.group_id as string,
-        wine_id: record.wine_id as string,
+        canonical_wine_id: record.canonical_wine_id as string,
       },
-      tag: `group_wine:${record.group_id}:${record.wine_id}`,
+      tag: `group_wine:${record.group_id}:${record.canonical_wine_id}`,
       threadId: `group:${record.group_id}`,
     };
   }

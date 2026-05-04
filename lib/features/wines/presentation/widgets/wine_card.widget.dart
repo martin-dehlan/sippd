@@ -9,6 +9,8 @@ class WineCardWidget extends StatelessWidget {
   final int rank;
   final VoidCallback? onTap;
   final bool compact;
+  final double? ratingOverride;
+  final bool hideRatingIfEmpty;
 
   const WineCardWidget({
     super.key,
@@ -16,11 +18,15 @@ class WineCardWidget extends StatelessWidget {
     required this.rank,
     this.onTap,
     this.compact = false,
+    this.ratingOverride,
+    this.hideRatingIfEmpty = false,
   });
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final effectiveRating = ratingOverride ?? wine.rating;
+    final showRating = !(hideRatingIfEmpty && effectiveRating <= 0);
 
     return Material(
       color: cs.surfaceContainer,
@@ -83,35 +89,37 @@ class WineCardWidget extends StatelessWidget {
                             ],
                           ),
                         ),
-                        SizedBox(width: context.w * 0.02),
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: context.w * 0.025,
-                            vertical: context.xs * 0.8,
-                          ),
-                          decoration: BoxDecoration(
-                            color: cs.primaryContainer,
-                            borderRadius:
-                                BorderRadius.circular(context.w * 0.025),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(PhosphorIconsRegular.star,
-                                  size: context.w * 0.04,
-                                  color: const Color(0xFFD4A84B)),
-                              SizedBox(width: context.w * 0.008),
-                              Text(
-                                wine.rating.toStringAsFixed(1),
-                                style: TextStyle(
-                                  fontSize: context.captionFont * 0.95,
-                                  fontWeight: FontWeight.w800,
-                                  color: cs.onPrimaryContainer,
+                        if (showRating) ...[
+                          SizedBox(width: context.w * 0.02),
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: context.w * 0.025,
+                              vertical: context.xs * 0.8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: cs.primaryContainer,
+                              borderRadius:
+                                  BorderRadius.circular(context.w * 0.025),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(PhosphorIconsRegular.star,
+                                    size: context.w * 0.04,
+                                    color: const Color(0xFFD4A84B)),
+                                SizedBox(width: context.w * 0.008),
+                                Text(
+                                  effectiveRating.toStringAsFixed(1),
+                                  style: TextStyle(
+                                    fontSize: context.captionFont * 0.95,
+                                    fontWeight: FontWeight.w800,
+                                    color: cs.onPrimaryContainer,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
+                        ],
                       ],
                     ),
                   ),
@@ -176,13 +184,34 @@ class WineCardImage extends StatelessWidget {
                           fit: BoxFit.cover,
                           width: double.infinity,
                           height: double.infinity,
+                          errorBuilder: (_, __, ___) => Center(
+                            child: Icon(
+                              PhosphorIconsThin.wine,
+                              size: size * 0.42,
+                              color: cs.onSurfaceVariant.withValues(alpha: 0.45),
+                            ),
+                          ),
+                          frameBuilder: (_, child, frame, wasSync) {
+                            if (frame == null && !wasSync) {
+                              return Center(
+                                child: Icon(
+                                  PhosphorIconsThin.wine,
+                                  size: size * 0.42,
+                                  color:
+                                      cs.onSurfaceVariant.withValues(alpha: 0.45),
+                                ),
+                              );
+                            }
+                            return child;
+                          },
                         ),
                       )
                     : Center(
                         child: Icon(
-                          PhosphorIconsRegular.wine,
-                          size: size * 0.4,
-                          color: cs.onSurface.withValues(alpha: 0.35),
+                          PhosphorIconsThin.wine,
+                          size: size * 0.42,
+                          color:
+                              cs.onSurfaceVariant.withValues(alpha: 0.45),
                         ),
                       ),
               ),

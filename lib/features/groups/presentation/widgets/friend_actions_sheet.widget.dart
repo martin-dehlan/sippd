@@ -3,6 +3,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../common/utils/responsive.dart';
+import '../../../../common/widgets/error_view.widget.dart';
 import '../../controller/group_invitation.provider.dart';
 
 Future<void> showFriendActionsSheet({
@@ -224,8 +225,11 @@ class _GroupPickerSheet extends ConsumerWidget {
                 },
                 loading: () =>
                     const Center(child: CircularProgressIndicator()),
-                error: (e, _) => Text('Could not load groups: $e',
-                    style: TextStyle(color: cs.error)),
+                error: (e, _) => ErrorView(
+                  title: "Couldn't load groups",
+                  compact: true,
+                  error: e,
+                ),
               ),
             ),
             SizedBox(height: context.s),

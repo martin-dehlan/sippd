@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../../common/utils/responsive.dart';
+import '../../../../../common/widgets/inline_error.widget.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../controller/auth.provider.dart';
 
@@ -21,6 +22,7 @@ class _PasswordRecoveryScreenState
   final _passwordController = TextEditingController();
   final _confirmController = TextEditingController();
   bool _isSubmitting = false;
+  Object? _submitError;
   bool _obscure = true;
 
   @override
@@ -32,7 +34,10 @@ class _PasswordRecoveryScreenState
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
-    setState(() => _isSubmitting = true);
+    setState(() {
+      _isSubmitting = true;
+      _submitError = null;
+    });
     try {
       await ref
           .read(authControllerProvider.notifier)
@@ -48,12 +53,7 @@ class _PasswordRecoveryScreenState
       context.go(AppRoutes.wines);
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.toString()),
-          backgroundColor: Theme.of(context).colorScheme.error,
-        ),
-      );
+      setState(() => _submitError = e);
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }
@@ -129,27 +129,18 @@ class _PasswordRecoveryScreenState
                   },
                 ),
                 SizedBox(height: context.xl),
-                SizedBox(
-                  height: context.h * 0.06,
-                  child: ElevatedButton(
-                    onPressed: _isSubmitting ? null : _submit,
-                    child: _isSubmitting
-                        ? SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: cs.onPrimary,
-                            ),
-                          )
-                        : Text(
-                            'Update password',
-                            style: TextStyle(
-                              fontSize: context.bodyFont,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
+                if (_submitError != null) ...[
+                  InlineFieldError(
+                    error: _submitError,
+                    fallback: "Couldn't update password. Try again.",
                   ),
+                  SizedBox(height: context.s),
+                ],
+                RetryActionButton(
+                  idleLabel: 'Update password',
+                  loading: _isSubmitting,
+                  error: _submitError,
+                  onPressed: _submit,
                 ),
               ],
             ),

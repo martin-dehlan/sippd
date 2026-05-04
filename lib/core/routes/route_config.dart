@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,6 +8,7 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../common/services/analytics/analytics.provider.dart';
+import '../../common/widgets/offline_indicator.widget.dart';
 import '../../common/widgets/splash.screen.dart';
 import '../../features/auth/controller/auth.provider.dart';
 import '../../features/groups/controller/group_invitation.provider.dart';
@@ -21,13 +24,16 @@ import '../../features/profile/controller/profile.provider.dart';
 import '../../features/profile/presentation/modules/choose_username/choose_username.screen.dart';
 import '../../features/profile/presentation/modules/edit_profile/edit_profile.screen.dart';
 import '../../features/profile/presentation/modules/notification_settings/notification_settings.screen.dart';
+import '../../features/wines/presentation/modules/wine_cleanup/wine_cleanup.screen.dart';
 import '../../features/friends/presentation/modules/friend_profile/friend_profile.screen.dart';
 import '../../features/friends/presentation/modules/friends/friends.screen.dart';
 import '../../features/groups/presentation/modules/group_detail/group_detail.screen.dart';
+import '../../features/groups/presentation/modules/group_wine_detail/group_wine_detail.screen.dart';
 import '../../features/groups/presentation/modules/group_list/group_list.screen.dart';
 import '../../features/tastings/presentation/modules/tasting_create/tasting_create.screen.dart';
 import '../../features/tastings/presentation/modules/tasting_detail/tasting_detail.screen.dart';
 import '../../features/tastings/presentation/modules/tasting_edit/tasting_edit.screen.dart';
+import '../../features/wines/domain/entities/wine.entity.dart';
 import '../../features/wines/presentation/modules/wine_list/wine_list.screen.dart';
 import '../../features/wines/presentation/modules/wine_add/wine_add.screen.dart';
 import '../../features/wines/presentation/modules/wine_stats/wine_stats.screen.dart';
@@ -36,6 +42,38 @@ import '../../features/wines/presentation/modules/wine_edit/wine_edit.screen.dar
 import 'app.routes.dart';
 
 part 'route_config.g.dart';
+
+/// Flips to true ~1.5s after the user becomes authenticated. Used by the
+/// router to optimistically release returning users to /wines when the
+/// profile fetch is too slow (e.g. cold-start while offline). Resets on
+/// auth changes so a fresh sign-in waits the full window again.
+///
+/// The timer lives in [_arm] (called from a `ref.listen` outside the
+/// build phase) rather than inside `build()` so a future maintainer
+/// adding a watched dep can't accidentally spawn duplicate timers.
+@riverpod
+class SplashDeadline extends _$SplashDeadline {
+  Timer? _timer;
+
+  @override
+  bool build() {
+    ref.onDispose(() => _timer?.cancel());
+    return false;
+  }
+
+  void _arm() {
+    _timer?.cancel();
+    state = false;
+    _timer = Timer(const Duration(milliseconds: 1500), () {
+      state = true;
+    });
+  }
+
+  void _disarm() {
+    _timer?.cancel();
+    state = false;
+  }
+}
 
 @riverpod
 GoRouter goRouter(GoRouterRef ref) {
@@ -57,6 +95,7 @@ GoRouter goRouter(GoRouterRef ref) {
       final seen = ref.read(onboardingSeenProvider);
       final profileAsync = ref.read(currentProfileProvider);
       final inRecovery = ref.read(passwordRecoveryControllerProvider);
+      final splashTimedOut = ref.read(splashDeadlineProvider);
 
       // Gate -1: password recovery deep link → must set new password first.
       if (inRecovery && loc != AppRoutes.passwordRecovery) {
@@ -67,13 +106,11 @@ GoRouter goRouter(GoRouterRef ref) {
       if (loc == AppRoutes.emailConfirmation) return null;
 
       // Gate 0: authed but profile stream still loading the new query →
-      // hold splash. We check `isLoading` (not `!hasValue`) because
-      // Riverpod preserves the previous value across rebuilds, so
-      // `hasValue` stays true with a stale null carried over from the
-      // unauthed branch — which would otherwise let Gate 2 below
-      // redirect to /choose-username for a returning user before their
-      // real profile row arrives.
-      if (authed && profileAsync.isLoading) {
+      // hold splash, but only until the splash deadline elapses. After
+      // that we fall through to Gate 2 which will optimistically release
+      // the user to /wines so a slow / offline profile fetch doesn't trap
+      // them on a spinner.
+      if (authed && profileAsync.isLoading && !splashTimedOut) {
         return loc == AppRoutes.splash ? null : AppRoutes.splash;
       }
 
@@ -93,6 +130,24 @@ GoRouter goRouter(GoRouterRef ref) {
       if (authed) {
         final profile = profileAsync.valueOrNull;
         if (profile == null) {
+          // No profile yet. If we never got a successful response, we
+          // can't tell "new signup with empty profile" from "offline,
+          // can't fetch". Hold splash until the deadline, then optimistically
+          // release returning users to /wines (cached Drift data still
+          // works). If the server later confirms a real null profile, the
+          // next refresh will route to /choose-username.
+          if (!profileAsync.hasValue) {
+            if (!splashTimedOut) {
+              return loc == AppRoutes.splash ? null : AppRoutes.splash;
+            }
+            if (loc == AppRoutes.splash ||
+                loc == AppRoutes.login ||
+                loc == AppRoutes.onboarding) {
+              return AppRoutes.wines;
+            }
+            return null;
+          }
+          // Confirmed empty profile from server → genuine new signup.
           return loc == AppRoutes.chooseUsername
               ? null
               : AppRoutes.chooseUsername;
@@ -223,7 +278,11 @@ GoRouter goRouter(GoRouterRef ref) {
         path: AppRoutes.wineDetail,
         builder: (context, state) {
           final id = state.pathParameters['id']!;
-          return WineDetailScreen(wineId: id);
+          final extra = state.extra;
+          return WineDetailScreen(
+            wineId: id,
+            initial: extra is WineEntity ? extra : null,
+          );
         },
       ),
       GoRoute(
@@ -239,6 +298,19 @@ GoRouter goRouter(GoRouterRef ref) {
         path: AppRoutes.groupDetail,
         builder: (context, state) =>
             GroupDetailScreen(groupId: state.pathParameters['id']!),
+      ),
+
+      // Group wine detail (canonical-keyed, for non-owner views)
+      GoRoute(
+        path: AppRoutes.groupWineDetail,
+        builder: (context, state) {
+          final extra = state.extra;
+          return GroupWineDetailScreen(
+            groupId: state.pathParameters['id']!,
+            canonicalWineId: state.pathParameters['cid']!,
+            initial: extra is WineEntity ? extra : null,
+          );
+        },
       ),
 
       // Tasting create
@@ -270,6 +342,10 @@ GoRouter goRouter(GoRouterRef ref) {
       GoRoute(
         path: AppRoutes.profileNotifications,
         builder: (context, state) => const NotificationSettingsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.wineCleanup,
+        builder: (context, state) => const WineCleanupScreen(),
       ),
 
       // Paywall (shown as a fullscreen page; trigger source passed via extra)
@@ -308,6 +384,16 @@ GoRouter goRouter(GoRouterRef ref) {
     ref.read(analyticsProvider).screen(loc);
   });
 
+  // Arm the splash deadline as soon as we know the user is authenticated
+  // (cold start or fresh sign-in). Disarm on sign-out so a later
+  // re-auth gets a full window again. Deferred via microtask: Riverpod
+  // forbids mutating another provider during a build, and goRouter is
+  // building right now.
+  if (ref.read(isAuthenticatedProvider)) {
+    Future.microtask(
+      () => ref.read(splashDeadlineProvider.notifier)._arm(),
+    );
+  }
   ref.listen(authControllerProvider, (prev, next) {
     // Any successful auth (sign-in or sign-up) means the device has
     // committed — mark onboarding seen so a later sign-out doesn't bounce
@@ -318,11 +404,15 @@ GoRouter goRouter(GoRouterRef ref) {
       Future.microtask(
         () => ref.read(onboardingControllerProvider.notifier).markSeen(),
       );
+      ref.read(splashDeadlineProvider.notifier)._arm();
+    } else if (wasSignedIn && !nowSignedIn) {
+      ref.read(splashDeadlineProvider.notifier)._disarm();
     }
     router.refresh();
   });
   ref.listen(onboardingControllerProvider, (_, _) => router.refresh());
   ref.listen(passwordRecoveryControllerProvider, (_, _) => router.refresh());
+  ref.listen(splashDeadlineProvider, (_, _) => router.refresh());
   // Refresh on:
   //  - profile transitioning from loading → loaded (so splash can leave)
   //  - username-presence flipping (gate-relevant)
@@ -368,7 +458,12 @@ class MainShell extends ConsumerWidget {
 
     return Scaffold(
       extendBody: true,
-      body: navigationShell,
+      body: Column(
+        children: [
+          const OfflineIndicator(),
+          Expanded(child: navigationShell),
+        ],
+      ),
       bottomNavigationBar: SafeArea(
         top: false,
         child: Padding(

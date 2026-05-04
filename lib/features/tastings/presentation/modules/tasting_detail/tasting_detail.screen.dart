@@ -13,6 +13,7 @@ import '../../../../auth/controller/auth.provider.dart';
 import '../../../../friends/domain/entities/friend_profile.entity.dart';
 import '../../../../friends/presentation/widgets/friend_avatar.widget.dart';
 import '../../../../groups/controller/group.provider.dart';
+import '../../../../wines/controller/wine.provider.dart';
 import '../../../../wines/domain/entities/wine.entity.dart';
 import '../../../../wines/presentation/widgets/wine_card.widget.dart';
 import '../../../controller/tastings.provider.dart';
@@ -786,6 +787,8 @@ class _WinesSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
     final winesAsync = ref.watch(tastingWinesProvider(tasting.id));
+    final ratingsAsync = ref.watch(tastingWineRatingsProvider(tasting.id));
+    final ratings = ratingsAsync.valueOrNull ?? const {};
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -808,10 +811,15 @@ class _WinesSection extends ConsumerWidget {
                   behavior: HitTestBehavior.opaque,
                   onTap: () async {
                     final existing = winesAsync.valueOrNull ?? const [];
-                    final existingIds = existing.map((w) => w.id).toSet();
+                    // existing wines come from the catalog (id ==
+                    // canonical_wine_id), so the picker matches user's
+                    // personal wines by their canonicalWineId field.
+                    final existingCanonicalIds = existing
+                        .map((w) => w.canonicalWineId ?? w.id)
+                        .toSet();
                     final picked = await showWinePickerSheet(
                       context: context,
-                      alreadyInLineup: existingIds,
+                      alreadyInLineup: existingCanonicalIds,
                     );
                     if (picked != null && picked.isNotEmpty) {
                       await ref
@@ -854,14 +862,19 @@ class _WinesSection extends ConsumerWidget {
                   horizontal: context.paddingH * 1.3),
               itemCount: wines.length,
               separatorBuilder: (_, __) => SizedBox(height: context.s),
-              itemBuilder: (_, i) => _WineLineupCard(
-                wine: wines[i],
-                rank: i + 1,
-                canRemove: isOwner,
-                onRemove: () => ref
-                    .read(tastingsControllerProvider.notifier)
-                    .removeWine(tasting.id, wines[i].id),
-              ),
+              itemBuilder: (_, i) {
+                final cid = wines[i].canonicalWineId ?? wines[i].id;
+                return _WineLineupCard(
+                  wine: wines[i],
+                  rank: i + 1,
+                  groupId: tasting.groupId,
+                  canRemove: isOwner,
+                  ratingOverride: ratings[cid],
+                  onRemove: () => ref
+                      .read(tastingsControllerProvider.notifier)
+                      .removeWine(tasting.id, wines[i].id),
+                );
+              },
             );
           },
           loading: () => const SizedBox.shrink(),
@@ -911,28 +924,57 @@ class _WinesEmptyState extends StatelessWidget {
   }
 }
 
-class _WineLineupCard extends StatelessWidget {
+class _WineLineupCard extends ConsumerWidget {
   final WineEntity wine;
   final int rank;
+  final String groupId;
   final bool canRemove;
+  final double? ratingOverride;
   final VoidCallback onRemove;
 
   const _WineLineupCard({
     required this.wine,
     required this.rank,
+    required this.groupId,
     required this.canRemove,
     required this.onRemove,
+    this.ratingOverride,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
     return Stack(
       children: [
         WineCardWidget(
           wine: wine,
           rank: rank,
-          onTap: () => context.push(AppRoutes.wineDetailPath(wine.id)),
+          ratingOverride: ratingOverride,
+          hideRatingIfEmpty: true,
+          onTap: () {
+            // Tasting wines are catalog-keyed (id == canonical_wine_id).
+            // If the user owns a personal log row for this canonical
+            // bottle, route to their full personal detail; otherwise
+            // fall back to the canonical group wine detail screen.
+            final cid = wine.canonicalWineId ?? wine.id;
+            final localWines =
+                ref.read(wineControllerProvider).valueOrNull ?? const [];
+            WineEntity? mine;
+            for (final w in localWines) {
+              if (w.canonicalWineId == cid) {
+                mine = w;
+                break;
+              }
+            }
+            if (mine != null) {
+              context.push(AppRoutes.wineDetailPath(mine.id), extra: mine);
+            } else {
+              context.push(
+                AppRoutes.groupWineDetailPath(groupId, cid),
+                extra: wine,
+              );
+            }
+          },
         ),
         if (canRemove)
           Positioned(

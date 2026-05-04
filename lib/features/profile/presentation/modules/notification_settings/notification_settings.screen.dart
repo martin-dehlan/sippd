@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../../common/utils/responsive.dart';
+import '../../../../../common/widgets/error_view.widget.dart';
 import '../../../../push/controller/push.provider.dart';
 import '../../../../push/domain/entities/notification_prefs.entity.dart';
 
@@ -17,7 +18,6 @@ class NotificationSettingsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final cs = Theme.of(context).colorScheme;
     final prefsAsync = ref.watch(notificationPrefsControllerProvider);
     final controller = ref.read(notificationPrefsControllerProvider.notifier);
 
@@ -31,13 +31,11 @@ class NotificationSettingsScreen extends ConsumerWidget {
         data: (prefs) => _Body(prefs: prefs, controller: controller),
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(
-          child: Padding(
-            padding: EdgeInsets.all(context.paddingH),
-            child: Text(
-              'Could not load notification settings: $e',
-              style: TextStyle(color: cs.error),
-              textAlign: TextAlign.center,
-            ),
+          child: ErrorView(
+            title: "Couldn't load notification settings",
+            onRetry: () =>
+                ref.invalidate(notificationPrefsControllerProvider),
+            error: e,
           ),
         ),
       ),

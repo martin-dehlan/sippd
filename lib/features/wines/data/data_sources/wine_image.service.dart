@@ -18,6 +18,7 @@ class WineImageService {
       maxWidth: 1200,
       maxHeight: 1200,
       imageQuality: 80,
+      requestFullMetadata: false,
     );
 
     if (photo == null) return null;

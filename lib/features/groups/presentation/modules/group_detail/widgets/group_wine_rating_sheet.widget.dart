@@ -5,6 +5,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../../../common/errors/app_error.dart';
 import '../../../../../../common/utils/responsive.dart';
 import '../../../../../auth/controller/auth.provider.dart';
 import '../../../../../profile/presentation/widgets/profile_avatar.widget.dart';
@@ -47,6 +48,7 @@ class _SheetState extends ConsumerState<_Sheet> {
   bool _saving = false;
   bool _loaded = false;
   bool _justSaved = false;
+  Object? _saveError;
   Timer? _savedTimer;
 
   @override
@@ -74,10 +76,17 @@ class _SheetState extends ConsumerState<_Sheet> {
 
   Future<void> _save() async {
     if (_myRating == null || _saving) return;
-    setState(() => _saving = true);
+    setState(() {
+      _saving = true;
+      _saveError = null;
+    });
     HapticFeedback.selectionClick();
     try {
       final notes = _notesController.text.trim();
+      // Owners ALSO need a group_wine_ratings row — otherwise drinking
+      // partners / shared bottles can't see them (those features only
+      // count group / tasting context). Personal rating still rides on
+      // wines.rating so the wine_detail summary stays in sync.
       if (_isOwner) {
         final fresh = await ref
                 .read(wineRepositoryProvider)
@@ -91,18 +100,21 @@ class _SheetState extends ConsumerState<_Sheet> {
         await ref.read(wineControllerProvider.notifier).updateWine(updated);
         ref.invalidate(groupWinesProvider(widget.groupId));
         ref.invalidate(wineDetailProvider(widget.wine.id));
-      } else {
-        await ref
-            .read(groupWineRatingControllerProvider.notifier)
-            .upsertRating(
-              groupId: widget.groupId,
-              wineId: widget.wine.id,
-              rating: _myRating!,
-              notes: notes.isEmpty ? null : notes,
-            );
       }
+      final canonicalId = widget.wine.canonicalWineId;
+      if (canonicalId == null) {
+        throw Exception('Wine has no canonical identity yet — try again.');
+      }
+      await ref
+          .read(groupWineRatingControllerProvider.notifier)
+          .upsertRating(
+            groupId: widget.groupId,
+            canonicalWineId: canonicalId,
+            rating: _myRating!,
+            notes: notes.isEmpty ? null : notes,
+          );
       ref.invalidate(
-          groupWineRatingsProvider(widget.groupId, widget.wine.id));
+          groupWineRatingsProvider(widget.groupId, canonicalId));
       if (mounted) {
         HapticFeedback.lightImpact();
         setState(() {
@@ -116,23 +128,25 @@ class _SheetState extends ConsumerState<_Sheet> {
         });
       }
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed: $e')),
-        );
-      }
+      if (mounted) setState(() => _saveError = e);
     } finally {
       if (mounted) setState(() => _saving = false);
     }
   }
 
   Future<void> _delete() async {
-    if (_isOwner) return;
     setState(() => _saving = true);
     try {
+      // Removes only the group_wine_ratings row. Owners' personal
+      // wines.rating is left intact — that's still their general
+      // opinion of the wine, even if they no longer want to surface
+      // their group-context rating.
+      final canonicalId = widget.wine.canonicalWineId;
+      if (canonicalId == null) return;
       await ref
           .read(groupWineRatingControllerProvider.notifier)
-          .deleteRating(groupId: widget.groupId, wineId: widget.wine.id);
+          .deleteRating(
+              groupId: widget.groupId, canonicalWineId: canonicalId);
       if (mounted) Navigator.of(context).pop();
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -164,19 +178,22 @@ class _SheetState extends ConsumerState<_Sheet> {
       ),
     );
     if (confirmed != true) return;
-    setState(() => _saving = true);
+    setState(() {
+      _saving = true;
+      _saveError = null;
+    });
     try {
+      final canonicalId = widget.wine.canonicalWineId;
+      if (canonicalId == null) {
+        throw Exception('Wine has no canonical identity yet.');
+      }
       await ref.read(groupControllerProvider.notifier).unshareWineFromGroup(
             groupId: widget.groupId,
-            wineId: widget.wine.id,
+            canonicalWineId: canonicalId,
           );
       if (mounted) Navigator.of(context).pop();
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed: $e')),
-        );
-      }
+      if (mounted) setState(() => _saveError = e);
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -185,8 +202,9 @@ class _SheetState extends ConsumerState<_Sheet> {
   @override
   Widget build(BuildContext context) {
     final userId = ref.watch(currentUserIdProvider);
+    final canonicalId = widget.wine.canonicalWineId ?? widget.wine.id;
     final ratingsAsync = ref.watch(
-        groupWineRatingsProvider(widget.groupId, widget.wine.id));
+        groupWineRatingsProvider(widget.groupId, canonicalId));
 
     if (!_loaded) {
       if (userId == widget.wine.userId) {
@@ -213,8 +231,7 @@ class _SheetState extends ConsumerState<_Sheet> {
       }
     }
 
-    final hasExistingRating = !_isOwner &&
-        _loaded &&
+    final hasExistingRating = _loaded &&
         ratingsAsync.valueOrNull?.any((r) => r.userId == userId) == true;
 
     final isDirty = _myRating != null &&
@@ -241,7 +258,7 @@ class _SheetState extends ConsumerState<_Sheet> {
                 Expanded(child: _Header(wine: widget.wine)),
                 _UnshareMenu(
                   groupId: widget.groupId,
-                  wineId: widget.wine.id,
+                  canonicalWineId: canonicalId,
                   onRemove: _saving ? null : _confirmUnshare,
                 ),
               ],
@@ -264,9 +281,10 @@ class _SheetState extends ConsumerState<_Sheet> {
             ),
             SizedBox(height: context.l),
             _SaveButton(
-              enabled: isDirty && !_saving,
+              enabled: (isDirty || _saveError != null) && !_saving,
               saving: _saving,
               justSaved: _justSaved,
+              error: _saveError,
               onTap: _save,
             ),
             if (hasExistingRating) ...[
@@ -434,6 +452,11 @@ class _Slider extends StatelessWidget {
         trackHeight: context.xs * 2.2,
         activeTrackColor: cs.primary,
         inactiveTrackColor: cs.surfaceContainer,
+        // Match enabled colors so the brief disabled flash during save
+        // doesn't visibly recolor the track / thumb.
+        disabledActiveTrackColor: cs.primary,
+        disabledInactiveTrackColor: cs.surfaceContainer,
+        disabledThumbColor: cs.primary,
         thumbColor: cs.primary,
         overlayColor: cs.primary.withValues(alpha: 0.12),
         thumbShape: RoundSliderThumbShape(
@@ -503,26 +526,38 @@ class _SaveButton extends StatelessWidget {
   final bool enabled;
   final bool saving;
   final bool justSaved;
+  final Object? error;
   final VoidCallback onTap;
   const _SaveButton({
     required this.enabled,
     required this.saving,
     required this.justSaved,
     required this.onTap,
+    this.error,
   });
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final label = justSaved ? 'Saved ✓' : 'Save rating';
+    final hasError = error != null;
+    final label = hasError
+        ? (error is OfflineError || error is NetworkError
+            ? 'Offline · Retry'
+            : "Couldn't save · Retry")
+        : (justSaved ? 'Saved ✓' : 'Save rating');
     return SizedBox(
       height: context.h * 0.055,
       child: FilledButton(
         onPressed: enabled ? onTap : null,
         style: FilledButton.styleFrom(
           elevation: 0,
+          backgroundColor: hasError ? cs.errorContainer : null,
+          foregroundColor: hasError ? cs.onErrorContainer : null,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(context.w * 0.04),
+            side: hasError
+                ? BorderSide(color: cs.error.withValues(alpha: 0.4), width: 1)
+                : BorderSide.none,
           ),
         ),
         child: saving
@@ -680,6 +715,7 @@ class _GroupZone extends StatelessWidget {
                   key: ValueKey(sorted[i].userId),
                   r: sorted[i],
                   isMe: sorted[i].userId == currentUserId,
+                  isFirst: i == 0,
                 ),
               ),
             );
@@ -702,7 +738,13 @@ class _GroupZone extends StatelessWidget {
 class _RankingBar extends StatelessWidget {
   final GroupWineRatingEntity r;
   final bool isMe;
-  const _RankingBar({super.key, required this.r, required this.isMe});
+  final bool isFirst;
+  const _RankingBar({
+    super.key,
+    required this.r,
+    required this.isMe,
+    required this.isFirst,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -713,7 +755,9 @@ class _RankingBar extends StatelessWidget {
     final avatarSize = barH;
     final fillColor = isMe
         ? cs.primary
-        : cs.onSurfaceVariant.withValues(alpha: 0.35);
+        : isFirst
+            ? cs.tertiary
+            : cs.onSurfaceVariant.withValues(alpha: 0.35);
 
     return Row(
       children: [
@@ -807,12 +851,12 @@ class _RankingBar extends StatelessWidget {
 
 class _UnshareMenu extends ConsumerWidget {
   final String groupId;
-  final String wineId;
+  final String canonicalWineId;
   final VoidCallback? onRemove;
 
   const _UnshareMenu({
     required this.groupId,
-    required this.wineId,
+    required this.canonicalWineId,
     required this.onRemove,
   });
 
@@ -821,7 +865,8 @@ class _UnshareMenu extends ConsumerWidget {
     final uid = ref.watch(currentUserIdProvider);
     if (uid == null) return const SizedBox.shrink();
 
-    final sharedBy = ref.watch(groupWineShareMetaProvider(groupId, wineId))
+    final sharedBy = ref
+        .watch(groupWineShareMetaProvider(groupId, canonicalWineId))
         .valueOrNull;
     final group = ref.watch(groupControllerProvider).valueOrNull
         ?.where((g) => g.id == groupId)
@@ -831,7 +876,7 @@ class _UnshareMenu extends ConsumerWidget {
     if (!isSharer && !isOwner) return const SizedBox.shrink();
 
     final cs = Theme.of(context).colorScheme;
-    return PopupMenuButton<void>(
+    return PopupMenuButton<bool>(
       icon: Icon(PhosphorIconsRegular.dotsThree, size: context.w * 0.055, color: cs.outline),
       tooltip: 'More',
       padding: EdgeInsets.zero,
@@ -841,8 +886,11 @@ class _UnshareMenu extends ConsumerWidget {
       ),
       onSelected: (_) => onRemove?.call(),
       itemBuilder: (_) => [
-        PopupMenuItem(
-          onTap: null,
+        PopupMenuItem<bool>(
+          // PopupMenuButton's onSelected only fires for non-null values —
+          // a void/null-valued item pops as null and routes through
+          // onCanceled instead, silently swallowing the tap.
+          value: true,
           enabled: onRemove != null,
           child: Row(
             children: [

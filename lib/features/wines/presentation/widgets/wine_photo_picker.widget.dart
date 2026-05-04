@@ -40,9 +40,10 @@ class _WinePhotoPickerState extends ConsumerState<WinePhotoPicker> {
       final picker = ImagePicker();
       final photo = await picker.pickImage(
         source: source,
-        maxWidth: 1600,
-        maxHeight: 1600,
-        imageQuality: 85,
+        maxWidth: 1200,
+        maxHeight: 1200,
+        imageQuality: 80,
+        requestFullMetadata: false,
       );
       if (photo == null) return;
 
@@ -150,10 +151,23 @@ class _PreviewImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     if (localPath != null) {
       return Image.file(File(localPath!), fit: BoxFit.cover);
     }
-    return Image.network(imageUrl!, fit: BoxFit.cover);
+    return Image.network(
+      imageUrl!,
+      fit: BoxFit.cover,
+      errorBuilder: (_, __, ___) => Container(
+        color: cs.surfaceContainer,
+        alignment: Alignment.center,
+        child: Icon(
+          PhosphorIconsRegular.wine,
+          size: 40,
+          color: cs.onSurfaceVariant.withValues(alpha: 0.5),
+        ),
+      ),
+    );
   }
 }
 

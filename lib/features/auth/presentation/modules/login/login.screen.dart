@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/app_logo.widget.dart';
+import '../../../../../common/widgets/inline_error.widget.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../controller/auth.provider.dart';
 import '../../widgets/google_sign_in_button.widget.dart';
@@ -23,6 +24,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   bool _isSignUp = false;
   final _displayNameController = TextEditingController();
+  Object? _submitError;
 
   @override
   void dispose() {
@@ -34,6 +36,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
+    setState(() => _submitError = null);
 
     final auth = ref.read(authControllerProvider.notifier);
 
@@ -68,12 +71,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     final state = ref.read(authControllerProvider);
     if (state.hasError) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(state.error.toString()),
-          backgroundColor: Theme.of(context).colorScheme.error,
-        ),
-      );
+      setState(() => _submitError = state.error);
     }
   }
 
@@ -206,29 +204,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                   SizedBox(height: _isSignUp ? context.xl : context.s),
 
-                  // Submit
-                  SizedBox(
-                    width: double.infinity,
-                    height: context.h * 0.06,
-                    child: ElevatedButton(
-                      onPressed: isLoading ? null : _submit,
-                      child: isLoading
-                          ? SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: cs.onPrimary,
-                              ),
-                            )
-                          : Text(
-                              _isSignUp ? 'Create Account' : 'Sign In',
-                              style: TextStyle(
-                                fontSize: context.bodyFont,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
+                  if (_submitError != null) ...[
+                    InlineFieldError(
+                      error: _submitError,
+                      fallback: _isSignUp
+                          ? "Couldn't create account. Try again."
+                          : "Sign-in failed. Check your details.",
                     ),
+                    SizedBox(height: context.s),
+                  ],
+                  RetryActionButton(
+                    idleLabel: _isSignUp ? 'Create Account' : 'Sign In',
+                    loading: isLoading,
+                    error: _submitError,
+                    onPressed: _submit,
                   ),
                   SizedBox(height: context.m),
 

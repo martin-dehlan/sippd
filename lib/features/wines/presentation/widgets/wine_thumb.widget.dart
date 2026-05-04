@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../domain/entities/wine.entity.dart';
 
@@ -58,8 +58,22 @@ class WineThumb extends StatelessWidget {
             ),
             clipBehavior: Clip.antiAlias,
             child: image != null
-                ? Image(image: image, fit: BoxFit.cover)
-                : _Typographic(wine: wine, size: size),
+                ? Image(
+                    image: image,
+                    fit: BoxFit.cover,
+                    // Same lean placeholder regardless of the failure
+                    // mode — keeps the row from flashing the default
+                    // red-X glyph or shifting backgrounds.
+                    errorBuilder: (_, __, ___) =>
+                        _Placeholder(size: size),
+                    frameBuilder: (_, child, frame, wasSync) {
+                      if (frame == null && !wasSync) {
+                        return _Placeholder(size: size);
+                      }
+                      return child;
+                    },
+                  )
+                : _Placeholder(size: size),
           ),
           if (cornerOverlay != null)
             Positioned(top: -size * 0.06, left: -size * 0.06, child: cornerOverlay!),
@@ -69,30 +83,22 @@ class WineThumb extends StatelessWidget {
   }
 }
 
-class _Typographic extends StatelessWidget {
-  final WineEntity wine;
+/// Single-source placeholder rendered for every absent / pending /
+/// broken thumbnail. Same surfaceContainer bg as the parent slot and
+/// a thin phosphor wine-glass at low alpha — the missing image reads
+/// as "nothing here" instead of broken or styled-different.
+class _Placeholder extends StatelessWidget {
   final double size;
-  const _Typographic({required this.wine, required this.size});
+  const _Placeholder({required this.size});
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final initial = (wine.name.trim().isNotEmpty
-            ? wine.name.trim()[0]
-            : '?')
-        .toUpperCase();
-    return Container(
-      color: wineTypeColor(wine.type, cs).withValues(alpha: 0.22),
-      alignment: Alignment.center,
-      child: Text(
-        initial,
-        style: GoogleFonts.playfairDisplay(
-          fontSize: size * 0.52,
-          fontWeight: FontWeight.w900,
-          color: cs.onSurface,
-          letterSpacing: -0.5,
-          height: 1,
-        ),
+    return Center(
+      child: Icon(
+        PhosphorIconsThin.wine,
+        size: size * 0.42,
+        color: cs.onSurfaceVariant.withValues(alpha: 0.45),
       ),
     );
   }

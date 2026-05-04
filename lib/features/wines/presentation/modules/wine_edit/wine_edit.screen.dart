@@ -31,6 +31,7 @@ class WineEditScreen extends ConsumerWidget {
             return memoriesAsync.when(
               data: (memories) => WineForm(
                 autoSave: true,
+                wine: wine,
                 initial: _toFormData(wine, memories),
                 onSubmit: (data) async {
                   final updated = wine.copyWith(
@@ -45,6 +46,8 @@ class WineEditScreen extends ConsumerWidget {
                     longitude: data.location?.lng,
                     notes: data.notes,
                     grape: data.grape,
+                    canonicalGrapeId: data.canonicalGrapeId,
+                    grapeFreetext: data.grapeFreetext,
                     winery: data.winery,
                     vintage: data.vintage,
                     imageUrl: data.imageUrl,
@@ -83,6 +86,9 @@ class WineEditScreen extends ConsumerWidget {
       price: wine.price,
       vintage: wine.vintage,
       grape: wine.grape,
+      canonicalGrapeId: wine.canonicalGrapeId,
+      grapeFreetext: wine.grapeFreetext ??
+          (wine.canonicalGrapeId == null ? wine.grape : null),
       winery: wine.winery,
       country: wine.country,
       region: wine.region,

@@ -4,7 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../../../common/utils/responsive.dart';
+import '../../../../../wines/presentation/widgets/wine_thumb.widget.dart';
 import '../../../../../../core/routes/app.routes.dart';
+import '../../../../../auth/controller/auth.provider.dart';
 import '../../../../../wines/domain/entities/wine.entity.dart';
 import '../../../../controller/group.provider.dart';
 import '../../../../domain/entities/group_wine_rating.entity.dart';
@@ -135,8 +137,17 @@ class _SharedWinesCarouselState extends ConsumerState<SharedWinesCarousel> {
   @override
   Widget build(BuildContext context) {
     final winesAsync = ref.watch(groupWinesProvider(widget.groupId));
+    final ranks =
+        ref.watch(groupWineRanksProvider(widget.groupId)).valueOrNull ??
+            const <String, int>{};
 
     return winesAsync.when(
+      // Keep showing the previous wine list while a save / refresh is
+      // in flight — without this, every group_wines_provider invalidate
+      // (owner-rates-own-wine path) flashes the whole carousel back
+      // through the skeleton state.
+      skipLoadingOnReload: true,
+      skipLoadingOnRefresh: true,
       data: (wines) {
         if (wines.isEmpty) {
           return _EmptyShared(
@@ -144,11 +155,19 @@ class _SharedWinesCarouselState extends ConsumerState<SharedWinesCarousel> {
                 WinePickerSheet.show(context, groupId: widget.groupId),
           );
         }
+        final sorted = [...wines]..sort((a, b) {
+            final ra = ranks[a.canonicalWineId ?? a.id];
+            final rb = ranks[b.canonicalWineId ?? b.id];
+            if (ra == null && rb == null) return 0;
+            if (ra == null) return 1;
+            if (rb == null) return -1;
+            return ra.compareTo(rb);
+          });
         return SizedBox(
           height: context.h * 0.28,
           child: PageView.builder(
             controller: _pageController,
-            itemCount: wines.length,
+            itemCount: sorted.length,
             padEnds: true,
             clipBehavior: Clip.none,
             itemBuilder: (_, i) {
@@ -164,7 +183,7 @@ class _SharedWinesCarouselState extends ConsumerState<SharedWinesCarousel> {
                     scale: scale,
                     child: _WineCard(
                       groupId: widget.groupId,
-                      wine: wines[i],
+                      wine: sorted[i],
                       isActive: delta < 0.5,
                     ),
                   ),
@@ -398,7 +417,9 @@ class _WineCard extends ConsumerWidget {
     final ratingsAsync =
         ref.watch(groupWineRatingsProvider(groupId, wine.id));
     final ranksAsync = ref.watch(groupWineRanksProvider(groupId));
-    final rank = ranksAsync.valueOrNull?[wine.id];
+    final rank = ranksAsync.valueOrNull?[wine.canonicalWineId ?? wine.id];
+    final currentUserId = ref.watch(currentUserIdProvider);
+    final isOwner = currentUserId != null && wine.userId == currentUserId;
     final typeColor = switch (wine.type) {
       WineType.red => const Color(0xFFA84343),
       WineType.white => const Color(0xFFD4C49A),
@@ -473,8 +494,20 @@ class _WineCard extends ConsumerWidget {
             _RatingFooter(
               ratings: ratingsAsync.valueOrNull ?? const [],
               fallback: wine.rating,
-              onDetails: () =>
-                  context.push(AppRoutes.wineDetailPath(wine.id)),
+              onDetails: () {
+                if (isOwner) {
+                  context.push(
+                    AppRoutes.wineDetailPath(wine.id),
+                    extra: wine,
+                  );
+                } else {
+                  final cid = wine.canonicalWineId ?? wine.id;
+                  context.push(
+                    AppRoutes.groupWineDetailPath(groupId, cid),
+                    extra: wine,
+                  );
+                }
+              },
             ),
           ],
         ),
@@ -498,6 +531,16 @@ class _WineImageArea extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = context.w * 0.22;
+    // Use the shared resolver so newly-added / offline wines that only
+    // have a `localImagePath` show their photo here too — matching the
+    // main wine list. Without this the carousel would only render after
+    // Supabase upload completed and `imageUrl` was populated.
+    final image = resolveWineImage(wine);
+    final placeholder = Icon(
+      PhosphorIconsRegular.wine,
+      size: size * 0.55,
+      color: typeColor.withValues(alpha: 0.6),
+    );
     return Center(
       child: Container(
         width: size,
@@ -507,25 +550,17 @@ class _WineImageArea extends StatelessWidget {
           shape: BoxShape.circle,
         ),
         alignment: Alignment.center,
-        child: wine.imageUrl != null
+        child: image != null
             ? ClipOval(
-                child: Image.network(
-                  wine.imageUrl!,
+                child: Image(
+                  image: image,
                   width: size,
                   height: size,
                   fit: BoxFit.cover,
-                  errorBuilder: (_, _, _) => Icon(
-                    PhosphorIconsRegular.wine,
-                    size: size * 0.55,
-                    color: typeColor.withValues(alpha: 0.6),
-                  ),
+                  errorBuilder: (_, _, _) => placeholder,
                 ),
               )
-            : Icon(
-                PhosphorIconsRegular.wine,
-                size: size * 0.55,
-                color: typeColor.withValues(alpha: 0.6),
-              ),
+            : placeholder,
       ),
     );
   }

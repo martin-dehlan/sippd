@@ -40,7 +40,7 @@ final wineSupabaseApiProvider = AutoDisposeProvider<WineSupabaseApi?>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef WineSupabaseApiRef = AutoDisposeProviderRef<WineSupabaseApi?>;
-String _$wineRepositoryHash() => r'7930a0aab308db7eb920f1ffa561f1ac8bd4075d';
+String _$wineRepositoryHash() => r'8456fb116e8fe5e2850ebc975c9e012c606c138b';
 
 /// See also [wineRepository].
 @ProviderFor(wineRepository)
@@ -57,6 +57,51 @@ final wineRepositoryProvider = AutoDisposeProvider<WineRepository>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef WineRepositoryRef = AutoDisposeProviderRef<WineRepository>;
+String _$imageOutboxFlusherHash() =>
+    r'db0f1dad715674ec7c42c788fc9622c704691b18';
+
+/// Background flusher for the image-upload outbox. Triggered at launch
+/// and on every connectivity flip to online via [imageOutboxAutoFlush].
+///
+/// Copied from [imageOutboxFlusher].
+@ProviderFor(imageOutboxFlusher)
+final imageOutboxFlusherProvider = AutoDisposeProvider<OutboxFlusher>.internal(
+  imageOutboxFlusher,
+  name: r'imageOutboxFlusherProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$imageOutboxFlusherHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef ImageOutboxFlusherRef = AutoDisposeProviderRef<OutboxFlusher>;
+String _$imageOutboxAutoFlushHash() =>
+    r'7946f420631f27de44db719c6d645ee28a8230c8';
+
+/// Self-arming side-effect provider: drains the image outbox whenever
+/// the device is online. Riverpod tracks the dependency so a flip from
+/// offline → online re-runs `build` and triggers another flush. Read
+/// once at app start (e.g. in main.dart's ProviderScope) to keep it
+/// alive — no UI consumes it.
+///
+/// Copied from [imageOutboxAutoFlush].
+@ProviderFor(imageOutboxAutoFlush)
+final imageOutboxAutoFlushProvider = FutureProvider<void>.internal(
+  imageOutboxAutoFlush,
+  name: r'imageOutboxAutoFlushProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$imageOutboxAutoFlushHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef ImageOutboxAutoFlushRef = FutureProviderRef<void>;
 String _$wineAliasSupabaseApiHash() =>
     r'483b4ec800daa8ec1d476684d7df709f42e31eb2';
 
@@ -134,7 +179,7 @@ final wineMemorySupabaseApiProvider =
 typedef WineMemorySupabaseApiRef =
     AutoDisposeProviderRef<WineMemorySupabaseApi?>;
 String _$wineMemoryRepositoryHash() =>
-    r'6e49d54d9eb5316d7b68058da124898531242b4b';
+    r'eae09b3d41e06c1b4b0f4da3da55436c5d0dc6c2';
 
 /// See also [wineMemoryRepository].
 @ProviderFor(wineMemoryRepository)
@@ -152,7 +197,93 @@ final wineMemoryRepositoryProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef WineMemoryRepositoryRef = AutoDisposeProviderRef<WineMemoryRepository>;
-String _$wineDetailHash() => r'e16e2db7c1f552d816b73dc417075b660dab01b5';
+String _$canonicalGrapeSupabaseApiHash() =>
+    r'47797806b34a2a336ffd753cec4640a2049ac841';
+
+/// See also [canonicalGrapeSupabaseApi].
+@ProviderFor(canonicalGrapeSupabaseApi)
+final canonicalGrapeSupabaseApiProvider =
+    AutoDisposeProvider<CanonicalGrapeSupabaseApi?>.internal(
+      canonicalGrapeSupabaseApi,
+      name: r'canonicalGrapeSupabaseApiProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$canonicalGrapeSupabaseApiHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef CanonicalGrapeSupabaseApiRef =
+    AutoDisposeProviderRef<CanonicalGrapeSupabaseApi?>;
+String _$canonicalGrapeRepositoryHash() =>
+    r'35d08374db93a23e42dbe107ae1ce02d663ad16f';
+
+/// See also [canonicalGrapeRepository].
+@ProviderFor(canonicalGrapeRepository)
+final canonicalGrapeRepositoryProvider =
+    AutoDisposeProvider<CanonicalGrapeRepository>.internal(
+      canonicalGrapeRepository,
+      name: r'canonicalGrapeRepositoryProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$canonicalGrapeRepositoryHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef CanonicalGrapeRepositoryRef =
+    AutoDisposeProviderRef<CanonicalGrapeRepository>;
+String _$canonicalGrapeSyncHash() =>
+    r'3305a1207d93203107008c5a858d32961a3ae1c8';
+
+/// Kicks off a remote sync of the canonical catalog the first time the
+/// provider is read. Kept alive so subsequent reads return the cached
+/// future instead of re-syncing on every UI rebuild.
+///
+/// Copied from [canonicalGrapeSync].
+@ProviderFor(canonicalGrapeSync)
+final canonicalGrapeSyncProvider = FutureProvider<void>.internal(
+  canonicalGrapeSync,
+  name: r'canonicalGrapeSyncProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$canonicalGrapeSyncHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef CanonicalGrapeSyncRef = FutureProviderRef<void>;
+String _$canonicalGrapesAllHash() =>
+    r'c1e4b5da20b9674dfa2daeb2ba8047765ec5c662';
+
+/// Full sorted catalog. Awaits the initial sync so newly-installed apps
+/// see the catalog before the user touches the grape picker.
+///
+/// Copied from [canonicalGrapesAll].
+@ProviderFor(canonicalGrapesAll)
+final canonicalGrapesAllProvider =
+    AutoDisposeFutureProvider<List<CanonicalGrapeEntity>>.internal(
+      canonicalGrapesAll,
+      name: r'canonicalGrapesAllProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$canonicalGrapesAllHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef CanonicalGrapesAllRef =
+    AutoDisposeFutureProviderRef<List<CanonicalGrapeEntity>>;
+String _$canonicalGrapesSearchHash() =>
+    r'546f041de1dfd811dc7e79a6893f49aaa84324c2';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -174,6 +305,490 @@ class _SystemHash {
     return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
   }
 }
+
+/// Search results for the typeahead. Empty query returns the full list.
+///
+/// Copied from [canonicalGrapesSearch].
+@ProviderFor(canonicalGrapesSearch)
+const canonicalGrapesSearchProvider = CanonicalGrapesSearchFamily();
+
+/// Search results for the typeahead. Empty query returns the full list.
+///
+/// Copied from [canonicalGrapesSearch].
+class CanonicalGrapesSearchFamily
+    extends Family<AsyncValue<List<CanonicalGrapeEntity>>> {
+  /// Search results for the typeahead. Empty query returns the full list.
+  ///
+  /// Copied from [canonicalGrapesSearch].
+  const CanonicalGrapesSearchFamily();
+
+  /// Search results for the typeahead. Empty query returns the full list.
+  ///
+  /// Copied from [canonicalGrapesSearch].
+  CanonicalGrapesSearchProvider call(String query) {
+    return CanonicalGrapesSearchProvider(query);
+  }
+
+  @override
+  CanonicalGrapesSearchProvider getProviderOverride(
+    covariant CanonicalGrapesSearchProvider provider,
+  ) {
+    return call(provider.query);
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'canonicalGrapesSearchProvider';
+}
+
+/// Search results for the typeahead. Empty query returns the full list.
+///
+/// Copied from [canonicalGrapesSearch].
+class CanonicalGrapesSearchProvider
+    extends AutoDisposeFutureProvider<List<CanonicalGrapeEntity>> {
+  /// Search results for the typeahead. Empty query returns the full list.
+  ///
+  /// Copied from [canonicalGrapesSearch].
+  CanonicalGrapesSearchProvider(String query)
+    : this._internal(
+        (ref) => canonicalGrapesSearch(ref as CanonicalGrapesSearchRef, query),
+        from: canonicalGrapesSearchProvider,
+        name: r'canonicalGrapesSearchProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$canonicalGrapesSearchHash,
+        dependencies: CanonicalGrapesSearchFamily._dependencies,
+        allTransitiveDependencies:
+            CanonicalGrapesSearchFamily._allTransitiveDependencies,
+        query: query,
+      );
+
+  CanonicalGrapesSearchProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.query,
+  }) : super.internal();
+
+  final String query;
+
+  @override
+  Override overrideWith(
+    FutureOr<List<CanonicalGrapeEntity>> Function(
+      CanonicalGrapesSearchRef provider,
+    )
+    create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: CanonicalGrapesSearchProvider._internal(
+        (ref) => create(ref as CanonicalGrapesSearchRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        query: query,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<List<CanonicalGrapeEntity>> createElement() {
+    return _CanonicalGrapesSearchProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is CanonicalGrapesSearchProvider && other.query == query;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, query.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin CanonicalGrapesSearchRef
+    on AutoDisposeFutureProviderRef<List<CanonicalGrapeEntity>> {
+  /// The parameter `query` of this provider.
+  String get query;
+}
+
+class _CanonicalGrapesSearchProviderElement
+    extends AutoDisposeFutureProviderElement<List<CanonicalGrapeEntity>>
+    with CanonicalGrapesSearchRef {
+  _CanonicalGrapesSearchProviderElement(super.provider);
+
+  @override
+  String get query => (origin as CanonicalGrapesSearchProvider).query;
+}
+
+String _$canonicalGrapeHash() => r'2e7983e12039505ad1eda62028304cb875bfb6bf';
+
+/// Single grape lookup used by wine_detail to render the resolved name.
+///
+/// Copied from [canonicalGrape].
+@ProviderFor(canonicalGrape)
+const canonicalGrapeProvider = CanonicalGrapeFamily();
+
+/// Single grape lookup used by wine_detail to render the resolved name.
+///
+/// Copied from [canonicalGrape].
+class CanonicalGrapeFamily extends Family<AsyncValue<CanonicalGrapeEntity?>> {
+  /// Single grape lookup used by wine_detail to render the resolved name.
+  ///
+  /// Copied from [canonicalGrape].
+  const CanonicalGrapeFamily();
+
+  /// Single grape lookup used by wine_detail to render the resolved name.
+  ///
+  /// Copied from [canonicalGrape].
+  CanonicalGrapeProvider call(String id) {
+    return CanonicalGrapeProvider(id);
+  }
+
+  @override
+  CanonicalGrapeProvider getProviderOverride(
+    covariant CanonicalGrapeProvider provider,
+  ) {
+    return call(provider.id);
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'canonicalGrapeProvider';
+}
+
+/// Single grape lookup used by wine_detail to render the resolved name.
+///
+/// Copied from [canonicalGrape].
+class CanonicalGrapeProvider
+    extends AutoDisposeFutureProvider<CanonicalGrapeEntity?> {
+  /// Single grape lookup used by wine_detail to render the resolved name.
+  ///
+  /// Copied from [canonicalGrape].
+  CanonicalGrapeProvider(String id)
+    : this._internal(
+        (ref) => canonicalGrape(ref as CanonicalGrapeRef, id),
+        from: canonicalGrapeProvider,
+        name: r'canonicalGrapeProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$canonicalGrapeHash,
+        dependencies: CanonicalGrapeFamily._dependencies,
+        allTransitiveDependencies:
+            CanonicalGrapeFamily._allTransitiveDependencies,
+        id: id,
+      );
+
+  CanonicalGrapeProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.id,
+  }) : super.internal();
+
+  final String id;
+
+  @override
+  Override overrideWith(
+    FutureOr<CanonicalGrapeEntity?> Function(CanonicalGrapeRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: CanonicalGrapeProvider._internal(
+        (ref) => create(ref as CanonicalGrapeRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        id: id,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<CanonicalGrapeEntity?> createElement() {
+    return _CanonicalGrapeProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is CanonicalGrapeProvider && other.id == id;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, id.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin CanonicalGrapeRef on AutoDisposeFutureProviderRef<CanonicalGrapeEntity?> {
+  /// The parameter `id` of this provider.
+  String get id;
+}
+
+class _CanonicalGrapeProviderElement
+    extends AutoDisposeFutureProviderElement<CanonicalGrapeEntity?>
+    with CanonicalGrapeRef {
+  _CanonicalGrapeProviderElement(super.provider);
+
+  @override
+  String get id => (origin as CanonicalGrapeProvider).id;
+}
+
+String _$canonicalWineApiHash() => r'b877af96028f5022e7ca58fe9f8c462daddb69b5';
+
+/// See also [canonicalWineApi].
+@ProviderFor(canonicalWineApi)
+final canonicalWineApiProvider =
+    AutoDisposeProvider<CanonicalWineApi?>.internal(
+      canonicalWineApi,
+      name: r'canonicalWineApiProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$canonicalWineApiHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef CanonicalWineApiRef = AutoDisposeProviderRef<CanonicalWineApi?>;
+String _$canonicalWineSuggestionsHash() =>
+    r'e3fc0f2f8fc319791846bb021445bf2782350c22';
+
+/// Looks up Tier 1 / Tier 2 canonical candidates for a wine the user is
+/// about to add or edit. Returns empty list when no API client is
+/// available (signed out) or the input name is too short to match.
+///
+/// Copied from [canonicalWineSuggestions].
+@ProviderFor(canonicalWineSuggestions)
+const canonicalWineSuggestionsProvider = CanonicalWineSuggestionsFamily();
+
+/// Looks up Tier 1 / Tier 2 canonical candidates for a wine the user is
+/// about to add or edit. Returns empty list when no API client is
+/// available (signed out) or the input name is too short to match.
+///
+/// Copied from [canonicalWineSuggestions].
+class CanonicalWineSuggestionsFamily
+    extends Family<AsyncValue<List<CanonicalWineCandidate>>> {
+  /// Looks up Tier 1 / Tier 2 canonical candidates for a wine the user is
+  /// about to add or edit. Returns empty list when no API client is
+  /// available (signed out) or the input name is too short to match.
+  ///
+  /// Copied from [canonicalWineSuggestions].
+  const CanonicalWineSuggestionsFamily();
+
+  /// Looks up Tier 1 / Tier 2 canonical candidates for a wine the user is
+  /// about to add or edit. Returns empty list when no API client is
+  /// available (signed out) or the input name is too short to match.
+  ///
+  /// Copied from [canonicalWineSuggestions].
+  CanonicalWineSuggestionsProvider call({
+    required String wineName,
+    String? winery,
+    int? vintage,
+  }) {
+    return CanonicalWineSuggestionsProvider(
+      wineName: wineName,
+      winery: winery,
+      vintage: vintage,
+    );
+  }
+
+  @override
+  CanonicalWineSuggestionsProvider getProviderOverride(
+    covariant CanonicalWineSuggestionsProvider provider,
+  ) {
+    return call(
+      wineName: provider.wineName,
+      winery: provider.winery,
+      vintage: provider.vintage,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'canonicalWineSuggestionsProvider';
+}
+
+/// Looks up Tier 1 / Tier 2 canonical candidates for a wine the user is
+/// about to add or edit. Returns empty list when no API client is
+/// available (signed out) or the input name is too short to match.
+///
+/// Copied from [canonicalWineSuggestions].
+class CanonicalWineSuggestionsProvider
+    extends AutoDisposeFutureProvider<List<CanonicalWineCandidate>> {
+  /// Looks up Tier 1 / Tier 2 canonical candidates for a wine the user is
+  /// about to add or edit. Returns empty list when no API client is
+  /// available (signed out) or the input name is too short to match.
+  ///
+  /// Copied from [canonicalWineSuggestions].
+  CanonicalWineSuggestionsProvider({
+    required String wineName,
+    String? winery,
+    int? vintage,
+  }) : this._internal(
+         (ref) => canonicalWineSuggestions(
+           ref as CanonicalWineSuggestionsRef,
+           wineName: wineName,
+           winery: winery,
+           vintage: vintage,
+         ),
+         from: canonicalWineSuggestionsProvider,
+         name: r'canonicalWineSuggestionsProvider',
+         debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+             ? null
+             : _$canonicalWineSuggestionsHash,
+         dependencies: CanonicalWineSuggestionsFamily._dependencies,
+         allTransitiveDependencies:
+             CanonicalWineSuggestionsFamily._allTransitiveDependencies,
+         wineName: wineName,
+         winery: winery,
+         vintage: vintage,
+       );
+
+  CanonicalWineSuggestionsProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.wineName,
+    required this.winery,
+    required this.vintage,
+  }) : super.internal();
+
+  final String wineName;
+  final String? winery;
+  final int? vintage;
+
+  @override
+  Override overrideWith(
+    FutureOr<List<CanonicalWineCandidate>> Function(
+      CanonicalWineSuggestionsRef provider,
+    )
+    create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: CanonicalWineSuggestionsProvider._internal(
+        (ref) => create(ref as CanonicalWineSuggestionsRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        wineName: wineName,
+        winery: winery,
+        vintage: vintage,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<List<CanonicalWineCandidate>>
+  createElement() {
+    return _CanonicalWineSuggestionsProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is CanonicalWineSuggestionsProvider &&
+        other.wineName == wineName &&
+        other.winery == winery &&
+        other.vintage == vintage;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, wineName.hashCode);
+    hash = _SystemHash.combine(hash, winery.hashCode);
+    hash = _SystemHash.combine(hash, vintage.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin CanonicalWineSuggestionsRef
+    on AutoDisposeFutureProviderRef<List<CanonicalWineCandidate>> {
+  /// The parameter `wineName` of this provider.
+  String get wineName;
+
+  /// The parameter `winery` of this provider.
+  String? get winery;
+
+  /// The parameter `vintage` of this provider.
+  int? get vintage;
+}
+
+class _CanonicalWineSuggestionsProviderElement
+    extends AutoDisposeFutureProviderElement<List<CanonicalWineCandidate>>
+    with CanonicalWineSuggestionsRef {
+  _CanonicalWineSuggestionsProviderElement(super.provider);
+
+  @override
+  String get wineName => (origin as CanonicalWineSuggestionsProvider).wineName;
+  @override
+  String? get winery => (origin as CanonicalWineSuggestionsProvider).winery;
+  @override
+  int? get vintage => (origin as CanonicalWineSuggestionsProvider).vintage;
+}
+
+String _$wineDetailHash() => r'e16e2db7c1f552d816b73dc417075b660dab01b5';
 
 /// See also [wineDetail].
 @ProviderFor(wineDetail)
@@ -292,7 +907,32 @@ class _WineDetailProviderElement
   String get wineId => (origin as WineDetailProvider).wineId;
 }
 
-String _$wineControllerHash() => r'4d35f9c044446e4054756e8cf05997649e8df3af';
+String _$canonicalMergeCandidatesHash() =>
+    r'140a2c4bc5fada5b7f471fc507db066d49040986';
+
+/// Pairs of canonicals the caller can merge. Drives the cleanup
+/// screen in profile settings. Empty when nothing matches the
+/// similarity threshold.
+///
+/// Copied from [CanonicalMergeCandidates].
+@ProviderFor(CanonicalMergeCandidates)
+final canonicalMergeCandidatesProvider =
+    AutoDisposeAsyncNotifierProvider<
+      CanonicalMergeCandidates,
+      List<CanonicalMergePair>
+    >.internal(
+      CanonicalMergeCandidates.new,
+      name: r'canonicalMergeCandidatesProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$canonicalMergeCandidatesHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+typedef _$CanonicalMergeCandidates =
+    AutoDisposeAsyncNotifier<List<CanonicalMergePair>>;
+String _$wineControllerHash() => r'f5cfbeb94094a94a322b4adaaf36419561eb5689';
 
 /// See also [WineController].
 @ProviderFor(WineController)

@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../common/utils/responsive.dart';
+import '../../../../../common/widgets/inline_error.widget.dart';
 import '../../../../onboarding/controller/onboarding.provider.dart';
 import '../../../controller/profile.provider.dart';
 
@@ -23,6 +24,7 @@ class _ChooseUsernameScreenState extends ConsumerState<ChooseUsernameScreen> {
   Timer? _debounce;
   _UsernameState _status = _UsernameState.idle;
   bool _saving = false;
+  Object? _saveError;
 
   static final _validRe = RegExp(r'^[a-z0-9._]+$');
 
@@ -68,7 +70,10 @@ class _ChooseUsernameScreenState extends ConsumerState<ChooseUsernameScreen> {
     final value = _controller.text.trim().toLowerCase();
     if (_status != _UsernameState.available || _saving) return;
 
-    setState(() => _saving = true);
+    setState(() {
+      _saving = true;
+      _saveError = null;
+    });
     try {
       final notifier = ref.read(profileControllerProvider.notifier);
       // Pre-auth funnel users get a single atomic write that includes
@@ -93,13 +98,10 @@ class _ChooseUsernameScreenState extends ConsumerState<ChooseUsernameScreen> {
       // Router redirect handles navigation once the profile stream emits.
     } catch (e) {
       if (!mounted) return;
-      setState(() => _saving = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.toString()),
-          backgroundColor: Theme.of(context).colorScheme.error,
-        ),
-      );
+      setState(() {
+        _saving = false;
+        _saveError = e;
+      });
     }
   }
 
@@ -141,34 +143,18 @@ class _ChooseUsernameScreenState extends ConsumerState<ChooseUsernameScreen> {
               SizedBox(height: context.s),
               _StatusLine(status: _status),
               const Spacer(),
-              SizedBox(
-                width: double.infinity,
-                height: context.h * 0.06,
-                child: FilledButton(
-                  onPressed: canSave ? _save : null,
-                  style: FilledButton.styleFrom(
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(context.w * 0.03),
-                    ),
-                  ),
-                  child: _saving
-                      ? SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: cs.onPrimary,
-                          ),
-                        )
-                      : Text(
-                          'Continue',
-                          style: TextStyle(
-                            fontSize: context.bodyFont,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+              if (_saveError != null) ...[
+                InlineFieldError(
+                  error: _saveError,
+                  fallback: "Couldn't save username. Try again.",
                 ),
+                SizedBox(height: context.s),
+              ],
+              RetryActionButton(
+                idleLabel: 'Continue',
+                loading: _saving,
+                error: _saveError,
+                onPressed: canSave || _saveError != null ? _save : null,
               ),
               SizedBox(height: context.l),
             ],

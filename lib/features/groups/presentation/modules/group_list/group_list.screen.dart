@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../../common/services/analytics/analytics.provider.dart';
 import '../../../../../common/utils/responsive.dart';
+import '../../../../../common/widgets/error_view.widget.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../../paywall/controller/paywall.provider.dart';
 import '../../../controller/group.provider.dart';
@@ -124,43 +125,11 @@ class GroupListScreen extends ConsumerWidget {
                   );
                 },
                 loading: () => const Center(child: CircularProgressIndicator()),
-                error: (error, _) => Center(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: context.paddingH),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          PhosphorIconsRegular.warningCircle,
-                          color: cs.error,
-                          size: context.w * 0.1,
-                        ),
-                        SizedBox(height: context.m),
-                        Text(
-                          'Could not load groups',
-                          style: TextStyle(
-                            fontSize: context.bodyFont,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        SizedBox(height: context.xs),
-                        Text(
-                          error.toString(),
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: context.captionFont,
-                            color: cs.onSurfaceVariant,
-                          ),
-                        ),
-                        SizedBox(height: context.m),
-                        FilledButton.icon(
-                          onPressed: () =>
-                              ref.invalidate(groupControllerProvider),
-                          icon: const Icon(PhosphorIconsRegular.arrowClockwise),
-                          label: const Text('Retry'),
-                        ),
-                      ],
-                    ),
+                error: (e, _) => Center(
+                  child: ErrorView(
+                    title: "Couldn't load groups",
+                    onRetry: () => ref.invalidate(groupControllerProvider),
+                    error: e,
                   ),
                 ),
               ),

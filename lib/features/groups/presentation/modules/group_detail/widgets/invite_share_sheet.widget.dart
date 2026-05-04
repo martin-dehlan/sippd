@@ -6,6 +6,7 @@ import 'package:share_plus/share_plus.dart';
 
 import '../../../../../../common/services/deep_link/deep_link.service.dart';
 import '../../../../../../common/utils/responsive.dart';
+import '../../../../../../common/widgets/error_view.widget.dart';
 import '../../../../../friends/domain/entities/friend_profile.entity.dart';
 import '../../../../../friends/presentation/widgets/friend_avatar.widget.dart';
 import '../../../../controller/group_invitation.provider.dart';
@@ -287,10 +288,10 @@ class _FriendList extends ConsumerWidget {
         padding: EdgeInsets.symmetric(vertical: context.m),
         child: const Center(child: CircularProgressIndicator()),
       ),
-      error: (e, _) => Padding(
-        padding: EdgeInsets.symmetric(vertical: context.m),
-        child: Text('Could not load friends: $e',
-            style: TextStyle(color: cs.error)),
+      error: (e, _) => ErrorView(
+        title: "Couldn't load friends",
+        compact: true,
+        error: e,
       ),
     );
   }
