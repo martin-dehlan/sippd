@@ -808,10 +808,15 @@ class _WinesSection extends ConsumerWidget {
                   behavior: HitTestBehavior.opaque,
                   onTap: () async {
                     final existing = winesAsync.valueOrNull ?? const [];
-                    final existingIds = existing.map((w) => w.id).toSet();
+                    // existing wines come from the catalog (id ==
+                    // canonical_wine_id), so the picker matches user's
+                    // personal wines by their canonicalWineId field.
+                    final existingCanonicalIds = existing
+                        .map((w) => w.canonicalWineId ?? w.id)
+                        .toSet();
                     final picked = await showWinePickerSheet(
                       context: context,
-                      alreadyInLineup: existingIds,
+                      alreadyInLineup: existingCanonicalIds,
                     );
                     if (picked != null && picked.isNotEmpty) {
                       await ref

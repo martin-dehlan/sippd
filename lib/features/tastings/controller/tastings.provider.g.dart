@@ -23,7 +23,7 @@ final tastingsApiProvider = AutoDisposeProvider<TastingsApi?>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef TastingsApiRef = AutoDisposeProviderRef<TastingsApi?>;
-String _$groupTastingsHash() => r'5b4fa051170395d68083e873b723107bce596b93';
+String _$groupTastingsHash() => r'c749aec4d655dc98bf8d459b6155f5d81613fc7f';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -165,7 +165,7 @@ class _GroupTastingsProviderElement
   String get groupId => (origin as GroupTastingsProvider).groupId;
 }
 
-String _$tastingDetailHash() => r'48d6d355bfe2d4c76d941c678532f6cc6267ab4a';
+String _$tastingDetailHash() => r'46341b7e5804c1f49c68b3d297f7ea5884ab7141';
 
 /// See also [tastingDetail].
 @ProviderFor(tastingDetail)
@@ -285,7 +285,7 @@ class _TastingDetailProviderElement
   String get tastingId => (origin as TastingDetailProvider).tastingId;
 }
 
-String _$tastingWinesHash() => r'18fe479bfd29190c549b064b1f32d3f40317f2cc';
+String _$tastingWinesHash() => r'95a9ca1e46ea099f6c0fd21330e4080475ec471b';
 
 /// See also [tastingWines].
 @ProviderFor(tastingWines)
@@ -405,7 +405,7 @@ class _TastingWinesProviderElement
   String get tastingId => (origin as TastingWinesProvider).tastingId;
 }
 
-String _$tastingAttendeesHash() => r'89ec0bcd54d66606b6eac3a0209a841e7c77ce13';
+String _$tastingAttendeesHash() => r'5da5e01641c554a1b9c8882d7c5989ee8f3b86aa';
 
 /// See also [tastingAttendees].
 @ProviderFor(tastingAttendees)

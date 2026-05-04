@@ -1,8 +1,9 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../common/services/analytics/analytics.provider.dart';
+import '../../../common/services/connectivity/connectivity.provider.dart';
 import '../../auth/controller/auth.provider.dart';
 import '../../friends/data/models/friend_profile.model.dart';
-import '../../wines/data/models/wine.model.dart';
+import '../../wines/controller/wine.provider.dart';
 import '../../wines/domain/entities/wine.entity.dart';
 import '../data/data_sources/tastings.api.dart';
 import '../data/models/tasting.model.dart';
@@ -24,7 +25,8 @@ Future<List<TastingEntity>> groupTastings(
     GroupTastingsRef ref, String groupId) async {
   final api = ref.watch(tastingsApiProvider);
   if (api == null) return const [];
-  final models = await api.fetchForGroup(groupId);
+  ref.requireOnline();
+  final models = await api.fetchForGroup(groupId).withNetTimeout();
   return models.map((m) => m.toEntity()).toList();
 }
 
@@ -33,7 +35,8 @@ Future<TastingEntity?> tastingDetail(
     TastingDetailRef ref, String tastingId) async {
   final api = ref.watch(tastingsApiProvider);
   if (api == null) return null;
-  final model = await api.fetchById(tastingId);
+  ref.requireOnline();
+  final model = await api.fetchById(tastingId).withNetTimeout();
   return model?.toEntity();
 }
 
@@ -42,8 +45,31 @@ Future<List<WineEntity>> tastingWines(
     TastingWinesRef ref, String tastingId) async {
   final api = ref.watch(tastingsApiProvider);
   if (api == null) return const [];
-  final models = await api.fetchWines(tastingId);
-  return models.map((m) => m.toEntity()).toList();
+  // Re-run when the local wine list changes so owner photo edits and
+  // newly-added (offline) bottles surface their image immediately.
+  // Entities stay catalog-keyed (id == canonical_wine_id) — only the
+  // image fields are grafted from the owner's local row, so the
+  // remove / detail call sites keep working.
+  final localWines = ref.watch(wineControllerProvider).valueOrNull ?? const [];
+  final localByCanonical = <String, WineEntity>{
+    for (final w in localWines)
+      if (w.canonicalWineId != null) w.canonicalWineId!: w,
+  };
+  ref.requireOnline();
+  final wines = await api.fetchWines(tastingId).withNetTimeout();
+  return [
+    for (final w in wines)
+      _mergeLocalImage(w, localByCanonical[w.canonicalWineId ?? w.id]),
+  ];
+}
+
+WineEntity _mergeLocalImage(WineEntity remote, WineEntity? local) {
+  if (local == null) return remote;
+  if (remote.imageUrl != null && remote.localImagePath == null) return remote;
+  return remote.copyWith(
+    imageUrl: remote.imageUrl ?? local.imageUrl,
+    localImagePath: remote.localImagePath ?? local.localImagePath,
+  );
 }
 
 @riverpod
@@ -51,7 +77,8 @@ Future<List<TastingAttendeeEntity>> tastingAttendees(
     TastingAttendeesRef ref, String tastingId) async {
   final api = ref.watch(tastingsApiProvider);
   if (api == null) return const [];
-  final rows = await api.fetchAttendees(tastingId);
+  ref.requireOnline();
+  final rows = await api.fetchAttendees(tastingId).withNetTimeout();
   return rows
       .map((r) => TastingAttendeeEntity(
             tastingId: r.tastingId,

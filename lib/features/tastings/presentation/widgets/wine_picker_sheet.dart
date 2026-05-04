@@ -87,9 +87,9 @@ class _SheetState extends ConsumerState<_Sheet> {
                     final sorted = List<WineEntity>.from(wines)
                       ..sort((a, b) {
                         final aIn =
-                            widget.alreadyInLineup.contains(a.id) ? 1 : 0;
+                            widget.alreadyInLineup.contains(a.canonicalWineId) ? 1 : 0;
                         final bIn =
-                            widget.alreadyInLineup.contains(b.id) ? 1 : 0;
+                            widget.alreadyInLineup.contains(b.canonicalWineId) ? 1 : 0;
                         if (aIn != bIn) return aIn - bIn;
                         return b.rating.compareTo(a.rating);
                       });
@@ -100,7 +100,7 @@ class _SheetState extends ConsumerState<_Sheet> {
                       itemBuilder: (_, i) {
                         final wine = sorted[i];
                         final inLineup =
-                            widget.alreadyInLineup.contains(wine.id);
+                            widget.alreadyInLineup.contains(wine.canonicalWineId);
                         return _WinePickerRow(
                           wine: wine,
                           inLineup: inLineup,
