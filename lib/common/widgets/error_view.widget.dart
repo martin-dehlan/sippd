@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../errors/app_error.dart';
 import '../services/connectivity/connectivity.provider.dart';
 import '../utils/responsive.dart';
 
@@ -31,13 +32,28 @@ class ErrorView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
     final online = ref.watch(isOnlineProvider);
+    // Treat AppError.offline / AppError.network as offline regardless
+    // of the live connectivity probe — the throw itself is the
+    // authoritative signal.
+    final errorIsOffline = error is OfflineError || error is NetworkError;
+    final showOffline = !online || errorIsOffline;
 
-    final resolvedTitle = title ?? (online ? "Couldn't load" : "You're offline");
+    final resolvedTitle =
+        title ?? (showOffline ? "You're offline" : "Couldn't load");
     final resolvedSubtitle = subtitle ??
-        (online ? 'Pull to retry or try again later.' : 'Reconnect to load this.');
-    final icon = online
-        ? PhosphorIconsRegular.warningCircle
-        : PhosphorIconsRegular.wifiSlash;
+        (showOffline
+            ? 'Reconnect to load this.'
+            : 'Pull to retry or try again later.');
+    final icon = showOffline
+        ? PhosphorIconsRegular.wifiSlash
+        : PhosphorIconsRegular.warningCircle;
+    // Hide raw freezed `AppError.offline()` / network strings — the
+    // friendly copy already covers them. Only surface unknown errors
+    // in debug for triage.
+    final showRawError = kDebugMode &&
+        error != null &&
+        error is! OfflineError &&
+        error is! NetworkError;
 
     return Padding(
       padding: EdgeInsets.symmetric(
@@ -95,7 +111,7 @@ class ErrorView extends ConsumerWidget {
               ),
             ),
           ],
-          if (kDebugMode && error != null) ...[
+          if (showRawError) ...[
             SizedBox(height: context.m),
             Text(
               error.toString(),
