@@ -41,6 +41,10 @@ part 'database.g.dart';
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
+  /// Test-only constructor. Tests pass `NativeDatabase.memory()` so
+  /// they get an isolated, schema-fresh DB without touching disk.
+  AppDatabase.forTesting(QueryExecutor e) : super(e);
+
   @override
   int get schemaVersion => 5;
 
