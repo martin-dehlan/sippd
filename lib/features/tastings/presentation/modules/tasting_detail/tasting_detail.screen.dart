@@ -787,6 +787,8 @@ class _WinesSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
     final winesAsync = ref.watch(tastingWinesProvider(tasting.id));
+    final ratingsAsync = ref.watch(tastingWineRatingsProvider(tasting.id));
+    final ratings = ratingsAsync.valueOrNull ?? const {};
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -860,15 +862,19 @@ class _WinesSection extends ConsumerWidget {
                   horizontal: context.paddingH * 1.3),
               itemCount: wines.length,
               separatorBuilder: (_, __) => SizedBox(height: context.s),
-              itemBuilder: (_, i) => _WineLineupCard(
-                wine: wines[i],
-                rank: i + 1,
-                groupId: tasting.groupId,
-                canRemove: isOwner,
-                onRemove: () => ref
-                    .read(tastingsControllerProvider.notifier)
-                    .removeWine(tasting.id, wines[i].id),
-              ),
+              itemBuilder: (_, i) {
+                final cid = wines[i].canonicalWineId ?? wines[i].id;
+                return _WineLineupCard(
+                  wine: wines[i],
+                  rank: i + 1,
+                  groupId: tasting.groupId,
+                  canRemove: isOwner,
+                  ratingOverride: ratings[cid],
+                  onRemove: () => ref
+                      .read(tastingsControllerProvider.notifier)
+                      .removeWine(tasting.id, wines[i].id),
+                );
+              },
             );
           },
           loading: () => const SizedBox.shrink(),
@@ -923,6 +929,7 @@ class _WineLineupCard extends ConsumerWidget {
   final int rank;
   final String groupId;
   final bool canRemove;
+  final double? ratingOverride;
   final VoidCallback onRemove;
 
   const _WineLineupCard({
@@ -931,6 +938,7 @@ class _WineLineupCard extends ConsumerWidget {
     required this.groupId,
     required this.canRemove,
     required this.onRemove,
+    this.ratingOverride,
   });
 
   @override
@@ -941,6 +949,8 @@ class _WineLineupCard extends ConsumerWidget {
         WineCardWidget(
           wine: wine,
           rank: rank,
+          ratingOverride: ratingOverride,
+          hideRatingIfEmpty: true,
           onTap: () {
             // Tasting wines are catalog-keyed (id == canonical_wine_id).
             // If the user owns a personal log row for this canonical

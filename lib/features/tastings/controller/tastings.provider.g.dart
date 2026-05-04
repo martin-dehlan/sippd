@@ -405,6 +405,178 @@ class _TastingWinesProviderElement
   String get tastingId => (origin as TastingWinesProvider).tastingId;
 }
 
+String _$tastingWineRatingsHash() =>
+    r'59c88312c5f7534d8f8a5001feb9b58b5e0f6514';
+
+/// Group-context rating average per canonical wine for the tasting's
+/// lineup. Mirrors `groupWineRatings`: owner of each canonical (via
+/// `group_wines.shared_by`) contributes their personal `wines.rating`,
+/// other members contribute their `group_wine_ratings.rating`. Each
+/// user counted at most once per canonical (member rows from the owner
+/// are dropped). Canonicals with zero usable ratings are omitted, so
+/// callers can `Map.containsKey` to decide whether to render a badge.
+///
+/// Copied from [tastingWineRatings].
+@ProviderFor(tastingWineRatings)
+const tastingWineRatingsProvider = TastingWineRatingsFamily();
+
+/// Group-context rating average per canonical wine for the tasting's
+/// lineup. Mirrors `groupWineRatings`: owner of each canonical (via
+/// `group_wines.shared_by`) contributes their personal `wines.rating`,
+/// other members contribute their `group_wine_ratings.rating`. Each
+/// user counted at most once per canonical (member rows from the owner
+/// are dropped). Canonicals with zero usable ratings are omitted, so
+/// callers can `Map.containsKey` to decide whether to render a badge.
+///
+/// Copied from [tastingWineRatings].
+class TastingWineRatingsFamily extends Family<AsyncValue<Map<String, double>>> {
+  /// Group-context rating average per canonical wine for the tasting's
+  /// lineup. Mirrors `groupWineRatings`: owner of each canonical (via
+  /// `group_wines.shared_by`) contributes their personal `wines.rating`,
+  /// other members contribute their `group_wine_ratings.rating`. Each
+  /// user counted at most once per canonical (member rows from the owner
+  /// are dropped). Canonicals with zero usable ratings are omitted, so
+  /// callers can `Map.containsKey` to decide whether to render a badge.
+  ///
+  /// Copied from [tastingWineRatings].
+  const TastingWineRatingsFamily();
+
+  /// Group-context rating average per canonical wine for the tasting's
+  /// lineup. Mirrors `groupWineRatings`: owner of each canonical (via
+  /// `group_wines.shared_by`) contributes their personal `wines.rating`,
+  /// other members contribute their `group_wine_ratings.rating`. Each
+  /// user counted at most once per canonical (member rows from the owner
+  /// are dropped). Canonicals with zero usable ratings are omitted, so
+  /// callers can `Map.containsKey` to decide whether to render a badge.
+  ///
+  /// Copied from [tastingWineRatings].
+  TastingWineRatingsProvider call(String tastingId) {
+    return TastingWineRatingsProvider(tastingId);
+  }
+
+  @override
+  TastingWineRatingsProvider getProviderOverride(
+    covariant TastingWineRatingsProvider provider,
+  ) {
+    return call(provider.tastingId);
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'tastingWineRatingsProvider';
+}
+
+/// Group-context rating average per canonical wine for the tasting's
+/// lineup. Mirrors `groupWineRatings`: owner of each canonical (via
+/// `group_wines.shared_by`) contributes their personal `wines.rating`,
+/// other members contribute their `group_wine_ratings.rating`. Each
+/// user counted at most once per canonical (member rows from the owner
+/// are dropped). Canonicals with zero usable ratings are omitted, so
+/// callers can `Map.containsKey` to decide whether to render a badge.
+///
+/// Copied from [tastingWineRatings].
+class TastingWineRatingsProvider
+    extends AutoDisposeFutureProvider<Map<String, double>> {
+  /// Group-context rating average per canonical wine for the tasting's
+  /// lineup. Mirrors `groupWineRatings`: owner of each canonical (via
+  /// `group_wines.shared_by`) contributes their personal `wines.rating`,
+  /// other members contribute their `group_wine_ratings.rating`. Each
+  /// user counted at most once per canonical (member rows from the owner
+  /// are dropped). Canonicals with zero usable ratings are omitted, so
+  /// callers can `Map.containsKey` to decide whether to render a badge.
+  ///
+  /// Copied from [tastingWineRatings].
+  TastingWineRatingsProvider(String tastingId)
+    : this._internal(
+        (ref) => tastingWineRatings(ref as TastingWineRatingsRef, tastingId),
+        from: tastingWineRatingsProvider,
+        name: r'tastingWineRatingsProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$tastingWineRatingsHash,
+        dependencies: TastingWineRatingsFamily._dependencies,
+        allTransitiveDependencies:
+            TastingWineRatingsFamily._allTransitiveDependencies,
+        tastingId: tastingId,
+      );
+
+  TastingWineRatingsProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.tastingId,
+  }) : super.internal();
+
+  final String tastingId;
+
+  @override
+  Override overrideWith(
+    FutureOr<Map<String, double>> Function(TastingWineRatingsRef provider)
+    create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: TastingWineRatingsProvider._internal(
+        (ref) => create(ref as TastingWineRatingsRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        tastingId: tastingId,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<Map<String, double>> createElement() {
+    return _TastingWineRatingsProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is TastingWineRatingsProvider && other.tastingId == tastingId;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, tastingId.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin TastingWineRatingsRef
+    on AutoDisposeFutureProviderRef<Map<String, double>> {
+  /// The parameter `tastingId` of this provider.
+  String get tastingId;
+}
+
+class _TastingWineRatingsProviderElement
+    extends AutoDisposeFutureProviderElement<Map<String, double>>
+    with TastingWineRatingsRef {
+  _TastingWineRatingsProviderElement(super.provider);
+
+  @override
+  String get tastingId => (origin as TastingWineRatingsProvider).tastingId;
+}
+
 String _$tastingAttendeesHash() => r'5da5e01641c554a1b9c8882d7c5989ee8f3b86aa';
 
 /// See also [tastingAttendees].
