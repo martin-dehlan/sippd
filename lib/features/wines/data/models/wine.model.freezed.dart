@@ -34,8 +34,9 @@ mixin _$WineModel {
   double? get longitude => throw _privateConstructorUsedError;
   String? get notes => throw _privateConstructorUsedError;
   @JsonKey(name: 'image_url')
-  String? get imageUrl => throw _privateConstructorUsedError;
-  @JsonKey(name: 'local_image_path')
+  String? get imageUrl => throw _privateConstructorUsedError; // Local-only — never written to Supabase. Stays on the originating
+  // device until the upload completes and `imageUrl` takes over.
+  @JsonKey(name: 'local_image_path', includeToJson: false)
   String? get localImagePath => throw _privateConstructorUsedError;
   int? get vintage => throw _privateConstructorUsedError;
   String? get grape => throw _privateConstructorUsedError;
@@ -85,7 +86,8 @@ abstract class $WineModelCopyWith<$Res> {
     double? longitude,
     String? notes,
     @JsonKey(name: 'image_url') String? imageUrl,
-    @JsonKey(name: 'local_image_path') String? localImagePath,
+    @JsonKey(name: 'local_image_path', includeToJson: false)
+    String? localImagePath,
     int? vintage,
     String? grape,
     @JsonKey(name: 'canonical_grape_id') String? canonicalGrapeId,
@@ -272,7 +274,8 @@ abstract class _$$WineModelImplCopyWith<$Res>
     double? longitude,
     String? notes,
     @JsonKey(name: 'image_url') String? imageUrl,
-    @JsonKey(name: 'local_image_path') String? localImagePath,
+    @JsonKey(name: 'local_image_path', includeToJson: false)
+    String? localImagePath,
     int? vintage,
     String? grape,
     @JsonKey(name: 'canonical_grape_id') String? canonicalGrapeId,
@@ -451,7 +454,8 @@ class _$WineModelImpl implements _WineModel {
     this.longitude,
     this.notes,
     @JsonKey(name: 'image_url') this.imageUrl,
-    @JsonKey(name: 'local_image_path') this.localImagePath,
+    @JsonKey(name: 'local_image_path', includeToJson: false)
+    this.localImagePath,
     this.vintage,
     this.grape,
     @JsonKey(name: 'canonical_grape_id') this.canonicalGrapeId,
@@ -496,8 +500,10 @@ class _$WineModelImpl implements _WineModel {
   @override
   @JsonKey(name: 'image_url')
   final String? imageUrl;
+  // Local-only — never written to Supabase. Stays on the originating
+  // device until the upload completes and `imageUrl` takes over.
   @override
-  @JsonKey(name: 'local_image_path')
+  @JsonKey(name: 'local_image_path', includeToJson: false)
   final String? localImagePath;
   @override
   final int? vintage;
@@ -640,7 +646,8 @@ abstract class _WineModel implements WineModel {
     final double? longitude,
     final String? notes,
     @JsonKey(name: 'image_url') final String? imageUrl,
-    @JsonKey(name: 'local_image_path') final String? localImagePath,
+    @JsonKey(name: 'local_image_path', includeToJson: false)
+    final String? localImagePath,
     final int? vintage,
     final String? grape,
     @JsonKey(name: 'canonical_grape_id') final String? canonicalGrapeId,
@@ -683,9 +690,10 @@ abstract class _WineModel implements WineModel {
   String? get notes;
   @override
   @JsonKey(name: 'image_url')
-  String? get imageUrl;
+  String? get imageUrl; // Local-only — never written to Supabase. Stays on the originating
+  // device until the upload completes and `imageUrl` takes over.
   @override
-  @JsonKey(name: 'local_image_path')
+  @JsonKey(name: 'local_image_path', includeToJson: false)
   String? get localImagePath;
   @override
   int? get vintage;

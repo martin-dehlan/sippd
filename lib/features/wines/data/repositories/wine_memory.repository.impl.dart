@@ -1,4 +1,5 @@
 import '../../../../common/database/daos/wine_memories.dao.dart';
+import '../../../../common/services/analytics/analytics.service.dart';
 import '../../domain/entities/wine_memory.entity.dart';
 import '../../domain/repositories/wine_memory.repository.dart';
 import '../data_sources/wine_memory_supabase.api.dart';
@@ -7,8 +8,9 @@ import '../models/wine_memory.model.dart';
 class WineMemoryRepositoryImpl implements WineMemoryRepository {
   final WineMemoriesDao _dao;
   final WineMemorySupabaseApi? _api;
+  final AnalyticsService? _analytics;
 
-  WineMemoryRepositoryImpl(this._dao, [this._api]);
+  WineMemoryRepositoryImpl(this._dao, [this._api, this._analytics]);
 
   @override
   Future<List<WineMemoryEntity>> getByWine(String wineId) async {
@@ -36,8 +38,8 @@ class WineMemoryRepositoryImpl implements WineMemoryRepository {
     await _dao.deleteMemory(id);
     try {
       await _api?.deleteMemory(id);
-    } catch (_) {
-      // Local delete stands.
+    } catch (e) {
+      _analytics?.syncFailed('memory_delete', error: e);
     }
   }
 
@@ -46,16 +48,16 @@ class WineMemoryRepositoryImpl implements WineMemoryRepository {
     await _dao.deleteByWine(wineId);
     try {
       await _api?.deleteByWine(wineId);
-    } catch (_) {
-      // Local delete stands.
+    } catch (e) {
+      _analytics?.syncFailed('memory_delete_by_wine', error: e);
     }
   }
 
   Future<void> _syncToRemote(WineMemoryEntity memory) async {
     try {
       await _api?.upsertMemory(memory.toModel());
-    } catch (_) {
-      // Local write stands; will sync on next fetch.
+    } catch (e) {
+      _analytics?.syncFailed('memory_upsert', error: e);
     }
   }
 
@@ -66,8 +68,8 @@ class WineMemoryRepositoryImpl implements WineMemoryRepository {
       for (final m in models) {
         await _dao.insertMemory(m.toEntity().toTableData());
       }
-    } catch (_) {
-      // Network error — local data serves as fallback.
+    } catch (e) {
+      _analytics?.syncFailed('memory_fetch', error: e);
     }
   }
 }

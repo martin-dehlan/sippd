@@ -20,7 +20,10 @@ class WineModel with _$WineModel {
     double? longitude,
     String? notes,
     @JsonKey(name: 'image_url') String? imageUrl,
-    @JsonKey(name: 'local_image_path') String? localImagePath,
+    // Local-only — never written to Supabase. Stays on the originating
+    // device until the upload completes and `imageUrl` takes over.
+    @JsonKey(name: 'local_image_path', includeToJson: false)
+    String? localImagePath,
     int? vintage,
     String? grape,
     @JsonKey(name: 'canonical_grape_id') String? canonicalGrapeId,

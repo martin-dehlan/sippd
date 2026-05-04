@@ -52,7 +52,6 @@ Map<String, dynamic> _$$WineModelImplToJson(_$WineModelImpl instance) =>
       'longitude': instance.longitude,
       'notes': instance.notes,
       'image_url': instance.imageUrl,
-      'local_image_path': instance.localImagePath,
       'vintage': instance.vintage,
       'grape': instance.grape,
       'canonical_grape_id': instance.canonicalGrapeId,

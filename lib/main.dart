@@ -26,6 +26,7 @@ import 'features/profile/controller/profile.provider.dart';
 import 'features/profile/domain/entities/profile.entity.dart';
 import 'features/push/controller/push.provider.dart';
 import 'features/push/data/push_handler.service.dart';
+import 'features/wines/controller/wine.provider.dart';
 import 'features/tastings/controller/tastings.provider.dart';
 import 'firebase_options.dart';
 
@@ -91,6 +92,10 @@ class _SippdAppState extends ConsumerState<SippdApp> {
     // Initialise the local-notification plugin + FCM listeners once.
     ref.read(pushHandlerProvider).init();
     ref.read(deepLinkProvider).init();
+    // Arm the image-upload outbox flusher: it keeps itself alive and
+    // re-runs whenever connectivity flips to online, draining any
+    // image uploads that failed during offline windows.
+    ref.read(imageOutboxAutoFlushProvider);
 
     // ref.listen below only fires on auth state *changes*, so a user who
     // was already signed in before the app restarted would never get

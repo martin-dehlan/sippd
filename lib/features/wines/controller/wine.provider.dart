@@ -1,8 +1,11 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../common/database/database.dart';
 import '../../../common/services/analytics/analytics.provider.dart';
+import '../../../common/services/connectivity/connectivity.provider.dart';
+import '../data/services/outbox_flusher.service.dart';
 import '../../auth/controller/auth.provider.dart';
 import '../../onboarding/controller/onboarding.provider.dart';
+import '../../taste_match/controller/taste_match.provider.dart';
 import '../domain/entities/canonical_grape.entity.dart';
 import '../domain/entities/canonical_merge_pair.entity.dart';
 import '../domain/entities/canonical_wine_candidate.entity.dart';
@@ -47,7 +50,46 @@ WineRepository wineRepository(WineRepositoryRef ref) {
   final db = ref.read(appDatabaseProvider);
   final api = ref.watch(wineSupabaseApiProvider);
   final userId = ref.watch(currentUserIdProvider);
-  return WineRepositoryImpl(db.winesDao, api, userId);
+  // Inject the image service so the repo can retry image uploads on
+  // every save when a previous upload left only a local file. Without
+  // this, group members would never see photos that failed to upload
+  // the first time.
+  final imageService = ref.watch(wineImageServiceProvider);
+  final analytics = ref.read(analyticsProvider);
+  return WineRepositoryImpl(
+    db.winesDao,
+    api,
+    userId,
+    imageService,
+    analytics,
+    db.pendingImageUploadsDao,
+  );
+}
+
+/// Background flusher for the image-upload outbox. Triggered at launch
+/// and on every connectivity flip to online via [imageOutboxAutoFlush].
+@riverpod
+OutboxFlusher imageOutboxFlusher(ImageOutboxFlusherRef ref) {
+  final db = ref.read(appDatabaseProvider);
+  return OutboxFlusher(
+    outbox: db.pendingImageUploadsDao,
+    winesDao: db.winesDao,
+    imageService: ref.watch(wineImageServiceProvider),
+    api: ref.watch(wineSupabaseApiProvider),
+    userId: ref.watch(currentUserIdProvider),
+    analytics: ref.read(analyticsProvider),
+  );
+}
+
+/// Self-arming side-effect provider: drains the image outbox whenever
+/// the device is online. Riverpod tracks the dependency so a flip from
+/// offline → online re-runs `build` and triggers another flush. Read
+/// once at app start (e.g. in main.dart's ProviderScope) to keep it
+/// alive — no UI consumes it.
+@Riverpod(keepAlive: true)
+Future<void> imageOutboxAutoFlush(ImageOutboxAutoFlushRef ref) async {
+  if (!ref.watch(isOnlineProvider)) return;
+  await ref.read(imageOutboxFlusherProvider).flush();
 }
 
 @riverpod
@@ -85,7 +127,8 @@ WineMemorySupabaseApi? wineMemorySupabaseApi(WineMemorySupabaseApiRef ref) {
 WineMemoryRepository wineMemoryRepository(WineMemoryRepositoryRef ref) {
   final db = ref.read(appDatabaseProvider);
   final api = ref.watch(wineMemorySupabaseApiProvider);
-  return WineMemoryRepositoryImpl(db.wineMemoriesDao, api);
+  return WineMemoryRepositoryImpl(
+      db.wineMemoriesDao, api, ref.read(analyticsProvider));
 }
 
 @riverpod
@@ -178,7 +221,8 @@ class CanonicalMergeCandidates extends _$CanonicalMergeCandidates {
   Future<List<CanonicalMergePair>> build() async {
     final api = ref.watch(canonicalWineApiProvider);
     if (api == null) return const [];
-    return api.findMergeCandidates();
+    ref.requireOnline();
+    return api.findMergeCandidates().withNetTimeout();
   }
 
   Future<void> merge({
@@ -205,6 +249,7 @@ class WineController extends _$WineController {
 
   Future<void> addWine(WineEntity wine) async {
     await ref.read(wineRepositoryProvider).addWine(wine);
+    _invalidateTasteAggregates();
     ref.read(analyticsProvider).capture(
       'wine_added',
       properties: {
@@ -221,15 +266,49 @@ class WineController extends _$WineController {
 
   Future<void> updateWine(WineEntity wine) async {
     await ref.read(wineRepositoryProvider).updateWine(wine);
+    _invalidateTasteAggregates();
     ref.read(analyticsProvider).capture(
       'wine_updated',
       properties: {'rating': wine.rating, 'type': wine.type.name},
     );
   }
 
+  // Personal-compass / DNA / top-grapes are server-aggregated and read by
+  // the profile hero. ProfileScreen lives in an indexedStack shell so its
+  // providers stay cached across tab switches — without manual
+  // invalidation the "Curious Newcomer / rate N more" copy never updates.
+  void _invalidateTasteAggregates() {
+    final userId = ref.read(currentUserIdProvider);
+    if (userId == null) return;
+    ref.invalidate(tasteCompassProvider(userId));
+    ref.invalidate(userStyleDnaProvider(userId));
+    ref.invalidate(userTopGrapesProvider(userId));
+  }
+
   Future<void> deleteWine(String id) async {
+    final wine = await ref.read(wineRepositoryProvider).getWineById(id);
     await ref.read(wineMemoryRepositoryProvider).deleteByWine(id);
     await ref.read(wineRepositoryProvider).deleteWine(id);
+
+    // Mental model: deleting a wine from your personal log also retracts
+    // your own ratings of that bottle from any groups (Untappd / Vivino /
+    // Letterboxd convention). Other members' ratings of the same canonical
+    // bottle stay — they are independent rating events.
+    final canonicalId = wine?.canonicalWineId;
+    final userId = ref.read(currentUserIdProvider);
+    if (canonicalId != null && userId != null) {
+      try {
+        await ref
+            .read(supabaseClientProvider)
+            .from('group_wine_ratings')
+            .delete()
+            .eq('user_id', userId)
+            .eq('canonical_wine_id', canonicalId);
+      } catch (_) {
+        // Local delete already done; sync will reconcile next session.
+      }
+    }
+    _invalidateTasteAggregates();
     ref.read(analyticsProvider).capture('wine_deleted');
   }
 }

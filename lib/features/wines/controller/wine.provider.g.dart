@@ -40,7 +40,7 @@ final wineSupabaseApiProvider = AutoDisposeProvider<WineSupabaseApi?>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef WineSupabaseApiRef = AutoDisposeProviderRef<WineSupabaseApi?>;
-String _$wineRepositoryHash() => r'29383881a344a4c34aa8311747fa2db7d076e0d2';
+String _$wineRepositoryHash() => r'f51c1d4c9952beb8a7d9e902463468e900bd3f32';
 
 /// See also [wineRepository].
 @ProviderFor(wineRepository)
@@ -57,6 +57,51 @@ final wineRepositoryProvider = AutoDisposeProvider<WineRepository>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef WineRepositoryRef = AutoDisposeProviderRef<WineRepository>;
+String _$imageOutboxFlusherHash() =>
+    r'db0f1dad715674ec7c42c788fc9622c704691b18';
+
+/// Background flusher for the image-upload outbox. Triggered at launch
+/// and on every connectivity flip to online via [imageOutboxAutoFlush].
+///
+/// Copied from [imageOutboxFlusher].
+@ProviderFor(imageOutboxFlusher)
+final imageOutboxFlusherProvider = AutoDisposeProvider<OutboxFlusher>.internal(
+  imageOutboxFlusher,
+  name: r'imageOutboxFlusherProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$imageOutboxFlusherHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef ImageOutboxFlusherRef = AutoDisposeProviderRef<OutboxFlusher>;
+String _$imageOutboxAutoFlushHash() =>
+    r'7946f420631f27de44db719c6d645ee28a8230c8';
+
+/// Self-arming side-effect provider: drains the image outbox whenever
+/// the device is online. Riverpod tracks the dependency so a flip from
+/// offline → online re-runs `build` and triggers another flush. Read
+/// once at app start (e.g. in main.dart's ProviderScope) to keep it
+/// alive — no UI consumes it.
+///
+/// Copied from [imageOutboxAutoFlush].
+@ProviderFor(imageOutboxAutoFlush)
+final imageOutboxAutoFlushProvider = FutureProvider<void>.internal(
+  imageOutboxAutoFlush,
+  name: r'imageOutboxAutoFlushProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$imageOutboxAutoFlushHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef ImageOutboxAutoFlushRef = FutureProviderRef<void>;
 String _$wineAliasSupabaseApiHash() =>
     r'483b4ec800daa8ec1d476684d7df709f42e31eb2';
 
@@ -134,7 +179,7 @@ final wineMemorySupabaseApiProvider =
 typedef WineMemorySupabaseApiRef =
     AutoDisposeProviderRef<WineMemorySupabaseApi?>;
 String _$wineMemoryRepositoryHash() =>
-    r'6e49d54d9eb5316d7b68058da124898531242b4b';
+    r'eae09b3d41e06c1b4b0f4da3da55436c5d0dc6c2';
 
 /// See also [wineMemoryRepository].
 @ProviderFor(wineMemoryRepository)
@@ -863,7 +908,7 @@ class _WineDetailProviderElement
 }
 
 String _$canonicalMergeCandidatesHash() =>
-    r'2ef73e3761dcf6b6a5fca30f3616e7e5dbd9cb6b';
+    r'140a2c4bc5fada5b7f471fc507db066d49040986';
 
 /// Pairs of canonicals the caller can merge. Drives the cleanup
 /// screen in profile settings. Empty when nothing matches the
@@ -887,7 +932,7 @@ final canonicalMergeCandidatesProvider =
 
 typedef _$CanonicalMergeCandidates =
     AutoDisposeAsyncNotifier<List<CanonicalMergePair>>;
-String _$wineControllerHash() => r'4d35f9c044446e4054756e8cf05997649e8df3af';
+String _$wineControllerHash() => r'f5cfbeb94094a94a322b4adaaf36419561eb5689';
 
 /// See also [WineController].
 @ProviderFor(WineController)
