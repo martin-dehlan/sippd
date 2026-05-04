@@ -137,13 +137,13 @@ void main() {
         find.widgetWithText(TextFormField, 'Password'), 'hunter2');
     await tester.tap(find.text('Sign In'));
     await tester.pumpAndSettle();
-    // The retry button label "Couldn't save · Retry" overflows by ~30px
-    // on this viewport — tracked separately. Drain the layout warning
-    // so it does not fail the assertion below.
-    tester.takeException();
 
     expect(fake.signInCalls, 1);
     expect(find.textContaining('Sign-in failed'), findsOneWidget);
+    // Regression guard for the RetryActionButton overflow fix —
+    // narrow phones should render the retry label without throwing
+    // a layout exception.
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('sign-up submit hits signUp instead of signIn',

@@ -159,11 +159,19 @@ class RetryActionButton extends ConsumerWidget {
                     Icon(icon, size: context.bodyFont),
                     SizedBox(width: context.xs * 1.4),
                   ],
-                  Text(
-                    label,
-                    style: TextStyle(
-                      fontSize: context.bodyFont,
-                      fontWeight: FontWeight.w600,
+                  // Flexible so longer error labels (e.g. "Couldn't
+                  // save · Retry") fade gracefully on narrow phones
+                  // instead of overflowing the FilledButton.
+                  Flexible(
+                    child: Text(
+                      label,
+                      maxLines: 1,
+                      overflow: TextOverflow.fade,
+                      softWrap: false,
+                      style: TextStyle(
+                        fontSize: context.bodyFont,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ],
