@@ -36,13 +36,21 @@ class PendingImageUploadsDao extends DatabaseAccessor<AppDatabase>
     );
   }
 
-  Future<void> recordFailure(String wineId) {
-    return customStatement(
-      'UPDATE pending_image_uploads '
-      'SET attempts = attempts + 1, last_error_at = ? '
-      'WHERE wine_id = ?',
-      [DateTime.now().toIso8601String(), wineId],
-    );
+  Future<void> recordFailure(String wineId) async {
+    // Two-step instead of a raw UPDATE so Drift owns DateTime
+    // serialization. The previous customStatement wrote an ISO string
+    // into a column Drift reads back as an int → FormatException on
+    // the next due() call.
+    final row = await (select(pendingImageUploadsTable)
+          ..where((p) => p.wineId.equals(wineId)))
+        .getSingleOrNull();
+    if (row == null) return;
+    await (update(pendingImageUploadsTable)
+          ..where((p) => p.wineId.equals(wineId)))
+        .write(PendingImageUploadsTableCompanion(
+      attempts: Value(row.attempts + 1),
+      lastErrorAt: Value(DateTime.now()),
+    ));
   }
 
   Future<void> remove(String wineId) {
