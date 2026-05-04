@@ -56,4 +56,18 @@ class AnalyticsService {
     if (!_enabled) return;
     await Posthog().reset();
   }
+
+  /// Telemetry for swallowed sync failures. Use at the catch site of
+  /// every fire-and-forget background write so silent loss is at least
+  /// observable in PostHog. [kind] is a stable event suffix
+  /// (`wine_upsert`, `image_upload`, `profile_sync`, …) — avoid passing
+  /// dynamic values, the dashboard groups by it.
+  Future<void> syncFailed(
+    String kind, {
+    Object? error,
+  }) =>
+      capture('sync_failed', properties: {
+        'kind': kind,
+        if (error != null) 'error_class': error.runtimeType.toString(),
+      });
 }

@@ -42,9 +42,16 @@ final profileImageServiceProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef ProfileImageServiceRef = AutoDisposeProviderRef<ProfileImageService?>;
-String _$currentProfileHash() => r'8bc83a1eae7bac904bd554e796d47bfba05da6aa';
+String _$currentProfileHash() => r'996922c57154a9e4193f71ff627f6f466a9118da';
 
-/// See also [currentProfile].
+/// Local-first profile stream. Drift is the source of truth — the
+/// returned stream tracks the cached row so the router and profile UI
+/// render immediately on cold start, including offline. A background
+/// task pulls the latest from Supabase and writes it back to Drift,
+/// which causes the watch stream to emit the fresh value. On network
+/// failure the local row is served unchanged.
+///
+/// Copied from [currentProfile].
 @ProviderFor(currentProfile)
 final currentProfileProvider =
     AutoDisposeStreamProvider<ProfileEntity?>.internal(
@@ -60,7 +67,7 @@ final currentProfileProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef CurrentProfileRef = AutoDisposeStreamProviderRef<ProfileEntity?>;
-String _$profileControllerHash() => r'2228645a26920ff743b3630b619f2c22a5d4680e';
+String _$profileControllerHash() => r'629914082cd0a6d1ac52ef4c51273eb746d5cff5';
 
 /// See also [ProfileController].
 @ProviderFor(ProfileController)

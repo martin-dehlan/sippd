@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import '../../../../common/database/database.dart';
 import '../../../onboarding/domain/onboarding_answers.dart';
 import '../../../wines/domain/entities/wine.entity.dart';
 import '../../domain/entities/profile.entity.dart';
@@ -46,7 +47,37 @@ extension ProfileModelX on ProfileModel {
     drinkFrequency: _enumByName(DrinkFrequency.values, drinkFrequency),
     tasteEmoji: tasteEmoji,
   );
+
+  ProfileTableData toTableData() => ProfileTableData(
+        id: id,
+        username: username,
+        displayName: displayName,
+        avatarUrl: avatarUrl,
+        onboardingCompleted: onboardingCompleted,
+        tasteLevel: tasteLevel,
+        goalsCsv: goals.join(','),
+        stylesCsv: styles.join(','),
+        drinkFrequency: drinkFrequency,
+        tasteEmoji: tasteEmoji,
+        updatedAt: DateTime.now(),
+      );
 }
+
+extension ProfileTableDataX on ProfileTableData {
+  ProfileModel toModel() => ProfileModel(
+        id: id,
+        username: username,
+        displayName: displayName,
+        avatarUrl: avatarUrl,
+        onboardingCompleted: onboardingCompleted,
+        tasteLevel: tasteLevel,
+        goals: goalsCsv.isEmpty ? const [] : goalsCsv.split(','),
+        styles: stylesCsv.isEmpty ? const [] : stylesCsv.split(','),
+        drinkFrequency: drinkFrequency,
+        tasteEmoji: tasteEmoji,
+      );
+}
+
 
 T? _enumByName<T extends Enum>(List<T> values, String? name) {
   if (name == null) return null;
