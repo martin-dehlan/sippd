@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../../common/utils/responsive.dart';
+import '../../../../../common/widgets/inline_error.widget.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../../profile/controller/profile.provider.dart';
 import '../../../../profile/presentation/widgets/profile_avatar.widget.dart';
@@ -267,10 +268,18 @@ Future<void> _changePassword(
     );
   } catch (e) {
     if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(e.toString()),
-        backgroundColor: Theme.of(context).colorScheme.error,
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text("Couldn't send link"),
+        content: Text(describeAppError(e,
+            fallback: 'Try again in a moment.')),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('OK'),
+          ),
+        ],
       ),
     );
   }

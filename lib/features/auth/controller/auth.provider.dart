@@ -6,6 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../common/services/analytics/analytics.provider.dart';
 import '../../onboarding/data/onboarding_storage_keys.dart';
+import '../../wines/controller/wine.provider.dart';
 
 part 'auth.provider.g.dart';
 
@@ -101,6 +102,7 @@ class AuthController extends _$AuthController {
 
   Future<void> signOut() async {
     final client = ref.read(supabaseClientProvider);
+    final uid = client.auth.currentUser?.id;
     ref.read(analyticsProvider).capture('auth_logout');
     await client.auth.signOut();
     // Wipe the pre-auth onboarding buffer so the next user on this device
@@ -111,6 +113,12 @@ class AuthController extends _$AuthController {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(onboardingAnswersKey);
     await prefs.remove(onboardingProfileSeedPendingKey);
+    // Drop the cached profile too — same reason as the SharedPreferences
+    // wipe above. Without this, the next sign-in on this device would
+    // briefly see the previous user's profile while the new one syncs.
+    if (uid != null) {
+      await ref.read(appDatabaseProvider).profilesDao.deleteById(uid);
+    }
     state = const AsyncValue.data(null);
   }
 

@@ -6,6 +6,7 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 
 import '../../../../common/services/analytics/analytics.provider.dart';
 import '../../../../common/utils/responsive.dart';
+import '../../../../common/widgets/error_view.widget.dart';
 import '../../controller/paywall.provider.dart';
 import '../../data/services/paywall.service.dart';
 import 'paywall_benefit.widget.dart';
@@ -295,12 +296,11 @@ class _PaywallBodyState extends ConsumerState<PaywallBody>
           padding: EdgeInsets.symmetric(vertical: context.l),
           child: const Center(child: CircularProgressIndicator()),
         ),
-        error: (_, _) => Padding(
-          padding: EdgeInsets.symmetric(vertical: context.m),
-          child: Text(
-            'Could not load plans. Please try again.',
-            style: TextStyle(color: cs.onSurfaceVariant),
-          ),
+        error: (e, _) => ErrorView(
+          title: "Couldn't load plans",
+          onRetry: () => ref.invalidate(paywallOfferingsProvider),
+          compact: true,
+          error: e,
         ),
         data: (offerings) {
           final packages =
