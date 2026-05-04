@@ -13,6 +13,7 @@ import '../../../../auth/controller/auth.provider.dart';
 import '../../../../friends/domain/entities/friend_profile.entity.dart';
 import '../../../../friends/presentation/widgets/friend_avatar.widget.dart';
 import '../../../../groups/controller/group.provider.dart';
+import '../../../../wines/controller/wine.provider.dart';
 import '../../../../wines/domain/entities/wine.entity.dart';
 import '../../../../wines/presentation/widgets/wine_card.widget.dart';
 import '../../../controller/tastings.provider.dart';
@@ -862,6 +863,7 @@ class _WinesSection extends ConsumerWidget {
               itemBuilder: (_, i) => _WineLineupCard(
                 wine: wines[i],
                 rank: i + 1,
+                groupId: tasting.groupId,
                 canRemove: isOwner,
                 onRemove: () => ref
                     .read(tastingsControllerProvider.notifier)
@@ -916,28 +918,53 @@ class _WinesEmptyState extends StatelessWidget {
   }
 }
 
-class _WineLineupCard extends StatelessWidget {
+class _WineLineupCard extends ConsumerWidget {
   final WineEntity wine;
   final int rank;
+  final String groupId;
   final bool canRemove;
   final VoidCallback onRemove;
 
   const _WineLineupCard({
     required this.wine,
     required this.rank,
+    required this.groupId,
     required this.canRemove,
     required this.onRemove,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
     return Stack(
       children: [
         WineCardWidget(
           wine: wine,
           rank: rank,
-          onTap: () => context.push(AppRoutes.wineDetailPath(wine.id)),
+          onTap: () {
+            // Tasting wines are catalog-keyed (id == canonical_wine_id).
+            // If the user owns a personal log row for this canonical
+            // bottle, route to their full personal detail; otherwise
+            // fall back to the canonical group wine detail screen.
+            final cid = wine.canonicalWineId ?? wine.id;
+            final localWines =
+                ref.read(wineControllerProvider).valueOrNull ?? const [];
+            WineEntity? mine;
+            for (final w in localWines) {
+              if (w.canonicalWineId == cid) {
+                mine = w;
+                break;
+              }
+            }
+            if (mine != null) {
+              context.push(AppRoutes.wineDetailPath(mine.id), extra: mine);
+            } else {
+              context.push(
+                AppRoutes.groupWineDetailPath(groupId, cid),
+                extra: wine,
+              );
+            }
+          },
         ),
         if (canRemove)
           Positioned(
