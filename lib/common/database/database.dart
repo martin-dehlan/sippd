@@ -6,11 +6,15 @@ import 'tables/wine_memories.table.dart';
 import 'tables/wine_aliases.table.dart';
 import 'tables/notification_prefs.table.dart';
 import 'tables/canonical_grape.table.dart';
+import 'tables/profiles.table.dart';
+import 'tables/pending_image_uploads.table.dart';
 import 'daos/wines.dao.dart';
 import 'daos/wine_memories.dao.dart';
 import 'daos/wine_aliases.dao.dart';
 import 'daos/notification_prefs.dao.dart';
 import 'daos/canonical_grape.dao.dart';
+import 'daos/profiles.dao.dart';
+import 'daos/pending_image_uploads.dao.dart';
 
 part 'database.g.dart';
 
@@ -21,6 +25,8 @@ part 'database.g.dart';
     WineAliasesTable,
     NotificationPrefsTable,
     CanonicalGrapeTable,
+    ProfilesTable,
+    PendingImageUploadsTable,
   ],
   daos: [
     WinesDao,
@@ -28,13 +34,15 @@ part 'database.g.dart';
     WineAliasesDao,
     NotificationPrefsDao,
     CanonicalGrapeDao,
+    ProfilesDao,
+    PendingImageUploadsDao,
   ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -60,6 +68,18 @@ class AppDatabase extends _$AppDatabase {
         // catalog stays server-side — only the FK lives locally so
         // wines round-trip cleanly to and from Supabase.
         await m.addColumn(winesTable, winesTable.canonicalWineId);
+      }
+      if (from <= 3) {
+        // Local mirror of the Supabase profile so the router and profile
+        // screens render immediately on cold-start, including offline.
+        await m.createTable(profilesTable);
+      }
+      if (from <= 4) {
+        // Outbox for image uploads. Without it, an upload that fails
+        // (offline, transient 5xx) silently leaves the wine row with
+        // imageUrl = null forever. The OutboxFlusher reads this on
+        // launch + connectivity flips and retries with backoff.
+        await m.createTable(pendingImageUploadsTable);
       }
     },
   );
