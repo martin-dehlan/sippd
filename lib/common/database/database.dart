@@ -46,7 +46,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(QueryExecutor e) : super(e);
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -83,6 +83,16 @@ class AppDatabase extends _$AppDatabase {
         // (offline, transient 5xx) silently leaves the wine row with
         // imageUrl = null forever. The OutboxFlusher reads this on
         // launch + connectivity flips and retries with backoff.
+        await m.createTable(pendingImageUploadsTable);
+      }
+      if (from <= 5) {
+        // Heal: PendingImageUploadsDao.recordFailure used to write
+        // ISO-8601 strings into a DateTime column (Drift expects int).
+        // Existing rows from v5 with corrupted last_error_at would
+        // crash the next due() read. Cheaper to drop the in-flight
+        // queue (max ~5 retries per wine) than to pick through every
+        // row defensively. Fresh users are unaffected.
+        await customStatement('DROP TABLE IF EXISTS pending_image_uploads');
         await m.createTable(pendingImageUploadsTable);
       }
     },

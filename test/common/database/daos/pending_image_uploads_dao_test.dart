@@ -98,5 +98,31 @@ void main() {
           .due(DateTime.now().add(const Duration(minutes: 5)));
       expect(due.map((r) => r.wineId), containsAll(['wine-1', 'wine-2']));
     });
+
+    test(
+        'due self-heals when a row has a corrupted DateTime '
+        '(legacy v5 ISO-string)', () async {
+      // Simulate the pre-fix corruption directly via raw SQL so we
+      // exercise the defensive read path even though the migration
+      // already cleared this on real upgrades.
+      await db.customStatement(
+        "INSERT INTO pending_image_uploads "
+        "(wine_id, local_path, attempts, last_error_at, queued_at) "
+        "VALUES (?, ?, 1, '2026-05-04T10:00:00.000', 0)",
+        ['wine-broken', '/tmp/a.jpg'],
+      );
+
+      // Without self-heal this would throw FormatException and
+      // soft-brick every future flush. With it, the table is wiped
+      // and an empty list returned.
+      final due = await db.pendingImageUploadsDao.due(DateTime(2099));
+      expect(due, isEmpty);
+
+      // Confirm the table is now empty (heal completed).
+      final remaining =
+          await db.customSelect('SELECT COUNT(*) as c FROM pending_image_uploads')
+              .getSingle();
+      expect(remaining.read<int>('c'), 0);
+    });
   });
 }

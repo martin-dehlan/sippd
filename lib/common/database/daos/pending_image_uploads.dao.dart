@@ -15,7 +15,19 @@ class PendingImageUploadsDao extends DatabaseAccessor<AppDatabase>
   static const maxAttempts = 5;
 
   Future<List<PendingImageUploadData>> due(DateTime now) async {
-    final rows = await select(pendingImageUploadsTable).get();
+    final List<PendingImageUploadData> rows;
+    try {
+      rows = await select(pendingImageUploadsTable).get();
+    } on FormatException {
+      // Self-heal: a corrupt row (e.g. legacy v5 ISO-string in a
+      // DateTime column) would otherwise soft-brick every flusher
+      // pass. Cheaper to drop the queue than to leave the user with
+      // permanently-stuck uploads. The v5→v6 schema migration
+      // already handles the known-bad upgrade path; this catch
+      // covers any future schema/serialization drift.
+      await delete(pendingImageUploadsTable).go();
+      return const [];
+    }
     return rows.where((r) {
       if (r.attempts >= maxAttempts) return false;
       if (r.lastErrorAt == null) return true;
