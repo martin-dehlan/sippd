@@ -29,6 +29,9 @@ class AppRoutes {
   // Groups
   static const String groupDetail = '/groups/:id';
   static String groupDetailPath(String id) => '/groups/$id';
+  static const String groupWineDetail = '/groups/:id/wines/:cid';
+  static String groupWineDetailPath(String groupId, String canonicalWineId) =>
+      '/groups/$groupId/wines/$canonicalWineId';
 
   // Friends
   static const String friends = '/friends';
