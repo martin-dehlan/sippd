@@ -37,12 +37,12 @@ void main() {
 
   WineRepositoryImpl buildRepo({String? userId = 'user-1'}) {
     return WineRepositoryImpl(
-      db.winesDao,
-      api,
-      userId,
-      imageService,
-      analytics,
-      db.pendingImageUploadsDao,
+      dao: db.winesDao,
+      api: api,
+      userId: userId,
+      imageService: imageService,
+      analytics: analytics,
+      outbox: db.pendingImageUploadsDao,
     );
   }
 

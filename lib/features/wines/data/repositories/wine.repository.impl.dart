@@ -17,14 +17,19 @@ class WineRepositoryImpl implements WineRepository {
   final AnalyticsService? _analytics;
   final PendingImageUploadsDao? _outbox;
 
-  WineRepositoryImpl(
-    this._dao, [
-    this._api,
-    this._userId,
-    this._imageService,
-    this._analytics,
-    this._outbox,
-  ]);
+  WineRepositoryImpl({
+    required WinesDao dao,
+    WineSupabaseApi? api,
+    String? userId,
+    WineImageService? imageService,
+    AnalyticsService? analytics,
+    PendingImageUploadsDao? outbox,
+  })  : _dao = dao,
+        _api = api,
+        _userId = userId,
+        _imageService = imageService,
+        _analytics = analytics,
+        _outbox = outbox;
 
   @override
   Future<List<WineEntity>> getWines() async {

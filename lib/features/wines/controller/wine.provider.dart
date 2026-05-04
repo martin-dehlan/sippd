@@ -57,12 +57,12 @@ WineRepository wineRepository(WineRepositoryRef ref) {
   final imageService = ref.watch(wineImageServiceProvider);
   final analytics = ref.read(analyticsProvider);
   return WineRepositoryImpl(
-    db.winesDao,
-    api,
-    userId,
-    imageService,
-    analytics,
-    db.pendingImageUploadsDao,
+    dao: db.winesDao,
+    api: api,
+    userId: userId,
+    imageService: imageService,
+    analytics: analytics,
+    outbox: db.pendingImageUploadsDao,
   );
 }
 

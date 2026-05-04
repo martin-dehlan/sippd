@@ -40,7 +40,7 @@ final wineSupabaseApiProvider = AutoDisposeProvider<WineSupabaseApi?>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef WineSupabaseApiRef = AutoDisposeProviderRef<WineSupabaseApi?>;
-String _$wineRepositoryHash() => r'f51c1d4c9952beb8a7d9e902463468e900bd3f32';
+String _$wineRepositoryHash() => r'8456fb116e8fe5e2850ebc975c9e012c606c138b';
 
 /// See also [wineRepository].
 @ProviderFor(wineRepository)

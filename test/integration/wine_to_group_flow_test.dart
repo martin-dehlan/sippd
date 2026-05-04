@@ -50,12 +50,12 @@ void main() {
         error: any(named: 'error'))).thenAnswer((_) async {});
 
     repo = WineRepositoryImpl(
-      db.winesDao,
-      api,
-      ownerId,
-      imageService,
-      analytics,
-      db.pendingImageUploadsDao,
+      dao: db.winesDao,
+      api: api,
+      userId: ownerId,
+      imageService: imageService,
+      analytics: analytics,
+      outbox: db.pendingImageUploadsDao,
     );
   });
 
