@@ -11,7 +11,10 @@ import 'package:sippd/features/friends/domain/entities/friend_profile.entity.dar
 import 'package:sippd/features/friends/domain/repositories/friends.repository.dart';
 import 'package:sippd/features/groups/data/data_sources/group_image.service.dart';
 import 'package:sippd/features/profile/data/data_sources/profile.api.dart';
+import 'package:sippd/features/paywall/data/services/paywall.service.dart';
 import 'package:sippd/features/profile/data/models/profile.model.dart';
+import 'package:sippd/features/push/data/data_sources/notification_prefs.api.dart';
+import 'package:sippd/features/push/data/models/notification_prefs.model.dart';
 import 'package:sippd/features/tastings/data/data_sources/tastings.api.dart';
 import 'package:sippd/features/wines/data/data_sources/canonical_wine.api.dart';
 import 'package:sippd/features/wines/data/data_sources/wine_image.service.dart';
@@ -43,6 +46,11 @@ class MockActivityApi extends Mock implements ActivityApi {}
 class MockGroupImageService extends Mock implements GroupImageService {}
 
 class MockTastingsApi extends Mock implements TastingsApi {}
+
+class MockNotificationPrefsApi extends Mock
+    implements NotificationPrefsApi {}
+
+class MockPaywallService extends Mock implements PaywallService {}
 
 // ---- Repository mocks -------------------------------------------------
 class MockWineRepository extends Mock implements WineRepository {}
@@ -76,6 +84,7 @@ void registerTestFallbacks() {
   registerFallbackValue(_anyWineEntity());
   registerFallbackValue(_anyWineModel());
   registerFallbackValue(_anyProfileModel());
+  registerFallbackValue(_anyNotificationPrefsModel());
   registerFallbackValue(FriendProfileEntity(id: 'test-friend'));
   registerFallbackValue(StackTrace.empty);
   registerFallbackValue(<String, Object>{});
@@ -103,4 +112,15 @@ WineModel _anyWineModel() => WineModel(
 ProfileModel _anyProfileModel() => const ProfileModel(
       id: 'test-user',
       onboardingCompleted: true,
+    );
+
+NotificationPrefsModel _anyNotificationPrefsModel() =>
+    NotificationPrefsModel(
+      userId: 'test-user',
+      tastingReminders: true,
+      tastingReminderHours: 1,
+      friendActivity: true,
+      groupActivity: true,
+      groupWineShared: true,
+      updatedAt: DateTime(2026),
     );
