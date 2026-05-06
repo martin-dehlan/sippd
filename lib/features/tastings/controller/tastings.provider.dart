@@ -9,6 +9,7 @@ import '../data/data_sources/tastings.api.dart';
 import '../data/models/tasting.model.dart';
 import '../domain/entities/tasting.entity.dart';
 import '../domain/entities/tasting_attendee.entity.dart';
+import '../domain/entities/tasting_recap_entry.entity.dart';
 
 part 'tastings.provider.g.dart';
 
@@ -90,6 +91,20 @@ Future<Map<String, double>> tastingWineRatings(
   if (api == null) return const {};
   ref.requireOnline();
   return api.fetchTastingAverages(tastingId);
+}
+
+/// All submitted ratings for the tasting joined with rater profiles.
+/// Powers the concluded-state recap view (top wine + per-wine
+/// breakdown). Empty list when no ratings exist yet.
+@riverpod
+Future<List<TastingRecapEntry>> tastingRecapEntries(
+  TastingRecapEntriesRef ref,
+  String tastingId,
+) async {
+  final api = ref.watch(tastingsApiProvider);
+  if (api == null) return const [];
+  ref.requireOnline();
+  return api.fetchTastingRecapEntries(tastingId);
 }
 
 /// The caller's own rating for a single wine in a tasting. Null if not
@@ -278,6 +293,7 @@ class TastingsController extends _$TastingsController {
     );
     ref.invalidate(myTastingRatingProvider(tastingId, canonicalWineId));
     ref.invalidate(tastingWineRatingsProvider(tastingId));
+    ref.invalidate(tastingRecapEntriesProvider(tastingId));
   }
 
   Future<TastingEntity?> updateTasting({

@@ -1,6 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../friends/data/models/friend_profile.model.dart';
 import '../../../wines/domain/entities/wine.entity.dart';
+import '../../domain/entities/tasting_recap_entry.entity.dart';
 import '../models/tasting.model.dart';
 
 class TastingAttendeeRow {
@@ -323,6 +324,46 @@ class TastingsApi {
         .maybeSingle();
     if (row == null) return null;
     return (row['rating'] as num?)?.toDouble();
+  }
+
+  /// Returns one entry per submitted rating in the tasting, joined with
+  /// the rater's profile. Two queries (ratings + profiles) instead of
+  /// a `select(...profiles(*))` embed because tasting_ratings has no
+  /// declared FK to profiles in the schema and PostgREST embed needs
+  /// one. Profiles RLS allows reading any row, so the second roundtrip
+  /// is cheap.
+  Future<List<TastingRecapEntry>> fetchTastingRecapEntries(
+      String tastingId) async {
+    final ratingRows = (await _client
+        .from('tasting_ratings')
+        .select('user_id, canonical_wine_id, rating')
+        .eq('tasting_id', tastingId)) as List;
+    if (ratingRows.isEmpty) return const [];
+    final userIds = ratingRows
+        .map((r) => (r as Map<String, dynamic>)['user_id'] as String)
+        .toSet()
+        .toList();
+    final profileRows = (await _client
+        .from('profiles')
+        .select('id, display_name, username, avatar_url')
+        .inFilter('id', userIds)) as List;
+    final profileById = <String, Map<String, dynamic>>{
+      for (final p in profileRows)
+        (p as Map<String, dynamic>)['id'] as String: p,
+    };
+    return ratingRows.map((row) {
+      final m = row as Map<String, dynamic>;
+      final uid = m['user_id'] as String;
+      final p = profileById[uid];
+      return TastingRecapEntry(
+        userId: uid,
+        canonicalWineId: m['canonical_wine_id'] as String,
+        rating: (m['rating'] as num).toDouble(),
+        displayName: p?['display_name'] as String?,
+        username: p?['username'] as String?,
+        avatarUrl: p?['avatar_url'] as String?,
+      );
+    }).toList(growable: false);
   }
 
   /// Returns avg rating per canonical wine for this tasting, computed

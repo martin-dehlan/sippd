@@ -601,6 +601,155 @@ class _TastingWineRatingsProviderElement
   String get tastingId => (origin as TastingWineRatingsProvider).tastingId;
 }
 
+String _$tastingRecapEntriesHash() =>
+    r'b2b26064ead0bc2dc8b4bff2c5e01744fdc36528';
+
+/// All submitted ratings for the tasting joined with rater profiles.
+/// Powers the concluded-state recap view (top wine + per-wine
+/// breakdown). Empty list when no ratings exist yet.
+///
+/// Copied from [tastingRecapEntries].
+@ProviderFor(tastingRecapEntries)
+const tastingRecapEntriesProvider = TastingRecapEntriesFamily();
+
+/// All submitted ratings for the tasting joined with rater profiles.
+/// Powers the concluded-state recap view (top wine + per-wine
+/// breakdown). Empty list when no ratings exist yet.
+///
+/// Copied from [tastingRecapEntries].
+class TastingRecapEntriesFamily
+    extends Family<AsyncValue<List<TastingRecapEntry>>> {
+  /// All submitted ratings for the tasting joined with rater profiles.
+  /// Powers the concluded-state recap view (top wine + per-wine
+  /// breakdown). Empty list when no ratings exist yet.
+  ///
+  /// Copied from [tastingRecapEntries].
+  const TastingRecapEntriesFamily();
+
+  /// All submitted ratings for the tasting joined with rater profiles.
+  /// Powers the concluded-state recap view (top wine + per-wine
+  /// breakdown). Empty list when no ratings exist yet.
+  ///
+  /// Copied from [tastingRecapEntries].
+  TastingRecapEntriesProvider call(String tastingId) {
+    return TastingRecapEntriesProvider(tastingId);
+  }
+
+  @override
+  TastingRecapEntriesProvider getProviderOverride(
+    covariant TastingRecapEntriesProvider provider,
+  ) {
+    return call(provider.tastingId);
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'tastingRecapEntriesProvider';
+}
+
+/// All submitted ratings for the tasting joined with rater profiles.
+/// Powers the concluded-state recap view (top wine + per-wine
+/// breakdown). Empty list when no ratings exist yet.
+///
+/// Copied from [tastingRecapEntries].
+class TastingRecapEntriesProvider
+    extends AutoDisposeFutureProvider<List<TastingRecapEntry>> {
+  /// All submitted ratings for the tasting joined with rater profiles.
+  /// Powers the concluded-state recap view (top wine + per-wine
+  /// breakdown). Empty list when no ratings exist yet.
+  ///
+  /// Copied from [tastingRecapEntries].
+  TastingRecapEntriesProvider(String tastingId)
+    : this._internal(
+        (ref) => tastingRecapEntries(ref as TastingRecapEntriesRef, tastingId),
+        from: tastingRecapEntriesProvider,
+        name: r'tastingRecapEntriesProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$tastingRecapEntriesHash,
+        dependencies: TastingRecapEntriesFamily._dependencies,
+        allTransitiveDependencies:
+            TastingRecapEntriesFamily._allTransitiveDependencies,
+        tastingId: tastingId,
+      );
+
+  TastingRecapEntriesProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.tastingId,
+  }) : super.internal();
+
+  final String tastingId;
+
+  @override
+  Override overrideWith(
+    FutureOr<List<TastingRecapEntry>> Function(TastingRecapEntriesRef provider)
+    create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: TastingRecapEntriesProvider._internal(
+        (ref) => create(ref as TastingRecapEntriesRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        tastingId: tastingId,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<List<TastingRecapEntry>> createElement() {
+    return _TastingRecapEntriesProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is TastingRecapEntriesProvider && other.tastingId == tastingId;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, tastingId.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin TastingRecapEntriesRef
+    on AutoDisposeFutureProviderRef<List<TastingRecapEntry>> {
+  /// The parameter `tastingId` of this provider.
+  String get tastingId;
+}
+
+class _TastingRecapEntriesProviderElement
+    extends AutoDisposeFutureProviderElement<List<TastingRecapEntry>>
+    with TastingRecapEntriesRef {
+  _TastingRecapEntriesProviderElement(super.provider);
+
+  @override
+  String get tastingId => (origin as TastingRecapEntriesProvider).tastingId;
+}
+
 String _$myTastingRatingHash() => r'77d84e96898b085a5ed7d89123d495b0646603a6';
 
 /// The caller's own rating for a single wine in a tasting. Null if not
@@ -888,7 +1037,7 @@ class _TastingAttendeesProviderElement
 }
 
 String _$tastingsControllerHash() =>
-    r'23ba10f7addc65530cb04d4eb8c938cbff7acf52';
+    r'b4edad0b5b3160fb7b0b99af7b979d7b7bb21adc';
 
 /// See also [TastingsController].
 @ProviderFor(TastingsController)
