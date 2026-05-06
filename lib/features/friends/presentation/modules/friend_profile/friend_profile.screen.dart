@@ -86,11 +86,22 @@ class _Body extends StatelessWidget {
       children: [
         SizedBox(height: context.xl * 1.2),
         _HeroHeader(profile: profile),
+        // Stats live right under the header — count + avg + countries
+        // function as the at-a-glance "size" of this person's wine
+        // life, before the editorial identity layers kick in.
+        SizedBox(height: context.l),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: padH),
+          child: winesAsync.when(
+            data: (wines) => StatsCard(stats: _statsFor(wines)),
+            loading: () => StatsCard(stats: _statsFor(const [])),
+            error: (_, __) => const SizedBox.shrink(),
+          ),
+        ),
         // Identity zone — who this person is, before how we relate to
-        // them and what their numbers say. The personality hero pulls
-        // archetype + DNA shape; traits surface the strongest stylistic
-        // axes. Both fall back gracefully when the friend's data is
-        // sparse (own loading + locked-state UI inside each widget).
+        // them. Personality hero pulls archetype + DNA shape; traits
+        // surface the strongest stylistic axes. Both fall back when
+        // the friend's data is sparse via internal locked states.
         SizedBox(height: context.l),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: padH),
@@ -107,15 +118,6 @@ class _Body extends StatelessWidget {
             friendId: profile.id,
             friendDisplayName:
                 profile.displayName ?? profile.username ?? 'Friend',
-          ),
-        ),
-        SizedBox(height: context.xl),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: padH),
-          child: winesAsync.when(
-            data: (wines) => StatsCard(stats: _statsFor(wines)),
-            loading: () => StatsCard(stats: _statsFor(const [])),
-            error: (_, __) => const SizedBox.shrink(),
           ),
         ),
         SizedBox(height: context.xl),
