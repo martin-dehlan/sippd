@@ -208,6 +208,11 @@ class _Body extends ConsumerWidget {
           ),
         ],
         SizedBox(height: context.l),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
+          child: _PhaseBanner(tasting: tasting, isOwner: isOwner),
+        ),
+        SizedBox(height: context.l),
         _Section(
           label: 'People',
           child: _AttendeesCard(tasting: tasting),
@@ -258,6 +263,246 @@ class _Body extends ConsumerWidget {
         .read(tastingsControllerProvider.notifier)
         .deleteTasting(t.id, groupId: t.groupId);
     if (context.mounted) context.pop();
+  }
+}
+
+/// Phase-aware banner showing current lifecycle state. Hosts get the
+/// transition CTA inline (Start / End). Non-hosts see a non-interactive
+/// state pill so they know whether ratings are open yet. The Start CTA
+/// is only surfaced near scheduledAt (±6h) to avoid premature firing.
+class _PhaseBanner extends ConsumerWidget {
+  final TastingEntity tasting;
+  final bool isOwner;
+  const _PhaseBanner({required this.tasting, required this.isOwner});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final cs = Theme.of(context).colorScheme;
+    return switch (tasting.state) {
+      TastingState.upcoming => _UpcomingBanner(
+          tasting: tasting,
+          isOwner: isOwner,
+          cs: cs,
+          onStart: () => _start(context, ref),
+        ),
+      TastingState.active => _ActiveBanner(
+          tasting: tasting,
+          isOwner: isOwner,
+          cs: cs,
+          onEnd: () => _confirmEnd(context, ref),
+        ),
+      TastingState.concluded => _ConcludedBanner(cs: cs),
+    };
+  }
+
+  Future<void> _start(BuildContext context, WidgetRef ref) async {
+    await ref
+        .read(tastingsControllerProvider.notifier)
+        .startTasting(tasting.id, groupId: tasting.groupId);
+  }
+
+  Future<void> _confirmEnd(BuildContext context, WidgetRef ref) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('End tasting?'),
+        content: const Text(
+            'This locks the recap. Attendees can still add ratings briefly afterwards.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Keep going'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('End'),
+          ),
+        ],
+      ),
+    );
+    if (ok != true) return;
+    await ref
+        .read(tastingsControllerProvider.notifier)
+        .endTasting(tasting.id, groupId: tasting.groupId);
+  }
+}
+
+class _UpcomingBanner extends StatelessWidget {
+  final TastingEntity tasting;
+  final bool isOwner;
+  final ColorScheme cs;
+  final VoidCallback onStart;
+  const _UpcomingBanner({
+    required this.tasting,
+    required this.isOwner,
+    required this.cs,
+    required this.onStart,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final now = DateTime.now();
+    final hoursUntil = tasting.scheduledAt.difference(now).inHours;
+    // Surface the Start CTA only inside a ±6h window around scheduledAt.
+    // Outside that window, host still sees the pill but no button — keeps
+    // the screen calm for far-future events.
+    final canStart = isOwner && hoursUntil <= 6 && hoursUntil >= -12;
+    return _BannerShell(
+      cs: cs,
+      icon: PhosphorIconsRegular.calendarBlank,
+      label: 'UPCOMING',
+      tone: cs.surfaceContainerHigh,
+      foreground: cs.onSurface,
+      action: canStart
+          ? _BannerAction(
+              label: 'Start tasting',
+              onTap: onStart,
+              filled: true,
+              cs: cs,
+            )
+          : null,
+    );
+  }
+}
+
+class _ActiveBanner extends StatelessWidget {
+  final TastingEntity tasting;
+  final bool isOwner;
+  final ColorScheme cs;
+  final VoidCallback onEnd;
+  const _ActiveBanner({
+    required this.tasting,
+    required this.isOwner,
+    required this.cs,
+    required this.onEnd,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return _BannerShell(
+      cs: cs,
+      icon: PhosphorIconsFill.circle,
+      label: 'LIVE',
+      tone: cs.primaryContainer,
+      foreground: cs.onPrimaryContainer,
+      action: isOwner
+          ? _BannerAction(
+              label: 'End tasting',
+              onTap: onEnd,
+              filled: false,
+              cs: cs,
+            )
+          : null,
+    );
+  }
+}
+
+class _ConcludedBanner extends StatelessWidget {
+  final ColorScheme cs;
+  const _ConcludedBanner({required this.cs});
+
+  @override
+  Widget build(BuildContext context) {
+    return _BannerShell(
+      cs: cs,
+      icon: PhosphorIconsRegular.checkCircle,
+      label: 'CONCLUDED',
+      tone: cs.surfaceContainer,
+      foreground: cs.onSurfaceVariant,
+      action: null,
+    );
+  }
+}
+
+class _BannerShell extends StatelessWidget {
+  final ColorScheme cs;
+  final IconData icon;
+  final String label;
+  final Color tone;
+  final Color foreground;
+  final _BannerAction? action;
+
+  const _BannerShell({
+    required this.cs,
+    required this.icon,
+    required this.label,
+    required this.tone,
+    required this.foreground,
+    this.action,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: context.w * 0.04,
+        vertical: context.s * 1.2,
+      ),
+      decoration: BoxDecoration(
+        color: tone,
+        borderRadius: BorderRadius.circular(context.w * 0.04),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, size: context.bodyFont * 0.95, color: foreground),
+          SizedBox(width: context.w * 0.02),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: context.captionFont * 0.95,
+              fontWeight: FontWeight.w800,
+              color: foreground,
+              letterSpacing: 1.4,
+            ),
+          ),
+          const Spacer(),
+          ?action,
+        ],
+      ),
+    );
+  }
+}
+
+class _BannerAction extends StatelessWidget {
+  final String label;
+  final VoidCallback onTap;
+  final bool filled;
+  final ColorScheme cs;
+
+  const _BannerAction({
+    required this.label,
+    required this.onTap,
+    required this.filled,
+    required this.cs,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final bg = filled ? cs.primary : cs.surface;
+    final fg = filled ? cs.onPrimary : cs.onSurface;
+    return Material(
+      color: bg,
+      borderRadius: BorderRadius.circular(context.w * 0.04),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(context.w * 0.04),
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: context.w * 0.04,
+            vertical: context.s * 0.9,
+          ),
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: context.captionFont,
+              fontWeight: FontWeight.w700,
+              color: fg,
+              letterSpacing: 0.2,
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
 

@@ -178,6 +178,7 @@ class TastingsController extends _$TastingsController {
     double? longitude,
     required DateTime scheduledAt,
     List<String> wineIds = const [],
+    TastingLineupMode lineupMode = TastingLineupMode.planned,
   }) async {
     final api = ref.read(tastingsApiProvider);
     if (api == null) return null;
@@ -190,6 +191,7 @@ class TastingsController extends _$TastingsController {
       latitude: latitude,
       longitude: longitude,
       scheduledAt: scheduledAt,
+      lineupMode: lineupMode.name,
     );
     if (wineIds.isNotEmpty) {
       await api.addWines(model.id, wineIds);
@@ -200,6 +202,7 @@ class TastingsController extends _$TastingsController {
         'wine_count': wineIds.length,
         'has_description': (description ?? '').isNotEmpty,
         'has_location': latitude != null && longitude != null,
+        'lineup_mode': lineupMode.name,
       },
     );
     // Reminder delivery is handled server-side: the `tasting-reminders`
@@ -245,6 +248,47 @@ class TastingsController extends _$TastingsController {
     await api.deleteTasting(tastingId);
     ref.read(analyticsProvider).capture('tasting_deleted');
     if (groupId != null) ref.invalidate(groupTastingsProvider(groupId));
+  }
+
+  /// Host transitions tasting from upcoming → active. UI gates this so
+  /// only the creator can call it; here we trust the caller and let RLS
+  /// reject anyone else server-side.
+  Future<TastingEntity?> startTasting(String tastingId,
+      {String? groupId}) async {
+    final api = ref.read(tastingsApiProvider);
+    if (api == null) return null;
+    final model = await api.startTasting(tastingId);
+    ref.read(analyticsProvider).capture('tasting_started');
+    ref.invalidate(tastingDetailProvider(tastingId));
+    if (groupId != null) ref.invalidate(groupTastingsProvider(groupId));
+    return model.toEntity();
+  }
+
+  /// Host transitions active → concluded. No auto-end exists — the
+  /// host must explicitly mark the event over (events run longer than
+  /// scheduled).
+  Future<TastingEntity?> endTasting(String tastingId,
+      {String? groupId}) async {
+    final api = ref.read(tastingsApiProvider);
+    if (api == null) return null;
+    final model = await api.endTasting(tastingId);
+    ref.read(analyticsProvider).capture('tasting_ended');
+    ref.invalidate(tastingDetailProvider(tastingId));
+    if (groupId != null) ref.invalidate(groupTastingsProvider(groupId));
+    return model.toEntity();
+  }
+
+  Future<TastingEntity?> setLineupMode(
+    String tastingId,
+    TastingLineupMode mode, {
+    String? groupId,
+  }) async {
+    final api = ref.read(tastingsApiProvider);
+    if (api == null) return null;
+    final model = await api.setLineupMode(tastingId, mode.name);
+    ref.invalidate(tastingDetailProvider(tastingId));
+    if (groupId != null) ref.invalidate(groupTastingsProvider(groupId));
+    return model.toEntity();
   }
 
   Future<TastingEntity?> updateTasting({

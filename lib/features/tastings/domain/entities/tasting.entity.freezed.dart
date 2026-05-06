@@ -28,6 +28,10 @@ mixin _$TastingEntity {
   String get createdBy => throw _privateConstructorUsedError;
   bool get isBlind => throw _privateConstructorUsedError;
   bool get isRevealed => throw _privateConstructorUsedError;
+  TastingState get state => throw _privateConstructorUsedError;
+  TastingLineupMode get lineupMode => throw _privateConstructorUsedError;
+  DateTime? get startedAt => throw _privateConstructorUsedError;
+  DateTime? get endedAt => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
 
   /// Create a copy of TastingEntity
@@ -56,6 +60,10 @@ abstract class $TastingEntityCopyWith<$Res> {
     String createdBy,
     bool isBlind,
     bool isRevealed,
+    TastingState state,
+    TastingLineupMode lineupMode,
+    DateTime? startedAt,
+    DateTime? endedAt,
     DateTime createdAt,
   });
 }
@@ -86,6 +94,10 @@ class _$TastingEntityCopyWithImpl<$Res, $Val extends TastingEntity>
     Object? createdBy = null,
     Object? isBlind = null,
     Object? isRevealed = null,
+    Object? state = null,
+    Object? lineupMode = null,
+    Object? startedAt = freezed,
+    Object? endedAt = freezed,
     Object? createdAt = null,
   }) {
     return _then(
@@ -134,6 +146,22 @@ class _$TastingEntityCopyWithImpl<$Res, $Val extends TastingEntity>
                 ? _value.isRevealed
                 : isRevealed // ignore: cast_nullable_to_non_nullable
                       as bool,
+            state: null == state
+                ? _value.state
+                : state // ignore: cast_nullable_to_non_nullable
+                      as TastingState,
+            lineupMode: null == lineupMode
+                ? _value.lineupMode
+                : lineupMode // ignore: cast_nullable_to_non_nullable
+                      as TastingLineupMode,
+            startedAt: freezed == startedAt
+                ? _value.startedAt
+                : startedAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+            endedAt: freezed == endedAt
+                ? _value.endedAt
+                : endedAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
             createdAt: null == createdAt
                 ? _value.createdAt
                 : createdAt // ignore: cast_nullable_to_non_nullable
@@ -165,6 +193,10 @@ abstract class _$$TastingEntityImplCopyWith<$Res>
     String createdBy,
     bool isBlind,
     bool isRevealed,
+    TastingState state,
+    TastingLineupMode lineupMode,
+    DateTime? startedAt,
+    DateTime? endedAt,
     DateTime createdAt,
   });
 }
@@ -194,6 +226,10 @@ class __$$TastingEntityImplCopyWithImpl<$Res>
     Object? createdBy = null,
     Object? isBlind = null,
     Object? isRevealed = null,
+    Object? state = null,
+    Object? lineupMode = null,
+    Object? startedAt = freezed,
+    Object? endedAt = freezed,
     Object? createdAt = null,
   }) {
     return _then(
@@ -242,6 +278,22 @@ class __$$TastingEntityImplCopyWithImpl<$Res>
             ? _value.isRevealed
             : isRevealed // ignore: cast_nullable_to_non_nullable
                   as bool,
+        state: null == state
+            ? _value.state
+            : state // ignore: cast_nullable_to_non_nullable
+                  as TastingState,
+        lineupMode: null == lineupMode
+            ? _value.lineupMode
+            : lineupMode // ignore: cast_nullable_to_non_nullable
+                  as TastingLineupMode,
+        startedAt: freezed == startedAt
+            ? _value.startedAt
+            : startedAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+        endedAt: freezed == endedAt
+            ? _value.endedAt
+            : endedAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
         createdAt: null == createdAt
             ? _value.createdAt
             : createdAt // ignore: cast_nullable_to_non_nullable
@@ -266,6 +318,10 @@ class _$TastingEntityImpl implements _TastingEntity {
     required this.createdBy,
     this.isBlind = false,
     this.isRevealed = false,
+    this.state = TastingState.upcoming,
+    this.lineupMode = TastingLineupMode.planned,
+    this.startedAt,
+    this.endedAt,
     required this.createdAt,
   });
 
@@ -294,11 +350,21 @@ class _$TastingEntityImpl implements _TastingEntity {
   @JsonKey()
   final bool isRevealed;
   @override
+  @JsonKey()
+  final TastingState state;
+  @override
+  @JsonKey()
+  final TastingLineupMode lineupMode;
+  @override
+  final DateTime? startedAt;
+  @override
+  final DateTime? endedAt;
+  @override
   final DateTime createdAt;
 
   @override
   String toString() {
-    return 'TastingEntity(id: $id, groupId: $groupId, title: $title, description: $description, location: $location, latitude: $latitude, longitude: $longitude, scheduledAt: $scheduledAt, createdBy: $createdBy, isBlind: $isBlind, isRevealed: $isRevealed, createdAt: $createdAt)';
+    return 'TastingEntity(id: $id, groupId: $groupId, title: $title, description: $description, location: $location, latitude: $latitude, longitude: $longitude, scheduledAt: $scheduledAt, createdBy: $createdBy, isBlind: $isBlind, isRevealed: $isRevealed, state: $state, lineupMode: $lineupMode, startedAt: $startedAt, endedAt: $endedAt, createdAt: $createdAt)';
   }
 
   @override
@@ -324,6 +390,12 @@ class _$TastingEntityImpl implements _TastingEntity {
             (identical(other.isBlind, isBlind) || other.isBlind == isBlind) &&
             (identical(other.isRevealed, isRevealed) ||
                 other.isRevealed == isRevealed) &&
+            (identical(other.state, state) || other.state == state) &&
+            (identical(other.lineupMode, lineupMode) ||
+                other.lineupMode == lineupMode) &&
+            (identical(other.startedAt, startedAt) ||
+                other.startedAt == startedAt) &&
+            (identical(other.endedAt, endedAt) || other.endedAt == endedAt) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt));
   }
@@ -342,6 +414,10 @@ class _$TastingEntityImpl implements _TastingEntity {
     createdBy,
     isBlind,
     isRevealed,
+    state,
+    lineupMode,
+    startedAt,
+    endedAt,
     createdAt,
   );
 
@@ -367,6 +443,10 @@ abstract class _TastingEntity implements TastingEntity {
     required final String createdBy,
     final bool isBlind,
     final bool isRevealed,
+    final TastingState state,
+    final TastingLineupMode lineupMode,
+    final DateTime? startedAt,
+    final DateTime? endedAt,
     required final DateTime createdAt,
   }) = _$TastingEntityImpl;
 
@@ -392,6 +472,14 @@ abstract class _TastingEntity implements TastingEntity {
   bool get isBlind;
   @override
   bool get isRevealed;
+  @override
+  TastingState get state;
+  @override
+  TastingLineupMode get lineupMode;
+  @override
+  DateTime? get startedAt;
+  @override
+  DateTime? get endedAt;
   @override
   DateTime get createdAt;
 

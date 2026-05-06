@@ -37,6 +37,13 @@ mixin _$TastingModel {
   bool get isBlind => throw _privateConstructorUsedError;
   @JsonKey(name: 'is_revealed')
   bool get isRevealed => throw _privateConstructorUsedError;
+  String get state => throw _privateConstructorUsedError;
+  @JsonKey(name: 'lineup_mode')
+  String get lineupMode => throw _privateConstructorUsedError;
+  @JsonKey(name: 'started_at')
+  DateTime? get startedAt => throw _privateConstructorUsedError;
+  @JsonKey(name: 'ended_at')
+  DateTime? get endedAt => throw _privateConstructorUsedError;
   @JsonKey(name: 'created_at')
   DateTime get createdAt => throw _privateConstructorUsedError;
 
@@ -69,6 +76,10 @@ abstract class $TastingModelCopyWith<$Res> {
     @JsonKey(name: 'created_by') String createdBy,
     @JsonKey(name: 'is_blind') bool isBlind,
     @JsonKey(name: 'is_revealed') bool isRevealed,
+    String state,
+    @JsonKey(name: 'lineup_mode') String lineupMode,
+    @JsonKey(name: 'started_at') DateTime? startedAt,
+    @JsonKey(name: 'ended_at') DateTime? endedAt,
     @JsonKey(name: 'created_at') DateTime createdAt,
   });
 }
@@ -99,6 +110,10 @@ class _$TastingModelCopyWithImpl<$Res, $Val extends TastingModel>
     Object? createdBy = null,
     Object? isBlind = null,
     Object? isRevealed = null,
+    Object? state = null,
+    Object? lineupMode = null,
+    Object? startedAt = freezed,
+    Object? endedAt = freezed,
     Object? createdAt = null,
   }) {
     return _then(
@@ -147,6 +162,22 @@ class _$TastingModelCopyWithImpl<$Res, $Val extends TastingModel>
                 ? _value.isRevealed
                 : isRevealed // ignore: cast_nullable_to_non_nullable
                       as bool,
+            state: null == state
+                ? _value.state
+                : state // ignore: cast_nullable_to_non_nullable
+                      as String,
+            lineupMode: null == lineupMode
+                ? _value.lineupMode
+                : lineupMode // ignore: cast_nullable_to_non_nullable
+                      as String,
+            startedAt: freezed == startedAt
+                ? _value.startedAt
+                : startedAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+            endedAt: freezed == endedAt
+                ? _value.endedAt
+                : endedAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
             createdAt: null == createdAt
                 ? _value.createdAt
                 : createdAt // ignore: cast_nullable_to_non_nullable
@@ -178,6 +209,10 @@ abstract class _$$TastingModelImplCopyWith<$Res>
     @JsonKey(name: 'created_by') String createdBy,
     @JsonKey(name: 'is_blind') bool isBlind,
     @JsonKey(name: 'is_revealed') bool isRevealed,
+    String state,
+    @JsonKey(name: 'lineup_mode') String lineupMode,
+    @JsonKey(name: 'started_at') DateTime? startedAt,
+    @JsonKey(name: 'ended_at') DateTime? endedAt,
     @JsonKey(name: 'created_at') DateTime createdAt,
   });
 }
@@ -207,6 +242,10 @@ class __$$TastingModelImplCopyWithImpl<$Res>
     Object? createdBy = null,
     Object? isBlind = null,
     Object? isRevealed = null,
+    Object? state = null,
+    Object? lineupMode = null,
+    Object? startedAt = freezed,
+    Object? endedAt = freezed,
     Object? createdAt = null,
   }) {
     return _then(
@@ -255,6 +294,22 @@ class __$$TastingModelImplCopyWithImpl<$Res>
             ? _value.isRevealed
             : isRevealed // ignore: cast_nullable_to_non_nullable
                   as bool,
+        state: null == state
+            ? _value.state
+            : state // ignore: cast_nullable_to_non_nullable
+                  as String,
+        lineupMode: null == lineupMode
+            ? _value.lineupMode
+            : lineupMode // ignore: cast_nullable_to_non_nullable
+                  as String,
+        startedAt: freezed == startedAt
+            ? _value.startedAt
+            : startedAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+        endedAt: freezed == endedAt
+            ? _value.endedAt
+            : endedAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
         createdAt: null == createdAt
             ? _value.createdAt
             : createdAt // ignore: cast_nullable_to_non_nullable
@@ -279,6 +334,10 @@ class _$TastingModelImpl implements _TastingModel {
     @JsonKey(name: 'created_by') required this.createdBy,
     @JsonKey(name: 'is_blind') this.isBlind = false,
     @JsonKey(name: 'is_revealed') this.isRevealed = false,
+    this.state = 'upcoming',
+    @JsonKey(name: 'lineup_mode') this.lineupMode = 'planned',
+    @JsonKey(name: 'started_at') this.startedAt,
+    @JsonKey(name: 'ended_at') this.endedAt,
     @JsonKey(name: 'created_at') required this.createdAt,
   });
 
@@ -313,12 +372,24 @@ class _$TastingModelImpl implements _TastingModel {
   @JsonKey(name: 'is_revealed')
   final bool isRevealed;
   @override
+  @JsonKey()
+  final String state;
+  @override
+  @JsonKey(name: 'lineup_mode')
+  final String lineupMode;
+  @override
+  @JsonKey(name: 'started_at')
+  final DateTime? startedAt;
+  @override
+  @JsonKey(name: 'ended_at')
+  final DateTime? endedAt;
+  @override
   @JsonKey(name: 'created_at')
   final DateTime createdAt;
 
   @override
   String toString() {
-    return 'TastingModel(id: $id, groupId: $groupId, title: $title, description: $description, location: $location, latitude: $latitude, longitude: $longitude, scheduledAt: $scheduledAt, createdBy: $createdBy, isBlind: $isBlind, isRevealed: $isRevealed, createdAt: $createdAt)';
+    return 'TastingModel(id: $id, groupId: $groupId, title: $title, description: $description, location: $location, latitude: $latitude, longitude: $longitude, scheduledAt: $scheduledAt, createdBy: $createdBy, isBlind: $isBlind, isRevealed: $isRevealed, state: $state, lineupMode: $lineupMode, startedAt: $startedAt, endedAt: $endedAt, createdAt: $createdAt)';
   }
 
   @override
@@ -344,6 +415,12 @@ class _$TastingModelImpl implements _TastingModel {
             (identical(other.isBlind, isBlind) || other.isBlind == isBlind) &&
             (identical(other.isRevealed, isRevealed) ||
                 other.isRevealed == isRevealed) &&
+            (identical(other.state, state) || other.state == state) &&
+            (identical(other.lineupMode, lineupMode) ||
+                other.lineupMode == lineupMode) &&
+            (identical(other.startedAt, startedAt) ||
+                other.startedAt == startedAt) &&
+            (identical(other.endedAt, endedAt) || other.endedAt == endedAt) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt));
   }
@@ -363,6 +440,10 @@ class _$TastingModelImpl implements _TastingModel {
     createdBy,
     isBlind,
     isRevealed,
+    state,
+    lineupMode,
+    startedAt,
+    endedAt,
     createdAt,
   );
 
@@ -393,6 +474,10 @@ abstract class _TastingModel implements TastingModel {
     @JsonKey(name: 'created_by') required final String createdBy,
     @JsonKey(name: 'is_blind') final bool isBlind,
     @JsonKey(name: 'is_revealed') final bool isRevealed,
+    final String state,
+    @JsonKey(name: 'lineup_mode') final String lineupMode,
+    @JsonKey(name: 'started_at') final DateTime? startedAt,
+    @JsonKey(name: 'ended_at') final DateTime? endedAt,
     @JsonKey(name: 'created_at') required final DateTime createdAt,
   }) = _$TastingModelImpl;
 
@@ -426,6 +511,17 @@ abstract class _TastingModel implements TastingModel {
   @override
   @JsonKey(name: 'is_revealed')
   bool get isRevealed;
+  @override
+  String get state;
+  @override
+  @JsonKey(name: 'lineup_mode')
+  String get lineupMode;
+  @override
+  @JsonKey(name: 'started_at')
+  DateTime? get startedAt;
+  @override
+  @JsonKey(name: 'ended_at')
+  DateTime? get endedAt;
   @override
   @JsonKey(name: 'created_at')
   DateTime get createdAt;
