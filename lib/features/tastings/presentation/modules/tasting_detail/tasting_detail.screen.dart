@@ -1324,6 +1324,7 @@ class _WineLineupCard extends ConsumerWidget {
                 tastingState == TastingState.concluded) {
               showTastingRateSheet(
                 context: context,
+                ref: ref,
                 tastingId: tastingId,
                 wine: wine,
               );
