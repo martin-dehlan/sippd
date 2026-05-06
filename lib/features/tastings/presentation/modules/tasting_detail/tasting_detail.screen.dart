@@ -23,6 +23,7 @@ import 'package:share_plus/share_plus.dart';
 import '../../../../../common/services/deep_link/deep_link.service.dart';
 import '../../widgets/calendar_export_sheet.dart';
 import '../../widgets/tasting_rate_sheet.dart';
+import '../../widgets/tasting_recap_section.widget.dart';
 import '../../widgets/wine_picker_sheet.dart';
 
 class TastingDetailScreen extends ConsumerWidget {
@@ -232,7 +233,10 @@ class _Body extends ConsumerWidget {
           ),
           SizedBox(height: context.l),
         ],
-        _WinesSection(tasting: tasting, isOwner: isOwner),
+        if (tasting.state == TastingState.concluded)
+          _RecapSwitcher(tasting: tasting)
+        else
+          _WinesSection(tasting: tasting, isOwner: isOwner),
         SizedBox(height: context.xl * 2),
       ],
     );
@@ -503,6 +507,23 @@ class _BannerAction extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Reads the catalog lineup once and hands it to the recap section.
+/// Kept thin so TastingRecapSection itself stays presentation-only.
+class _RecapSwitcher extends ConsumerWidget {
+  const _RecapSwitcher({required this.tasting});
+  final TastingEntity tasting;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final winesAsync = ref.watch(tastingWinesProvider(tasting.id));
+    final wines = winesAsync.valueOrNull ?? const [];
+    return TastingRecapSection(
+      tastingId: tasting.id,
+      wines: wines,
     );
   }
 }
