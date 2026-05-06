@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import '../../domain/entities/wine.entity.dart';
 import '../../domain/repositories/wine.repository.dart';
 import '../../../../common/database/daos/pending_image_uploads.dao.dart';
@@ -31,6 +33,13 @@ class WineRepositoryImpl implements WineRepository {
         _analytics = analytics,
         _outbox = outbox;
 
+  /// Per-wine timers debouncing remote sync so 500ms-keystroke autosave
+  /// in wine_edit only writes to Drift; the round-trip to Supabase fires
+  /// once the user has paused for [_remoteSyncDebounce] or explicitly
+  /// flushed via [flushPendingSync].
+  final Map<String, Timer> _pendingRemoteSyncs = {};
+  static const Duration _remoteSyncDebounce = Duration(seconds: 3);
+
   @override
   Future<List<WineEntity>> getWines() async {
     // Background sync from Supabase (fire and forget)
@@ -56,7 +65,24 @@ class WineRepositoryImpl implements WineRepository {
   Future<void> updateWine(WineEntity wine) async {
     final normalized = _withNameNorm(wine);
     await _dao.updateWine(normalized.toTableData());
-    _syncToRemote(normalized);
+    _scheduleRemoteSync(normalized);
+  }
+
+  void _scheduleRemoteSync(WineEntity wine) {
+    _pendingRemoteSyncs[wine.id]?.cancel();
+    _pendingRemoteSyncs[wine.id] = Timer(_remoteSyncDebounce, () {
+      _pendingRemoteSyncs.remove(wine.id);
+      _syncToRemote(wine);
+    });
+  }
+
+  @override
+  Future<void> flushPendingSync(String wineId) async {
+    final timer = _pendingRemoteSyncs.remove(wineId);
+    if (timer == null) return;
+    timer.cancel();
+    final fresh = await _dao.getWineById(wineId);
+    if (fresh != null) await _syncToRemote(fresh.toEntity());
   }
 
   WineEntity _withNameNorm(WineEntity wine) =>

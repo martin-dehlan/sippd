@@ -11,15 +11,30 @@ import '../../../domain/entities/wine_memory.entity.dart';
 import '../../widgets/wine_form.widget.dart';
 import '../../widgets/wine_memories_editor.widget.dart';
 
-class WineEditScreen extends ConsumerWidget {
+class WineEditScreen extends ConsumerStatefulWidget {
   final String wineId;
 
   const WineEditScreen({super.key, required this.wineId});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final wineAsync = ref.watch(wineDetailProvider(wineId));
-    final memoriesAsync = ref.watch(wineMemoriesControllerProvider(wineId));
+  ConsumerState<WineEditScreen> createState() => _WineEditScreenState();
+}
+
+class _WineEditScreenState extends ConsumerState<WineEditScreen> {
+  @override
+  void dispose() {
+    // Force-flush any debounced remote sync so the latest autosave state
+    // reaches Supabase even if the user navigates away mid-debounce.
+    ref
+        .read(wineRepositoryProvider)
+        .flushPendingSync(widget.wineId);
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final wineAsync = ref.watch(wineDetailProvider(widget.wineId));
+    final memoriesAsync = ref.watch(wineMemoriesControllerProvider(widget.wineId));
 
     return Scaffold(
       body: SafeArea(
@@ -58,7 +73,7 @@ class WineEditScreen extends ConsumerWidget {
                       .read(wineControllerProvider.notifier)
                       .updateWine(updated);
                   await _syncMemories(ref, wine, data.memories);
-                  ref.invalidate(wineDetailProvider(wineId));
+                  ref.invalidate(wineDetailProvider(widget.wineId));
                 },
               ),
               loading: () =>
