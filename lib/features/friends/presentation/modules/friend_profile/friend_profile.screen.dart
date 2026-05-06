@@ -9,6 +9,8 @@ import '../../../../../common/widgets/error_view.widget.dart';
 import '../../../../../common/widgets/stats_card.widget.dart';
 import '../../../../groups/presentation/widgets/friend_actions_sheet.widget.dart';
 import '../../../../taste_match/presentation/widgets/friend_taste_match_section.widget.dart';
+import '../../../../taste_match/presentation/widgets/taste_traits.widget.dart';
+import '../../../../taste_match/presentation/widgets/wine_personality_hero.widget.dart';
 import '../../../../wines/domain/entities/wine.entity.dart';
 import '../../../controller/friends.provider.dart';
 import '../../../domain/entities/friend_profile.entity.dart';
@@ -84,6 +86,29 @@ class _Body extends StatelessWidget {
       children: [
         SizedBox(height: context.xl * 1.2),
         _HeroHeader(profile: profile),
+        // Identity zone — who this person is, before how we relate to
+        // them and what their numbers say. The personality hero pulls
+        // archetype + DNA shape; traits surface the strongest stylistic
+        // axes. Both fall back gracefully when the friend's data is
+        // sparse (own loading + locked-state UI inside each widget).
+        SizedBox(height: context.l),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: padH),
+          child: WinePersonalityHero(userId: profile.id),
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: padH),
+          child: TasteTraits(userId: profile.id),
+        ),
+        SizedBox(height: context.l),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: padH),
+          child: FriendTasteMatchSection(
+            friendId: profile.id,
+            friendDisplayName:
+                profile.displayName ?? profile.username ?? 'Friend',
+          ),
+        ),
         SizedBox(height: context.xl),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: padH),
@@ -91,15 +116,6 @@ class _Body extends StatelessWidget {
             data: (wines) => StatsCard(stats: _statsFor(wines)),
             loading: () => StatsCard(stats: _statsFor(const [])),
             error: (_, __) => const SizedBox.shrink(),
-          ),
-        ),
-        SizedBox(height: context.xl),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: padH),
-          child: FriendTasteMatchSection(
-            friendId: profile.id,
-            friendDisplayName:
-                profile.displayName ?? profile.username ?? 'Friend',
           ),
         ),
         SizedBox(height: context.xl),
