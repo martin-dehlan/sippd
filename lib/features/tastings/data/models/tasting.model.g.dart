@@ -19,6 +19,14 @@ _$TastingModelImpl _$$TastingModelImplFromJson(Map<String, dynamic> json) =>
       createdBy: json['created_by'] as String,
       isBlind: json['is_blind'] as bool? ?? false,
       isRevealed: json['is_revealed'] as bool? ?? false,
+      state: json['state'] as String? ?? 'upcoming',
+      lineupMode: json['lineup_mode'] as String? ?? 'planned',
+      startedAt: json['started_at'] == null
+          ? null
+          : DateTime.parse(json['started_at'] as String),
+      endedAt: json['ended_at'] == null
+          ? null
+          : DateTime.parse(json['ended_at'] as String),
       createdAt: DateTime.parse(json['created_at'] as String),
     );
 
@@ -35,5 +43,9 @@ Map<String, dynamic> _$$TastingModelImplToJson(_$TastingModelImpl instance) =>
       'created_by': instance.createdBy,
       'is_blind': instance.isBlind,
       'is_revealed': instance.isRevealed,
+      'state': instance.state,
+      'lineup_mode': instance.lineupMode,
+      'started_at': instance.startedAt?.toIso8601String(),
+      'ended_at': instance.endedAt?.toIso8601String(),
       'created_at': instance.createdAt.toIso8601String(),
     };

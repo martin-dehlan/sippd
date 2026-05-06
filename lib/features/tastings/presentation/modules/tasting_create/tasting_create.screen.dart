@@ -10,6 +10,7 @@ import '../../../../../core/routes/app.routes.dart';
 import '../../../../locations/domain/entities/location.entity.dart';
 import '../../../../locations/presentation/widgets/location_search_sheet.dart';
 import '../../../controller/tastings.provider.dart';
+import '../../../domain/entities/tasting.entity.dart';
 
 class TastingCreateScreen extends ConsumerStatefulWidget {
   final String groupId;
@@ -26,6 +27,7 @@ class _TastingCreateScreenState extends ConsumerState<TastingCreateScreen> {
   LocationEntity? _location;
   DateTime _date = DateTime.now().add(const Duration(days: 1));
   TimeOfDay _time = const TimeOfDay(hour: 19, minute: 0);
+  bool _openLineup = false;
   bool _saving = false;
 
   DateTime get _scheduledAt => DateTime(
@@ -91,6 +93,9 @@ class _TastingCreateScreenState extends ConsumerState<TastingCreateScreen> {
               latitude: _location?.lat,
               longitude: _location?.lng,
               scheduledAt: _scheduledAt,
+              lineupMode: _openLineup
+                  ? TastingLineupMode.open
+                  : TastingLineupMode.planned,
             );
     if (!mounted) return;
     setState(() => _saving = false);
@@ -159,6 +164,13 @@ class _TastingCreateScreenState extends ConsumerState<TastingCreateScreen> {
               value: _description ?? 'Tap to add',
               isEmpty: _description == null,
               onTap: _editDescription,
+            ),
+            _Divider(),
+            _ToggleRow(
+              label: 'Open lineup',
+              hint: 'Add wines as they arrive',
+              value: _openLineup,
+              onChanged: (v) => setState(() => _openLineup = v),
             ),
             _Divider(),
             SizedBox(height: context.xl),
@@ -271,6 +283,63 @@ class _Row extends StatelessWidget {
             SizedBox(width: context.w * 0.02),
             Icon(PhosphorIconsRegular.caretRight,
                 size: context.w * 0.045, color: cs.outline),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ToggleRow extends StatelessWidget {
+  final String label;
+  final String hint;
+  final bool value;
+  final ValueChanged<bool> onChanged;
+
+  const _ToggleRow({
+    required this.label,
+    required this.hint,
+    required this.value,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () => onChanged(!value),
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+            horizontal: context.paddingH * 1.3, vertical: context.m),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: context.bodyFont,
+                      color: cs.onSurface,
+                    ),
+                  ),
+                  SizedBox(height: context.xs * 0.6),
+                  Text(
+                    hint,
+                    style: TextStyle(
+                      fontSize: context.captionFont * 0.95,
+                      color: cs.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Switch(
+              value: value,
+              onChanged: onChanged,
+            ),
           ],
         ),
       ),

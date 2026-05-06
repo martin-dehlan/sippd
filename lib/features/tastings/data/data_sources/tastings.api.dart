@@ -52,6 +52,7 @@ class TastingsApi {
     double? latitude,
     double? longitude,
     required DateTime scheduledAt,
+    String lineupMode = 'planned',
   }) async {
     final inserted = await _client
         .from('group_tastings')
@@ -64,6 +65,7 @@ class TastingsApi {
           'longitude': longitude,
           'scheduled_at': scheduledAt.toUtc().toIso8601String(),
           'created_by': _uid,
+          'lineup_mode': lineupMode,
         })
         .select()
         .single();
@@ -219,6 +221,47 @@ class TastingsApi {
 
   Future<void> deleteTasting(String id) async {
     await _client.from('group_tastings').delete().eq('id', id);
+  }
+
+  /// Host-driven transition `upcoming → active`. Stamps `started_at` so
+  /// the recap card and listings can sort by real start time, not by
+  /// scheduledAt (which is just the planned moment).
+  Future<TastingModel> startTasting(String id) async {
+    final updated = await _client
+        .from('group_tastings')
+        .update({
+          'state': 'active',
+          'started_at': DateTime.now().toUtc().toIso8601String(),
+        })
+        .eq('id', id)
+        .select()
+        .single();
+    return TastingModel.fromJson(updated);
+  }
+
+  /// Host-driven transition `active → concluded`. Stamps `ended_at` so
+  /// rating-edit windows and recap surfaces have a reference point.
+  Future<TastingModel> endTasting(String id) async {
+    final updated = await _client
+        .from('group_tastings')
+        .update({
+          'state': 'concluded',
+          'ended_at': DateTime.now().toUtc().toIso8601String(),
+        })
+        .eq('id', id)
+        .select()
+        .single();
+    return TastingModel.fromJson(updated);
+  }
+
+  Future<TastingModel> setLineupMode(String id, String lineupMode) async {
+    final updated = await _client
+        .from('group_tastings')
+        .update({'lineup_mode': lineupMode})
+        .eq('id', id)
+        .select()
+        .single();
+    return TastingModel.fromJson(updated);
   }
 
   Future<TastingModel> update({

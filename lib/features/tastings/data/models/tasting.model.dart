@@ -18,6 +18,10 @@ class TastingModel with _$TastingModel {
     @JsonKey(name: 'created_by') required String createdBy,
     @JsonKey(name: 'is_blind') @Default(false) bool isBlind,
     @JsonKey(name: 'is_revealed') @Default(false) bool isRevealed,
+    @Default('upcoming') String state,
+    @JsonKey(name: 'lineup_mode') @Default('planned') String lineupMode,
+    @JsonKey(name: 'started_at') DateTime? startedAt,
+    @JsonKey(name: 'ended_at') DateTime? endedAt,
     @JsonKey(name: 'created_at') required DateTime createdAt,
   }) = _TastingModel;
 
@@ -38,6 +42,21 @@ extension TastingModelX on TastingModel {
         createdBy: createdBy,
         isBlind: isBlind,
         isRevealed: isRevealed,
+        state: _stateFromString(state),
+        lineupMode: _lineupModeFromString(lineupMode),
+        startedAt: startedAt,
+        endedAt: endedAt,
         createdAt: createdAt,
       );
 }
+
+TastingState _stateFromString(String raw) => switch (raw) {
+      'active' => TastingState.active,
+      'concluded' => TastingState.concluded,
+      _ => TastingState.upcoming,
+    };
+
+TastingLineupMode _lineupModeFromString(String raw) => switch (raw) {
+      'open' => TastingLineupMode.open,
+      _ => TastingLineupMode.planned,
+    };
