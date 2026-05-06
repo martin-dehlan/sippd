@@ -22,6 +22,7 @@ import '../../../domain/entities/tasting_attendee.entity.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../../../../common/services/deep_link/deep_link.service.dart';
 import '../../widgets/calendar_export_sheet.dart';
+import '../../widgets/tasting_rate_sheet.dart';
 import '../../widgets/wine_picker_sheet.dart';
 
 class TastingDetailScreen extends ConsumerWidget {
@@ -1034,6 +1035,21 @@ class _WinesSection extends ConsumerWidget {
     final winesAsync = ref.watch(tastingWinesProvider(tasting.id));
     final ratingsAsync = ref.watch(tastingWineRatingsProvider(tasting.id));
     final ratings = ratingsAsync.valueOrNull ?? const {};
+
+    // Add-wines visibility:
+    //   * Upcoming  → host curates the lineup (planning phase)
+    //   * Active    → any going-attendee can drop a bottle in (everyone
+    //                 -brings home tastings + winery walk-ups need this)
+    //   * Concluded → lineup is locked
+    final attendees = ref.watch(tastingAttendeesProvider(tasting.id))
+            .valueOrNull ??
+        const <TastingAttendeeEntity>[];
+    final currentUid = ref.watch(currentUserIdProvider);
+    final amGoing = attendees.any((a) =>
+        a.userId == currentUid && a.status == RsvpStatus.going);
+    final canAdd = (tasting.state == TastingState.upcoming && isOwner) ||
+        (tasting.state == TastingState.active && (amGoing || isOwner));
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1051,7 +1067,7 @@ class _WinesSection extends ConsumerWidget {
                       letterSpacing: 1.2,
                     )),
               ),
-              if (isOwner)
+              if (canAdd)
                 GestureDetector(
                   behavior: HitTestBehavior.opaque,
                   onTap: () async {
@@ -1097,7 +1113,11 @@ class _WinesSection extends ConsumerWidget {
                 padding: EdgeInsets.symmetric(
                     horizontal: context.paddingH * 1.3,
                     vertical: context.m),
-                child: _WinesEmptyState(isOwner: isOwner),
+                child: _WinesEmptyState(
+                  isOwner: isOwner,
+                  lineupMode: tasting.lineupMode,
+                  state: tasting.state,
+                ),
               );
             }
             return ListView.separated(
@@ -1112,6 +1132,8 @@ class _WinesSection extends ConsumerWidget {
                 return _WineLineupCard(
                   wine: wines[i],
                   rank: i + 1,
+                  tastingId: tasting.id,
+                  tastingState: tasting.state,
                   groupId: tasting.groupId,
                   canRemove: isOwner,
                   ratingOverride: ratings[cid],
@@ -1132,7 +1154,14 @@ class _WinesSection extends ConsumerWidget {
 
 class _WinesEmptyState extends StatelessWidget {
   final bool isOwner;
-  const _WinesEmptyState({required this.isOwner});
+  final TastingLineupMode lineupMode;
+  final TastingState state;
+
+  const _WinesEmptyState({
+    required this.isOwner,
+    required this.lineupMode,
+    required this.state,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -1150,14 +1179,12 @@ class _WinesEmptyState extends StatelessWidget {
                 size: context.w * 0.1, color: cs.primary),
           ),
           SizedBox(height: context.m),
-          Text('No wines lined up yet',
+          Text(_title,
               style: TextStyle(
                   fontSize: context.bodyFont, fontWeight: FontWeight.w600)),
           SizedBox(height: context.xs),
           Text(
-            isOwner
-                ? 'Tap “Add wines” to build the lineup'
-                : 'The host hasn’t added wines yet',
+            _hint(isOwner: isOwner),
             textAlign: TextAlign.center,
             style: TextStyle(
                 fontSize: context.captionFont,
@@ -1167,11 +1194,36 @@ class _WinesEmptyState extends StatelessWidget {
       ),
     );
   }
+
+  String get _title {
+    if (lineupMode == TastingLineupMode.open &&
+        state == TastingState.active) {
+      return 'Lineup fills as you go';
+    }
+    return 'No wines lined up yet';
+  }
+
+  String _hint({required bool isOwner}) {
+    if (lineupMode == TastingLineupMode.open &&
+        state == TastingState.active) {
+      return 'Anyone going can add bottles as they appear';
+    }
+    if (lineupMode == TastingLineupMode.open) {
+      return isOwner
+          ? 'Wines can be added once the tasting starts'
+          : 'Wines will be added on the night';
+    }
+    return isOwner
+        ? 'Tap “Add wines” to build the lineup'
+        : 'The host hasn’t added wines yet';
+  }
 }
 
 class _WineLineupCard extends ConsumerWidget {
   final WineEntity wine;
   final int rank;
+  final String tastingId;
+  final TastingState tastingState;
   final String groupId;
   final bool canRemove;
   final double? ratingOverride;
@@ -1180,6 +1232,8 @@ class _WineLineupCard extends ConsumerWidget {
   const _WineLineupCard({
     required this.wine,
     required this.rank,
+    required this.tastingId,
+    required this.tastingState,
     required this.groupId,
     required this.canRemove,
     required this.onRemove,
@@ -1197,6 +1251,19 @@ class _WineLineupCard extends ConsumerWidget {
           ratingOverride: ratingOverride,
           hideRatingIfEmpty: true,
           onTap: () {
+            // While the tasting is live or concluded, the lineup card
+            // is a rating surface — tap = open the rate sheet rather
+            // than navigating away. Upcoming tastings keep the planning
+            // drilldown to the wine's full detail screen.
+            if (tastingState == TastingState.active ||
+                tastingState == TastingState.concluded) {
+              showTastingRateSheet(
+                context: context,
+                tastingId: tastingId,
+                wine: wine,
+              );
+              return;
+            }
             // Tasting wines are catalog-keyed (id == canonical_wine_id).
             // If the user owns a personal log row for this canonical
             // bottle, route to their full personal detail; otherwise
