@@ -523,6 +523,9 @@ class _RecapSwitcher extends ConsumerWidget {
     final wines = winesAsync.valueOrNull ?? const [];
     return TastingRecapSection(
       tastingId: tasting.id,
+      groupId: tasting.groupId,
+      tastingTitle: tasting.title,
+      scheduledAt: tasting.scheduledAt,
       wines: wines,
     );
   }

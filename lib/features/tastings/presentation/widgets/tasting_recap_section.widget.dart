@@ -4,23 +4,33 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../common/utils/responsive.dart';
+import '../../../groups/controller/group.provider.dart';
+import '../../../share_cards/controller/share_card.provider.dart';
+import '../../../share_cards/presentation/cards/tasting_recap_card.widget.dart';
 import '../../../wines/domain/entities/wine.entity.dart';
 import '../../controller/tastings.provider.dart';
+import '../../domain/entities/tasting_attendee.entity.dart';
 import '../../domain/entities/tasting_recap_entry.entity.dart';
 
 /// Concluded-state replacement for the planning lineup. Surfaces the
 /// top wine of the night, then a ranked list of every bottle with its
 /// per-attendee breakdown so the group can re-litigate the night
-/// without scrolling away. The Share-recap CTA is placeholder until
-/// Slice 4 wires the F3 share-card.
+/// without scrolling away. Share-recap CTA renders the F3 IG-story
+/// share card via [ShareCardService.shareTastingRecapCard].
 class TastingRecapSection extends ConsumerWidget {
   const TastingRecapSection({
     super.key,
     required this.tastingId,
+    required this.groupId,
+    required this.tastingTitle,
+    required this.scheduledAt,
     required this.wines,
   });
 
   final String tastingId;
+  final String groupId;
+  final String tastingTitle;
+  final DateTime scheduledAt;
   final List<WineEntity> wines;
 
   @override
@@ -74,7 +84,11 @@ class TastingRecapSection extends ConsumerWidget {
                   ),
                 ),
               ),
-              _ShareRecapPlaceholder(cs: cs),
+              _ShareRecapButton(
+                cs: cs,
+                enabled: hasAnyRating,
+                onTap: () => _share(context, ref, ranked),
+              ),
             ],
           ),
         ),
@@ -123,30 +137,82 @@ class _RankedWine {
   _RankedWine({required this.wine, required this.ratings, required this.avg});
 }
 
-class _ShareRecapPlaceholder extends StatelessWidget {
-  const _ShareRecapPlaceholder({required this.cs});
+extension on TastingRecapSection {
+  Future<void> _share(
+    BuildContext context,
+    WidgetRef ref,
+    List<_RankedWine> ranked,
+  ) async {
+    final group =
+        ref.read(groupDetailProvider(groupId)).valueOrNull;
+    final attendees = ref
+            .read(tastingAttendeesProvider(tastingId))
+            .valueOrNull ??
+        const <TastingAttendeeEntity>[];
+    final goingCount = attendees
+        .where((a) => a.status == RsvpStatus.going)
+        .length;
+    final top = ranked.firstWhere(
+      (w) => w.avg != null,
+      orElse: () => ranked.first,
+    );
+    final data = TastingRecapCardData(
+      groupName: group?.name ?? 'Group tasting',
+      tastingTitle: tastingTitle,
+      date: scheduledAt,
+      topWineName: top.avg == null ? null : top.wine.name,
+      topWineWinery: top.wine.winery,
+      topWineVintage: top.wine.vintage,
+      topWineAvg: top.avg,
+      ranked: [
+        for (final r in ranked)
+          TastingRecapCardLine(name: r.wine.name, avg: r.avg),
+      ],
+      attendeeCount: goingCount,
+    );
+    await ref.read(shareCardProvider).shareTastingRecapCard(
+          context: context,
+          tastingId: tastingId,
+          data: data,
+          source: 'concluded_recap',
+        );
+  }
+}
+
+class _ShareRecapButton extends StatelessWidget {
+  const _ShareRecapButton({
+    required this.cs,
+    required this.enabled,
+    required this.onTap,
+  });
+
   final ColorScheme cs;
+  final bool enabled;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Opacity(
-      opacity: 0.45,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(PhosphorIconsRegular.shareNetwork,
-              size: context.w * 0.04, color: cs.primary),
-          SizedBox(width: context.w * 0.012),
-          Text(
-            'Share recap',
-            style: TextStyle(
-              fontSize: context.captionFont,
-              fontWeight: FontWeight.w600,
-              color: cs.primary,
-            ),
+    final inner = Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(PhosphorIconsRegular.shareNetwork,
+            size: context.w * 0.04, color: cs.primary),
+        SizedBox(width: context.w * 0.012),
+        Text(
+          'Share recap',
+          style: TextStyle(
+            fontSize: context.captionFont,
+            fontWeight: FontWeight.w600,
+            color: cs.primary,
           ),
-        ],
-      ),
+        ),
+      ],
+    );
+    if (!enabled) return Opacity(opacity: 0.45, child: inner);
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: inner,
     );
   }
 }

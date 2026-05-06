@@ -9,6 +9,7 @@ import 'package:share_plus/share_plus.dart';
 import '../../../../common/services/analytics/analytics.service.dart';
 import '../../../wines/domain/entities/wine.entity.dart';
 import '../../presentation/cards/share_card_branding.widget.dart';
+import '../../presentation/cards/tasting_recap_card.widget.dart';
 import '../../presentation/cards/wine_rating_card.widget.dart';
 
 class ShareCardService {
@@ -58,6 +59,51 @@ class ShareCardService {
           : 'share_card_cancelled',
       properties: {
         'card_type': 'wine_rating',
+        'source': source,
+      },
+    );
+  }
+
+  /// Renders a tasting recap card off-screen at IG-story dimensions
+  /// and hands it to the native share sheet. Card is fully typographic
+  /// (no remote images), so no precache step is needed.
+  Future<void> shareTastingRecapCard({
+    required BuildContext context,
+    required String tastingId,
+    required TastingRecapCardData data,
+    required String source,
+  }) async {
+    _analytics.capture(
+      'share_card_generated',
+      properties: {
+        'card_type': 'tasting_recap',
+        'source': source,
+      },
+    );
+
+    final card = TastingRecapCard(data: data);
+    final file = await _renderToFile(
+      context: context,
+      card: card,
+      filenamePrefix: 'sippd_tasting_$tastingId',
+    );
+    if (file == null) return;
+
+    final topLine = data.topWineName != null && data.topWineAvg != null
+        ? '${data.topWineName} took the night at '
+            '${data.topWineAvg!.toStringAsFixed(1)}/10'
+        : data.tastingTitle;
+    final result = await Share.shareXFiles(
+      [XFile(file.path, mimeType: 'image/png')],
+      text: '$topLine · hosted on Sippd · $shareCardUrl',
+    );
+
+    _analytics.capture(
+      result.status == ShareResultStatus.success
+          ? 'share_card_shared'
+          : 'share_card_cancelled',
+      properties: {
+        'card_type': 'tasting_recap',
         'source': source,
       },
     );
