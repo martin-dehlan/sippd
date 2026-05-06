@@ -18,6 +18,7 @@ import '../../../controller/wine.provider.dart';
 import '../../../domain/entities/wine.entity.dart';
 import '../../../domain/entities/wine_memory.entity.dart';
 import '../../widgets/expert_tasting_sheet.dart';
+import '../../widgets/friend_ratings_strip.widget.dart';
 import '../../widgets/wine_detail_blocks.widget.dart';
 
 class WineDetailScreen extends ConsumerWidget {
@@ -224,6 +225,12 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
                 ),
               ),
               _MemoriesSection(wineId: widget.wine.id),
+              if (widget.wine.canonicalWineId != null) ...[
+                SizedBox(height: context.xl),
+                FriendRatingsStrip(
+                  canonicalWineId: widget.wine.canonicalWineId!,
+                ),
+              ],
               if (widget.wine.notes != null &&
                   widget.wine.notes!.isNotEmpty) ...[
                 SizedBox(height: context.xl),

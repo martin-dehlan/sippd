@@ -11,23 +11,23 @@ const String kProPitchEyebrow = 'Sippd Pro';
 const String kProPitchHeadline = 'See how you\nreally taste.';
 
 const String kProPitchSubhead =
-    'Map every bottle, leaderboard with your friends, '
-    'and share cards that actually look good.';
+    'Map every bottle, match with friends who drink like you, '
+    'and dig deeper into every tasting.';
 
 const List<PaywallBenefit> kProPitchBenefits = [
   (
     icon: PhosphorIconsRegular.usersThree,
-    title: 'Unlimited groups & members',
-    subtitle: 'Bring your whole tasting circle.',
+    title: 'Unlimited groups & friend matching',
+    subtitle: 'Bring your circle. See who drinks like you.',
   ),
   (
-    icon: PhosphorIconsRegular.chartLineUp,
-    title: 'Deep stats & taste insights',
-    subtitle: 'Map · prices · top regions · podium.',
+    icon: PhosphorIconsRegular.compass,
+    title: 'Taste compass & deep stats',
+    subtitle: 'Your wine personality, mapped.',
   ),
   (
-    icon: PhosphorIconsRegular.shareNetwork,
-    title: 'Premium share-cards & themes',
-    subtitle: 'Stand out everywhere you post.',
+    icon: PhosphorIconsRegular.notepad,
+    title: 'Expert tasting notes',
+    subtitle: 'Nose · body · tannins · finish.',
   ),
 ];
