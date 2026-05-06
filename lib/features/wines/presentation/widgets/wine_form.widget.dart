@@ -18,7 +18,7 @@ import '../../../locations/presentation/widgets/location_search_sheet.dart';
 import '../../controller/wine.provider.dart';
 import '../../domain/entities/wine.entity.dart';
 import 'grape_picker_sheet.dart';
-import 'rating_sheet.dart';
+import 'wine_rating_sheet.dart';
 import 'wine_country_picker.widget.dart';
 import 'wine_memories_editor.widget.dart';
 import 'wine_photo_picker.widget.dart';
@@ -223,9 +223,10 @@ class WineFormState extends ConsumerState<WineForm>
 
   Future<void> _editRating() async {
     FocusScope.of(context).unfocus();
-    final result = await showRatingSheet(
+    final result = await showWineRatingSheet(
       context: context,
       initial: _rating,
+      ratingContext: 'personal',
       wine: widget.wine,
     );
     if (!mounted) return;

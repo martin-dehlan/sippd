@@ -5,12 +5,19 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:go_router/go_router.dart';
+
 import '../../../../../../common/errors/app_error.dart';
 import '../../../../../../common/utils/responsive.dart';
+import '../../../../../../core/routes/app.routes.dart';
 import '../../../../../auth/controller/auth.provider.dart';
+import '../../../../../paywall/controller/paywall.provider.dart';
 import '../../../../../profile/presentation/widgets/profile_avatar.widget.dart';
 import '../../../../../wines/controller/wine.provider.dart';
+import '../../../../../wines/data/data_sources/expert_tasting.api.dart';
+import '../../../../../wines/domain/entities/expert_tasting.entity.dart';
 import '../../../../../wines/domain/entities/wine.entity.dart';
+import '../../../../../wines/presentation/widgets/expert_rating_panel.widget.dart';
 import '../../../../controller/group.provider.dart';
 import '../../../../domain/entities/group_wine_rating.entity.dart';
 
@@ -50,6 +57,10 @@ class _SheetState extends ConsumerState<_Sheet> {
   bool _justSaved = false;
   Object? _saveError;
   Timer? _savedTimer;
+  bool _expertExpanded = false;
+  bool _expertLoading = false;
+  bool _aromasExpanded = false;
+  ExpertTastingEntity _tasting = const ExpertTastingEntity();
 
   @override
   void initState() {
@@ -72,6 +83,49 @@ class _SheetState extends ConsumerState<_Sheet> {
   bool get _isOwner {
     final uid = ref.read(currentUserIdProvider);
     return uid != null && uid == widget.wine.userId;
+  }
+
+  Future<void> _toggleExpert() async {
+    final canonicalId = widget.wine.canonicalWineId;
+    if (canonicalId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content:
+              Text('Save the wine first — tasting notes attach to it.'),
+        ),
+      );
+      return;
+    }
+    final isPro = ref.read(isProProvider);
+    if (!isPro) {
+      Navigator.pop(context);
+      // ignore: use_build_context_synchronously
+      context.push(
+        AppRoutes.paywall,
+        extra: const {'source': 'expert_tasting_group'},
+      );
+      return;
+    }
+    if (_expertExpanded) {
+      setState(() => _expertExpanded = false);
+      return;
+    }
+    setState(() {
+      _expertExpanded = true;
+      _expertLoading = true;
+    });
+    final api = ExpertTastingApi(ref.read(supabaseClientProvider));
+    final existing = await api.getMine(
+      canonicalWineId: canonicalId,
+      context: 'group',
+      groupId: widget.groupId,
+    );
+    if (!mounted) return;
+    setState(() {
+      _tasting = existing ?? const ExpertTastingEntity();
+      _aromasExpanded = (existing?.aromaTags ?? const []).isNotEmpty;
+      _expertLoading = false;
+    });
   }
 
   Future<void> _save() async {
@@ -115,6 +169,19 @@ class _SheetState extends ConsumerState<_Sheet> {
           );
       ref.invalidate(
           groupWineRatingsProvider(widget.groupId, canonicalId));
+      // Expert dims piggyback on the same save tap. Persisted only when
+      // the user expanded the panel during this sheet open — collapsed
+      // means "didn't engage with expert", same convention as the
+      // unified wine rating sheet.
+      if (_expertExpanded) {
+        final api = ExpertTastingApi(ref.read(supabaseClientProvider));
+        await api.upsert(
+          canonicalWineId: canonicalId,
+          tasting: _tasting,
+          context: 'group',
+          groupId: widget.groupId,
+        );
+      }
       if (mounted) {
         HapticFeedback.lightImpact();
         setState(() {
@@ -273,11 +340,51 @@ class _SheetState extends ConsumerState<_Sheet> {
             SizedBox(height: context.m),
             const _SectionDivider(),
             SizedBox(height: context.m),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'YOUR RATING',
+                    style: TextStyle(
+                      fontSize: context.captionFont * 0.9,
+                      fontWeight: FontWeight.w800,
+                      color:
+                          Theme.of(context).colorScheme.onSurfaceVariant,
+                      letterSpacing: 1.4,
+                    ),
+                  ),
+                ),
+                if (widget.wine.canonicalWineId != null)
+                  ExpertRatingChip(
+                    isPro: ref.watch(isProProvider),
+                    expanded: _expertExpanded,
+                    onTap: _toggleExpert,
+                  ),
+              ],
+            ),
+            SizedBox(height: context.s),
             _RateZone(
               rating: _myRating,
               enabled: !_saving,
               onChanged: (v) => setState(() => _myRating = v),
               notesController: _notesController,
+            ),
+            AnimatedSize(
+              duration: const Duration(milliseconds: 220),
+              curve: Curves.easeOutCubic,
+              alignment: Alignment.topCenter,
+              child: _expertExpanded
+                  ? ExpertRatingPanel(
+                      loading: _expertLoading,
+                      wineType: widget.wine.type,
+                      tasting: _tasting,
+                      aromasExpanded: _aromasExpanded,
+                      onTastingChange: (t) =>
+                          setState(() => _tasting = t),
+                      onToggleAromas: () => setState(
+                          () => _aromasExpanded = !_aromasExpanded),
+                    )
+                  : const SizedBox(width: double.infinity),
             ),
             SizedBox(height: context.l),
             _SaveButton(
