@@ -514,23 +514,20 @@ class _BannerAction extends StatelessWidget {
   }
 }
 
-/// Reads the catalog lineup once and hands it to the recap section.
-/// Kept thin so TastingRecapSection itself stays presentation-only.
-class _RecapSwitcher extends ConsumerWidget {
+/// Thin wrapper — TastingRecapSection now owns its own wine + entries
+/// fetches so loading vs empty can be distinguished cleanly.
+class _RecapSwitcher extends StatelessWidget {
   const _RecapSwitcher({required this.tasting});
   final TastingEntity tasting;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final winesAsync = ref.watch(tastingWinesProvider(tasting.id));
-    final wines = winesAsync.valueOrNull ?? const [];
+  Widget build(BuildContext context) {
     return TastingRecapSection(
       tastingId: tasting.id,
       groupId: tasting.groupId,
       tastingTitle: tasting.title,
       scheduledAt: tasting.scheduledAt,
       location: tasting.location,
-      wines: wines,
     );
   }
 }
