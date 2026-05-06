@@ -49,6 +49,7 @@ class _EditFormState extends ConsumerState<_EditForm> {
   late LocationEntity? _location;
   late DateTime _date;
   late TimeOfDay _time;
+  late bool _openLineup;
   bool _saving = false;
 
   @override
@@ -67,6 +68,7 @@ class _EditFormState extends ConsumerState<_EditForm> {
     final local = t.scheduledAt.toLocal();
     _date = DateTime(local.year, local.month, local.day);
     _time = TimeOfDay(hour: local.hour, minute: local.minute);
+    _openLineup = t.lineupMode == TastingLineupMode.open;
   }
 
   DateTime get _scheduledAt => DateTime(
@@ -133,6 +135,9 @@ class _EditFormState extends ConsumerState<_EditForm> {
               latitude: _location?.lat,
               longitude: _location?.lng,
               scheduledAt: _scheduledAt,
+              lineupMode: _openLineup
+                  ? TastingLineupMode.open
+                  : TastingLineupMode.planned,
             );
     if (!mounted) return;
     setState(() => _saving = false);
@@ -203,6 +208,13 @@ class _EditFormState extends ConsumerState<_EditForm> {
             value: _description ?? 'Tap to add',
             isEmpty: _description == null,
             onTap: _editDescription,
+          ),
+          _Divider(),
+          _ToggleRow(
+            label: 'Open lineup',
+            hint: 'Add wines as they arrive',
+            value: _openLineup,
+            onChanged: (v) => setState(() => _openLineup = v),
           ),
           _Divider(),
           SizedBox(height: context.xl),
@@ -310,6 +322,60 @@ class _Row extends StatelessWidget {
             SizedBox(width: context.w * 0.02),
             Icon(PhosphorIconsRegular.caretRight,
                 size: context.w * 0.045, color: cs.outline),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ToggleRow extends StatelessWidget {
+  final String label;
+  final String hint;
+  final bool value;
+  final ValueChanged<bool> onChanged;
+
+  const _ToggleRow({
+    required this.label,
+    required this.hint,
+    required this.value,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () => onChanged(!value),
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+            horizontal: context.paddingH * 1.3, vertical: context.m),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: context.bodyFont,
+                      color: cs.onSurface,
+                    ),
+                  ),
+                  SizedBox(height: context.xs * 0.6),
+                  Text(
+                    hint,
+                    style: TextStyle(
+                      fontSize: context.captionFont * 0.95,
+                      color: cs.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Switch(value: value, onChanged: onChanged),
           ],
         ),
       ),

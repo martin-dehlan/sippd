@@ -18,6 +18,7 @@ class TastingRecapCardData {
   final String groupName;
   final String tastingTitle;
   final DateTime date;
+  final String? location;
   final String? topWineName;
   final String? topWineWinery;
   final int? topWineVintage;
@@ -29,6 +30,7 @@ class TastingRecapCardData {
     required this.groupName,
     required this.tastingTitle,
     required this.date,
+    this.location,
     this.topWineName,
     this.topWineWinery,
     this.topWineVintage,
@@ -61,7 +63,7 @@ class TastingRecapCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _Header(date: data.date),
+          _Header(date: data.date, location: data.location),
           const Spacer(flex: 1),
           _GroupHeading(
             groupName: data.groupName,
@@ -87,21 +89,32 @@ class TastingRecapCard extends StatelessWidget {
 
 class _Header extends StatelessWidget {
   final DateTime date;
-  const _Header({required this.date});
+  final String? location;
+  const _Header({required this.date, this.location});
 
   @override
   Widget build(BuildContext context) {
+    final loc = (location ?? '').trim();
+    final dateStamp = DateFormat('d MMM yyyy').format(date).toUpperCase();
+    final stamp = loc.isEmpty ? dateStamp : '$dateStamp · ${loc.toUpperCase()}';
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         const ShareCardWordmark(color: _onBg, size: 44),
-        Text(
-          DateFormat('d MMM yyyy').format(date).toUpperCase(),
-          style: TextStyle(
-            fontSize: 26,
-            color: _onBgMuted,
-            letterSpacing: 4,
-            fontWeight: FontWeight.w700,
+        Flexible(
+          child: Text(
+            stamp,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.right,
+            style: TextStyle(
+              fontSize: 26,
+              color: _onBgMuted,
+              letterSpacing: 4,
+              fontWeight: FontWeight.w700,
+              height: 1.2,
+            ),
           ),
         ),
       ],

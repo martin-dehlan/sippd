@@ -305,6 +305,7 @@ class TastingsController extends _$TastingsController {
     double? latitude,
     double? longitude,
     required DateTime scheduledAt,
+    TastingLineupMode? lineupMode,
   }) async {
     final api = ref.read(tastingsApiProvider);
     if (api == null) return null;
@@ -316,6 +317,7 @@ class TastingsController extends _$TastingsController {
       latitude: latitude,
       longitude: longitude,
       scheduledAt: scheduledAt,
+      lineupMode: lineupMode?.name,
     );
     // No client-side reminder reschedule: the BEFORE-UPDATE trigger
     // group_tastings_reset_reminder clears reminder_sent_at when

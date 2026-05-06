@@ -273,17 +273,20 @@ class TastingsApi {
     double? latitude,
     double? longitude,
     required DateTime scheduledAt,
+    String? lineupMode,
   }) async {
+    final patch = <String, dynamic>{
+      'title': title,
+      'description': description,
+      'location': location,
+      'latitude': latitude,
+      'longitude': longitude,
+      'scheduled_at': scheduledAt.toUtc().toIso8601String(),
+      'lineup_mode': ?lineupMode,
+    };
     final updated = await _client
         .from('group_tastings')
-        .update({
-          'title': title,
-          'description': description,
-          'location': location,
-          'latitude': latitude,
-          'longitude': longitude,
-          'scheduled_at': scheduledAt.toUtc().toIso8601String(),
-        })
+        .update(patch)
         .eq('id', id)
         .select()
         .single();

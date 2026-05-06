@@ -25,6 +25,7 @@ class TastingRecapSection extends ConsumerWidget {
     required this.tastingTitle,
     required this.scheduledAt,
     required this.wines,
+    this.location,
   });
 
   final String tastingId;
@@ -32,6 +33,7 @@ class TastingRecapSection extends ConsumerWidget {
   final String tastingTitle;
   final DateTime scheduledAt;
   final List<WineEntity> wines;
+  final String? location;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -160,6 +162,7 @@ extension on TastingRecapSection {
       groupName: group?.name ?? 'Group tasting',
       tastingTitle: tastingTitle,
       date: scheduledAt,
+      location: location,
       topWineName: top.avg == null ? null : top.wine.name,
       topWineWinery: top.wine.winery,
       topWineVintage: top.wine.vintage,

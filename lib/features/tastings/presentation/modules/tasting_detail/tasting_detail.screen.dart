@@ -223,14 +223,17 @@ class _Body extends ConsumerWidget {
         _RsvpBar(tasting: tasting),
         SizedBox(height: context.l),
         if (tasting.location != null) ...[
-          _Section(
-            label: 'Place',
-            child: _PlaceCard(
-              location: tasting.location!,
-              latitude: tasting.latitude,
-              longitude: tasting.longitude,
-            ),
-          ),
+          if (tasting.state == TastingState.upcoming)
+            _Section(
+              label: 'Place',
+              child: _PlaceCard(
+                location: tasting.location!,
+                latitude: tasting.latitude,
+                longitude: tasting.longitude,
+              ),
+            )
+          else
+            _PlaceStrip(location: tasting.location!),
           SizedBox(height: context.l),
         ],
         if (tasting.state == TastingState.concluded)
@@ -526,6 +529,7 @@ class _RecapSwitcher extends ConsumerWidget {
       groupId: tasting.groupId,
       tastingTitle: tasting.title,
       scheduledAt: tasting.scheduledAt,
+      location: tasting.location,
       wines: wines,
     );
   }
@@ -618,6 +622,46 @@ class _RsvpBar extends ConsumerWidget {
                   .read(tastingsControllerProvider.notifier)
                   .setRsvp(tasting.id, s.first);
             },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Compact place reference shown during Active and Concluded states.
+/// During Upcoming the full map-tile [_PlaceCard] is preferred since
+/// users still need to navigate; once people are at the venue (or the
+/// night is over) the location is read-only context, not an action,
+/// so we drop the map tile and keep just the name.
+class _PlaceStrip extends StatelessWidget {
+  final String location;
+  const _PlaceStrip({required this.location});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
+      child: Row(
+        children: [
+          Icon(
+            PhosphorIconsRegular.mapPin,
+            size: context.bodyFont * 0.95,
+            color: cs.onSurfaceVariant,
+          ),
+          SizedBox(width: context.w * 0.02),
+          Expanded(
+            child: Text(
+              location,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: context.bodyFont,
+                color: cs.onSurface,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ),
         ],
       ),
