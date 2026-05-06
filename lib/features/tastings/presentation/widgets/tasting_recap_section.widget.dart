@@ -24,7 +24,6 @@ class TastingRecapSection extends ConsumerWidget {
     required this.groupId,
     required this.tastingTitle,
     required this.scheduledAt,
-    required this.wines,
     this.location,
   });
 
@@ -32,21 +31,43 @@ class TastingRecapSection extends ConsumerWidget {
   final String groupId;
   final String tastingTitle;
   final DateTime scheduledAt;
-  final List<WineEntity> wines;
   final String? location;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
+    final winesAsync = ref.watch(tastingWinesProvider(tastingId));
     final entriesAsync = ref.watch(tastingRecapEntriesProvider(tastingId));
-    final entries = entriesAsync.valueOrNull ?? const <TastingRecapEntry>[];
+
+    final wines = winesAsync.valueOrNull;
+    final entries = entriesAsync.valueOrNull;
+    // Loading vs empty needs distinguishing — non-rating attendees hit
+    // this surface with cold cache, so before either provider resolves
+    // we'd otherwise flash the "no ratings yet" placeholder. Treat
+    // "still null and no error" as loading; once data arrives, the
+    // computation below decides between empty-state and full results.
+    final stillLoading =
+        (wines == null && !winesAsync.hasError) ||
+        (entries == null && !entriesAsync.hasError);
+
+    if (stillLoading) {
+      return _SectionShell(
+        cs: cs,
+        shareEnabled: false,
+        onShare: () {},
+        body: _LoadingBody(cs: cs),
+      );
+    }
+
+    final safeWines = wines ?? const <WineEntity>[];
+    final safeEntries = entries ?? const <TastingRecapEntry>[];
 
     final byCanonical = <String, List<TastingRecapEntry>>{};
-    for (final e in entries) {
+    for (final e in safeEntries) {
       byCanonical.putIfAbsent(e.canonicalWineId, () => []).add(e);
     }
 
-    final ranked = wines
+    final ranked = safeWines
         .map((w) {
           final cid = w.canonicalWineId ?? w.id;
           final ratings = byCanonical[cid] ?? const <TastingRecapEntry>[];
@@ -137,6 +158,81 @@ class _RankedWine {
   final List<TastingRecapEntry> ratings;
   final double? avg;
   _RankedWine({required this.wine, required this.ratings, required this.avg});
+}
+
+/// Wraps the section in the standard header (RESULTS + Share button) so
+/// the loading state shows the same chrome as the loaded state — avoids
+/// the section "appearing" once data arrives.
+class _SectionShell extends StatelessWidget {
+  const _SectionShell({
+    required this.cs,
+    required this.shareEnabled,
+    required this.onShare,
+    required this.body,
+  });
+
+  final ColorScheme cs;
+  final bool shareEnabled;
+  final VoidCallback onShare;
+  final Widget body;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'RESULTS',
+                  style: TextStyle(
+                    fontSize: context.captionFont * 0.95,
+                    fontWeight: FontWeight.w700,
+                    color: cs.onSurface.withValues(alpha: 0.72),
+                    letterSpacing: 1.2,
+                  ),
+                ),
+              ),
+              _ShareRecapButton(
+                cs: cs,
+                enabled: shareEnabled,
+                onTap: onShare,
+              ),
+            ],
+          ),
+        ),
+        body,
+      ],
+    );
+  }
+}
+
+class _LoadingBody extends StatelessWidget {
+  const _LoadingBody({required this.cs});
+  final ColorScheme cs;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: context.paddingH * 1.3,
+        vertical: context.l,
+      ),
+      child: Center(
+        child: SizedBox(
+          width: context.w * 0.06,
+          height: context.w * 0.06,
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            color: cs.primary,
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 extension on TastingRecapSection {
