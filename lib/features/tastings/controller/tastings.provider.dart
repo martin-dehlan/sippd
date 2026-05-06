@@ -1,4 +1,7 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../common/services/analytics/analytics.provider.dart';
 import '../../../common/services/connectivity/connectivity.provider.dart';
 import '../../auth/controller/auth.provider.dart';
@@ -12,6 +15,39 @@ import '../domain/entities/tasting_attendee.entity.dart';
 import '../domain/entities/tasting_recap_entry.entity.dart';
 
 part 'tastings.provider.g.dart';
+
+/// Subscribes the calling provider to postgres changes on [table] for a
+/// single [filterValue] and invalidates it when an INSERT / UPDATE /
+/// DELETE arrives. Channel is removed on `ref.onDispose`. Kept private
+/// to this file because the providers using it cluster around the same
+/// tasting screen — extracting further would obscure intent.
+void _wireTastingRealtime(
+  Ref ref, {
+  required SupabaseClient client,
+  required String table,
+  required String filterColumn,
+  required String filterValue,
+  required VoidCallback onChange,
+  String? channelSuffix,
+}) {
+  final channelName =
+      '${table}_${channelSuffix ?? filterValue}_${identityHashCode(ref)}';
+  final channel = client.channel(channelName);
+  channel
+      .onPostgresChanges(
+        event: PostgresChangeEvent.all,
+        schema: 'public',
+        table: table,
+        filter: PostgresChangeFilter(
+          type: PostgresChangeFilterType.eq,
+          column: filterColumn,
+          value: filterValue,
+        ),
+        callback: (_) => onChange(),
+      )
+      .subscribe();
+  ref.onDispose(() => client.removeChannel(channel));
+}
 
 @riverpod
 TastingsApi? tastingsApi(TastingsApiRef ref) {
@@ -37,6 +73,17 @@ Future<TastingEntity?> tastingDetail(
   final api = ref.watch(tastingsApiProvider);
   if (api == null) return null;
   ref.requireOnline();
+  // Realtime: state transitions (Start / End / lineup_mode flip / edit)
+  // by the host land on every attendee's banner without a manual
+  // refresh.
+  _wireTastingRealtime(
+    ref,
+    client: ref.read(supabaseClientProvider),
+    table: 'group_tastings',
+    filterColumn: 'id',
+    filterValue: tastingId,
+    onChange: ref.invalidateSelf,
+  );
   final model = await api.fetchById(tastingId).withNetTimeout();
   return model?.toEntity();
 }
@@ -46,6 +93,17 @@ Future<List<WineEntity>> tastingWines(
     TastingWinesRef ref, String tastingId) async {
   final api = ref.watch(tastingsApiProvider);
   if (api == null) return const [];
+  // Realtime: any going-attendee can drop a wine into the lineup
+  // mid-tasting; everyone else's screen needs to pick it up without a
+  // manual refresh.
+  _wireTastingRealtime(
+    ref,
+    client: ref.read(supabaseClientProvider),
+    table: 'tasting_wines',
+    filterColumn: 'tasting_id',
+    filterValue: tastingId,
+    onChange: ref.invalidateSelf,
+  );
   // Re-run when the local wine list changes so owner photo edits and
   // newly-added (offline) bottles surface their image immediately.
   // Entities stay catalog-keyed (id == canonical_wine_id) — only the
@@ -90,6 +148,18 @@ Future<Map<String, double>> tastingWineRatings(
   final api = ref.watch(tastingsApiProvider);
   if (api == null) return const {};
   ref.requireOnline();
+  // Realtime: any rating submitted or edited recomputes the avg pill
+  // shown on lineup cards live, so attendees rating around a table
+  // see scores converge in real time.
+  _wireTastingRealtime(
+    ref,
+    client: ref.read(supabaseClientProvider),
+    table: 'tasting_ratings',
+    filterColumn: 'tasting_id',
+    filterValue: tastingId,
+    onChange: ref.invalidateSelf,
+    channelSuffix: 'avg_$tastingId',
+  );
   return api.fetchTastingAverages(tastingId);
 }
 
@@ -104,6 +174,18 @@ Future<List<TastingRecapEntry>> tastingRecapEntries(
   final api = ref.watch(tastingsApiProvider);
   if (api == null) return const [];
   ref.requireOnline();
+  // Realtime: same source as tastingWineRatings but separate channel
+  // so the recap section refreshes per-attendee chips (not just the
+  // avg) when ratings land.
+  _wireTastingRealtime(
+    ref,
+    client: ref.read(supabaseClientProvider),
+    table: 'tasting_ratings',
+    filterColumn: 'tasting_id',
+    filterValue: tastingId,
+    onChange: ref.invalidateSelf,
+    channelSuffix: 'recap_$tastingId',
+  );
   return api.fetchTastingRecapEntries(tastingId);
 }
 
@@ -130,6 +212,17 @@ Future<List<TastingAttendeeEntity>> tastingAttendees(
     TastingAttendeesRef ref, String tastingId) async {
   final api = ref.watch(tastingsApiProvider);
   if (api == null) return const [];
+  // Realtime: RSVP transitions (going / maybe / declined / no_response)
+  // refresh the attendee cluster + going-count + the
+  // canAdd-during-active rule for everyone watching the screen.
+  _wireTastingRealtime(
+    ref,
+    client: ref.read(supabaseClientProvider),
+    table: 'tasting_attendees',
+    filterColumn: 'tasting_id',
+    filterValue: tastingId,
+    onChange: ref.invalidateSelf,
+  );
   ref.requireOnline();
   final rows = await api.fetchAttendees(tastingId).withNetTimeout();
   return rows
