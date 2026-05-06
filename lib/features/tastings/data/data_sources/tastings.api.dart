@@ -288,4 +288,61 @@ class TastingsApi {
         .single();
     return TastingModel.fromJson(updated);
   }
+
+  /// Upsert the caller's rating for a wine in this tasting. Writes to
+  /// `tasting_ratings` keyed (tasting_id, canonical_wine_id, user_id).
+  /// RLS enforces caller identity + group membership for SELECT.
+  Future<void> upsertMyTastingRating({
+    required String tastingId,
+    required String canonicalWineId,
+    required double rating,
+    String? notes,
+  }) async {
+    await _client.from('tasting_ratings').upsert(
+      {
+        'tasting_id': tastingId,
+        'canonical_wine_id': canonicalWineId,
+        'user_id': _uid,
+        'rating': rating,
+        'notes': notes,
+      },
+      onConflict: 'tasting_id,canonical_wine_id,user_id',
+    );
+  }
+
+  Future<double?> fetchMyTastingRating({
+    required String tastingId,
+    required String canonicalWineId,
+  }) async {
+    final row = await _client
+        .from('tasting_ratings')
+        .select('rating')
+        .eq('tasting_id', tastingId)
+        .eq('canonical_wine_id', canonicalWineId)
+        .eq('user_id', _uid)
+        .maybeSingle();
+    if (row == null) return null;
+    return (row['rating'] as num?)?.toDouble();
+  }
+
+  /// Returns avg rating per canonical wine for this tasting, computed
+  /// across all attendees who submitted a rating.
+  Future<Map<String, double>> fetchTastingAverages(String tastingId) async {
+    final rows = (await _client
+        .from('tasting_ratings')
+        .select('canonical_wine_id, rating')
+        .eq('tasting_id', tastingId)) as List;
+    final perCanonical = <String, List<double>>{};
+    for (final r in rows) {
+      final m = r as Map<String, dynamic>;
+      final cid = m['canonical_wine_id'] as String;
+      final rating = (m['rating'] as num).toDouble();
+      perCanonical.putIfAbsent(cid, () => []).add(rating);
+    }
+    return {
+      for (final e in perCanonical.entries)
+        if (e.value.isNotEmpty)
+          e.key: e.value.reduce((a, b) => a + b) / e.value.length,
+    };
+  }
 }

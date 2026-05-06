@@ -79,72 +79,35 @@ WineEntity _mergeLocalImage(WineEntity remote, WineEntity? local) {
 /// user counted at most once per canonical (member rows from the owner
 /// are dropped). Canonicals with zero usable ratings are omitted, so
 /// callers can `Map.containsKey` to decide whether to render a badge.
+/// Average rating per canonical wine for the tasting, sourced from
+/// `tasting_ratings`. Tasting context is intentionally separate from
+/// group-historical ratings — the same canonical may have a different
+/// score in tonight's flight than in last weekend's group dinner.
 @riverpod
 Future<Map<String, double>> tastingWineRatings(
     TastingWineRatingsRef ref, String tastingId) async {
-  final tasting = await ref.watch(tastingDetailProvider(tastingId).future);
-  if (tasting == null) return const {};
-  final wines = await ref.watch(tastingWinesProvider(tastingId).future);
-  if (wines.isEmpty) return const {};
+  final api = ref.watch(tastingsApiProvider);
+  if (api == null) return const {};
   ref.requireOnline();
-  final client = ref.read(supabaseClientProvider);
-  final groupId = tasting.groupId;
-  final canonicalIds = wines
-      .map((w) => w.canonicalWineId ?? w.id)
-      .toSet()
-      .toList();
+  return api.fetchTastingAverages(tastingId);
+}
 
-  final shareRows = (await client
-      .from('group_wines')
-      .select('canonical_wine_id, shared_by')
-      .eq('group_id', groupId)
-      .inFilter('canonical_wine_id', canonicalIds)) as List;
-  final ownerByCanonical = <String, String>{
-    for (final r in shareRows)
-      (r as Map<String, dynamic>)['canonical_wine_id'] as String:
-          r['shared_by'] as String,
-  };
-
-  final ownerRatingByCanonical = <String, double>{};
-  if (ownerByCanonical.isNotEmpty) {
-    final wineRows = (await client
-        .from('wines')
-        .select('canonical_wine_id, user_id, rating')
-        .inFilter('canonical_wine_id', canonicalIds)) as List;
-    for (final r in wineRows) {
-      final m = r as Map<String, dynamic>;
-      final cid = m['canonical_wine_id'] as String;
-      final uid = m['user_id'] as String;
-      final rating = (m['rating'] as num?)?.toDouble();
-      if (rating == null || rating <= 0) continue;
-      if (ownerByCanonical[cid] != uid) continue;
-      ownerRatingByCanonical[cid] = rating;
-    }
-  }
-
-  final memberRows = (await client
-      .from('group_wine_ratings')
-      .select('canonical_wine_id, user_id, rating')
-      .eq('group_id', groupId)
-      .inFilter('canonical_wine_id', canonicalIds)) as List;
-
-  final perCanonical = <String, List<double>>{};
-  ownerRatingByCanonical.forEach((cid, r) => perCanonical[cid] = [r]);
-  for (final r in memberRows) {
-    final m = r as Map<String, dynamic>;
-    final cid = m['canonical_wine_id'] as String;
-    final uid = m['user_id'] as String;
-    final rating = (m['rating'] as num).toDouble();
-    if (rating <= 0) continue;
-    if (ownerByCanonical[cid] == uid) continue;
-    perCanonical.putIfAbsent(cid, () => []).add(rating);
-  }
-
-  return {
-    for (final e in perCanonical.entries)
-      if (e.value.isNotEmpty)
-        e.key: e.value.reduce((a, b) => a + b) / e.value.length,
-  };
+/// The caller's own rating for a single wine in a tasting. Null if not
+/// yet rated. Used to prefill the rate-sheet so re-opening shows the
+/// last value the user submitted.
+@riverpod
+Future<double?> myTastingRating(
+  MyTastingRatingRef ref,
+  String tastingId,
+  String canonicalWineId,
+) async {
+  final api = ref.watch(tastingsApiProvider);
+  if (api == null) return null;
+  ref.requireOnline();
+  return api.fetchMyTastingRating(
+    tastingId: tastingId,
+    canonicalWineId: canonicalWineId,
+  );
 }
 
 @riverpod
@@ -289,6 +252,32 @@ class TastingsController extends _$TastingsController {
     ref.invalidate(tastingDetailProvider(tastingId));
     if (groupId != null) ref.invalidate(groupTastingsProvider(groupId));
     return model.toEntity();
+  }
+
+  /// Submit (or update) the caller's rating for a wine in this tasting.
+  /// Invalidates both the per-user prefill provider and the aggregate
+  /// average so lineup cards refresh in place without a full screen
+  /// rebuild.
+  Future<void> rateTastingWine({
+    required String tastingId,
+    required String canonicalWineId,
+    required double rating,
+    String? notes,
+  }) async {
+    final api = ref.read(tastingsApiProvider);
+    if (api == null) return;
+    await api.upsertMyTastingRating(
+      tastingId: tastingId,
+      canonicalWineId: canonicalWineId,
+      rating: rating,
+      notes: notes,
+    );
+    ref.read(analyticsProvider).capture(
+      'tasting_wine_rated',
+      properties: {'rating': rating},
+    );
+    ref.invalidate(myTastingRatingProvider(tastingId, canonicalWineId));
+    ref.invalidate(tastingWineRatingsProvider(tastingId));
   }
 
   Future<TastingEntity?> updateTasting({

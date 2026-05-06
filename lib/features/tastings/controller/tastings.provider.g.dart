@@ -406,7 +406,7 @@ class _TastingWinesProviderElement
 }
 
 String _$tastingWineRatingsHash() =>
-    r'59c88312c5f7534d8f8a5001feb9b58b5e0f6514';
+    r'd72d5013127d6272ecddee5d53b6519c6896d2bd';
 
 /// Group-context rating average per canonical wine for the tasting's
 /// lineup. Mirrors `groupWineRatings`: owner of each canonical (via
@@ -415,6 +415,10 @@ String _$tastingWineRatingsHash() =>
 /// user counted at most once per canonical (member rows from the owner
 /// are dropped). Canonicals with zero usable ratings are omitted, so
 /// callers can `Map.containsKey` to decide whether to render a badge.
+/// Average rating per canonical wine for the tasting, sourced from
+/// `tasting_ratings`. Tasting context is intentionally separate from
+/// group-historical ratings — the same canonical may have a different
+/// score in tonight's flight than in last weekend's group dinner.
 ///
 /// Copied from [tastingWineRatings].
 @ProviderFor(tastingWineRatings)
@@ -427,6 +431,10 @@ const tastingWineRatingsProvider = TastingWineRatingsFamily();
 /// user counted at most once per canonical (member rows from the owner
 /// are dropped). Canonicals with zero usable ratings are omitted, so
 /// callers can `Map.containsKey` to decide whether to render a badge.
+/// Average rating per canonical wine for the tasting, sourced from
+/// `tasting_ratings`. Tasting context is intentionally separate from
+/// group-historical ratings — the same canonical may have a different
+/// score in tonight's flight than in last weekend's group dinner.
 ///
 /// Copied from [tastingWineRatings].
 class TastingWineRatingsFamily extends Family<AsyncValue<Map<String, double>>> {
@@ -437,6 +445,10 @@ class TastingWineRatingsFamily extends Family<AsyncValue<Map<String, double>>> {
   /// user counted at most once per canonical (member rows from the owner
   /// are dropped). Canonicals with zero usable ratings are omitted, so
   /// callers can `Map.containsKey` to decide whether to render a badge.
+  /// Average rating per canonical wine for the tasting, sourced from
+  /// `tasting_ratings`. Tasting context is intentionally separate from
+  /// group-historical ratings — the same canonical may have a different
+  /// score in tonight's flight than in last weekend's group dinner.
   ///
   /// Copied from [tastingWineRatings].
   const TastingWineRatingsFamily();
@@ -448,6 +460,10 @@ class TastingWineRatingsFamily extends Family<AsyncValue<Map<String, double>>> {
   /// user counted at most once per canonical (member rows from the owner
   /// are dropped). Canonicals with zero usable ratings are omitted, so
   /// callers can `Map.containsKey` to decide whether to render a badge.
+  /// Average rating per canonical wine for the tasting, sourced from
+  /// `tasting_ratings`. Tasting context is intentionally separate from
+  /// group-historical ratings — the same canonical may have a different
+  /// score in tonight's flight than in last weekend's group dinner.
   ///
   /// Copied from [tastingWineRatings].
   TastingWineRatingsProvider call(String tastingId) {
@@ -483,6 +499,10 @@ class TastingWineRatingsFamily extends Family<AsyncValue<Map<String, double>>> {
 /// user counted at most once per canonical (member rows from the owner
 /// are dropped). Canonicals with zero usable ratings are omitted, so
 /// callers can `Map.containsKey` to decide whether to render a badge.
+/// Average rating per canonical wine for the tasting, sourced from
+/// `tasting_ratings`. Tasting context is intentionally separate from
+/// group-historical ratings — the same canonical may have a different
+/// score in tonight's flight than in last weekend's group dinner.
 ///
 /// Copied from [tastingWineRatings].
 class TastingWineRatingsProvider
@@ -494,6 +514,10 @@ class TastingWineRatingsProvider
   /// user counted at most once per canonical (member rows from the owner
   /// are dropped). Canonicals with zero usable ratings are omitted, so
   /// callers can `Map.containsKey` to decide whether to render a badge.
+  /// Average rating per canonical wine for the tasting, sourced from
+  /// `tasting_ratings`. Tasting context is intentionally separate from
+  /// group-historical ratings — the same canonical may have a different
+  /// score in tonight's flight than in last weekend's group dinner.
   ///
   /// Copied from [tastingWineRatings].
   TastingWineRatingsProvider(String tastingId)
@@ -575,6 +599,167 @@ class _TastingWineRatingsProviderElement
 
   @override
   String get tastingId => (origin as TastingWineRatingsProvider).tastingId;
+}
+
+String _$myTastingRatingHash() => r'77d84e96898b085a5ed7d89123d495b0646603a6';
+
+/// The caller's own rating for a single wine in a tasting. Null if not
+/// yet rated. Used to prefill the rate-sheet so re-opening shows the
+/// last value the user submitted.
+///
+/// Copied from [myTastingRating].
+@ProviderFor(myTastingRating)
+const myTastingRatingProvider = MyTastingRatingFamily();
+
+/// The caller's own rating for a single wine in a tasting. Null if not
+/// yet rated. Used to prefill the rate-sheet so re-opening shows the
+/// last value the user submitted.
+///
+/// Copied from [myTastingRating].
+class MyTastingRatingFamily extends Family<AsyncValue<double?>> {
+  /// The caller's own rating for a single wine in a tasting. Null if not
+  /// yet rated. Used to prefill the rate-sheet so re-opening shows the
+  /// last value the user submitted.
+  ///
+  /// Copied from [myTastingRating].
+  const MyTastingRatingFamily();
+
+  /// The caller's own rating for a single wine in a tasting. Null if not
+  /// yet rated. Used to prefill the rate-sheet so re-opening shows the
+  /// last value the user submitted.
+  ///
+  /// Copied from [myTastingRating].
+  MyTastingRatingProvider call(String tastingId, String canonicalWineId) {
+    return MyTastingRatingProvider(tastingId, canonicalWineId);
+  }
+
+  @override
+  MyTastingRatingProvider getProviderOverride(
+    covariant MyTastingRatingProvider provider,
+  ) {
+    return call(provider.tastingId, provider.canonicalWineId);
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'myTastingRatingProvider';
+}
+
+/// The caller's own rating for a single wine in a tasting. Null if not
+/// yet rated. Used to prefill the rate-sheet so re-opening shows the
+/// last value the user submitted.
+///
+/// Copied from [myTastingRating].
+class MyTastingRatingProvider extends AutoDisposeFutureProvider<double?> {
+  /// The caller's own rating for a single wine in a tasting. Null if not
+  /// yet rated. Used to prefill the rate-sheet so re-opening shows the
+  /// last value the user submitted.
+  ///
+  /// Copied from [myTastingRating].
+  MyTastingRatingProvider(String tastingId, String canonicalWineId)
+    : this._internal(
+        (ref) => myTastingRating(
+          ref as MyTastingRatingRef,
+          tastingId,
+          canonicalWineId,
+        ),
+        from: myTastingRatingProvider,
+        name: r'myTastingRatingProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$myTastingRatingHash,
+        dependencies: MyTastingRatingFamily._dependencies,
+        allTransitiveDependencies:
+            MyTastingRatingFamily._allTransitiveDependencies,
+        tastingId: tastingId,
+        canonicalWineId: canonicalWineId,
+      );
+
+  MyTastingRatingProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.tastingId,
+    required this.canonicalWineId,
+  }) : super.internal();
+
+  final String tastingId;
+  final String canonicalWineId;
+
+  @override
+  Override overrideWith(
+    FutureOr<double?> Function(MyTastingRatingRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: MyTastingRatingProvider._internal(
+        (ref) => create(ref as MyTastingRatingRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        tastingId: tastingId,
+        canonicalWineId: canonicalWineId,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<double?> createElement() {
+    return _MyTastingRatingProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is MyTastingRatingProvider &&
+        other.tastingId == tastingId &&
+        other.canonicalWineId == canonicalWineId;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, tastingId.hashCode);
+    hash = _SystemHash.combine(hash, canonicalWineId.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin MyTastingRatingRef on AutoDisposeFutureProviderRef<double?> {
+  /// The parameter `tastingId` of this provider.
+  String get tastingId;
+
+  /// The parameter `canonicalWineId` of this provider.
+  String get canonicalWineId;
+}
+
+class _MyTastingRatingProviderElement
+    extends AutoDisposeFutureProviderElement<double?>
+    with MyTastingRatingRef {
+  _MyTastingRatingProviderElement(super.provider);
+
+  @override
+  String get tastingId => (origin as MyTastingRatingProvider).tastingId;
+  @override
+  String get canonicalWineId =>
+      (origin as MyTastingRatingProvider).canonicalWineId;
 }
 
 String _$tastingAttendeesHash() => r'5da5e01641c554a1b9c8882d7c5989ee8f3b86aa';
@@ -703,7 +888,7 @@ class _TastingAttendeesProviderElement
 }
 
 String _$tastingsControllerHash() =>
-    r'b4466dd09a9359f95516e8bce9440a2276c8b4cd';
+    r'23ba10f7addc65530cb04d4eb8c938cbff7acf52';
 
 /// See also [TastingsController].
 @ProviderFor(TastingsController)
