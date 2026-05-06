@@ -9,7 +9,6 @@ import '../../../../../common/widgets/error_view.widget.dart';
 import '../../../../../common/widgets/stats_card.widget.dart';
 import '../../../../groups/presentation/widgets/friend_actions_sheet.widget.dart';
 import '../../../../taste_match/presentation/widgets/friend_taste_match_section.widget.dart';
-import '../../../../taste_match/presentation/widgets/taste_traits.widget.dart';
 import '../../../../taste_match/presentation/widgets/wine_personality_hero.widget.dart';
 import '../../../../wines/domain/entities/wine.entity.dart';
 import '../../../controller/friends.provider.dart';
@@ -99,17 +98,14 @@ class _Body extends StatelessWidget {
           ),
         ),
         // Identity zone — who this person is, before how we relate to
-        // them. Personality hero pulls archetype + DNA shape; traits
-        // surface the strongest stylistic axes. Both fall back when
-        // the friend's data is sparse via internal locked states.
+        // them. Personality hero owns its own traits expansion (taps
+        // the chevron on the hero); we don't embed TasteTraits as a
+        // sibling because it would render twice — once collapsed +
+        // once expanded — once the user opens the hero.
         SizedBox(height: context.l),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: padH),
           child: WinePersonalityHero(userId: profile.id),
-        ),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: padH),
-          child: TasteTraits(userId: profile.id),
         ),
         SizedBox(height: context.l),
         Padding(
