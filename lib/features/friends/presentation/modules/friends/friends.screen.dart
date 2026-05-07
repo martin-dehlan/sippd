@@ -5,12 +5,13 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:share_plus/share_plus.dart';
 
 import '../../../../../common/services/analytics/analytics.provider.dart';
 import '../../../../../common/services/deep_link/deep_link.service.dart';
 import '../../../../../common/utils/responsive.dart';
-import '../../../../../common/utils/share_origin.dart';
+import '../../../../profile/controller/profile.provider.dart';
+import '../../../../share_cards/controller/share_card.provider.dart';
+import '../../../../share_cards/presentation/cards/friend_invite_card.widget.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../../auth/controller/auth.provider.dart';
 import '../../../controller/friends.provider.dart';
@@ -863,12 +864,23 @@ class _EmptyFriendsState extends ConsumerWidget {
           'friend_invite_share',
           properties: const {'source': 'empty_state'},
         );
-    final url = DeepLinkService.friendHttpsUri(userId);
-    await Share.share(
-      'Add me on Sippd 🍷 — we rate, taste, and share wines together.\n\n$url',
-      subject: 'Add me on Sippd',
-      sharePositionOrigin: shareOriginFor(context),
-    );
+    final profile = ref.read(currentProfileProvider).valueOrNull;
+    final inviteUrl = DeepLinkService.friendHttpsUri(userId);
+    final displayName = (profile?.displayName?.trim().isNotEmpty ?? false)
+        ? profile!.displayName!.trim()
+        : (profile?.username?.trim() ?? 'A friend');
+    await ref
+        .read(shareCardProvider)
+        .shareFriendInviteCard(
+          context: context,
+          data: FriendInviteCardData(
+            displayName: displayName,
+            username: profile?.username,
+            avatarUrl: profile?.avatarUrl,
+          ),
+          inviteUrl: inviteUrl,
+          source: 'empty_state',
+        );
   }
 
   @override
