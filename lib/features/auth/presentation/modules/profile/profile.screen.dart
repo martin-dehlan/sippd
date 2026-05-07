@@ -10,6 +10,10 @@ import '../../../../../core/routes/app.routes.dart';
 import '../../../../profile/controller/profile.provider.dart';
 import '../../../../profile/presentation/widgets/profile_avatar.widget.dart';
 import '../../../../push/controller/push.provider.dart';
+import '../../../../share_cards/controller/share_card.provider.dart';
+import '../../../../share_cards/presentation/cards/compass_share_card.widget.dart';
+import '../../../../taste_match/controller/taste_match.provider.dart';
+import '../../../../taste_match/domain/archetype_match.dart';
 import '../../../../taste_match/presentation/widgets/wine_personality_hero.widget.dart';
 import '../../../../wines/controller/wine.provider.dart';
 import '../../../controller/auth.provider.dart';
@@ -91,6 +95,8 @@ class ProfileScreen extends ConsumerWidget {
             // Numerical stats live on the dedicated stats screen.
             if (user != null) ...[
               WinePersonalityHero(userId: user.id),
+              SizedBox(height: context.s),
+              _SharePersonalityButton(userId: user.id),
               SizedBox(height: context.s),
               _ViewStatsLink(),
               SizedBox(height: context.l),
@@ -370,6 +376,70 @@ class _ConfirmDeleteDialogState extends State<_ConfirmDeleteDialog> {
           child: const Text('Delete'),
         ),
       ],
+    );
+  }
+}
+
+/// Share-recap entry for the user's wine personality. Hidden when the
+/// user is still classified as `curious_newcomer` so we don't push a
+/// "just getting started" identity to a public IG story — re-appears
+/// once enough wines / DNA signal land for a real archetype match.
+class _SharePersonalityButton extends ConsumerWidget {
+  const _SharePersonalityButton({required this.userId});
+
+  final String userId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final cs = Theme.of(context).colorScheme;
+    final compass = ref.watch(tasteCompassProvider(userId)).valueOrNull;
+    final dna = ref.watch(userStyleDnaProvider(userId)).valueOrNull;
+    if (compass == null) return const SizedBox.shrink();
+    final match = matchArchetype(compass, dna);
+    if (match.isNewcomer) return const SizedBox.shrink();
+
+    final username =
+        ref.watch(currentProfileProvider).valueOrNull?.username;
+
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () async {
+        final data = CompassShareCardData(
+          username: username,
+          archetypeName: match.archetype.name,
+          archetypeTagline: match.archetype.tagline,
+          archetypeColor: match.archetype.color,
+          dna: dna,
+          totalWines: compass.totalCount,
+          date: DateTime.now(),
+        );
+        await ref.read(shareCardProvider).shareCompassCard(
+              context: context,
+              data: data,
+              source: 'own_profile',
+            );
+      },
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: context.s),
+        child: Row(
+          children: [
+            Icon(
+              PhosphorIconsRegular.shareNetwork,
+              size: context.bodyFont * 0.95,
+              color: cs.primary,
+            ),
+            SizedBox(width: context.w * 0.02),
+            Text(
+              'Share my wine personality',
+              style: TextStyle(
+                fontSize: context.bodyFont,
+                fontWeight: FontWeight.w600,
+                color: cs.primary,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
