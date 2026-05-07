@@ -226,6 +226,7 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
                 FriendRatingsStrip(
                   canonicalWineId: widget.wine.canonicalWineId!,
                 ),
+                SizedBox(height: context.l),
                 // Read-only display of the user's own expert tasting
                 // dimensions for this wine. Renders nothing when empty,
                 // so non-Pro / unfilled wines stay clean.
