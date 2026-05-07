@@ -48,16 +48,33 @@ class ShareCardFooter extends StatelessWidget {
         const SizedBox(height: 28),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(
-              'SIPPD',
-              style: GoogleFonts.playfairDisplay(
-                fontSize: 36,
-                fontWeight: FontWeight.w800,
-                color: textColor,
-                letterSpacing: -0.5,
-                height: 1,
-              ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // logo_icon.png is RGBA with a transparent canvas — logo.png
+                // bakes in a dark background and renders as a solid square
+                // on light card variants, so use _icon here.
+                Image.asset(
+                  'assets/branding/logo_icon.png',
+                  height: 70,
+                  fit: BoxFit.contain,
+                  filterQuality: FilterQuality.high,
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'SIPPD',
+                  style: GoogleFonts.playfairDisplay(
+                    fontSize: 36,
+                    fontWeight: FontWeight.w800,
+                    color: textColor,
+                    letterSpacing: -0.5,
+                    height: 1,
+                  ),
+                ),
+              ],
             ),
             Text(
               tagline,
