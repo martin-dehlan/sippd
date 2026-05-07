@@ -8,6 +8,7 @@ import 'package:share_plus/share_plus.dart';
 
 import '../../../../common/services/analytics/analytics.service.dart';
 import '../../../wines/domain/entities/wine.entity.dart';
+import '../../presentation/cards/compass_share_card.widget.dart';
 import '../../presentation/cards/share_card_branding.widget.dart';
 import '../../presentation/cards/tasting_recap_card.widget.dart';
 import '../../presentation/cards/wine_rating_card.widget.dart';
@@ -59,6 +60,49 @@ class ShareCardService {
           : 'share_card_cancelled',
       properties: {
         'card_type': 'wine_rating',
+        'source': source,
+      },
+    );
+  }
+
+  /// Renders the user's wine-personality (archetype + DNA shape) as a
+  /// 1080×1920 IG-story card and hands it to the native share sheet.
+  /// Caller should suppress the entry point when the archetype is the
+  /// `curious_newcomer` placeholder so users don't share an unformed
+  /// identity.
+  Future<void> shareCompassCard({
+    required BuildContext context,
+    required CompassShareCardData data,
+    required String source,
+  }) async {
+    _analytics.capture(
+      'share_card_generated',
+      properties: {
+        'card_type': 'compass',
+        'source': source,
+      },
+    );
+
+    final card = CompassShareCard(data: data);
+    final file = await _renderToFile(
+      context: context,
+      card: card,
+      filenamePrefix: 'sippd_personality_${data.username ?? 'me'}',
+    );
+    if (file == null) return;
+
+    final result = await Share.shareXFiles(
+      [XFile(file.path, mimeType: 'image/png')],
+      text: 'My wine personality: ${data.archetypeName} · '
+          'find yours at $shareCardUrl',
+    );
+
+    _analytics.capture(
+      result.status == ShareResultStatus.success
+          ? 'share_card_shared'
+          : 'share_card_cancelled',
+      properties: {
+        'card_type': 'compass',
         'source': source,
       },
     );
