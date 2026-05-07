@@ -440,7 +440,7 @@ class _TopWineCard extends StatelessWidget {
                     child: Icon(
                       PhosphorIconsFill.trophy,
                       size: context.captionFont,
-                      color: cs.primaryContainer,
+                      color: Colors.black,
                     ),
                   ),
                 ),
