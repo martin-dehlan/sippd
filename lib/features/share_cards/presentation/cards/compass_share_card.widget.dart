@@ -109,9 +109,12 @@ class _Header extends StatelessWidget {
           children: [
             // Brand glyph alongside the wordmark — same baseline-height
             // as the SIPPD letters so the lockup reads as one unit.
+            // logo_icon.png is RGBA (transparent canvas with the gold
+            // glyph) — logo.png had a baked-in dark background that
+            // disappeared against the share card's #14101A bg.
             Image.asset(
-              'assets/branding/logo.png',
-              height: 64,
+              'assets/branding/logo_icon.png',
+              height: 88,
               fit: BoxFit.contain,
               filterQuality: FilterQuality.high,
             ),

@@ -109,6 +109,7 @@ flutter:
   assets:
     - .env
     - assets/branding/logo.png
+    - assets/branding/logo_icon.png
   fonts:
     - family: Sippd
       fonts:
