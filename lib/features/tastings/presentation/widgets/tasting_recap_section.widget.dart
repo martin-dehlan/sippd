@@ -10,6 +10,7 @@ import '../../../profile/presentation/widgets/profile_avatar.widget.dart';
 import '../../../share_cards/controller/share_card.provider.dart';
 import '../../../share_cards/presentation/cards/tasting_recap_card.widget.dart';
 import '../../../wines/domain/entities/wine.entity.dart';
+import '../../../wines/presentation/widgets/wine_thumb.widget.dart';
 import '../../controller/tastings.provider.dart';
 import '../../domain/entities/tasting_attendee.entity.dart';
 import '../../domain/entities/tasting_recap_entry.entity.dart';
@@ -254,8 +255,15 @@ extension on TastingRecapSection {
       (w) => w.avg != null,
       orElse: () => ranked.first,
     );
+    // Prefer the wine's URL — local-only paths can't be loaded by
+    // NetworkImage on the off-screen render canvas. The card simply
+    // renders without the photo if the URL hasn't synced yet, so the
+    // share still works.
+    final topImageUrl =
+        (top.wine.imageUrl ?? '').trim().isNotEmpty ? top.wine.imageUrl : null;
     final data = TastingRecapCardData(
       groupName: group?.name ?? 'Group tasting',
+      groupAvatarUrl: group?.imageUrl,
       tastingTitle: tastingTitle,
       date: scheduledAt,
       location: location,
@@ -263,6 +271,7 @@ extension on TastingRecapSection {
       topWineWinery: top.wine.winery,
       topWineVintage: top.wine.vintage,
       topWineAvg: top.avg,
+      topWineImageUrl: top.avg == null ? null : topImageUrl,
       ranked: [
         for (final r in ranked)
           TastingRecapCardLine(name: r.wine.name, avg: r.avg),
@@ -369,6 +378,8 @@ class _TopWineCard extends StatelessWidget {
       if (wine.winery != null && wine.winery!.isNotEmpty) wine.winery!,
       if (wine.vintage != null) wine.vintage.toString(),
     ].join(' · ');
+    final image = resolveWineImage(wine);
+    final imageSize = context.w * 0.20;
 
     return Container(
       padding: EdgeInsets.all(context.w * 0.045),
@@ -379,12 +390,61 @@ class _TopWineCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            PhosphorIconsFill.trophy,
-            size: context.titleFont,
-            color: cs.onPrimaryContainer,
+          // Wine image — promoted from a small trophy glyph to a real
+          // photo so the winner has visual presence on the recap.
+          // Trophy stays as a corner-tag overlay so the "top wine"
+          // semantics stay readable when the photo is busy.
+          SizedBox(
+            width: imageSize,
+            height: imageSize,
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Container(
+                  width: imageSize,
+                  height: imageSize,
+                  decoration: BoxDecoration(
+                    color: cs.surface.withValues(alpha: 0.55),
+                    borderRadius: BorderRadius.circular(context.w * 0.03),
+                  ),
+                  alignment: Alignment.center,
+                  child: image == null
+                      ? Icon(
+                          PhosphorIconsFill.wine,
+                          size: imageSize * 0.5,
+                          color: cs.onPrimaryContainer.withValues(alpha: 0.55),
+                        )
+                      : ClipRRect(
+                          borderRadius:
+                              BorderRadius.circular(context.w * 0.03),
+                          child: Image(
+                            image: image,
+                            width: imageSize,
+                            height: imageSize,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                ),
+                Positioned(
+                  top: -context.xs * 0.6,
+                  left: -context.xs * 0.6,
+                  child: Container(
+                    padding: EdgeInsets.all(context.xs * 0.6),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: cs.onPrimaryContainer,
+                    ),
+                    child: Icon(
+                      PhosphorIconsFill.trophy,
+                      size: context.captionFont,
+                      color: cs.primaryContainer,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
-          SizedBox(width: context.w * 0.035),
+          SizedBox(width: context.w * 0.04),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
