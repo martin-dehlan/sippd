@@ -15,11 +15,22 @@ class DnaShape extends StatelessWidget {
     required this.dna,
     required this.color,
     this.size = 96,
+    this.strokeWidth = 1.4,
+    this.vertexRadius = 1.6,
   });
 
   final UserStyleDna? dna;
   final Color color;
   final double size;
+
+  /// Outline thickness in logical pixels. Small in-app surfaces look
+  /// right at the default; large export surfaces (the 1080×1920 share
+  /// card) bump this so the silhouette doesn't read as a hairline.
+  final double strokeWidth;
+
+  /// Radius of the vertex dot at each axis tick. Same scale-up logic
+  /// as [strokeWidth] — defaults match the in-app density.
+  final double vertexRadius;
 
   static const _axes = ['body', 'tannin', 'acidity', 'sweetness', 'oak', 'intensity'];
 
@@ -31,16 +42,30 @@ class DnaShape extends StatelessWidget {
     return SizedBox(
       width: size,
       height: size,
-      child: CustomPaint(painter: _DnaShapePainter(values: values, color: color)),
+      child: CustomPaint(
+        painter: _DnaShapePainter(
+          values: values,
+          color: color,
+          strokeWidth: strokeWidth,
+          vertexRadius: vertexRadius,
+        ),
+      ),
     );
   }
 }
 
 class _DnaShapePainter extends CustomPainter {
-  _DnaShapePainter({required this.values, required this.color});
+  _DnaShapePainter({
+    required this.values,
+    required this.color,
+    required this.strokeWidth,
+    required this.vertexRadius,
+  });
 
   final List<double> values;
   final Color color;
+  final double strokeWidth;
+  final double vertexRadius;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -68,7 +93,7 @@ class _DnaShapePainter extends CustomPainter {
       Paint()
         ..color = color.withValues(alpha: 0.85)
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 1.4
+        ..strokeWidth = strokeWidth
         ..strokeJoin = StrokeJoin.round,
     );
 
@@ -76,7 +101,7 @@ class _DnaShapePainter extends CustomPainter {
       ..color = color
       ..style = PaintingStyle.fill;
     for (final p in points) {
-      canvas.drawCircle(p, 1.6, dotPaint);
+      canvas.drawCircle(p, vertexRadius, dotPaint);
     }
   }
 
@@ -103,7 +128,10 @@ class _DnaShapePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _DnaShapePainter old) =>
-      old.color != color || !_listsEqual(old.values, values);
+      old.color != color ||
+      old.strokeWidth != strokeWidth ||
+      old.vertexRadius != vertexRadius ||
+      !_listsEqual(old.values, values);
 
   bool _listsEqual(List<double> a, List<double> b) {
     if (a.length != b.length) return false;

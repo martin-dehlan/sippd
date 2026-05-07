@@ -235,6 +235,10 @@ class _LabeledShape extends StatelessWidget {
               dna: dna,
               color: color,
               size: _shapeSize,
+              // The default 1.4px stroke disappears at the export
+              // resolution; bump so the silhouette reads at a glance.
+              strokeWidth: 4.0,
+              vertexRadius: 5.0,
             ),
           ),
           for (var i = 0; i < _axes.length; i++)
@@ -256,8 +260,8 @@ class _LabeledShape extends StatelessWidget {
     // Anchor the label box around its centre so each label sits exactly
     // on the axis tick. Box is sized generously to absorb the longest
     // copy ("SWEETNESS") at the chosen typography.
-    const boxW = 220.0;
-    const boxH = 60.0;
+    const boxW = 260.0;
+    const boxH = 64.0;
     return Positioned(
       left: cx + dx - boxW / 2,
       top: cy + dy - boxH / 2,
@@ -267,10 +271,12 @@ class _LabeledShape extends StatelessWidget {
         child: Text(
           label.toUpperCase(),
           style: TextStyle(
-            fontSize: 26,
-            fontWeight: FontWeight.w800,
-            color: _onBgMuted,
-            letterSpacing: 4,
+            fontSize: 32,
+            fontWeight: FontWeight.w700,
+            // Brighter than the muted body copy — labels need to read
+            // immediately even when the silhouette gets the eye first.
+            color: _onBg.withValues(alpha: 0.85),
+            letterSpacing: 3,
             height: 1,
           ),
         ),
@@ -307,7 +313,11 @@ class _TraitsBlock extends StatelessWidget {
         const SizedBox(height: 24),
         for (var i = 0; i < ranked.length; i++) ...[
           if (i > 0) const SizedBox(height: 18),
-          _TraitRow(axis: ranked[i].$1, value: ranked[i].$2),
+          _TraitRow(
+            rank: i + 1,
+            axis: ranked[i].$1,
+            value: ranked[i].$2,
+          ),
         ],
       ],
     );
@@ -315,40 +325,45 @@ class _TraitsBlock extends StatelessWidget {
 }
 
 class _TraitRow extends StatelessWidget {
+  final int rank;
   final String axis;
   final double value;
-  const _TraitRow({required this.axis, required this.value});
+  const _TraitRow({
+    required this.rank,
+    required this.axis,
+    required this.value,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final pct = (value * 100).round();
     final descriptor = traitDescriptor(axis, value);
+    final phrase = '$descriptor ${traitLabel(axis).toLowerCase()}';
     return Row(
       crossAxisAlignment: CrossAxisAlignment.baseline,
       textBaseline: TextBaseline.alphabetic,
       children: [
         SizedBox(
-          width: 130,
+          width: 86,
           child: Text(
-            '$pct%',
+            rank.toString().padLeft(2, '0'),
             style: GoogleFonts.playfairDisplay(
-              fontSize: 56,
-              fontWeight: FontWeight.w900,
-              color: _onBg,
+              fontSize: 44,
+              fontStyle: FontStyle.italic,
+              fontWeight: FontWeight.w400,
+              color: _onBgMuted,
               height: 1,
             ),
           ),
         ),
         Expanded(
           child: Text(
-            '${descriptor.toUpperCase()}  ·  ${traitLabel(axis).toUpperCase()}',
+            phrase,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: 30,
+            style: GoogleFonts.playfairDisplay(
+              fontSize: 42,
               color: _onBg,
               fontWeight: FontWeight.w700,
-              letterSpacing: 1.2,
               height: 1.1,
             ),
           ),
