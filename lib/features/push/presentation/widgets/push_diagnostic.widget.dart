@@ -105,9 +105,10 @@ class _PushDiagnosticPanelState extends ConsumerState<PushDiagnosticPanel> {
       await fcm.requestPermission();
       await fcm.register();
       if (!mounted) return;
+      final next = _runCheck();
       setState(() {
         _registerStatus = 'Re-register triggered. Refresh below.';
-        _check = _runCheck();
+        _check = next;
       });
     } catch (e) {
       if (!mounted) return;
@@ -118,7 +119,10 @@ class _PushDiagnosticPanelState extends ConsumerState<PushDiagnosticPanel> {
   }
 
   void _refresh() {
-    setState(() => _check = _runCheck());
+    final next = _runCheck();
+    setState(() {
+      _check = next;
+    });
   }
 
   @override
