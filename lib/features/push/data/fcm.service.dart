@@ -20,7 +20,40 @@ class FcmService {
 
   Future<String?> _currentToken() async {
     try {
-      return await _messaging.getToken();
+      // On iOS we need APNS to attach a device-token before FCM will
+      // mint a registration token — without it `getToken()` returns
+      // null silently. The plugin exposes `getAPNSToken()`; awaiting
+      // it here gives the system a moment to complete the APNS
+      // handshake on first launch right after permission grant.
+      if (!kIsWeb && Platform.isIOS) {
+        try {
+          final apns = await _messaging.getAPNSToken();
+          if (apns == null) {
+            debugPrint(
+              'FCM: APNS token still null after wait — '
+              'iOS APNS pairing not yet ready (permission denied? '
+              'aps-environment mismatch? bad APNs key in Firebase?)',
+            );
+          } else {
+            debugPrint('FCM: APNS token present (len=${apns.length})');
+          }
+        } catch (e) {
+          debugPrint('FCM getAPNSToken failed: $e');
+        }
+      }
+      final token = await _messaging.getToken();
+      if (token == null) {
+        debugPrint(
+          'FCM: getToken() returned null on $_platform — no push delivery '
+          'possible until a token is registered.',
+        );
+      } else {
+        debugPrint(
+          'FCM: got token on $_platform (len=${token.length}, '
+          'preview=${token.substring(0, token.length < 16 ? token.length : 16)})',
+        );
+      }
+      return token;
     } catch (e) {
       debugPrint('FCM getToken failed: $e');
       return null;
@@ -42,17 +75,33 @@ class FcmService {
   /// is valid regardless; if the user later grants permission, deliveries
   /// just start displaying. On iOS getToken returns null without
   /// permission, so this no-ops gracefully.
+  ///
+  /// On iOS the call is allowed to retry once: the APNS handshake can
+  /// take a beat right after permission grant on first launch, and the
+  /// initial getToken() returns null. Without the retry the user has
+  /// to background+foreground the app for the next onTokenRefresh
+  /// callback to wake the registration.
   Future<void> register() async {
     final user = _client.auth.currentUser;
     if (user == null) return;
 
-    final token = await _currentToken();
+    var token = await _currentToken();
+    if (token == null && !kIsWeb && Platform.isIOS) {
+      debugPrint('FCM: iOS first attempt returned null, retrying in 2s…');
+      await Future.delayed(const Duration(seconds: 2));
+      token = await _currentToken();
+    }
     if (token == null) return;
 
-    await _client.rpc(
-      'register_user_device',
-      params: {'p_token': token, 'p_platform': _platform},
-    );
+    try {
+      await _client.rpc(
+        'register_user_device',
+        params: {'p_token': token, 'p_platform': _platform},
+      );
+      debugPrint('FCM: registered $_platform token with server');
+    } catch (e) {
+      debugPrint('FCM: register_user_device RPC failed: $e');
+    }
   }
 
   /// Listen for token refreshes and update the row.
