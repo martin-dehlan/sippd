@@ -8,6 +8,7 @@ import '../../../../common/utils/responsive.dart';
 import '../../../../core/routes/app.routes.dart';
 import '../../../auth/controller/auth.provider.dart';
 import '../../../paywall/controller/paywall.provider.dart';
+import '../../controller/expert_tasting.provider.dart';
 import '../../data/data_sources/expert_tasting.api.dart';
 import '../../domain/entities/expert_tasting.entity.dart';
 import '../../domain/entities/wine.entity.dart';
@@ -160,6 +161,8 @@ class _WineRatingSheetState extends ConsumerState<_WineRatingSheet> {
           groupId: widget.groupId,
           tastingId: widget.tastingId,
         );
+        // Refresh the wine-detail summary that reads the same row.
+        ref.invalidate(myExpertTastingProvider(_canonicalId!));
       }
     } catch (e) {
       if (mounted) {

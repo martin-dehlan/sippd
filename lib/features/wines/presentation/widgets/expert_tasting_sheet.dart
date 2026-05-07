@@ -6,6 +6,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../../../common/utils/responsive.dart';
 import '../../../../common/widgets/inline_error.widget.dart';
 import '../../../auth/controller/auth.provider.dart';
+import '../../controller/expert_tasting.provider.dart';
 import '../../data/data_sources/expert_tasting.api.dart';
 import '../../domain/entities/expert_tasting.entity.dart';
 import '../../domain/entities/wine.entity.dart';
@@ -123,6 +124,9 @@ class _ExpertSheetState extends ConsumerState<_ExpertSheet> {
         canonicalWineId: widget.wine.canonicalWineId!,
         tasting: _draft,
       );
+      // Invalidate the wine-detail summary provider so the read-only
+      // section reflects the new dimensions immediately on pop.
+      ref.invalidate(myExpertTastingProvider(widget.wine.canonicalWineId!));
       if (mounted) Navigator.pop(context);
     } catch (e) {
       if (mounted) setState(() => _saveError = e);
