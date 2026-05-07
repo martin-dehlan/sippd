@@ -8,7 +8,9 @@ import '../../../../../common/utils/responsive.dart';
 import '../../../../auth/controller/auth.provider.dart';
 import '../../../../locations/domain/entities/location.entity.dart';
 import '../../../../share_cards/presentation/widgets/wine_share_prompt_sheet.dart';
+import '../../../controller/expert_tasting.provider.dart';
 import '../../../controller/wine.provider.dart';
+import '../../../data/data_sources/expert_tasting.api.dart';
 import '../../../domain/entities/wine.entity.dart';
 import '../../../domain/entities/wine_memory.entity.dart';
 import '../../widgets/canonical_wine_prompt_sheet.dart';
@@ -143,6 +145,37 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
       createdAt: DateTime.now(),
     );
     await ref.read(wineControllerProvider.notifier).addWine(wine);
+
+    // If the user typed expert tasting dimensions in the rating sheet
+    // before the wine was ever saved, the canonical_wine_id wasn't yet
+    // known. Resolve it now (server RPC — same lookup the post-insert
+    // trigger uses) and write the dimensions. Best-effort: a failure
+    // here doesn't block the rest of the save flow.
+    final pending = data.pendingExpertTasting;
+    if (pending != null && !pending.isEmpty && canonicalApi != null) {
+      try {
+        final resolvedCanonical =
+            linkedCanonicalId ??
+            await canonicalApi.resolve(
+              name: data.name,
+              winery: data.winery,
+              vintage: data.vintage,
+              type: data.type.name,
+              country: data.country,
+              region: data.region,
+              canonicalGrapeId: data.canonicalGrapeId,
+              userId: userId,
+            );
+        if (resolvedCanonical != null) {
+          await ExpertTastingApi(
+            ref.read(supabaseClientProvider),
+          ).upsert(canonicalWineId: resolvedCanonical, tasting: pending);
+          ref.invalidate(myExpertTastingProvider(resolvedCanonical));
+        }
+      } catch (_) {
+        // Non-fatal — wine save already succeeded.
+      }
+    }
 
     final repo = ref.read(wineMemoryRepositoryProvider);
     for (final m in data.memories) {

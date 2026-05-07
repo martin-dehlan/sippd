@@ -56,6 +56,38 @@ class CanonicalWineApi {
     );
   }
 
+  /// Server-side resolve: returns the existing canonical id for the
+  /// (name, winery, vintage) triple if one exists, otherwise inserts a
+  /// new canonical_wine row and returns its id. Used by the new-wine flow
+  /// when expert tasting dimensions need to be persisted before the
+  /// fire-and-forget background sync has populated `wines.canonical_wine_id`.
+  /// Returns null if the name is shorter than 3 chars (server-side guard).
+  Future<String?> resolve({
+    required String name,
+    String? winery,
+    int? vintage,
+    String? type,
+    String? country,
+    String? region,
+    String? canonicalGrapeId,
+    required String userId,
+  }) async {
+    final id = await _client.rpc(
+      'resolve_canonical_wine',
+      params: {
+        'p_name': name,
+        'p_winery': winery,
+        'p_vintage': vintage,
+        'p_type': type,
+        'p_country': country,
+        'p_region': region,
+        'p_canonical_grape_id': canonicalGrapeId,
+        'p_user_id': userId,
+      },
+    );
+    return id as String?;
+  }
+
   /// Pairs of canonicals the caller participates in that look similar
   /// enough to potentially merge. Used by the manual cleanup screen.
   Future<List<CanonicalMergePair>> findMergeCandidates({
