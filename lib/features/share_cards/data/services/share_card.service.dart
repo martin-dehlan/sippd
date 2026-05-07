@@ -10,6 +10,7 @@ import '../../../../common/services/analytics/analytics.service.dart';
 import '../../../../common/utils/share_origin.dart';
 import '../../../wines/domain/entities/wine.entity.dart';
 import '../../presentation/cards/compass_share_card.widget.dart';
+import '../../presentation/cards/friend_invite_card.widget.dart';
 import '../../presentation/cards/share_card_branding.widget.dart';
 import '../../presentation/cards/tasting_recap_card.widget.dart';
 import '../../presentation/cards/wine_rating_card.widget.dart';
@@ -147,6 +148,65 @@ class ShareCardService {
           ? 'share_card_shared'
           : 'share_card_cancelled',
       properties: {'card_type': 'tasting_recap', 'source': source},
+    );
+  }
+
+  /// Renders a friend-invite IG-story card and hands it to the share
+  /// sheet alongside the inviter's profile deep-link. The card is the
+  /// payload — the URL in [text] is the call-to-action so chat apps
+  /// like WhatsApp surface a tap target even when the image is the
+  /// hero. Drops the URL down to plain text if rendering fails so the
+  /// invite still goes out.
+  Future<void> shareFriendInviteCard({
+    required BuildContext context,
+    required FriendInviteCardData data,
+    required String inviteUrl,
+    required String source,
+  }) async {
+    _analytics.capture(
+      'share_card_generated',
+      properties: {'card_type': 'friend_invite', 'source': source},
+    );
+
+    final shareOrigin = shareOriginFor(context);
+
+    if (data.avatarUrl != null && data.avatarUrl!.trim().isNotEmpty) {
+      try {
+        await precacheImage(NetworkImage(data.avatarUrl!), context);
+      } catch (_) {
+        // Card falls back to initials.
+      }
+      if (!context.mounted) return;
+    }
+
+    final card = FriendInviteCard(data: data);
+    final file = await _renderToFile(
+      context: context,
+      card: card,
+      filenamePrefix: 'sippd_invite_${(data.username ?? 'me').replaceAll(RegExp(r"[^A-Za-z0-9_-]"), "_")}',
+    );
+
+    final fallbackText =
+        "${data.displayName} wants to taste with you on Sippd · $inviteUrl";
+    final imageText = "Join me on Sippd 🍷  $inviteUrl";
+
+    final result = file == null
+        ? await Share.share(
+            fallbackText,
+            subject: 'Join me on Sippd',
+            sharePositionOrigin: shareOrigin,
+          )
+        : await Share.shareXFiles(
+            [XFile(file.path, mimeType: 'image/png')],
+            text: imageText,
+            sharePositionOrigin: shareOrigin,
+          );
+
+    _analytics.capture(
+      result.status == ShareResultStatus.success
+          ? 'share_card_shared'
+          : 'share_card_cancelled',
+      properties: {'card_type': 'friend_invite', 'source': source},
     );
   }
 
