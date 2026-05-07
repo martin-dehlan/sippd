@@ -68,6 +68,10 @@
 		<string>Sippd needs photo library access to add wine label photos</string>
 		<key>NSLocationWhenInUseUsageDescription</key>
 		<string>Sippd uses your location to auto-detect where you are tasting a wine</string>
+		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+		<string>Sippd uses your location to auto-detect where you are tasting a wine</string>
+		<key>NSCalendarsUsageDescription</key>
+		<string>Sippd adds tasting events to your calendar so you don't miss a wine night</string>
 		<key>UIApplicationSupportsIndirectInputEvents</key>
 		<true/>
 		<key>UIBackgroundModes</key>

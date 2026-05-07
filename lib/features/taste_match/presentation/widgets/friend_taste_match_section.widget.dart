@@ -8,12 +8,7 @@ import '../../../../core/routes/app.routes.dart';
 import '../../../paywall/controller/paywall.provider.dart';
 import '../../controller/taste_match.provider.dart';
 import 'shared_bottles.widget.dart';
-import 'taste_compass.widget.dart';
 import 'taste_match_score.widget.dart';
-
-/// Composes the three Pro-gated taste-match blocks for the friend
-/// profile screen: match score (with confidence), shared bottles, and
-/// the friend's compass. Free users see a single upsell CTA.
 class FriendTasteMatchSection extends ConsumerWidget {
   const FriendTasteMatchSection({
     super.key,
@@ -33,7 +28,6 @@ class FriendTasteMatchSection extends ConsumerWidget {
     }
 
     final matchAsync = ref.watch(tasteMatchProvider(friendId));
-    final compassAsync = ref.watch(tasteCompassProvider(friendId));
     final sharedAsync = ref.watch(sharedBottlesProvider(friendId));
 
     return Column(
@@ -48,24 +42,8 @@ class FriendTasteMatchSection extends ConsumerWidget {
         sharedAsync.when(
           data: (bottles) => bottles.isEmpty
               ? const SizedBox.shrink()
-              : Padding(
-                  padding: EdgeInsets.only(bottom: context.m),
-                  child: SharedBottlesWidget(bottles: bottles),
-                ),
+              : SharedBottlesWidget(bottles: bottles),
           loading: () => const SizedBox.shrink(),
-          error: (_, _) => const SizedBox.shrink(),
-        ),
-        compassAsync.when(
-          data: (compass) => TasteCompassWidget(
-            compass: compass,
-            title: '${friendDisplayName.split(' ').first}\'s compass',
-            userId: friendId,
-            // Friend section is itself Pro-gated above; once we get
-            // here the caller is Pro, so all modes are unlocked
-            // without a per-mode lock affordance.
-            allowProGated: false,
-          ),
-          loading: () => const _LoadingCard(),
           error: (_, _) => const SizedBox.shrink(),
         ),
       ],
@@ -111,7 +89,6 @@ class _TasteMatchUpsell extends StatelessWidget {
 
     final pills = [
       (icon: PhosphorIconsRegular.percent, label: 'Taste match'),
-      (icon: PhosphorIconsRegular.compass, label: 'Their compass'),
       (icon: PhosphorIconsRegular.handshake, label: 'Shared bottles'),
     ];
 

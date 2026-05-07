@@ -191,27 +191,12 @@ class _WineRatingSheetState extends ConsumerState<_WineRatingSheet> {
                 ),
               ),
             ),
-            SizedBox(height: context.l),
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    'YOUR RATING',
-                    style: TextStyle(
-                      fontSize: context.captionFont * 0.9,
-                      fontWeight: FontWeight.w800,
-                      color: cs.onSurfaceVariant,
-                      letterSpacing: 1.4,
-                    ),
-                  ),
-                ),
-                if (canExpert)
-                  ExpertRatingChip(
-                    isPro: isPro,
-                    expanded: _expertExpanded,
-                    onTap: _toggleExpert,
-                  ),
-              ],
+            SizedBox(height: context.m),
+            YourRatingHeader(
+              showChip: canExpert,
+              isPro: isPro,
+              expanded: _expertExpanded,
+              onChipTap: _toggleExpert,
             ),
             if (wine != null) ...[
               SizedBox(height: context.xs),
@@ -228,9 +213,9 @@ class _WineRatingSheetState extends ConsumerState<_WineRatingSheet> {
                 overflow: TextOverflow.ellipsis,
               ),
             ],
-            SizedBox(height: context.xl),
-            Center(child: _Hero(value: _value, cs: cs)),
             SizedBox(height: context.l),
+            Center(child: _Hero(value: _value, cs: cs)),
+            SizedBox(height: context.m),
             _Slider(
               value: _value,
               onChanged: (v) => setState(() => _value = v),
@@ -252,7 +237,7 @@ class _WineRatingSheetState extends ConsumerState<_WineRatingSheet> {
                     )
                   : const SizedBox(width: double.infinity),
             ),
-            SizedBox(height: context.xl),
+            SizedBox(height: context.l),
             SizedBox(
               height: context.h * 0.065,
               child: FilledButton(
