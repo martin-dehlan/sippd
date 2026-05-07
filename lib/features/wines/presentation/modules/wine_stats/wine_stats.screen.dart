@@ -33,12 +33,13 @@ class WineStatsScreen extends ConsumerWidget {
     final timeline = ref.watch(statsTimelineProvider);
     final partnersAsync = ref.watch(statsDrinkingPartnersProvider);
     final isPro = ref.watch(isProProvider);
-    final hasWines =
-        ref.watch(statsHeroProvider.select((h) => h.totalWines > 0));
-    final hasLocations =
-        ref.watch(statsWinesWithLocationProvider).isNotEmpty;
-    final hasPriced =
-        ref.watch(statsSpendingProvider.select((s) => s.pricedCount > 0));
+    final hasWines = ref.watch(
+      statsHeroProvider.select((h) => h.totalWines > 0),
+    );
+    final hasLocations = ref.watch(statsWinesWithLocationProvider).isNotEmpty;
+    final hasPriced = ref.watch(
+      statsSpendingProvider.select((s) => s.pricedCount > 0),
+    );
 
     return Scaffold(
       backgroundColor: cs.surface,
@@ -106,8 +107,7 @@ class WineStatsScreen extends ConsumerWidget {
                 if (isPro) ...[
                   _SliverSection(
                     title: 'Timeline',
-                    subtitle:
-                        'Month by month, the wines that wrote your year.',
+                    subtitle: 'Month by month, the wines that wrote your year.',
                     delay: 175,
                     child: hasWines
                         ? WineTimeline(months: timeline)

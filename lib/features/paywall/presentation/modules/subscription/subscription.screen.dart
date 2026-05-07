@@ -82,10 +82,7 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen>
               )
             : null,
       ),
-      body: SafeArea(
-        top: false,
-        child: _SubscriptionContent(info: info),
-      ),
+      body: SafeArea(top: false, child: _SubscriptionContent(info: info)),
     );
   }
 }
@@ -160,10 +157,7 @@ class _ProManagementContent extends ConsumerWidget {
       children: [
         _StatusCard(entitlement: entitlement),
         SizedBox(height: context.l),
-        const _Section(
-          title: 'Included in Pro',
-          children: [_BenefitsBlock()],
-        ),
+        const _Section(title: 'Included in Pro', children: [_BenefitsBlock()]),
         SizedBox(height: context.l),
         _Section(
           title: 'Manage',
@@ -290,11 +284,7 @@ class _StatusChip extends StatelessWidget {
     final (label, fg, bg) = switch (state) {
       _SubState.active => ('ACTIVE', cs.onPrimary, cs.primary),
       _SubState.trial => ('TRIAL', cs.onPrimary, cs.primary),
-      _SubState.ending => (
-        'ENDING',
-        cs.onErrorContainer,
-        cs.errorContainer,
-      ),
+      _SubState.ending => ('ENDING', cs.onErrorContainer, cs.errorContainer),
       _SubState.lifetime => ('LIFETIME', cs.onPrimary, cs.primary),
       _SubState.test => ('TEST MODE', cs.onSurface, cs.surfaceContainer),
     };
@@ -356,10 +346,7 @@ class _Section extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Padding(
-          padding: EdgeInsets.only(
-            left: context.w * 0.04,
-            bottom: context.s,
-          ),
+          padding: EdgeInsets.only(left: context.w * 0.04, bottom: context.s),
           child: Text(
             title.toUpperCase(),
             style: TextStyle(

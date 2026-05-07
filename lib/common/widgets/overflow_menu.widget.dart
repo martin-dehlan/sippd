@@ -74,8 +74,7 @@ class OverflowMenu extends StatelessWidget {
                 value: i,
                 child: Row(
                   children: [
-                    Icon(item.icon,
-                        size: context.w * 0.045, color: colour),
+                    Icon(item.icon, size: context.w * 0.045, color: colour),
                     SizedBox(width: context.s),
                     Text(item.label, style: TextStyle(color: colour)),
                   ],

@@ -53,21 +53,23 @@ class PendingImageUploadsDao extends DatabaseAccessor<AppDatabase>
     // serialization. The previous customStatement wrote an ISO string
     // into a column Drift reads back as an int → FormatException on
     // the next due() call.
-    final row = await (select(pendingImageUploadsTable)
-          ..where((p) => p.wineId.equals(wineId)))
-        .getSingleOrNull();
+    final row = await (select(
+      pendingImageUploadsTable,
+    )..where((p) => p.wineId.equals(wineId))).getSingleOrNull();
     if (row == null) return;
-    await (update(pendingImageUploadsTable)
-          ..where((p) => p.wineId.equals(wineId)))
-        .write(PendingImageUploadsTableCompanion(
-      attempts: Value(row.attempts + 1),
-      lastErrorAt: Value(DateTime.now()),
-    ));
+    await (update(
+      pendingImageUploadsTable,
+    )..where((p) => p.wineId.equals(wineId))).write(
+      PendingImageUploadsTableCompanion(
+        attempts: Value(row.attempts + 1),
+        lastErrorAt: Value(DateTime.now()),
+      ),
+    );
   }
 
   Future<void> remove(String wineId) {
-    return (delete(pendingImageUploadsTable)
-          ..where((p) => p.wineId.equals(wineId)))
-        .go();
+    return (delete(
+      pendingImageUploadsTable,
+    )..where((p) => p.wineId.equals(wineId))).go();
   }
 }

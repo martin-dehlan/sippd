@@ -71,8 +71,8 @@ class _EditFormState extends ConsumerState<_EditForm> {
     _openLineup = t.lineupMode == TastingLineupMode.open;
   }
 
-  DateTime get _scheduledAt => DateTime(
-      _date.year, _date.month, _date.day, _time.hour, _time.minute);
+  DateTime get _scheduledAt =>
+      DateTime(_date.year, _date.month, _date.day, _time.hour, _time.minute);
 
   Future<void> _editTitle() async {
     final r = await showTextInputSheet(
@@ -108,8 +108,7 @@ class _EditFormState extends ConsumerState<_EditForm> {
   }
 
   Future<void> _editTime() async {
-    final picked =
-        await showTimePicker(context: context, initialTime: _time);
+    final picked = await showTimePicker(context: context, initialTime: _time);
     if (picked != null) setState(() => _time = picked);
   }
 
@@ -125,28 +124,29 @@ class _EditFormState extends ConsumerState<_EditForm> {
   Future<void> _submit() async {
     if (_title.trim().isEmpty) return;
     setState(() => _saving = true);
-    final updated =
-        await ref.read(tastingsControllerProvider.notifier).updateTasting(
-              tastingId: widget.tasting.id,
-              groupId: widget.tasting.groupId,
-              title: _title.trim(),
-              description: _description,
-              location: _location?.shortDisplay,
-              latitude: _location?.lat,
-              longitude: _location?.lng,
-              scheduledAt: _scheduledAt,
-              lineupMode: _openLineup
-                  ? TastingLineupMode.open
-                  : TastingLineupMode.planned,
-            );
+    final updated = await ref
+        .read(tastingsControllerProvider.notifier)
+        .updateTasting(
+          tastingId: widget.tasting.id,
+          groupId: widget.tasting.groupId,
+          title: _title.trim(),
+          description: _description,
+          location: _location?.shortDisplay,
+          latitude: _location?.lat,
+          longitude: _location?.lng,
+          scheduledAt: _scheduledAt,
+          lineupMode: _openLineup
+              ? TastingLineupMode.open
+              : TastingLineupMode.planned,
+        );
     if (!mounted) return;
     setState(() => _saving = false);
     if (updated != null) {
       context.pop();
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not update tasting')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Could not update tasting')));
     }
   }
 
@@ -161,15 +161,16 @@ class _EditFormState extends ConsumerState<_EditForm> {
         children: [
           SizedBox(height: context.xl * 1.5),
           Padding(
-            padding:
-                EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
-            child: Text('EDIT TASTING',
-                style: GoogleFonts.playfairDisplay(
-                  fontSize: context.titleFont * 1.1,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: -0.5,
-                  height: 1.05,
-                )),
+            padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
+            child: Text(
+              'EDIT TASTING',
+              style: GoogleFonts.playfairDisplay(
+                fontSize: context.titleFont * 1.1,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.5,
+                height: 1.05,
+              ),
+            ),
           ),
           SizedBox(height: context.l),
           _Row(
@@ -198,8 +199,7 @@ class _EditFormState extends ConsumerState<_EditForm> {
             value: _location?.shortDisplay.isNotEmpty == true
                 ? _location!.shortDisplay
                 : 'Tap to add',
-            isEmpty:
-                _location == null || _location!.shortDisplay.isEmpty,
+            isEmpty: _location == null || _location!.shortDisplay.isEmpty,
             onTap: _editPlace,
           ),
           _Divider(),
@@ -219,8 +219,7 @@ class _EditFormState extends ConsumerState<_EditForm> {
           _Divider(),
           SizedBox(height: context.xl),
           Padding(
-            padding:
-                EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
+            padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
             child: SizedBox(
               width: double.infinity,
               height: context.h * 0.06,
@@ -237,12 +236,17 @@ class _EditFormState extends ConsumerState<_EditForm> {
                         width: 20,
                         height: 20,
                         child: CircularProgressIndicator(
-                            strokeWidth: 2, color: cs.onPrimary),
+                          strokeWidth: 2,
+                          color: cs.onPrimary,
+                        ),
                       )
-                    : Text('Save changes',
+                    : Text(
+                        'Save changes',
                         style: TextStyle(
-                            fontSize: context.bodyFont,
-                            fontWeight: FontWeight.w600)),
+                          fontSize: context.bodyFont,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
               ),
             ),
           ),
@@ -297,14 +301,20 @@ class _Row extends StatelessWidget {
       onTap: onTap,
       child: Padding(
         padding: EdgeInsets.symmetric(
-            horizontal: context.paddingH * 1.3, vertical: context.m),
+          horizontal: context.paddingH * 1.3,
+          vertical: context.m,
+        ),
         child: Row(
           children: [
             SizedBox(
               width: context.w * 0.28,
-              child: Text(label,
-                  style: TextStyle(
-                      fontSize: context.bodyFont, color: cs.onSurface)),
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontSize: context.bodyFont,
+                  color: cs.onSurface,
+                ),
+              ),
             ),
             Expanded(
               child: Text(
@@ -320,8 +330,11 @@ class _Row extends StatelessWidget {
               ),
             ),
             SizedBox(width: context.w * 0.02),
-            Icon(PhosphorIconsRegular.caretRight,
-                size: context.w * 0.045, color: cs.outline),
+            Icon(
+              PhosphorIconsRegular.caretRight,
+              size: context.w * 0.045,
+              color: cs.outline,
+            ),
           ],
         ),
       ),
@@ -350,7 +363,9 @@ class _ToggleRow extends StatelessWidget {
       onTap: () => onChanged(!value),
       child: Padding(
         padding: EdgeInsets.symmetric(
-            horizontal: context.paddingH * 1.3, vertical: context.m),
+          horizontal: context.paddingH * 1.3,
+          vertical: context.m,
+        ),
         child: Row(
           children: [
             Expanded(

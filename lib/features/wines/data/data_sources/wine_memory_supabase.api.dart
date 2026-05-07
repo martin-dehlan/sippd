@@ -13,9 +13,7 @@ class WineMemorySupabaseApi {
         .eq('wine_id', wineId)
         .order('created_at', ascending: true);
 
-    return (data as List)
-        .map((row) => WineMemoryModel.fromJson(row))
-        .toList();
+    return (data as List).map((row) => WineMemoryModel.fromJson(row)).toList();
   }
 
   Future<void> upsertMemory(WineMemoryModel memory) async {

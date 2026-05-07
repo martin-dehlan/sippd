@@ -142,8 +142,9 @@ class _RatingPair extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
     final agree = delta <= 0.5;
     final deltaColor = agree ? cs.primary : cs.error;
-    final deltaIcon =
-        agree ? PhosphorIconsBold.checkCircle : PhosphorIconsBold.warningCircle;
+    final deltaIcon = agree
+        ? PhosphorIconsBold.checkCircle
+        : PhosphorIconsBold.warningCircle;
 
     return Row(
       children: [

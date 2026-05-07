@@ -30,26 +30,34 @@ Future<GroupEntity?> groupDetail(GroupDetailRef ref, String groupId) async {
 
 @riverpod
 Future<List<FriendProfileEntity>> groupMembers(
-    GroupMembersRef ref, String groupId) async {
+  GroupMembersRef ref,
+  String groupId,
+) async {
   ref.requireOnline();
   final client = ref.read(supabaseClientProvider);
-  final memberRows = (await client
-      .from('group_members')
-      .select('user_id, role')
-      .eq('group_id', groupId)
-      .withNetTimeout()) as List;
+  final memberRows =
+      (await client
+              .from('group_members')
+              .select('user_id, role')
+              .eq('group_id', groupId)
+              .withNetTimeout())
+          as List;
   if (memberRows.isEmpty) return const [];
   final ids = memberRows
       .map((m) => (m as Map<String, dynamic>)['user_id'] as String)
       .toList();
-  final profileRows = (await client
-      .from('profiles')
-      .select()
-      .inFilter('id', ids)
-      .withNetTimeout()) as List;
+  final profileRows =
+      (await client
+              .from('profiles')
+              .select()
+              .inFilter('id', ids)
+              .withNetTimeout())
+          as List;
   return profileRows
-      .map((p) => FriendProfileModel.fromJson(p as Map<String, dynamic>)
-          .toEntity())
+      .map(
+        (p) =>
+            FriendProfileModel.fromJson(p as Map<String, dynamic>).toEntity(),
+      )
       .toList();
 }
 
@@ -59,8 +67,7 @@ Future<List<FriendProfileEntity>> groupMembers(
 /// notes, photos) come from the local `wines` mirror when the caller
 /// owns the bottle, otherwise from the canonical_wine catalog.
 @riverpod
-Future<List<WineEntity>> groupWines(
-    GroupWinesRef ref, String groupId) async {
+Future<List<WineEntity>> groupWines(GroupWinesRef ref, String groupId) async {
   // Re-run whenever local wines change so owner edits propagate instantly.
   final localWines = ref.watch(wineControllerProvider).valueOrNull ?? const [];
   final localByCanonical = <String, WineEntity>{
@@ -70,11 +77,13 @@ Future<List<WineEntity>> groupWines(
 
   ref.requireOnline();
   final client = ref.read(supabaseClientProvider);
-  final shareRows = (await client
-      .from('group_wines')
-      .select('canonical_wine_id, shared_by, shared_at')
-      .eq('group_id', groupId)
-      .order('shared_at', ascending: false)) as List;
+  final shareRows =
+      (await client
+              .from('group_wines')
+              .select('canonical_wine_id, shared_by, shared_at')
+              .eq('group_id', groupId)
+              .order('shared_at', ascending: false))
+          as List;
   if (shareRows.isEmpty) return const [];
 
   final orderedCanonicalIds = <String>[];
@@ -99,20 +108,25 @@ Future<List<WineEntity>> groupWines(
   // group members to read these rows by canonical_wine_id.
   final imageUrlByCanonical = <String, String>{};
   if (missing.isNotEmpty) {
-    final canonicalRows = (await client
-        .from('canonical_wine')
-        .select(
-            'id, name, winery, region, country, type, vintage, canonical_grape_id')
-        .inFilter('id', missing)) as List;
+    final canonicalRows =
+        (await client
+                .from('canonical_wine')
+                .select(
+                  'id, name, winery, region, country, type, vintage, canonical_grape_id',
+                )
+                .inFilter('id', missing))
+            as List;
     for (final r in canonicalRows) {
       final m = r as Map<String, dynamic>;
       canonicalById[m['id'] as String] = m;
     }
-    final wineRows = (await client
-        .from('wines')
-        .select('canonical_wine_id, image_url, updated_at')
-        .inFilter('canonical_wine_id', missing)
-        .not('image_url', 'is', null)) as List;
+    final wineRows =
+        (await client
+                .from('wines')
+                .select('canonical_wine_id, image_url, updated_at')
+                .inFilter('canonical_wine_id', missing)
+                .not('image_url', 'is', null))
+            as List;
     // Multiple users may have a personal wines row for the same
     // canonical bottle — prefer the most recently updated one's image.
     for (final r in wineRows) {
@@ -141,21 +155,23 @@ Future<List<WineEntity>> groupWines(
     }
     final m = canonicalById[cid];
     if (m == null) continue;
-    out.add(WineEntity(
-      id: cid,
-      name: (m['name'] as String?) ?? 'Unknown',
-      rating: 0,
-      type: _parseType(m['type'] as String?) ?? WineType.red,
-      country: m['country'] as String?,
-      region: m['region'] as String?,
-      winery: m['winery'] as String?,
-      vintage: m['vintage'] as int?,
-      imageUrl: imageUrlByCanonical[cid],
-      canonicalWineId: cid,
-      canonicalGrapeId: m['canonical_grape_id'] as String?,
-      userId: sharerByCanonical[cid] ?? '',
-      createdAt: now,
-    ));
+    out.add(
+      WineEntity(
+        id: cid,
+        name: (m['name'] as String?) ?? 'Unknown',
+        rating: 0,
+        type: _parseType(m['type'] as String?) ?? WineType.red,
+        country: m['country'] as String?,
+        region: m['region'] as String?,
+        winery: m['winery'] as String?,
+        vintage: m['vintage'] as int?,
+        imageUrl: imageUrlByCanonical[cid],
+        canonicalWineId: cid,
+        canonicalGrapeId: m['canonical_grape_id'] as String?,
+        userId: sharerByCanonical[cid] ?? '',
+        createdAt: now,
+      ),
+    );
   }
   return out;
 }
@@ -172,9 +188,10 @@ WineType? _parseType(String? raw) {
 /// Used to decide who can unshare it (sharer + group owner).
 @riverpod
 Future<String?> groupWineShareMeta(
-    GroupWineShareMetaRef ref,
-    String groupId,
-    String canonicalWineId) async {
+  GroupWineShareMetaRef ref,
+  String groupId,
+  String canonicalWineId,
+) async {
   final client = ref.read(supabaseClientProvider);
   final row = await client
       .from('group_wines')
@@ -189,9 +206,10 @@ Future<String?> groupWineShareMeta(
 /// the group wine detail screen to show "shared by @user · X ago".
 @riverpod
 Future<GroupWineShareEntity?> groupWineShareDetails(
-    GroupWineShareDetailsRef ref,
-    String groupId,
-    String canonicalWineId) async {
+  GroupWineShareDetailsRef ref,
+  String groupId,
+  String canonicalWineId,
+) async {
   ref.requireOnline();
   final client = ref.read(supabaseClientProvider);
   final shareRow = await client
@@ -228,7 +246,9 @@ Future<GroupWineShareEntity?> groupWineShareDetails(
 /// that already received this wine.
 @riverpod
 Future<Set<String>> groupsContainingWine(
-    GroupsContainingWineRef ref, String wineId) async {
+  GroupsContainingWineRef ref,
+  String wineId,
+) async {
   final userId = ref.watch(currentUserIdProvider);
   if (userId == null) return const {};
 

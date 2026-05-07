@@ -15,17 +15,15 @@ class WinePickerSheet extends ConsumerWidget {
   final String groupId;
   const WinePickerSheet({super.key, required this.groupId});
 
-  static Future<void> show(
-    BuildContext context, {
-    required String groupId,
-  }) {
+  static Future<void> show(BuildContext context, {required String groupId}) {
     return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Theme.of(context).colorScheme.surface,
       shape: RoundedRectangleBorder(
-        borderRadius:
-            BorderRadius.vertical(top: Radius.circular(context.w * 0.05)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(context.w * 0.05),
+        ),
       ),
       builder: (_) => WinePickerSheet(groupId: groupId),
     );
@@ -36,11 +34,13 @@ class WinePickerSheet extends ConsumerWidget {
     final cs = Theme.of(context).colorScheme;
     final winesAsync = ref.watch(wineControllerProvider);
     final sharedCanonicalIds =
-        ref.watch(groupWinesProvider(groupId)).valueOrNull
-                ?.map((w) => w.canonicalWineId)
-                .whereType<String>()
-                .toSet() ??
-            const <String>{};
+        ref
+            .watch(groupWinesProvider(groupId))
+            .valueOrNull
+            ?.map((w) => w.canonicalWineId)
+            .whereType<String>()
+            .toSet() ??
+        const <String>{};
 
     return SafeArea(
       child: Padding(
@@ -78,12 +78,14 @@ class WinePickerSheet extends ConsumerWidget {
                   wines: wines,
                   sharedCanonicalIds: sharedCanonicalIds,
                 ),
-                loading: () =>
-                    const Center(child: CircularProgressIndicator()),
-                error: (e, _) => Text('Error: $e',
-                    style: TextStyle(
-                        fontSize: context.captionFont,
-                        color: cs.error)),
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (e, _) => Text(
+                  'Error: $e',
+                  style: TextStyle(
+                    fontSize: context.captionFont,
+                    color: cs.error,
+                  ),
+                ),
               ),
             ),
             SizedBox(height: context.s),
@@ -170,7 +172,9 @@ class _PickerListState extends ConsumerState<_PickerList> {
     String canonicalWineId, {
     WineEntity? openRatingFor,
   }) async {
-    await ref.read(groupControllerProvider.notifier).shareCanonicalToGroup(
+    await ref
+        .read(groupControllerProvider.notifier)
+        .shareCanonicalToGroup(
           groupId: widget.groupId,
           canonicalWineId: canonicalWineId,
         );
@@ -196,17 +200,20 @@ class _PickerListState extends ConsumerState<_PickerList> {
           'You have no wines yet.',
           textAlign: TextAlign.center,
           style: TextStyle(
-              fontSize: context.captionFont, color: cs.onSurfaceVariant),
+            fontSize: context.captionFont,
+            color: cs.onSurfaceVariant,
+          ),
         ),
       );
     }
 
-    final sorted = List<WineEntity>.from(widget.wines)..sort((a, b) {
-      final aShared = _isShared(a) ? 1 : 0;
-      final bShared = _isShared(b) ? 1 : 0;
-      if (aShared != bShared) return aShared - bShared;
-      return b.rating.compareTo(a.rating);
-    });
+    final sorted = List<WineEntity>.from(widget.wines)
+      ..sort((a, b) {
+        final aShared = _isShared(a) ? 1 : 0;
+        final bShared = _isShared(b) ? 1 : 0;
+        if (aShared != bShared) return aShared - bShared;
+        return b.rating.compareTo(a.rating);
+      });
     return ListView.separated(
       shrinkWrap: true,
       itemCount: sorted.length,
@@ -261,13 +268,16 @@ class _WinePickerRow extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(wine.name,
-                          style: TextStyle(
-                              fontSize: context.bodyFont,
-                              fontWeight: FontWeight.w700,
-                              height: 1.2),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis),
+                      Text(
+                        wine.name,
+                        style: TextStyle(
+                          fontSize: context.bodyFont,
+                          fontWeight: FontWeight.w700,
+                          height: 1.2,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                       SizedBox(height: context.xs * 0.5),
                       Row(
                         children: [
@@ -281,8 +291,9 @@ class _WinePickerRow extends StatelessWidget {
                                 if (wine.country != null) wine.country,
                               ].join(' · '),
                               style: TextStyle(
-                                  fontSize: context.captionFont,
-                                  color: cs.onSurfaceVariant),
+                                fontSize: context.captionFont,
+                                color: cs.onSurfaceVariant,
+                              ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -325,7 +336,9 @@ class _SharedChip extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
     return Container(
       padding: EdgeInsets.symmetric(
-          horizontal: context.w * 0.025, vertical: context.xs),
+        horizontal: context.w * 0.025,
+        vertical: context.xs,
+      ),
       decoration: BoxDecoration(
         color: cs.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(context.w * 0.02),
@@ -333,8 +346,11 @@ class _SharedChip extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(PhosphorIconsRegular.check,
-              size: context.w * 0.035, color: cs.onSurfaceVariant),
+          Icon(
+            PhosphorIconsRegular.check,
+            size: context.w * 0.035,
+            color: cs.onSurfaceVariant,
+          ),
           SizedBox(width: context.xs),
           Text(
             'Shared',

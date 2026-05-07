@@ -35,20 +35,21 @@ void main() {
       expect(due.first.localPath, '/tmp/new.jpg');
     });
 
-    test('recordFailure increments attempts and stamps lastErrorAt',
-        () async {
+    test('recordFailure increments attempts and stamps lastErrorAt', () async {
       await db.pendingImageUploadsDao.enqueue('wine-1', '/tmp/a.jpg');
 
       await db.pendingImageUploadsDao.recordFailure('wine-1');
-      var due = await db.pendingImageUploadsDao
-          .due(DateTime.now().add(const Duration(hours: 1)));
+      var due = await db.pendingImageUploadsDao.due(
+        DateTime.now().add(const Duration(hours: 1)),
+      );
       expect(due, hasLength(1));
       expect(due.first.attempts, 1);
       expect(due.first.lastErrorAt, isNotNull);
 
       await db.pendingImageUploadsDao.recordFailure('wine-1');
-      due = await db.pendingImageUploadsDao
-          .due(DateTime.now().add(const Duration(hours: 1)));
+      due = await db.pendingImageUploadsDao.due(
+        DateTime.now().add(const Duration(hours: 1)),
+      );
       expect(due.first.attempts, 2);
     });
 
@@ -57,14 +58,17 @@ void main() {
       await db.pendingImageUploadsDao.recordFailure('wine-1');
 
       // Just after the failure → not due yet (30s window for attempt 1).
-      final tooSoon =
-          await db.pendingImageUploadsDao.due(DateTime.now());
-      expect(tooSoon, isEmpty,
-          reason: 'first attempt should wait 30s before retry');
+      final tooSoon = await db.pendingImageUploadsDao.due(DateTime.now());
+      expect(
+        tooSoon,
+        isEmpty,
+        reason: 'first attempt should wait 30s before retry',
+      );
 
       // Past the 30s window → due again.
-      final later = await db.pendingImageUploadsDao
-          .due(DateTime.now().add(const Duration(seconds: 31)));
+      final later = await db.pendingImageUploadsDao.due(
+        DateTime.now().add(const Duration(seconds: 31)),
+      );
       expect(later, hasLength(1));
     });
 
@@ -76,8 +80,9 @@ void main() {
 
       // Even with all the time in the world, a row that hit
       // maxAttempts must not be retried again.
-      final due = await db.pendingImageUploadsDao
-          .due(DateTime.now().add(const Duration(days: 365)));
+      final due = await db.pendingImageUploadsDao.due(
+        DateTime.now().add(const Duration(days: 365)),
+      );
       expect(due, isEmpty);
     });
 
@@ -94,13 +99,13 @@ void main() {
       await db.pendingImageUploadsDao.enqueue('wine-2', '/tmp/b.jpg');
       await db.pendingImageUploadsDao.recordFailure('wine-1');
 
-      final due = await db.pendingImageUploadsDao
-          .due(DateTime.now().add(const Duration(minutes: 5)));
+      final due = await db.pendingImageUploadsDao.due(
+        DateTime.now().add(const Duration(minutes: 5)),
+      );
       expect(due.map((r) => r.wineId), containsAll(['wine-1', 'wine-2']));
     });
 
-    test(
-        'due self-heals when a row has a corrupted DateTime '
+    test('due self-heals when a row has a corrupted DateTime '
         '(legacy v5 ISO-string)', () async {
       // Simulate the pre-fix corruption directly via raw SQL so we
       // exercise the defensive read path even though the migration
@@ -119,9 +124,9 @@ void main() {
       expect(due, isEmpty);
 
       // Confirm the table is now empty (heal completed).
-      final remaining =
-          await db.customSelect('SELECT COUNT(*) as c FROM pending_image_uploads')
-              .getSingle();
+      final remaining = await db
+          .customSelect('SELECT COUNT(*) as c FROM pending_image_uploads')
+          .getSingle();
       expect(remaining.read<int>('c'), 0);
     });
   });

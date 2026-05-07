@@ -112,12 +112,10 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
       vsync: this,
     );
     _fadeIn = CurvedAnimation(parent: _animController, curve: Curves.easeOut);
-    _slideUp = Tween<Offset>(
-      begin: const Offset(0, 0.06),
-      end: Offset.zero,
-    ).animate(
-      CurvedAnimation(parent: _animController, curve: Curves.easeOutCubic),
-    );
+    _slideUp = Tween<Offset>(begin: const Offset(0, 0.06), end: Offset.zero)
+        .animate(
+          CurvedAnimation(parent: _animController, curve: Curves.easeOutCubic),
+        );
     _animController.forward();
   }
 
@@ -180,9 +178,7 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
                                 if (!isPro) {
                                   context.push(
                                     AppRoutes.paywall,
-                                    extra: const {
-                                      'source': 'expert_tasting',
-                                    },
+                                    extra: const {'source': 'expert_tasting'},
                                   );
                                   return;
                                 }
@@ -215,11 +211,10 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
                   child: Row(
                     children: [
                       Expanded(
-                          flex: 5,
-                          child: WineDetailImage(wine: widget.wine)),
-                      Expanded(
-                          flex: 4,
-                          child: _StatsColumn(wine: widget.wine)),
+                        flex: 5,
+                        child: WineDetailImage(wine: widget.wine),
+                      ),
+                      Expanded(flex: 4, child: _StatsColumn(wine: widget.wine)),
                     ],
                   ),
                 ),
@@ -266,13 +261,15 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
         content: const Text('This cannot be undone.'),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('Cancel')),
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text('Delete',
-                style:
-                    TextStyle(color: Theme.of(ctx).colorScheme.error)),
+            child: Text(
+              'Delete',
+              style: TextStyle(color: Theme.of(ctx).colorScheme.error),
+            ),
           ),
         ],
       ),
@@ -415,41 +412,49 @@ class _StatItem extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        Text(label.toUpperCase(),
-            style: TextStyle(
-              fontSize: context.captionFont * 0.95,
-              fontWeight: FontWeight.w700,
-              color: cs.onSurface.withValues(alpha: 0.72),
-              letterSpacing: 1.2,
-            )),
+        Text(
+          label.toUpperCase(),
+          style: TextStyle(
+            fontSize: context.captionFont * 0.95,
+            fontWeight: FontWeight.w700,
+            color: cs.onSurface.withValues(alpha: 0.72),
+            letterSpacing: 1.2,
+          ),
+        ),
         SizedBox(height: context.xs * 0.3),
         if (isText)
-          Text(value,
-              textAlign: TextAlign.right,
-              style: TextStyle(
-                fontSize: context.bodyFont * 1.1,
-                fontWeight: FontWeight.bold,
-              ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis)
+          Text(
+            value,
+            textAlign: TextAlign.right,
+            style: TextStyle(
+              fontSize: context.bodyFont * 1.1,
+              fontWeight: FontWeight.bold,
+            ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          )
         else
           Row(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.baseline,
             textBaseline: TextBaseline.alphabetic,
             children: [
-              Text(value,
-                  style: TextStyle(
-                    fontSize: context.headingFont * 1.4,
-                    fontWeight: FontWeight.bold,
-                  )),
+              Text(
+                value,
+                style: TextStyle(
+                  fontSize: context.headingFont * 1.4,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               if (unit != null) ...[
                 SizedBox(width: context.w * 0.01),
-                Text(unit!,
-                    style: TextStyle(
-                      fontSize: context.captionFont,
-                      color: cs.onSurfaceVariant,
-                    )),
+                Text(
+                  unit!,
+                  style: TextStyle(
+                    fontSize: context.captionFont,
+                    color: cs.onSurfaceVariant,
+                  ),
+                ),
               ],
             ],
           ),
@@ -471,10 +476,7 @@ class _NotesBlock extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Container(
-              width: 2,
-              color: cs.outlineVariant,
-            ),
+            Container(width: 2, color: cs.outlineVariant),
             SizedBox(width: context.w * 0.035),
             Expanded(
               child: Padding(
@@ -539,8 +541,7 @@ class _PlaceSection extends StatelessWidget {
             ),
             children: [
               TileLayer(
-                urlTemplate:
-                    'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                 userAgentPackageName: 'xyz.sippd.app',
               ),
               MarkerLayer(
@@ -566,15 +567,20 @@ class _PlaceSection extends StatelessWidget {
               bottom: context.m,
               child: Container(
                 padding: EdgeInsets.symmetric(
-                    horizontal: context.m, vertical: context.s),
+                  horizontal: context.m,
+                  vertical: context.s,
+                ),
                 decoration: BoxDecoration(
                   color: cs.surface.withValues(alpha: 0.92),
                   borderRadius: BorderRadius.circular(context.w * 0.02),
                 ),
                 child: Row(
                   children: [
-                    Icon(PhosphorIconsRegular.mapPin,
-                        size: context.w * 0.045, color: cs.primary),
+                    Icon(
+                      PhosphorIconsRegular.mapPin,
+                      size: context.w * 0.045,
+                      color: cs.primary,
+                    ),
                     SizedBox(width: context.w * 0.02),
                     Expanded(
                       child: Text(
@@ -635,10 +641,8 @@ class _MemoriesSection extends ConsumerWidget {
       PageRouteBuilder(
         opaque: false,
         barrierColor: Colors.black.withValues(alpha: 0.95),
-        pageBuilder: (_, _, _) => _MemoryViewer(
-          memories: memories,
-          initialIndex: initialIndex,
-        ),
+        pageBuilder: (_, _, _) =>
+            _MemoryViewer(memories: memories, initialIndex: initialIndex),
       ),
     );
   }
@@ -682,7 +686,7 @@ class _MemoryThumb extends StatelessWidget {
       return Image.network(
         m.imageUrl!,
         fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) =>
+        errorBuilder: (_, _, _) =>
             Icon(PhosphorIconsRegular.image, color: cs.outline),
       );
     }
@@ -694,18 +698,16 @@ class _MemoryViewer extends StatefulWidget {
   final List<WineMemoryEntity> memories;
   final int initialIndex;
 
-  const _MemoryViewer({
-    required this.memories,
-    required this.initialIndex,
-  });
+  const _MemoryViewer({required this.memories, required this.initialIndex});
 
   @override
   State<_MemoryViewer> createState() => _MemoryViewerState();
 }
 
 class _MemoryViewerState extends State<_MemoryViewer> {
-  late final PageController _controller =
-      PageController(initialPage: widget.initialIndex);
+  late final PageController _controller = PageController(
+    initialPage: widget.initialIndex,
+  );
   late int _index = widget.initialIndex;
 
   @override
@@ -745,8 +747,11 @@ class _MemoryViewerState extends State<_MemoryViewer> {
                     color: Colors.black.withValues(alpha: 0.5),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(PhosphorIconsRegular.x,
-                      color: Colors.white, size: context.w * 0.06),
+                  child: Icon(
+                    PhosphorIconsRegular.x,
+                    color: Colors.white,
+                    size: context.w * 0.06,
+                  ),
                 ),
               ),
             ),
@@ -758,7 +763,9 @@ class _MemoryViewerState extends State<_MemoryViewer> {
                 child: Center(
                   child: Container(
                     padding: EdgeInsets.symmetric(
-                        horizontal: context.m, vertical: context.xs * 1.4),
+                      horizontal: context.m,
+                      vertical: context.xs * 1.4,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.black.withValues(alpha: 0.5),
                       borderRadius: BorderRadius.circular(context.w * 0.05),
@@ -788,15 +795,18 @@ class _MemoryViewerState extends State<_MemoryViewer> {
       return Image.network(
         m.imageUrl!,
         fit: BoxFit.contain,
-        errorBuilder: (_, __, ___) => const Icon(
+        errorBuilder: (_, _, _) => const Icon(
           PhosphorIconsRegular.image,
           color: Colors.white,
           size: 80,
         ),
       );
     }
-    return const Icon(PhosphorIconsRegular.image,
-        color: Colors.white, size: 80);
+    return const Icon(
+      PhosphorIconsRegular.image,
+      color: Colors.white,
+      size: 80,
+    );
   }
 }
 
@@ -817,8 +827,11 @@ class _EmptyPlace extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(PhosphorIconsRegular.mapTrifold,
-                size: context.w * 0.12, color: cs.outline),
+            Icon(
+              PhosphorIconsRegular.mapTrifold,
+              size: context.w * 0.12,
+              color: cs.outline,
+            ),
             SizedBox(height: context.s),
             Text(
               location ?? 'No place set',

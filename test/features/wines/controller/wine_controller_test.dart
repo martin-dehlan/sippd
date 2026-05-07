@@ -21,30 +21,33 @@ void main() {
     memoryRepo = MockWineMemoryRepository();
     analytics = MockAnalyticsService();
 
-    when(() => analytics.capture(any(),
-        properties: any(named: 'properties'))).thenAnswer((_) async {});
+    when(
+      () => analytics.capture(any(), properties: any(named: 'properties')),
+    ).thenAnswer((_) async {});
   });
 
   ProviderContainer container({Stream<List<WineEntity>>? stream}) {
-    when(() => repo.watchWines()).thenAnswer(
-      (_) => stream ?? Stream.value(const <WineEntity>[]),
+    when(
+      () => repo.watchWines(),
+    ).thenAnswer((_) => stream ?? Stream.value(const <WineEntity>[]));
+    return makeContainer(
+      overrides: [
+        authControllerProvider.overrideWith(FakeAuthController.new),
+        wineRepositoryProvider.overrideWithValue(repo),
+        wineMemoryRepositoryProvider.overrideWithValue(memoryRepo),
+        analyticsProvider.overrideWithValue(analytics),
+      ],
     );
-    return makeContainer(overrides: [
-      authControllerProvider.overrideWith(FakeAuthController.new),
-      wineRepositoryProvider.overrideWithValue(repo),
-      wineMemoryRepositoryProvider.overrideWithValue(memoryRepo),
-      analyticsProvider.overrideWithValue(analytics),
-    ]);
   }
 
   WineEntity sample({String id = 'w-1', double rating = 7}) => WineEntity(
-        id: id,
-        name: 'Pinot',
-        rating: rating,
-        type: WineType.red,
-        userId: 'user-1',
-        createdAt: DateTime(2026),
-      );
+    id: id,
+    name: 'Pinot',
+    rating: rating,
+    type: WineType.red,
+    userId: 'user-1',
+    createdAt: DateTime(2026),
+  );
 
   group('build', () {
     test('emits whatever the repository stream emits', () async {
@@ -78,13 +81,15 @@ void main() {
       final c = container();
       await c.read(wineControllerProvider.future);
 
-      await c
-          .read(wineControllerProvider.notifier)
-          .addWine(sample(rating: 9));
+      await c.read(wineControllerProvider.notifier).addWine(sample(rating: 9));
 
       verify(() => repo.addWine(any())).called(1);
-      verify(() => analytics.capture('wine_added',
-          properties: any(named: 'properties'))).called(1);
+      verify(
+        () => analytics.capture(
+          'wine_added',
+          properties: any(named: 'properties'),
+        ),
+      ).called(1);
     });
 
     test('rethrows repository failure so UI can surface it', () async {
@@ -96,8 +101,12 @@ void main() {
         c.read(wineControllerProvider.notifier).addWine(sample()),
         throwsA(isA<StateError>()),
       );
-      verifyNever(() => analytics.capture('wine_added',
-          properties: any(named: 'properties')));
+      verifyNever(
+        () => analytics.capture(
+          'wine_added',
+          properties: any(named: 'properties'),
+        ),
+      );
     });
   });
 
@@ -112,8 +121,12 @@ void main() {
           .updateWine(sample().copyWith(rating: 8.4));
 
       verify(() => repo.updateWine(any())).called(1);
-      verify(() => analytics.capture('wine_updated',
-          properties: any(named: 'properties'))).called(1);
+      verify(
+        () => analytics.capture(
+          'wine_updated',
+          properties: any(named: 'properties'),
+        ),
+      ).called(1);
     });
   });
 }

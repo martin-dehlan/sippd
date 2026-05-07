@@ -183,23 +183,23 @@ class WineFormState extends ConsumerState<WineForm>
   }
 
   WineFormData _collect() => WineFormData(
-        name: _nameController.text.trim(),
-        rating: _rating,
-        type: _type,
-        price: _price,
-        vintage: _vintage,
-        grape: _grapeDisplay,
-        canonicalGrapeId: _canonicalGrapeId,
-        grapeFreetext: _grapeFreetext,
-        winery: _winery,
-        country: _country,
-        region: _region,
-        location: _location,
-        notes: _notes,
-        imageUrl: _imageUrl,
-        localImagePath: _localImagePath,
-        memories: _memories,
-      );
+    name: _nameController.text.trim(),
+    rating: _rating,
+    type: _type,
+    price: _price,
+    vintage: _vintage,
+    grape: _grapeDisplay,
+    canonicalGrapeId: _canonicalGrapeId,
+    grapeFreetext: _grapeFreetext,
+    winery: _winery,
+    country: _country,
+    region: _region,
+    location: _location,
+    notes: _notes,
+    imageUrl: _imageUrl,
+    localImagePath: _localImagePath,
+    memories: _memories,
+  );
 
   Future<void> _submit() async {
     if (_nameController.text.trim().isEmpty) {
@@ -247,9 +247,11 @@ class WineFormState extends ConsumerState<WineForm>
     if (!mounted) return;
     FocusManager.instance.primaryFocus?.unfocus();
     if (result == null) return;
-    setState(() => _price = result.isEmpty
-        ? null
-        : double.tryParse(result.replaceAll(',', '.')));
+    setState(
+      () => _price = result.isEmpty
+          ? null
+          : double.tryParse(result.replaceAll(',', '.')),
+    );
     _scheduleAutoSave();
   }
 
@@ -282,8 +284,8 @@ class WineFormState extends ConsumerState<WineForm>
     final result = await showGrapePickerSheet(
       context: context,
       initialCanonicalId: _canonicalGrapeId,
-      initialFreetext: _grapeFreetext ??
-          (_canonicalGrapeId == null ? _grapeDisplay : null),
+      initialFreetext:
+          _grapeFreetext ?? (_canonicalGrapeId == null ? _grapeDisplay : null),
     );
     if (!mounted) return;
     FocusManager.instance.primaryFocus?.unfocus();
@@ -431,15 +433,9 @@ class WineFormState extends ConsumerState<WineForm>
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      WineFormRatingStat(
-                        rating: _rating,
-                        onTap: _editRating,
-                      ),
+                      WineFormRatingStat(rating: _rating, onTap: _editRating),
                       SizedBox(height: context.l),
-                      WineFormPriceStat(
-                        price: _price,
-                        onTap: _editPrice,
-                      ),
+                      WineFormPriceStat(price: _price, onTap: _editPrice),
                       SizedBox(height: context.l),
                       WineFormCountryStat(
                         country: _country,
@@ -475,10 +471,7 @@ class WineFormState extends ConsumerState<WineForm>
         SizedBox(height: context.l),
         SizedBox(
           height: context.h * 0.24,
-          child: WineFormPlaceMap(
-            location: _location,
-            onTap: _editPlace,
-          ),
+          child: WineFormPlaceMap(location: _location, onTap: _editPlace),
         ),
         if (!widget.autoSave && widget.showInlineSubmit) ...[
           SizedBox(height: context.l),
@@ -588,13 +581,15 @@ class WineFormStatLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    return Text(text,
-        style: TextStyle(
-          fontSize: context.captionFont,
-          fontWeight: FontWeight.w500,
-          color: cs.primary,
-          letterSpacing: 0.3,
-        ));
+    return Text(
+      text,
+      style: TextStyle(
+        fontSize: context.captionFont,
+        fontWeight: FontWeight.w500,
+        color: cs.primary,
+        letterSpacing: 0.3,
+      ),
+    );
   }
 }
 
@@ -623,15 +618,21 @@ class WineFormRatingStat extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.baseline,
             textBaseline: TextBaseline.alphabetic,
             children: [
-              Text(rating.toStringAsFixed(1),
-                  style: TextStyle(
-                      fontSize: context.headingFont * 1.4,
-                      fontWeight: FontWeight.bold)),
+              Text(
+                rating.toStringAsFixed(1),
+                style: TextStyle(
+                  fontSize: context.headingFont * 1.4,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               SizedBox(width: context.w * 0.01),
-              Text('/ 10',
-                  style: TextStyle(
-                      fontSize: context.captionFont,
-                      color: cs.onSurfaceVariant)),
+              Text(
+                '/ 10',
+                style: TextStyle(
+                  fontSize: context.captionFont,
+                  color: cs.onSurfaceVariant,
+                ),
+              ),
             ],
           ),
         ],
@@ -675,10 +676,13 @@ class WineFormPriceStat extends StatelessWidget {
               ),
               if (price != null) ...[
                 SizedBox(width: context.w * 0.01),
-                Text('EUR',
-                    style: TextStyle(
-                        fontSize: context.captionFont,
-                        color: cs.onSurfaceVariant)),
+                Text(
+                  'EUR',
+                  style: TextStyle(
+                    fontSize: context.captionFont,
+                    color: cs.onSurfaceVariant,
+                  ),
+                ),
               ],
             ],
           ),
@@ -767,8 +771,9 @@ class WineFormTypeChoice extends StatelessWidget {
           vertical: context.xs + 1,
         ),
         decoration: BoxDecoration(
-          color:
-              isSelected ? color.withValues(alpha: 0.18) : Colors.transparent,
+          color: isSelected
+              ? color.withValues(alpha: 0.18)
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(context.w * 0.05),
           border: Border.all(
             color: isSelected ? color : cs.outlineVariant,
@@ -923,15 +928,20 @@ class WineFormFieldChip extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon,
-                size: context.w * 0.04,
-                color: isEmpty ? cs.outline : cs.primary),
+            Icon(
+              icon,
+              size: context.w * 0.04,
+              color: isEmpty ? cs.outline : cs.primary,
+            ),
             SizedBox(width: context.w * 0.015),
-            Text(label,
-                style: TextStyle(
-                    fontSize: context.captionFont,
-                    fontWeight: FontWeight.w500,
-                    color: isEmpty ? cs.outline : cs.onSurface)),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: context.captionFont,
+                fontWeight: FontWeight.w500,
+                color: isEmpty ? cs.outline : cs.onSurface,
+              ),
+            ),
           ],
         ),
       ),
@@ -973,14 +983,19 @@ class WineFormPlaceMap extends StatelessWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(PhosphorIconsRegular.mapPinPlus,
-                          size: context.w * 0.12, color: cs.outline),
+                      Icon(
+                        PhosphorIconsRegular.mapPinPlus,
+                        size: context.w * 0.12,
+                        color: cs.outline,
+                      ),
                       SizedBox(height: context.s),
-                      Text('Tap to add place',
-                          style: TextStyle(
-                            fontSize: context.bodyFont,
-                            color: cs.onSurfaceVariant,
-                          )),
+                      Text(
+                        'Tap to add place',
+                        style: TextStyle(
+                          fontSize: context.bodyFont,
+                          color: cs.onSurfaceVariant,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -1024,8 +1039,11 @@ class WineFormMapContent extends StatelessWidget {
                     point: point,
                     width: context.w * 0.1,
                     height: context.w * 0.1,
-                    child: Icon(PhosphorIconsFill.mapPin,
-                        size: context.w * 0.1, color: cs.primary),
+                    child: Icon(
+                      PhosphorIconsFill.mapPin,
+                      size: context.w * 0.1,
+                      color: cs.primary,
+                    ),
                   ),
                 ],
               ),
@@ -1038,15 +1056,20 @@ class WineFormMapContent extends StatelessWidget {
           bottom: context.m,
           child: Container(
             padding: EdgeInsets.symmetric(
-                horizontal: context.m, vertical: context.s),
+              horizontal: context.m,
+              vertical: context.s,
+            ),
             decoration: BoxDecoration(
               color: cs.surface.withValues(alpha: 0.92),
               borderRadius: BorderRadius.circular(context.w * 0.02),
             ),
             child: Row(
               children: [
-                Icon(PhosphorIconsRegular.mapPin,
-                    size: context.w * 0.045, color: cs.primary),
+                Icon(
+                  PhosphorIconsRegular.mapPin,
+                  size: context.w * 0.045,
+                  color: cs.primary,
+                ),
                 SizedBox(width: context.w * 0.02),
                 Expanded(
                   child: Text(

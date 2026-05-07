@@ -14,8 +14,7 @@ class TastingsCalendar extends ConsumerStatefulWidget {
   const TastingsCalendar({super.key, required this.groupId});
 
   @override
-  ConsumerState<TastingsCalendar> createState() =>
-      _TastingsCalendarState();
+  ConsumerState<TastingsCalendar> createState() => _TastingsCalendarState();
 }
 
 class _TastingsCalendarState extends ConsumerState<TastingsCalendar> {
@@ -23,31 +22,31 @@ class _TastingsCalendarState extends ConsumerState<TastingsCalendar> {
 
   @override
   Widget build(BuildContext context) {
-    final tastingsAsync =
-        ref.watch(groupTastingsProvider(widget.groupId));
+    final tastingsAsync = ref.watch(groupTastingsProvider(widget.groupId));
 
     return tastingsAsync.when(
       data: (tastings) {
         final now = DateTime.now();
-        final upcoming = tastings
-            .where((t) => !t.scheduledAt.isBefore(_dayStart(now)))
-            .toList()
-          ..sort((a, b) => a.scheduledAt.compareTo(b.scheduledAt));
-        final past = tastings
-            .where((t) => t.scheduledAt.isBefore(_dayStart(now)))
-            .toList()
-          ..sort((a, b) => b.scheduledAt.compareTo(a.scheduledAt));
+        final upcoming =
+            tastings
+                .where((t) => !t.scheduledAt.isBefore(_dayStart(now)))
+                .toList()
+              ..sort((a, b) => a.scheduledAt.compareTo(b.scheduledAt));
+        final past =
+            tastings
+                .where((t) => t.scheduledAt.isBefore(_dayStart(now)))
+                .toList()
+              ..sort((a, b) => b.scheduledAt.compareTo(a.scheduledAt));
 
         return Padding(
-          padding:
-              EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
+          padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (upcoming.isEmpty && past.isEmpty)
                 _EmptyTastings(
-                  onPlan: () => context
-                      .push(AppRoutes.tastingCreatePath(widget.groupId)),
+                  onPlan: () =>
+                      context.push(AppRoutes.tastingCreatePath(widget.groupId)),
                 )
               else ...[
                 for (var i = 0; i < upcoming.length; i++) ...[
@@ -75,8 +74,7 @@ class _TastingsCalendarState extends ConsumerState<TastingsCalendar> {
         );
       },
       loading: () => Padding(
-        padding:
-            EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
+        padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
         child: const _TastingSkeleton(),
       ),
       error: (_, _) => const SizedBox.shrink(),
@@ -96,7 +94,8 @@ class _TastingTile extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
     final local = tasting.scheduledAt.toLocal();
     final now = DateTime.now();
-    final isToday = local.year == now.year &&
+    final isToday =
+        local.year == now.year &&
         local.month == now.month &&
         local.day == now.day;
 
@@ -108,12 +107,13 @@ class _TastingTile extends StatelessWidget {
     return Opacity(
       opacity: past ? 0.55 : 1,
       child: GestureDetector(
-        onTap: () =>
-            context.push(AppRoutes.tastingDetailPath(tasting.id)),
+        onTap: () => context.push(AppRoutes.tastingDetailPath(tasting.id)),
         behavior: HitTestBehavior.opaque,
         child: Container(
           padding: EdgeInsets.symmetric(
-              horizontal: context.w * 0.035, vertical: context.s),
+            horizontal: context.w * 0.035,
+            vertical: context.s,
+          ),
           decoration: BoxDecoration(
             color: bg,
             borderRadius: BorderRadius.circular(context.w * 0.035),
@@ -142,9 +142,11 @@ class _TastingTile extends StatelessWidget {
                     SizedBox(height: context.xs * 0.5),
                     Row(
                       children: [
-                        Icon(PhosphorIconsRegular.clock,
-                            size: context.w * 0.035,
-                            color: cs.onSurfaceVariant),
+                        Icon(
+                          PhosphorIconsRegular.clock,
+                          size: context.w * 0.035,
+                          color: cs.onSurfaceVariant,
+                        ),
                         SizedBox(width: context.xs * 0.8),
                         Text(
                           DateFormat.Hm().format(local),
@@ -161,9 +163,11 @@ class _TastingTile extends StatelessWidget {
                               color: cs.outline,
                             ),
                           ),
-                          Icon(PhosphorIconsRegular.mapPin,
-                              size: context.w * 0.035,
-                              color: cs.onSurfaceVariant),
+                          Icon(
+                            PhosphorIconsRegular.mapPin,
+                            size: context.w * 0.035,
+                            color: cs.onSurfaceVariant,
+                          ),
                           SizedBox(width: context.xs * 0.8),
                           Flexible(
                             child: Text(
@@ -182,8 +186,11 @@ class _TastingTile extends StatelessWidget {
                   ],
                 ),
               ),
-              Icon(PhosphorIconsRegular.caretRight,
-                  size: context.w * 0.045, color: cs.outline),
+              Icon(
+                PhosphorIconsRegular.caretRight,
+                size: context.w * 0.045,
+                color: cs.outline,
+              ),
             ],
           ),
         ),
@@ -261,7 +268,9 @@ class _PastToggle extends StatelessWidget {
       child: Row(
         children: [
           Icon(
-            open ? PhosphorIconsRegular.caretDown : PhosphorIconsRegular.caretRight,
+            open
+                ? PhosphorIconsRegular.caretDown
+                : PhosphorIconsRegular.caretRight,
             size: context.w * 0.045,
             color: cs.onSurfaceVariant,
           ),
@@ -311,8 +320,11 @@ class _EmptyTastings extends StatelessWidget {
               color: cs.surfaceContainerHighest,
             ),
             alignment: Alignment.center,
-            child: Icon(PhosphorIconsRegular.calendarBlank,
-                size: context.w * 0.07, color: cs.onSurfaceVariant),
+            child: Icon(
+              PhosphorIconsRegular.calendarBlank,
+              size: context.w * 0.07,
+              color: cs.onSurfaceVariant,
+            ),
           ),
           SizedBox(height: context.m),
           Text(
@@ -349,8 +361,11 @@ class _EmptyTastings extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(PhosphorIconsRegular.plus,
-                        size: context.w * 0.045, color: cs.onPrimary),
+                    Icon(
+                      PhosphorIconsRegular.plus,
+                      size: context.w * 0.045,
+                      color: cs.onPrimary,
+                    ),
                     SizedBox(width: context.w * 0.015),
                     Text(
                       'Plan a tasting',
@@ -388,7 +403,9 @@ class _TastingSkeleton extends StatelessWidget {
           if (i > 0) SizedBox(height: context.s),
           Container(
             padding: EdgeInsets.symmetric(
-                horizontal: context.w * 0.035, vertical: context.s),
+              horizontal: context.w * 0.035,
+              vertical: context.s,
+            ),
             decoration: BoxDecoration(color: block, borderRadius: radius),
             child: Row(
               children: [

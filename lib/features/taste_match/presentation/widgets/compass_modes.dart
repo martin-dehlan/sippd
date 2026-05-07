@@ -30,16 +30,16 @@ enum CompassMode {
   dna;
 
   String get displayName => switch (this) {
-        CompassMode.style => 'Style',
-        CompassMode.world => 'World',
-        CompassMode.grapes => 'Grapes',
-        CompassMode.dna => 'DNA',
-      };
+    CompassMode.style => 'Style',
+    CompassMode.world => 'World',
+    CompassMode.grapes => 'Grapes',
+    CompassMode.dna => 'DNA',
+  };
 
   bool get isProGated => switch (this) {
-        CompassMode.style => false,
-        _ => true,
-      };
+    CompassMode.style => false,
+    _ => true,
+  };
 }
 
 enum CompassMetric {
@@ -47,9 +47,9 @@ enum CompassMetric {
   rating;
 
   String get displayName => switch (this) {
-        CompassMetric.count => 'count',
-        CompassMetric.rating => 'rating',
-      };
+    CompassMetric.count => 'count',
+    CompassMetric.rating => 'rating',
+  };
 }
 
 const _redColor = Color(0xFFE05A6B);
@@ -86,12 +86,39 @@ const _dnaColors = {
 };
 
 const _europeanCountries = {
-  'france', 'italy', 'spain', 'germany', 'portugal', 'austria',
-  'greece', 'hungary', 'croatia', 'slovenia', 'romania',
-  'bulgaria', 'switzerland', 'czechia', 'czech republic', 'slovakia',
-  'moldova', 'ukraine', 'serbia', 'macedonia', 'cyprus', 'england',
-  'united kingdom', 'uk', 'belgium', 'luxembourg', 'netherlands',
-  'denmark', 'sweden', 'norway', 'finland', 'poland', 'ireland',
+  'france',
+  'italy',
+  'spain',
+  'germany',
+  'portugal',
+  'austria',
+  'greece',
+  'hungary',
+  'croatia',
+  'slovenia',
+  'romania',
+  'bulgaria',
+  'switzerland',
+  'czechia',
+  'czech republic',
+  'slovakia',
+  'moldova',
+  'ukraine',
+  'serbia',
+  'macedonia',
+  'cyprus',
+  'england',
+  'united kingdom',
+  'uk',
+  'belgium',
+  'luxembourg',
+  'netherlands',
+  'denmark',
+  'sweden',
+  'norway',
+  'finland',
+  'poland',
+  'ireland',
 };
 
 String _continentForCountry(String country) {
@@ -100,16 +127,30 @@ String _continentForCountry(String country) {
   if ({'united states', 'usa', 'us', 'canada', 'mexico'}.contains(c)) {
     return 'north america';
   }
-  if ({'argentina', 'chile', 'brazil', 'uruguay', 'peru', 'bolivia'}
-      .contains(c)) {
+  if ({
+    'argentina',
+    'chile',
+    'brazil',
+    'uruguay',
+    'peru',
+    'bolivia',
+  }.contains(c)) {
     return 'south america';
   }
   if ({'south africa', 'morocco', 'egypt', 'tunisia', 'algeria'}.contains(c)) {
     return 'africa';
   }
-  if ({'china', 'japan', 'india', 'korea', 'thailand', 'lebanon', 'turkey',
-        'israel', 'georgia'}
-      .contains(c)) {
+  if ({
+    'china',
+    'japan',
+    'india',
+    'korea',
+    'thailand',
+    'lebanon',
+    'turkey',
+    'israel',
+    'georgia',
+  }.contains(c)) {
     return 'asia';
   }
   if ({'australia', 'new zealand'}.contains(c)) return 'oceania';
@@ -210,18 +251,19 @@ List<RadarAxis> buildGrapeAxes(
   CompassMetric metric,
 ) {
   if (shares.isEmpty) return const [];
-  final maxCount =
-      shares.map((g) => g.count).reduce((a, b) => a > b ? a : b);
+  final maxCount = shares.map((g) => g.count).reduce((a, b) => a > b ? a : b);
   // Pad to 7 axes with empty slots if user has fewer rated grapes.
   final padded = [...shares];
   while (padded.length < 7) {
-    padded.add(const UserGrapeShare(
-      canonicalGrapeId: '',
-      grapeName: '—',
-      grapeColor: 'red',
-      count: 0,
-      avgRating: 0,
-    ));
+    padded.add(
+      const UserGrapeShare(
+        canonicalGrapeId: '',
+        grapeName: '—',
+        grapeColor: 'red',
+        count: 0,
+        avgRating: 0,
+      ),
+    );
   }
   final list = padded.take(7).toList();
 
@@ -238,8 +280,8 @@ List<RadarAxis> buildGrapeAxes(
         detail: list[i].count == 0
             ? ''
             : metric == CompassMetric.count
-                ? '${list[i].count}×'
-                : '${list[i].avgRating.toStringAsFixed(1)}★',
+            ? '${list[i].count}×'
+            : '${list[i].avgRating.toStringAsFixed(1)}★',
         headline: list[i].count == 0
             ? 'Empty slot — rate more grapes to fill'
             : '${list[i].grapeName} · ${list[i].count} bottle${list[i].count == 1 ? '' : 's'} · ${list[i].avgRating.toStringAsFixed(1)}★ avg',
@@ -275,38 +317,38 @@ List<RadarAxis> buildDnaAxes(UserStyleDna dna) {
         return v < 0.4
             ? 'You lean light-bodied · $pct%'
             : v < 0.65
-                ? 'Balanced body · $pct%'
-                : 'You lean full-bodied · $pct%';
+            ? 'Balanced body · $pct%'
+            : 'You lean full-bodied · $pct%';
       case 'tannin':
         return v < 0.4
             ? 'Soft tannins · $pct%'
             : v < 0.65
-                ? 'Medium tannin · $pct%'
-                : 'Bold, gripping tannins · $pct%';
+            ? 'Medium tannin · $pct%'
+            : 'Bold, gripping tannins · $pct%';
       case 'acidity':
         return v < 0.4
             ? 'Soft acid · $pct%'
             : v < 0.65
-                ? 'Balanced acid · $pct%'
-                : 'High-acid drinker · $pct%';
+            ? 'Balanced acid · $pct%'
+            : 'High-acid drinker · $pct%';
       case 'sweetness':
         return v < 0.15
             ? 'Bone dry · $pct%'
             : v < 0.4
-                ? 'Off-dry tendency · $pct%'
-                : 'Sweet leaning · $pct%';
+            ? 'Off-dry tendency · $pct%'
+            : 'Sweet leaning · $pct%';
       case 'oak':
         return v < 0.3
             ? 'Unoaked / fresh · $pct%'
             : v < 0.55
-                ? 'Some oak · $pct%'
-                : 'Oak lover · $pct%';
+            ? 'Some oak · $pct%'
+            : 'Oak lover · $pct%';
       case 'intensity':
         return v < 0.4
             ? 'Subtle aromatics · $pct%'
             : v < 0.7
-                ? 'Expressive · $pct%'
-                : 'Bold aromatics · $pct%';
+            ? 'Expressive · $pct%'
+            : 'Bold aromatics · $pct%';
     }
     return '$pct%';
   }

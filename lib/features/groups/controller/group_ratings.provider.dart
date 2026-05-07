@@ -17,7 +17,10 @@ part 'group_ratings.provider.g.dart';
 /// rating, then merged with `group_wine_ratings` rows from other members.
 @riverpod
 Future<List<GroupWineRatingEntity>> groupWineRatings(
-    GroupWineRatingsRef ref, String groupId, String canonicalWineId) async {
+  GroupWineRatingsRef ref,
+  String groupId,
+  String canonicalWineId,
+) async {
   ref.requireOnline();
   final client = ref.read(supabaseClientProvider);
 
@@ -52,16 +55,19 @@ Future<List<GroupWineRatingEntity>> groupWineRatings(
         .eq('user_id', ownerId)
         .maybeSingle();
     ownerRating = (wineRow?['rating'] as num?)?.toDouble();
-    final raw = (wineRow?['updated_at'] as String?) ??
+    final raw =
+        (wineRow?['updated_at'] as String?) ??
         (wineRow?['created_at'] as String?);
     if (raw != null) ownerUpdated = DateTime.tryParse(raw);
   }
 
-  final memberRows = (await client
-      .from('group_wine_ratings')
-      .select()
-      .eq('group_id', groupId)
-      .eq('canonical_wine_id', canonicalWineId)) as List;
+  final memberRows =
+      (await client
+              .from('group_wine_ratings')
+              .select()
+              .eq('group_id', groupId)
+              .eq('canonical_wine_id', canonicalWineId))
+          as List;
 
   final memberModels = memberRows
       .map((r) => GroupWineRatingModel.fromJson(r as Map<String, dynamic>))
@@ -74,13 +80,14 @@ Future<List<GroupWineRatingEntity>> groupWineRatings(
   }.toList();
   if (userIds.isEmpty) return const [];
 
-  final profileRows = (await client
-      .from('profiles')
-      .select('id, username, display_name, avatar_url')
-      .inFilter('id', userIds)) as List;
+  final profileRows =
+      (await client
+              .from('profiles')
+              .select('id, username, display_name, avatar_url')
+              .inFilter('id', userIds))
+          as List;
   final profiles = {
-    for (final p in profileRows)
-      (p as Map<String, dynamic>)['id'] as String: p,
+    for (final p in profileRows) (p as Map<String, dynamic>)['id'] as String: p,
   };
 
   return mergeGroupRatings(
@@ -110,28 +117,30 @@ List<GroupWineRatingEntity> mergeGroupRatings({
   final list = <GroupWineRatingEntity>[];
   if (ownerId != null && ownerRating != null) {
     final p = profilesById[ownerId];
-    list.add(GroupWineRatingEntity(
-      groupId: groupId,
-      canonicalWineId: canonicalWineId,
-      userId: ownerId,
-      rating: ownerRating,
-      updatedAt: ownerUpdatedAt ?? DateTime.now(),
-      username: p?['username'] as String?,
-      displayName: p?['display_name'] as String?,
-      avatarUrl: p?['avatar_url'] as String?,
-      isOwner: true,
-    ));
-  }
-  list.addAll(memberModels
-      .where((m) => m.userId != ownerId)
-      .map((m) {
-    final p = profilesById[m.userId];
-    return m.toEntity(
-      username: p?['username'] as String?,
-      displayName: p?['display_name'] as String?,
-      avatarUrl: p?['avatar_url'] as String?,
+    list.add(
+      GroupWineRatingEntity(
+        groupId: groupId,
+        canonicalWineId: canonicalWineId,
+        userId: ownerId,
+        rating: ownerRating,
+        updatedAt: ownerUpdatedAt ?? DateTime.now(),
+        username: p?['username'] as String?,
+        displayName: p?['display_name'] as String?,
+        avatarUrl: p?['avatar_url'] as String?,
+        isOwner: true,
+      ),
     );
-  }));
+  }
+  list.addAll(
+    memberModels.where((m) => m.userId != ownerId).map((m) {
+      final p = profilesById[m.userId];
+      return m.toEntity(
+        username: p?['username'] as String?,
+        displayName: p?['display_name'] as String?,
+        avatarUrl: p?['avatar_url'] as String?,
+      );
+    }),
+  );
   list.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
   return list;
 }
@@ -158,13 +167,12 @@ class GroupWineRatingController extends _$GroupWineRatingController {
       'notes': notes,
       'updated_at': DateTime.now().toIso8601String(),
     }, onConflict: 'group_id,canonical_wine_id,user_id');
-    ref.read(analyticsProvider).capture(
-      'group_rating_submitted',
-      properties: {
-        'rating': rating,
-        'has_notes': (notes ?? '').isNotEmpty,
-      },
-    );
+    ref
+        .read(analyticsProvider)
+        .capture(
+          'group_rating_submitted',
+          properties: {'rating': rating, 'has_notes': (notes ?? '').isNotEmpty},
+        );
     ref.invalidate(groupWineRatingsProvider(groupId, canonicalWineId));
     ref.invalidate(groupWineRanksProvider(groupId));
   }
@@ -191,7 +199,9 @@ class GroupWineRatingController extends _$GroupWineRatingController {
 /// across owner + member ratings. Ties share a rank.
 @riverpod
 Future<Map<String, int>> groupWineRanks(
-    GroupWineRanksRef ref, String groupId) async {
+  GroupWineRanksRef ref,
+  String groupId,
+) async {
   final wines = await ref.watch(groupWinesProvider(groupId).future);
   if (wines.isEmpty) return const {};
   ref.requireOnline();
@@ -202,11 +212,13 @@ Future<Map<String, int>> groupWineRanks(
   ];
   if (canonicalIds.isEmpty) return const {};
 
-  final ratingRows = (await client
-      .from('group_wine_ratings')
-      .select('canonical_wine_id, user_id, rating')
-      .eq('group_id', groupId)
-      .inFilter('canonical_wine_id', canonicalIds)) as List;
+  final ratingRows =
+      (await client
+              .from('group_wine_ratings')
+              .select('canonical_wine_id, user_id, rating')
+              .eq('group_id', groupId)
+              .inFilter('canonical_wine_id', canonicalIds))
+          as List;
 
   return computeGroupWineRanks(
     wines: wines,

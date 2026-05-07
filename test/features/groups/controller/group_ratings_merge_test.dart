@@ -8,31 +8,29 @@ void main() {
     double rating = 7,
     DateTime? at,
     String? notes,
-  }) =>
-      GroupWineRatingModel(
-        groupId: 'g',
-        canonicalWineId: 'cw',
-        userId: userId,
-        rating: rating,
-        notes: notes,
-        updatedAt: at ?? DateTime.utc(2026, 1, 1),
-      );
+  }) => GroupWineRatingModel(
+    groupId: 'g',
+    canonicalWineId: 'cw',
+    userId: userId,
+    rating: rating,
+    notes: notes,
+    updatedAt: at ?? DateTime.utc(2026, 1, 1),
+  );
 
   Map<String, Map<String, dynamic>> profiles(
-          Map<String, String> displayNames) =>
-      {
-        for (final entry in displayNames.entries)
-          entry.key: {
-            'id': entry.key,
-            'username': entry.key,
-            'display_name': entry.value,
-            'avatar_url': null,
-          }
-      };
+    Map<String, String> displayNames,
+  ) => {
+    for (final entry in displayNames.entries)
+      entry.key: {
+        'id': entry.key,
+        'username': entry.key,
+        'display_name': entry.value,
+        'avatar_url': null,
+      },
+  };
 
   group('mergeGroupRatings', () {
-    test('owner row inserted with isOwner=true and synthesized rating',
-        () {
+    test('owner row inserted with isOwner=true and synthesized rating', () {
       final out = mergeGroupRatings(
         groupId: 'g',
         canonicalWineId: 'cw',
@@ -74,11 +72,18 @@ void main() {
         ],
         profilesById: profiles({'owner-1': 'O', 'm-1': 'M1'}),
       );
-      expect(out.where((r) => r.userId == 'owner-1'), hasLength(1),
-          reason: 'owner row appears exactly once');
-      expect(out.where((r) => r.userId == 'owner-1').single.rating, 9,
-          reason: 'owner rating comes from local wines.rating, '
-              'not the duplicate member row');
+      expect(
+        out.where((r) => r.userId == 'owner-1'),
+        hasLength(1),
+        reason: 'owner row appears exactly once',
+      );
+      expect(
+        out.where((r) => r.userId == 'owner-1').single.rating,
+        9,
+        reason:
+            'owner rating comes from local wines.rating, '
+            'not the duplicate member row',
+      );
     });
 
     test('sorts by updatedAt descending across owner + members', () {
@@ -97,8 +102,7 @@ void main() {
       expect(out.map((r) => r.userId).toList(), ['a', 'b', 'o']);
     });
 
-    test('attaches profile fields to each row, gracefully nulling missing',
-        () {
+    test('attaches profile fields to each row, gracefully nulling missing', () {
       final out = mergeGroupRatings(
         groupId: 'g',
         canonicalWineId: 'cw',

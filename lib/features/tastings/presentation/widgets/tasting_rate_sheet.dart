@@ -31,7 +31,9 @@ Future<void> showTastingRateSheet({
     ratingContext: 'tasting',
     tastingId: tastingId,
     onSave: (rating) async {
-      await ref.read(tastingsControllerProvider.notifier).rateTastingWine(
+      await ref
+          .read(tastingsControllerProvider.notifier)
+          .rateTastingWine(
             tastingId: tastingId,
             canonicalWineId: canonicalId,
             rating: rating,

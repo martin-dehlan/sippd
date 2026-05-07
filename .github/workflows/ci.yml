@@ -1,0 +1,51 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Cancel superseded runs on the same ref so a fresh push doesn't sit
+# behind a stale older one.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze-and-test:
+    name: format · analyze · test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: set up flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.41.6
+          cache: true
+
+      - name: pub get
+        run: flutter pub get
+
+      # Generated files (Freezed, Riverpod, Drift, json_serializable) are
+      # checked in, so codegen runs only when an annotated source has
+      # drifted out of sync with its generated output.
+      - name: codegen sync check
+        run: |
+          dart run build_runner build --delete-conflicting-outputs
+          if ! git diff --exit-code; then
+            echo "::error::Generated files are out of sync with their source. Run 'dart run build_runner build --delete-conflicting-outputs' locally and commit the result."
+            exit 1
+          fi
+
+      - name: format
+        run: dart format --output=none --set-exit-if-changed .
+
+      - name: analyze
+        run: flutter analyze --no-fatal-infos
+
+      - name: test
+        run: flutter test --reporter=expanded

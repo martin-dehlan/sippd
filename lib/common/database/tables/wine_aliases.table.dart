@@ -9,8 +9,7 @@ class WineAliasesTable extends Table {
   TextColumn get localWineId => text()();
   TextColumn get canonicalWineId => text()();
   TextColumn get source => text().withDefault(const Constant('share_match'))();
-  DateTimeColumn get createdAt =>
-      dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 
   @override
   Set<Column> get primaryKey => {userId, localWineId};

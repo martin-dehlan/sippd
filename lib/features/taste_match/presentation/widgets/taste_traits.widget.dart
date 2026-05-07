@@ -75,7 +75,14 @@ class _Body extends ConsumerWidget {
   }
 
   List<(String, double)> _orderedEntries(UserStyleDna dna) {
-    final all = <String>['body', 'tannin', 'acidity', 'sweetness', 'oak', 'intensity'];
+    final all = <String>[
+      'body',
+      'tannin',
+      'acidity',
+      'sweetness',
+      'oak',
+      'intensity',
+    ];
     final entries = all
         .map((k) => (k, (dna.values[k] ?? 0.5).clamp(0.0, 1.0)))
         .toList();
@@ -285,11 +292,41 @@ const _labels = {
 String _label(String axis) => _labels[axis] ?? axis;
 
 String _descriptor(String axis, double v) => switch (axis) {
-      'body' => v < 0.4 ? 'Light, easy-drinking' : v < 0.65 ? 'Balanced' : 'Bold, full-bodied',
-      'tannin' => v < 0.4 ? 'Soft, low-grip' : v < 0.65 ? 'Medium grip' : 'Grippy, structured',
-      'acidity' => v < 0.4 ? 'Soft, round' : v < 0.65 ? 'Balanced' : 'Crisp, bright',
-      'sweetness' => v < 0.15 ? 'Bone dry' : v < 0.4 ? 'Off-dry' : 'Sweet-leaning',
-      'oak' => v < 0.3 ? 'Unoaked, fresh' : v < 0.55 ? 'Touch of oak' : 'Oak-forward',
-      'intensity' => v < 0.4 ? 'Subtle aromatics' : v < 0.7 ? 'Expressive' : 'Bold, aromatic',
-      _ => '',
-    };
+  'body' =>
+    v < 0.4
+        ? 'Light, easy-drinking'
+        : v < 0.65
+        ? 'Balanced'
+        : 'Bold, full-bodied',
+  'tannin' =>
+    v < 0.4
+        ? 'Soft, low-grip'
+        : v < 0.65
+        ? 'Medium grip'
+        : 'Grippy, structured',
+  'acidity' =>
+    v < 0.4
+        ? 'Soft, round'
+        : v < 0.65
+        ? 'Balanced'
+        : 'Crisp, bright',
+  'sweetness' =>
+    v < 0.15
+        ? 'Bone dry'
+        : v < 0.4
+        ? 'Off-dry'
+        : 'Sweet-leaning',
+  'oak' =>
+    v < 0.3
+        ? 'Unoaked, fresh'
+        : v < 0.55
+        ? 'Touch of oak'
+        : 'Oak-forward',
+  'intensity' =>
+    v < 0.4
+        ? 'Subtle aromatics'
+        : v < 0.7
+        ? 'Expressive'
+        : 'Bold, aromatic',
+  _ => '',
+};

@@ -23,15 +23,15 @@ class FriendRequestModel with _$FriendRequestModel {
 
 extension FriendRequestModelX on FriendRequestModel {
   FriendRequestEntity toEntity() => FriendRequestEntity(
-        id: id,
-        senderId: senderId,
-        receiverId: receiverId,
-        status: FriendRequestStatus.values.firstWhere(
-          (s) => s.name == status,
-          orElse: () => FriendRequestStatus.pending,
-        ),
-        createdAt: createdAt,
-        senderProfile: sender?.toEntity(),
-        receiverProfile: receiver?.toEntity(),
-      );
+    id: id,
+    senderId: senderId,
+    receiverId: receiverId,
+    status: FriendRequestStatus.values.firstWhere(
+      (s) => s.name == status,
+      orElse: () => FriendRequestStatus.pending,
+    ),
+    createdAt: createdAt,
+    senderProfile: sender?.toEntity(),
+    receiverProfile: receiver?.toEntity(),
+  );
 }

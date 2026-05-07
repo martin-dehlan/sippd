@@ -40,7 +40,8 @@ class ErrorView extends ConsumerWidget {
 
     final resolvedTitle =
         title ?? (showOffline ? "You're offline" : "Couldn't load");
-    final resolvedSubtitle = subtitle ??
+    final resolvedSubtitle =
+        subtitle ??
         (showOffline
             ? 'Reconnect to load this.'
             : 'Pull to retry or try again later.');
@@ -50,7 +51,8 @@ class ErrorView extends ConsumerWidget {
     // Hide raw freezed `AppError.offline()` / network strings — the
     // friendly copy already covers them. Only surface unknown errors
     // in debug for triage.
-    final showRawError = kDebugMode &&
+    final showRawError =
+        kDebugMode &&
         error != null &&
         error is! OfflineError &&
         error is! NetworkError;
@@ -64,7 +66,11 @@ class ErrorView extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: context.w * (compact ? 0.07 : 0.09), color: cs.outline),
+          Icon(
+            icon,
+            size: context.w * (compact ? 0.07 : 0.09),
+            color: cs.outline,
+          ),
           SizedBox(height: context.s * 1.4),
           Text(
             resolvedTitle,

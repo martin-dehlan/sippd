@@ -30,8 +30,7 @@ class MockWineSupabaseApi extends Mock implements WineSupabaseApi {}
 
 class MockWineImageService extends Mock implements WineImageService {}
 
-class MockWineMemorySupabaseApi extends Mock
-    implements WineMemorySupabaseApi {}
+class MockWineMemorySupabaseApi extends Mock implements WineMemorySupabaseApi {}
 
 class MockCanonicalWineApi extends Mock implements CanonicalWineApi {}
 
@@ -47,8 +46,7 @@ class MockGroupImageService extends Mock implements GroupImageService {}
 
 class MockTastingsApi extends Mock implements TastingsApi {}
 
-class MockNotificationPrefsApi extends Mock
-    implements NotificationPrefsApi {}
+class MockNotificationPrefsApi extends Mock implements NotificationPrefsApi {}
 
 class MockPaywallService extends Mock implements PaywallService {}
 
@@ -92,35 +90,32 @@ void registerTestFallbacks() {
 }
 
 WineEntity _anyWineEntity() => WineEntity(
-      id: 'test-wine',
-      name: 'Test Wine',
-      rating: 7,
-      type: WineType.red,
-      userId: 'test-user',
-      createdAt: DateTime(2026),
-    );
+  id: 'test-wine',
+  name: 'Test Wine',
+  rating: 7,
+  type: WineType.red,
+  userId: 'test-user',
+  createdAt: DateTime(2026),
+);
 
 WineModel _anyWineModel() => WineModel(
-      id: 'test-wine',
-      name: 'Test Wine',
-      rating: 7,
-      type: 'red',
-      userId: 'test-user',
-      createdAt: DateTime(2026),
-    );
+  id: 'test-wine',
+  name: 'Test Wine',
+  rating: 7,
+  type: 'red',
+  userId: 'test-user',
+  createdAt: DateTime(2026),
+);
 
-ProfileModel _anyProfileModel() => const ProfileModel(
-      id: 'test-user',
-      onboardingCompleted: true,
-    );
+ProfileModel _anyProfileModel() =>
+    const ProfileModel(id: 'test-user', onboardingCompleted: true);
 
-NotificationPrefsModel _anyNotificationPrefsModel() =>
-    NotificationPrefsModel(
-      userId: 'test-user',
-      tastingReminders: true,
-      tastingReminderHours: 1,
-      friendActivity: true,
-      groupActivity: true,
-      groupWineShared: true,
-      updatedAt: DateTime(2026),
-    );
+NotificationPrefsModel _anyNotificationPrefsModel() => NotificationPrefsModel(
+  userId: 'test-user',
+  tastingReminders: true,
+  tastingReminderHours: 1,
+  friendActivity: true,
+  groupActivity: true,
+  groupWineShared: true,
+  updatedAt: DateTime(2026),
+);

@@ -21,8 +21,9 @@ void showWineRegionPicker({
     isScrollControlled: true,
     backgroundColor: cs.surface,
     shape: RoundedRectangleBorder(
-      borderRadius:
-          BorderRadius.vertical(top: Radius.circular(context.w * 0.05)),
+      borderRadius: BorderRadius.vertical(
+        top: Radius.circular(context.w * 0.05),
+      ),
     ),
     builder: (ctx) => StatefulBuilder(
       builder: (ctx, setModalState) {
@@ -140,14 +141,16 @@ void showWineRegionPicker({
                           Navigator.pop(ctx);
                         },
                       ),
-                    ...filtered.map((r) => _RegionTile(
-                          region: r,
-                          isSelected: r == selected,
-                          onTap: () {
-                            onChanged(r);
-                            Navigator.pop(ctx);
-                          },
-                        )),
+                    ...filtered.map(
+                      (r) => _RegionTile(
+                        region: r,
+                        isSelected: r == selected,
+                        onTap: () {
+                          onChanged(r);
+                          Navigator.pop(ctx);
+                        },
+                      ),
+                    ),
                     if (regions.isNotEmpty) ...[
                       SizedBox(height: context.s),
                       const Divider(height: 1),

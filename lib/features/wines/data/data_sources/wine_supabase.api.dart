@@ -25,11 +25,7 @@ class WineSupabaseApi {
   /// name_norm) that wouldn't otherwise reach the local Drift row until
   /// the next full refetch.
   Future<WineModel?> fetchWineById(String id) async {
-    final row = await _client
-        .from('wines')
-        .select()
-        .eq('id', id)
-        .maybeSingle();
+    final row = await _client.from('wines').select().eq('id', id).maybeSingle();
     if (row == null) return null;
     return WineModel.fromJson(row);
   }

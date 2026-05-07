@@ -16,8 +16,7 @@ class PendingImageUploadsTable extends Table {
   TextColumn get localPath => text()();
   IntColumn get attempts => integer().withDefault(const Constant(0))();
   DateTimeColumn get lastErrorAt => dateTime().nullable()();
-  DateTimeColumn get queuedAt =>
-      dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get queuedAt => dateTime().withDefault(currentDateAndTime)();
 
   @override
   Set<Column> get primaryKey => {wineId};

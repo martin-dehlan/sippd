@@ -35,17 +35,17 @@ class WineImageService {
     final fileName = '${const Uuid().v4()}.$ext';
     final storagePath = '$userId/$fileName';
 
-    await _client.storage.from('wine-images').upload(
+    await _client.storage
+        .from('wine-images')
+        .upload(
           storagePath,
           file,
-          fileOptions: const FileOptions(
-            cacheControl: '3600',
-            upsert: true,
-          ),
+          fileOptions: const FileOptions(cacheControl: '3600', upsert: true),
         );
 
-    final publicUrl =
-        _client.storage.from('wine-images').getPublicUrl(storagePath);
+    final publicUrl = _client.storage
+        .from('wine-images')
+        .getPublicUrl(storagePath);
 
     return publicUrl;
   }

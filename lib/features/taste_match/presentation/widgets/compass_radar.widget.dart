@@ -97,8 +97,9 @@ class _CompassRadarState extends State<CompassRadar>
                             fillColor: cs.primary.withValues(alpha: 0.28),
                             fillCenterColor: cs.primary.withValues(alpha: 0.12),
                             strokeColor: cs.primary,
-                            ringColor:
-                                cs.outlineVariant.withValues(alpha: 0.45),
+                            ringColor: cs.outlineVariant.withValues(
+                              alpha: 0.45,
+                            ),
                             haloColor: cs.primary.withValues(alpha: 0.06),
                             surfaceColor: cs.surfaceContainerHighest,
                           ),
@@ -211,16 +212,28 @@ class _RadarPainter extends CustomPainter {
         ),
     );
 
-    _drawPolygon(canvas, center, radius, n, startAngle,
-        Paint()
-          ..color = ringColor
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 0.8);
-    _drawPolygon(canvas, center, radius * 0.5, n, startAngle,
-        Paint()
-          ..color = ringColor.withValues(alpha: 0.25)
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 0.6);
+    _drawPolygon(
+      canvas,
+      center,
+      radius,
+      n,
+      startAngle,
+      Paint()
+        ..color = ringColor
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 0.8,
+    );
+    _drawPolygon(
+      canvas,
+      center,
+      radius * 0.5,
+      n,
+      startAngle,
+      Paint()
+        ..color = ringColor.withValues(alpha: 0.25)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 0.6,
+    );
 
     final spokePaint = Paint()
       ..color = ringColor.withValues(alpha: 0.25)
@@ -238,9 +251,12 @@ class _RadarPainter extends CustomPainter {
       final angle = startAngle + i * twoPi / n;
       final v = axes[i].value.clamp(0.0, 1.0);
       final scale = v == 0 ? 0.0 : math.max(v, 0.06);
-      final p = center +
-          Offset(radius * scale * math.cos(angle),
-              radius * scale * math.sin(angle));
+      final p =
+          center +
+          Offset(
+            radius * scale * math.cos(angle),
+            radius * scale * math.sin(angle),
+          );
       vertices.add(p);
       if (i == 0) {
         dataPath.moveTo(p.dx, p.dy);
@@ -287,8 +303,9 @@ class _RadarPainter extends CustomPainter {
       final isMuted = selected != null && selected != i;
       final color = axes[i].color;
       final orbValueRadius = (4.0 + v * 7.0);
-      final pulseScale =
-          isSelected ? (1.0 + 0.15 * math.sin(pulse * twoPi)) : 1.0;
+      final pulseScale = isSelected
+          ? (1.0 + 0.15 * math.sin(pulse * twoPi))
+          : 1.0;
       final orbR = orbValueRadius * pulseScale;
       final muteFactor = isMuted ? 0.45 : 1.0;
 
@@ -332,8 +349,8 @@ class _RadarPainter extends CustomPainter {
     final path = Path();
     for (var i = 0; i <= n; i++) {
       final angle = startAngle + (i % n) * twoPi / n;
-      final p = center +
-          Offset(radius * math.cos(angle), radius * math.sin(angle));
+      final p =
+          center + Offset(radius * math.cos(angle), radius * math.sin(angle));
       if (i == 0) {
         path.moveTo(p.dx, p.dy);
       } else {
@@ -383,8 +400,7 @@ class _AxisLabel extends StatelessWidget {
     final labelRadius = radius * 0.84;
     final cosA = math.cos(angle);
     final sinA = math.sin(angle);
-    final labelCentre =
-        center + Offset(labelRadius * cosA, labelRadius * sinA);
+    final labelCentre = center + Offset(labelRadius * cosA, labelRadius * sinA);
 
     final labelColor = axis.value <= 0 ? cs.outline : cs.onSurface;
     final detailColor = cs.onSurfaceVariant;
@@ -408,8 +424,9 @@ class _AxisLabel extends StatelessWidget {
                   width: 6,
                   height: 6,
                   decoration: BoxDecoration(
-                    color: axis.color
-                        .withValues(alpha: axis.value <= 0 ? 0.4 : 1.0),
+                    color: axis.color.withValues(
+                      alpha: axis.value <= 0 ? 0.4 : 1.0,
+                    ),
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -422,8 +439,7 @@ class _AxisLabel extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 12.5,
-                      fontWeight:
-                          selected ? FontWeight.w800 : FontWeight.w700,
+                      fontWeight: selected ? FontWeight.w800 : FontWeight.w700,
                       color: labelColor,
                       letterSpacing: -0.1,
                     ),
@@ -466,10 +482,7 @@ class _AxisDetailCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: cs.surface,
         borderRadius: BorderRadius.circular(context.w * 0.03),
-        border: Border.all(
-          color: axis.color.withValues(alpha: 0.4),
-          width: 1,
-        ),
+        border: Border.all(color: axis.color.withValues(alpha: 0.4), width: 1),
       ),
       child: Row(
         children: [

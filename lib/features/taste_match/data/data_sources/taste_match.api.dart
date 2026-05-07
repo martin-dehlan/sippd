@@ -22,22 +22,27 @@ class TasteMatchApi {
     return TasteCompassModel.fromJson(Map<String, dynamic>.from(raw));
   }
 
-  Future<List<UserGrapeShare>> getTopGrapes(String userId, {int limit = 7}) async {
+  Future<List<UserGrapeShare>> getTopGrapes(
+    String userId, {
+    int limit = 7,
+  }) async {
     final raw = await _client.rpc(
       'get_user_top_grapes',
       params: {'p_user_id': userId, 'p_limit': limit},
     );
     if (raw is! List) return const [];
-    return raw.map((row) {
-      final m = Map<String, dynamic>.from(row as Map);
-      return UserGrapeShare(
-        canonicalGrapeId: m['canonical_grape_id'] as String,
-        grapeName: m['grape_name'] as String,
-        grapeColor: m['grape_color'] as String,
-        count: m['count'] as int,
-        avgRating: (m['avg_rating'] as num).toDouble(),
-      );
-    }).toList(growable: false);
+    return raw
+        .map((row) {
+          final m = Map<String, dynamic>.from(row as Map);
+          return UserGrapeShare(
+            canonicalGrapeId: m['canonical_grape_id'] as String,
+            grapeName: m['grape_name'] as String,
+            grapeColor: m['grape_color'] as String,
+            count: m['count'] as int,
+            avgRating: (m['avg_rating'] as num).toDouble(),
+          );
+        })
+        .toList(growable: false);
   }
 
   Future<UserStyleDna> getStyleDna(String userId) async {
@@ -46,15 +51,18 @@ class TasteMatchApi {
       params: {'p_user_id': userId},
     );
     if (raw is! Map) {
-      return const UserStyleDna(
-        values: {},
-        attributedCount: 0,
-        confidence: 0,
-      );
+      return const UserStyleDna(values: {}, attributedCount: 0, confidence: 0);
     }
     final m = Map<String, dynamic>.from(raw);
     final values = <String, double>{};
-    for (final k in const ['body', 'tannin', 'acidity', 'sweetness', 'oak', 'intensity']) {
+    for (final k in const [
+      'body',
+      'tannin',
+      'acidity',
+      'sweetness',
+      'oak',
+      'intensity',
+    ]) {
       final v = m[k];
       if (v is num) values[k] = v.toDouble();
     }
@@ -72,8 +80,10 @@ class TasteMatchApi {
     );
     if (raw is! List) return const [];
     return raw
-        .map((row) =>
-            SharedBottleModel.fromJson(Map<String, dynamic>.from(row as Map)))
+        .map(
+          (row) =>
+              SharedBottleModel.fromJson(Map<String, dynamic>.from(row as Map)),
+        )
         .toList(growable: false);
   }
 

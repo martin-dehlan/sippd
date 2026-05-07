@@ -11,14 +11,15 @@ class CanonicalGrapeDao extends DatabaseAccessor<AppDatabase>
   CanonicalGrapeDao(super.db);
 
   Future<List<CanonicalGrapeTableData>> getAll() {
-    return (select(canonicalGrapeTable)
-          ..orderBy([(g) => OrderingTerm.asc(g.name)]))
-        .get();
+    return (select(
+      canonicalGrapeTable,
+    )..orderBy([(g) => OrderingTerm.asc(g.name)])).get();
   }
 
   Future<CanonicalGrapeTableData?> getById(String id) {
-    return (select(canonicalGrapeTable)..where((g) => g.id.equals(id)))
-        .getSingleOrNull();
+    return (select(
+      canonicalGrapeTable,
+    )..where((g) => g.id.equals(id))).getSingleOrNull();
   }
 
   Future<int> count() async {

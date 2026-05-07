@@ -25,11 +25,13 @@ class TastingsApi {
   String get _uid => _client.auth.currentUser!.id;
 
   Future<List<TastingModel>> fetchForGroup(String groupId) async {
-    final rows = (await _client
-        .from('group_tastings')
-        .select()
-        .eq('group_id', groupId)
-        .order('scheduled_at', ascending: true)) as List;
+    final rows =
+        (await _client
+                .from('group_tastings')
+                .select()
+                .eq('group_id', groupId)
+                .order('scheduled_at', ascending: true))
+            as List;
     return rows
         .map((r) => TastingModel.fromJson(r as Map<String, dynamic>))
         .toList();
@@ -79,10 +81,12 @@ class TastingsApi {
   /// log row.
   Future<void> addWines(String tastingId, List<String> wineIds) async {
     if (wineIds.isEmpty) return;
-    final winesRows = (await _client
-        .from('wines')
-        .select('id, canonical_wine_id')
-        .inFilter('id', wineIds)) as List;
+    final winesRows =
+        (await _client
+                .from('wines')
+                .select('id, canonical_wine_id')
+                .inFilter('id', wineIds))
+            as List;
     final canonicalById = <String, String>{
       for (final r in winesRows)
         if ((r as Map<String, dynamic>)['canonical_wine_id'] != null)
@@ -108,24 +112,30 @@ class TastingsApi {
   /// `wines_select_shared` lets group members read these by
   /// canonical_wine_id) so other attendees see the photo too.
   Future<List<WineEntity>> fetchWines(String tastingId) async {
-    final joinRows = (await _client
-        .from('tasting_wines')
-        .select('canonical_wine_id, position')
-        .eq('tasting_id', tastingId)
-        .order('position', ascending: true)) as List;
+    final joinRows =
+        (await _client
+                .from('tasting_wines')
+                .select('canonical_wine_id, position')
+                .eq('tasting_id', tastingId)
+                .order('position', ascending: true))
+            as List;
     if (joinRows.isEmpty) return const [];
     final canonicalIds = joinRows
         .map((j) => (j as Map<String, dynamic>)['canonical_wine_id'] as String)
         .toList();
-    final canonicalRows = (await _client
-        .from('canonical_wine')
-        .select('id, name, winery, region, country, type, vintage')
-        .inFilter('id', canonicalIds)) as List;
-    final wineRows = (await _client
-        .from('wines')
-        .select('canonical_wine_id, image_url, updated_at')
-        .inFilter('canonical_wine_id', canonicalIds)
-        .not('image_url', 'is', null)) as List;
+    final canonicalRows =
+        (await _client
+                .from('canonical_wine')
+                .select('id, name, winery, region, country, type, vintage')
+                .inFilter('id', canonicalIds))
+            as List;
+    final wineRows =
+        (await _client
+                .from('wines')
+                .select('canonical_wine_id, image_url, updated_at')
+                .inFilter('canonical_wine_id', canonicalIds)
+                .not('image_url', 'is', null))
+            as List;
     final imageUrlByCanonical = <String, String>{};
     for (final r in wineRows) {
       final m = r as Map<String, dynamic>;
@@ -141,19 +151,18 @@ class TastingsApi {
       final id = r['id'] as String;
       byId[id] = _canonicalToEntity(r, now, imageUrlByCanonical[id]);
     }
-    return canonicalIds
-        .map((id) => byId[id])
-        .whereType<WineEntity>()
-        .toList();
+    return canonicalIds.map((id) => byId[id]).whereType<WineEntity>().toList();
   }
 
   static WineEntity _canonicalToEntity(
-      Map<String, dynamic> r, DateTime now, String? imageUrl) {
+    Map<String, dynamic> r,
+    DateTime now,
+    String? imageUrl,
+  ) {
     final id = r['id'] as String;
     final rawType = r['type'] as String?;
-    final type = WineType.values
-            .where((t) => t.name == rawType)
-            .firstOrNull ??
+    final type =
+        WineType.values.where((t) => t.name == rawType).firstOrNull ??
         WineType.red;
     return WineEntity(
       id: id,
@@ -172,18 +181,19 @@ class TastingsApi {
   }
 
   Future<List<TastingAttendeeRow>> fetchAttendees(String tastingId) async {
-    final rows = (await _client
-        .from('tasting_attendees')
-        .select('tasting_id, user_id, status')
-        .eq('tasting_id', tastingId)) as List;
+    final rows =
+        (await _client
+                .from('tasting_attendees')
+                .select('tasting_id, user_id, status')
+                .eq('tasting_id', tastingId))
+            as List;
     if (rows.isEmpty) return const [];
     final userIds = rows
         .map((r) => (r as Map<String, dynamic>)['user_id'] as String)
         .toList();
-    final profiles = (await _client
-        .from('profiles')
-        .select()
-        .inFilter('id', userIds)) as List;
+    final profiles =
+        (await _client.from('profiles').select().inFilter('id', userIds))
+            as List;
     final byId = {
       for (final p in profiles)
         (p as Map<String, dynamic>)['id'] as String:
@@ -302,16 +312,13 @@ class TastingsApi {
     required double rating,
     String? notes,
   }) async {
-    await _client.from('tasting_ratings').upsert(
-      {
-        'tasting_id': tastingId,
-        'canonical_wine_id': canonicalWineId,
-        'user_id': _uid,
-        'rating': rating,
-        'notes': notes,
-      },
-      onConflict: 'tasting_id,canonical_wine_id,user_id',
-    );
+    await _client.from('tasting_ratings').upsert({
+      'tasting_id': tastingId,
+      'canonical_wine_id': canonicalWineId,
+      'user_id': _uid,
+      'rating': rating,
+      'notes': notes,
+    }, onConflict: 'tasting_id,canonical_wine_id,user_id');
   }
 
   Future<double?> fetchMyTastingRating({
@@ -336,46 +343,55 @@ class TastingsApi {
   /// one. Profiles RLS allows reading any row, so the second roundtrip
   /// is cheap.
   Future<List<TastingRecapEntry>> fetchTastingRecapEntries(
-      String tastingId) async {
-    final ratingRows = (await _client
-        .from('tasting_ratings')
-        .select('user_id, canonical_wine_id, rating')
-        .eq('tasting_id', tastingId)) as List;
+    String tastingId,
+  ) async {
+    final ratingRows =
+        (await _client
+                .from('tasting_ratings')
+                .select('user_id, canonical_wine_id, rating')
+                .eq('tasting_id', tastingId))
+            as List;
     if (ratingRows.isEmpty) return const [];
     final userIds = ratingRows
         .map((r) => (r as Map<String, dynamic>)['user_id'] as String)
         .toSet()
         .toList();
-    final profileRows = (await _client
-        .from('profiles')
-        .select('id, display_name, username, avatar_url')
-        .inFilter('id', userIds)) as List;
+    final profileRows =
+        (await _client
+                .from('profiles')
+                .select('id, display_name, username, avatar_url')
+                .inFilter('id', userIds))
+            as List;
     final profileById = <String, Map<String, dynamic>>{
       for (final p in profileRows)
         (p as Map<String, dynamic>)['id'] as String: p,
     };
-    return ratingRows.map((row) {
-      final m = row as Map<String, dynamic>;
-      final uid = m['user_id'] as String;
-      final p = profileById[uid];
-      return TastingRecapEntry(
-        userId: uid,
-        canonicalWineId: m['canonical_wine_id'] as String,
-        rating: (m['rating'] as num).toDouble(),
-        displayName: p?['display_name'] as String?,
-        username: p?['username'] as String?,
-        avatarUrl: p?['avatar_url'] as String?,
-      );
-    }).toList(growable: false);
+    return ratingRows
+        .map((row) {
+          final m = row as Map<String, dynamic>;
+          final uid = m['user_id'] as String;
+          final p = profileById[uid];
+          return TastingRecapEntry(
+            userId: uid,
+            canonicalWineId: m['canonical_wine_id'] as String,
+            rating: (m['rating'] as num).toDouble(),
+            displayName: p?['display_name'] as String?,
+            username: p?['username'] as String?,
+            avatarUrl: p?['avatar_url'] as String?,
+          );
+        })
+        .toList(growable: false);
   }
 
   /// Returns avg rating per canonical wine for this tasting, computed
   /// across all attendees who submitted a rating.
   Future<Map<String, double>> fetchTastingAverages(String tastingId) async {
-    final rows = (await _client
-        .from('tasting_ratings')
-        .select('canonical_wine_id, rating')
-        .eq('tasting_id', tastingId)) as List;
+    final rows =
+        (await _client
+                .from('tasting_ratings')
+                .select('canonical_wine_id, rating')
+                .eq('tasting_id', tastingId))
+            as List;
     final perCanonical = <String, List<double>>{};
     for (final r in rows) {
       final m = r as Map<String, dynamic>;

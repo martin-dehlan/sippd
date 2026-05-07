@@ -59,26 +59,27 @@ class GroupController extends _$GroupController {
       client.removeChannel(channel);
     });
 
-    final memberships = (await client
-        .from('group_members')
-        .select('group_id')
-        .eq('user_id', userId)
-        .withNetTimeout()) as List;
+    final memberships =
+        (await client
+                .from('group_members')
+                .select('group_id')
+                .eq('user_id', userId)
+                .withNetTimeout())
+            as List;
 
     if (memberships.isEmpty) return [];
 
-    final groupIds =
-        memberships.map((m) => m['group_id'] as String).toList();
+    final groupIds = memberships.map((m) => m['group_id'] as String).toList();
 
-    final groupsData = (await client
-        .from('groups')
-        .select()
-        .inFilter('id', groupIds)
-        .withNetTimeout()) as List;
+    final groupsData =
+        (await client
+                .from('groups')
+                .select()
+                .inFilter('id', groupIds)
+                .withNetTimeout())
+            as List;
 
-    return groupsData
-        .map((g) => GroupModel.fromJson(g).toEntity())
-        .toList();
+    return groupsData.map((g) => GroupModel.fromJson(g).toEntity()).toList();
   }
 
   /// Creates a group and returns the inserted row so the caller can chain
@@ -97,10 +98,7 @@ class GroupController extends _$GroupController {
 
     final client = ref.read(supabaseClientProvider);
 
-    await client.from('groups').insert({
-      'name': name,
-      'created_by': userId,
-    });
+    await client.from('groups').insert({'name': name, 'created_by': userId});
 
     final row = await client
         .from('groups')
@@ -128,10 +126,9 @@ class GroupController extends _$GroupController {
       params: {'p_code': inviteCode},
     );
 
-    ref.read(analyticsProvider).capture(
-      'group_joined',
-      properties: const {'via': 'invite_code'},
-    );
+    ref
+        .read(analyticsProvider)
+        .capture('group_joined', properties: const {'via': 'invite_code'});
     ref.invalidateSelf();
   }
 
@@ -151,12 +148,14 @@ class GroupController extends _$GroupController {
         .toModel();
     await client.from('wines').upsert(model.toJson());
 
-    final canonicalId = wine.canonicalWineId ??
+    final canonicalId =
+        wine.canonicalWineId ??
         (await client
-            .from('wines')
-            .select('canonical_wine_id')
-            .eq('id', wineId)
-            .maybeSingle())?['canonical_wine_id'] as String?;
+                .from('wines')
+                .select('canonical_wine_id')
+                .eq('id', wineId)
+                .maybeSingle())?['canonical_wine_id']
+            as String?;
     if (canonicalId == null) {
       throw Exception('Wine has no canonical identity yet — try again.');
     }
@@ -166,10 +165,9 @@ class GroupController extends _$GroupController {
       'canonical_wine_id': canonicalId,
       'shared_by': userId,
     }, onConflict: 'group_id,canonical_wine_id');
-    ref.read(analyticsProvider).capture(
-      'wine_shared_to_group',
-      properties: const {'mode': 'local'},
-    );
+    ref
+        .read(analyticsProvider)
+        .capture('wine_shared_to_group', properties: const {'mode': 'local'});
   }
 
   /// Shares an existing [canonicalWineId] into [groupId]. Used when the
@@ -187,10 +185,12 @@ class GroupController extends _$GroupController {
       'canonical_wine_id': canonicalWineId,
       'shared_by': userId,
     }, onConflict: 'group_id,canonical_wine_id');
-    ref.read(analyticsProvider).capture(
-      'wine_shared_to_group',
-      properties: const {'mode': 'canonical'},
-    );
+    ref
+        .read(analyticsProvider)
+        .capture(
+          'wine_shared_to_group',
+          properties: const {'mode': 'canonical'},
+        );
   }
 
   /// Returns canonical wines already shared in [groupId] whose normalized
@@ -207,10 +207,12 @@ class GroupController extends _$GroupController {
 
     final client = ref.read(supabaseClientProvider);
 
-    final shareRows = (await client
-        .from('group_wines')
-        .select('canonical_wine_id, shared_by')
-        .eq('group_id', groupId)) as List;
+    final shareRows =
+        (await client
+                .from('group_wines')
+                .select('canonical_wine_id, shared_by')
+                .eq('group_id', groupId))
+            as List;
     if (shareRows.isEmpty) return const [];
 
     final sharerByCanonical = <String, String>{};
@@ -225,11 +227,15 @@ class GroupController extends _$GroupController {
         .toList();
     if (sharedCanonicalIds.isEmpty) return const [];
 
-    final canonicalRows = (await client
-        .from('canonical_wine')
-        .select('id, name, winery, region, country, type, vintage, name_norm')
-        .inFilter('id', sharedCanonicalIds)
-        .eq('name_norm', nameNorm)) as List;
+    final canonicalRows =
+        (await client
+                .from('canonical_wine')
+                .select(
+                  'id, name, winery, region, country, type, vintage, name_norm',
+                )
+                .inFilter('id', sharedCanonicalIds)
+                .eq('name_norm', nameNorm))
+            as List;
     if (canonicalRows.isEmpty) return const [];
 
     final now = DateTime.now();
@@ -258,10 +264,12 @@ class GroupController extends _$GroupController {
         .toList();
     final usernameById = <String, String>{};
     if (sharerIds.isNotEmpty) {
-      final profiles = (await client
-          .from('profiles')
-          .select('id, username')
-          .inFilter('id', sharerIds)) as List;
+      final profiles =
+          (await client
+                  .from('profiles')
+                  .select('id, username')
+                  .inFilter('id', sharerIds))
+              as List;
       for (final p in profiles) {
         final m = p as Map<String, dynamic>;
         final uname = m['username'] as String?;
@@ -270,10 +278,12 @@ class GroupController extends _$GroupController {
     }
 
     return matches
-        .map((w) => ShareMatchCandidate(
-              wine: w,
-              sharedByUsername: usernameById[sharerByCanonical[w.id]],
-            ))
+        .map(
+          (w) => ShareMatchCandidate(
+            wine: w,
+            sharedByUsername: usernameById[sharerByCanonical[w.id]],
+          ),
+        )
         .toList();
   }
 
@@ -392,4 +402,3 @@ WineType? _parseType(String? raw) {
   }
   return null;
 }
-

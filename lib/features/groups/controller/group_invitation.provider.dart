@@ -16,7 +16,7 @@ part 'group_invitation.provider.g.dart';
 /// or already has a pending invite for.
 @riverpod
 Future<List<({String groupId, String name, String? imageUrl})>>
-    invitableGroupsForFriend(
+invitableGroupsForFriend(
   InvitableGroupsForFriendRef ref,
   String friendId,
 ) async {
@@ -31,8 +31,7 @@ Future<List<({String groupId, String name, String? imageUrl})>>
       .select('group_id')
       .eq('user_id', userId);
   if ((myMemberships as List).isEmpty) return const [];
-  final myGroupIds =
-      myMemberships.map((m) => m['group_id'] as String).toList();
+  final myGroupIds = myMemberships.map((m) => m['group_id'] as String).toList();
 
   // Groups the friend already joined.
   final friendMemberships = await client
@@ -56,8 +55,9 @@ Future<List<({String groupId, String name, String? imageUrl})>>
       .toSet();
 
   final eligibleIds = myGroupIds
-      .where((id) =>
-          !friendGroupIds.contains(id) && !pendingGroupIds.contains(id))
+      .where(
+        (id) => !friendGroupIds.contains(id) && !pendingGroupIds.contains(id),
+      )
       .toList();
   if (eligibleIds.isEmpty) return const [];
 
@@ -67,11 +67,13 @@ Future<List<({String groupId, String name, String? imageUrl})>>
       .inFilter('id', eligibleIds);
 
   return (groups as List)
-      .map((g) => (
-            groupId: g['id'] as String,
-            name: g['name'] as String,
-            imageUrl: g['image_url'] as String?,
-          ))
+      .map(
+        (g) => (
+          groupId: g['id'] as String,
+          name: g['name'] as String,
+          imageUrl: g['image_url'] as String?,
+        ),
+      )
       .toList();
 }
 
@@ -88,8 +90,7 @@ Future<List<FriendProfileEntity>> invitableFriendsForGroup(
 
   final client = ref.read(supabaseClientProvider);
 
-  final friends =
-      await ref.watch(friendsListProvider.future);
+  final friends = await ref.watch(friendsListProvider.future);
   if (friends.isEmpty) return const [];
   final friendIds = friends.map((f) => f.id).toList();
 
@@ -113,8 +114,7 @@ Future<List<FriendProfileEntity>> invitableFriendsForGroup(
       .toSet();
 
   return friends
-      .where((f) =>
-          !memberIds.contains(f.id) && !pendingIds.contains(f.id))
+      .where((f) => !memberIds.contains(f.id) && !pendingIds.contains(f.id))
       .toList();
 }
 
@@ -249,10 +249,9 @@ class GroupInvitationController extends _$GroupInvitationController {
         })
         .eq('id', invitation.id);
 
-    ref.read(analyticsProvider).capture(
-      'group_joined',
-      properties: const {'via': 'invitation'},
-    );
+    ref
+        .read(analyticsProvider)
+        .capture('group_joined', properties: const {'via': 'invitation'});
     ref.invalidate(myGroupInvitationsProvider);
     ref.invalidate(groupControllerProvider);
   }

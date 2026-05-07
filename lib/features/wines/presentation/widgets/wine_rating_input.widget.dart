@@ -21,8 +21,11 @@ class WineRatingInput extends StatelessWidget {
       children: [
         Row(
           children: [
-            Icon(PhosphorIconsRegular.star,
-                color: cs.primary, size: context.w * 0.06),
+            Icon(
+              PhosphorIconsRegular.star,
+              color: cs.primary,
+              size: context.w * 0.06,
+            ),
             SizedBox(width: context.w * 0.02),
             Text(
               'Rating',
@@ -55,9 +58,13 @@ class WineRatingInput extends StatelessWidget {
         SizedBox(height: context.s),
         Row(
           children: [
-            Text('0',
-                style: TextStyle(
-                    fontSize: context.captionFont, color: cs.outline)),
+            Text(
+              '0',
+              style: TextStyle(
+                fontSize: context.captionFont,
+                color: cs.outline,
+              ),
+            ),
             Expanded(
               child: SliderTheme(
                 data: SliderThemeData(
@@ -76,9 +83,13 @@ class WineRatingInput extends StatelessWidget {
                 ),
               ),
             ),
-            Text('10',
-                style: TextStyle(
-                    fontSize: context.captionFont, color: cs.outline)),
+            Text(
+              '10',
+              style: TextStyle(
+                fontSize: context.captionFont,
+                color: cs.outline,
+              ),
+            ),
           ],
         ),
       ],

@@ -41,11 +41,8 @@ class InviteShareSheet extends ConsumerWidget {
           top: Radius.circular(context.w * 0.05),
         ),
       ),
-      builder: (_) => InviteShareSheet(
-        code: code,
-        groupId: groupId,
-        groupName: groupName,
-      ),
+      builder: (_) =>
+          InviteShareSheet(code: code, groupId: groupId, groupName: groupName),
     );
   }
 
@@ -155,8 +152,11 @@ class _CodeBlock extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(PhosphorIconsRegular.key,
-              color: cs.primary, size: context.w * 0.05),
+          Icon(
+            PhosphorIconsRegular.key,
+            color: cs.primary,
+            size: context.w * 0.05,
+          ),
           SizedBox(width: context.w * 0.025),
           Text(
             code,
@@ -288,11 +288,8 @@ class _FriendList extends ConsumerWidget {
         padding: EdgeInsets.symmetric(vertical: context.m),
         child: const Center(child: CircularProgressIndicator()),
       ),
-      error: (e, _) => ErrorView(
-        title: "Couldn't load friends",
-        compact: true,
-        error: e,
-      ),
+      error: (e, _) =>
+          ErrorView(title: "Couldn't load friends", compact: true, error: e),
     );
   }
 
@@ -307,14 +304,14 @@ class _FriendList extends ConsumerWidget {
           .read(groupInvitationControllerProvider.notifier)
           .invite(groupId: groupId, inviteeId: friend.id);
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Invite sent to $name')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Invite sent to $name')));
     } catch (e) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not send invite: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Could not send invite: $e')));
     }
   }
 }
@@ -359,17 +356,22 @@ class _FriendRow extends StatelessWidget {
                     ),
                     if (friend.username != null) ...[
                       SizedBox(height: context.xs * 0.4),
-                      Text('@${friend.username}',
-                          style: TextStyle(
-                            fontSize: context.captionFont,
-                            color: cs.onSurfaceVariant,
-                          )),
+                      Text(
+                        '@${friend.username}',
+                        style: TextStyle(
+                          fontSize: context.captionFont,
+                          color: cs.onSurfaceVariant,
+                        ),
+                      ),
                     ],
                   ],
                 ),
               ),
-              Icon(PhosphorIconsRegular.paperPlaneRight,
-                  color: cs.primary, size: context.w * 0.045),
+              Icon(
+                PhosphorIconsRegular.paperPlaneRight,
+                color: cs.primary,
+                size: context.w * 0.045,
+              ),
             ],
           ),
         ),

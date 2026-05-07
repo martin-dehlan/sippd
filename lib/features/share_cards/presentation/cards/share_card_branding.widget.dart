@@ -9,11 +9,7 @@ const shareCardUrl = 'sippd.xyz';
 class ShareCardWordmark extends StatelessWidget {
   final Color color;
   final double size;
-  const ShareCardWordmark({
-    super.key,
-    required this.color,
-    this.size = 56,
-  });
+  const ShareCardWordmark({super.key, required this.color, this.size = 56});
 
   @override
   Widget build(BuildContext context) {

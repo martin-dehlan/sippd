@@ -31,8 +31,9 @@ Future<void> showGroupWineRatingSheet({
     isScrollControlled: true,
     backgroundColor: Theme.of(context).colorScheme.surface,
     shape: RoundedRectangleBorder(
-      borderRadius:
-          BorderRadius.vertical(top: Radius.circular(context.w * 0.06)),
+      borderRadius: BorderRadius.vertical(
+        top: Radius.circular(context.w * 0.06),
+      ),
     ),
     builder: (_) => _Sheet(groupId: groupId, wine: wine),
   );
@@ -90,8 +91,7 @@ class _SheetState extends ConsumerState<_Sheet> {
     if (canonicalId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content:
-              Text('Save the wine first — tasting notes attach to it.'),
+          content: Text('Save the wine first — tasting notes attach to it.'),
         ),
       );
       return;
@@ -142,7 +142,8 @@ class _SheetState extends ConsumerState<_Sheet> {
       // count group / tasting context). Personal rating still rides on
       // wines.rating so the wine_detail summary stays in sync.
       if (_isOwner) {
-        final fresh = await ref
+        final fresh =
+            await ref
                 .read(wineRepositoryProvider)
                 .getWineById(widget.wine.id) ??
             widget.wine;
@@ -167,8 +168,7 @@ class _SheetState extends ConsumerState<_Sheet> {
             rating: _myRating!,
             notes: notes.isEmpty ? null : notes,
           );
-      ref.invalidate(
-          groupWineRatingsProvider(widget.groupId, canonicalId));
+      ref.invalidate(groupWineRatingsProvider(widget.groupId, canonicalId));
       // Expert dims piggyback on the same save tap. Persisted only when
       // the user expanded the panel during this sheet open — collapsed
       // means "didn't engage with expert", same convention as the
@@ -212,8 +212,7 @@ class _SheetState extends ConsumerState<_Sheet> {
       if (canonicalId == null) return;
       await ref
           .read(groupWineRatingControllerProvider.notifier)
-          .deleteRating(
-              groupId: widget.groupId, canonicalWineId: canonicalId);
+          .deleteRating(groupId: widget.groupId, canonicalWineId: canonicalId);
       if (mounted) Navigator.of(context).pop();
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -254,7 +253,9 @@ class _SheetState extends ConsumerState<_Sheet> {
       if (canonicalId == null) {
         throw Exception('Wine has no canonical identity yet.');
       }
-      await ref.read(groupControllerProvider.notifier).unshareWineFromGroup(
+      await ref
+          .read(groupControllerProvider.notifier)
+          .unshareWineFromGroup(
             groupId: widget.groupId,
             canonicalWineId: canonicalId,
           );
@@ -271,7 +272,8 @@ class _SheetState extends ConsumerState<_Sheet> {
     final userId = ref.watch(currentUserIdProvider);
     final canonicalId = widget.wine.canonicalWineId ?? widget.wine.id;
     final ratingsAsync = ref.watch(
-        groupWineRatingsProvider(widget.groupId, canonicalId));
+      groupWineRatingsProvider(widget.groupId, canonicalId),
+    );
 
     if (!_loaded) {
       if (userId == widget.wine.userId) {
@@ -298,10 +300,12 @@ class _SheetState extends ConsumerState<_Sheet> {
       }
     }
 
-    final hasExistingRating = _loaded &&
+    final hasExistingRating =
+        _loaded &&
         ratingsAsync.valueOrNull?.any((r) => r.userId == userId) == true;
 
-    final isDirty = _myRating != null &&
+    final isDirty =
+        _myRating != null &&
         (_myRating != _savedRating ||
             _notesController.text.trim() != _savedNotes.trim());
 
@@ -333,10 +337,7 @@ class _SheetState extends ConsumerState<_Sheet> {
             SizedBox(height: context.m),
             const _SectionDivider(),
             SizedBox(height: context.m),
-            _GroupZone(
-              ratingsAsync: ratingsAsync,
-              currentUserId: userId,
-            ),
+            _GroupZone(ratingsAsync: ratingsAsync, currentUserId: userId),
             SizedBox(height: context.m),
             const _SectionDivider(),
             SizedBox(height: context.m),
@@ -363,10 +364,9 @@ class _SheetState extends ConsumerState<_Sheet> {
                       wineType: widget.wine.type,
                       tasting: _tasting,
                       aromasExpanded: _aromasExpanded,
-                      onTastingChange: (t) =>
-                          setState(() => _tasting = t),
-                      onToggleAromas: () => setState(
-                          () => _aromasExpanded = !_aromasExpanded),
+                      onTastingChange: (t) => setState(() => _tasting = t),
+                      onToggleAromas: () =>
+                          setState(() => _aromasExpanded = !_aromasExpanded),
                     )
                   : const SizedBox(width: double.infinity),
             ),
@@ -505,11 +505,7 @@ class _RateZone extends StatelessWidget {
           ],
         ),
         SizedBox(height: context.xs),
-        _Slider(
-          value: rating,
-          enabled: enabled,
-          onChanged: onChanged,
-        ),
+        _Slider(value: rating, enabled: enabled, onChanged: onChanged),
         SizedBox(height: context.s),
         _NotesField(controller: notesController, enabled: enabled),
       ],
@@ -542,12 +538,8 @@ class _Slider extends StatelessWidget {
         disabledThumbColor: cs.primary,
         thumbColor: cs.primary,
         overlayColor: cs.primary.withValues(alpha: 0.12),
-        thumbShape: RoundSliderThumbShape(
-          enabledThumbRadius: context.w * 0.04,
-        ),
-        overlayShape: RoundSliderOverlayShape(
-          overlayRadius: context.w * 0.065,
-        ),
+        thumbShape: RoundSliderThumbShape(enabledThumbRadius: context.w * 0.04),
+        overlayShape: RoundSliderOverlayShape(overlayRadius: context.w * 0.065),
         trackShape: const RoundedRectSliderTrackShape(),
         showValueIndicator: ShowValueIndicator.never,
       ),
@@ -578,8 +570,7 @@ class _NotesField extends StatelessWidget {
       style: TextStyle(fontSize: context.captionFont),
       decoration: InputDecoration(
         hintText: 'Add a note',
-        hintStyle:
-            TextStyle(color: cs.outline, fontSize: context.captionFont),
+        hintStyle: TextStyle(color: cs.outline, fontSize: context.captionFont),
         counterText: '',
         filled: true,
         fillColor: cs.surfaceContainer,
@@ -625,8 +616,8 @@ class _SaveButton extends StatelessWidget {
     final hasError = error != null;
     final label = hasError
         ? (error is OfflineError || error is NetworkError
-            ? 'Offline · Retry'
-            : "Couldn't save · Retry")
+              ? 'Offline · Retry'
+              : "Couldn't save · Retry")
         : (justSaved ? 'Saved ✓' : 'Save rating');
     return SizedBox(
       height: context.h * 0.055,
@@ -681,7 +672,9 @@ class _RemoveButton extends StatelessWidget {
         onPressed: onTap,
         style: TextButton.styleFrom(
           padding: EdgeInsets.symmetric(
-              horizontal: context.m, vertical: context.xs),
+            horizontal: context.m,
+            vertical: context.xs,
+          ),
         ),
         child: Text(
           'Remove my rating',
@@ -699,17 +692,15 @@ class _RemoveButton extends StatelessWidget {
 class _GroupZone extends StatelessWidget {
   final AsyncValue<List<GroupWineRatingEntity>> ratingsAsync;
   final String? currentUserId;
-  const _GroupZone({
-    required this.ratingsAsync,
-    required this.currentUserId,
-  });
+  const _GroupZone({required this.ratingsAsync, required this.currentUserId});
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final raw = ratingsAsync.valueOrNull ?? const <GroupWineRatingEntity>[];
     final sorted = [...raw]..sort((a, b) => b.rating.compareTo(a.rating));
-    final isSoloMe = sorted.length == 1 &&
+    final isSoloMe =
+        sorted.length == 1 &&
         currentUserId != null &&
         sorted.first.userId == currentUserId;
     final showBars = sorted.isNotEmpty && !isSoloMe;
@@ -727,8 +718,8 @@ class _GroupZone extends StatelessWidget {
               sorted.isEmpty
                   ? 'Ratings'
                   : sorted.length == 1
-                      ? '1 rating'
-                      : '${sorted.length} ratings',
+                  ? '1 rating'
+                  : '${sorted.length} ratings',
               style: TextStyle(
                 fontSize: context.captionFont,
                 fontWeight: FontWeight.w600,
@@ -792,8 +783,7 @@ class _GroupZone extends StatelessWidget {
                 shrinkWrap: true,
                 padding: EdgeInsets.zero,
                 itemCount: sorted.length,
-                separatorBuilder: (_, _) =>
-                    SizedBox(height: context.s * 1.4),
+                separatorBuilder: (_, _) => SizedBox(height: context.s * 1.4),
                 itemBuilder: (_, i) => _RankingBar(
                   key: ValueKey(sorted[i].userId),
                   r: sorted[i],
@@ -839,8 +829,8 @@ class _RankingBar extends StatelessWidget {
     final fillColor = isMe
         ? cs.primary
         : isFirst
-            ? cs.tertiary
-            : cs.onSurfaceVariant.withValues(alpha: 0.35);
+        ? cs.tertiary
+        : cs.onSurfaceVariant.withValues(alpha: 0.35);
 
     return Row(
       children: [
@@ -853,10 +843,11 @@ class _RankingBar extends StatelessWidget {
                 curve: Curves.easeOutCubic,
                 tween: Tween(begin: 0.0, end: pct),
                 builder: (_, animPct, _) {
-                  final fillW =
-                      (trackW * animPct).clamp(avatarSize, trackW);
-                  final avatarLeft =
-                      (fillW - avatarSize).clamp(0.0, trackW - avatarSize);
+                  final fillW = (trackW * animPct).clamp(avatarSize, trackW);
+                  final avatarLeft = (fillW - avatarSize).clamp(
+                    0.0,
+                    trackW - avatarSize,
+                  );
                   return SizedBox(
                     width: trackW,
                     height: barH,
@@ -867,8 +858,7 @@ class _RankingBar extends StatelessWidget {
                           child: Container(
                             decoration: BoxDecoration(
                               color: cs.surfaceContainer,
-                              borderRadius:
-                                  BorderRadius.circular(barH / 2),
+                              borderRadius: BorderRadius.circular(barH / 2),
                             ),
                           ),
                         ),
@@ -880,8 +870,7 @@ class _RankingBar extends StatelessWidget {
                           child: Container(
                             decoration: BoxDecoration(
                               color: fillColor,
-                              borderRadius:
-                                  BorderRadius.circular(barH / 2),
+                              borderRadius: BorderRadius.circular(barH / 2),
                             ),
                           ),
                         ),
@@ -951,7 +940,9 @@ class _UnshareMenu extends ConsumerWidget {
     final sharedBy = ref
         .watch(groupWineShareMetaProvider(groupId, canonicalWineId))
         .valueOrNull;
-    final group = ref.watch(groupControllerProvider).valueOrNull
+    final group = ref
+        .watch(groupControllerProvider)
+        .valueOrNull
         ?.where((g) => g.id == groupId)
         .firstOrNull;
     final isSharer = sharedBy != null && sharedBy == uid;
@@ -960,7 +951,11 @@ class _UnshareMenu extends ConsumerWidget {
 
     final cs = Theme.of(context).colorScheme;
     return PopupMenuButton<bool>(
-      icon: Icon(PhosphorIconsRegular.dotsThree, size: context.w * 0.055, color: cs.outline),
+      icon: Icon(
+        PhosphorIconsRegular.dotsThree,
+        size: context.w * 0.055,
+        color: cs.outline,
+      ),
       tooltip: 'More',
       padding: EdgeInsets.zero,
       color: cs.surfaceContainerHigh,
@@ -977,8 +972,11 @@ class _UnshareMenu extends ConsumerWidget {
           enabled: onRemove != null,
           child: Row(
             children: [
-              Icon(PhosphorIconsRegular.minusCircle,
-                  size: context.w * 0.045, color: cs.error),
+              Icon(
+                PhosphorIconsRegular.minusCircle,
+                size: context.w * 0.045,
+                color: cs.error,
+              ),
               SizedBox(width: context.s),
               Text('Remove from group', style: TextStyle(color: cs.error)),
             ],

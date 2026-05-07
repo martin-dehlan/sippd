@@ -59,18 +59,15 @@ void main() {
 
   group('describeAppError', () {
     test('OfflineError → friendly offline copy', () {
-      expect(describeAppError(const AppError.offline()),
-          contains('offline'));
+      expect(describeAppError(const AppError.offline()), contains('offline'));
     });
 
     test('NetworkError → friendly network copy', () {
-      expect(describeAppError(const AppError.network()),
-          contains('Network'));
+      expect(describeAppError(const AppError.network()), contains('Network'));
     });
 
     test('non-AppError falls back to default message', () {
-      expect(describeAppError(StateError('boom')),
-          'Something went wrong.');
+      expect(describeAppError(StateError('boom')), 'Something went wrong.');
     });
 
     test('non-AppError uses caller-supplied fallback', () {

@@ -13,7 +13,8 @@ import '../../../../../common/utils/responsive.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../../auth/controller/auth.provider.dart';
 import '../../../controller/friends.provider.dart';
-import '../../../data/data_sources/friends.api.dart' show FriendRequestExistsException;
+import '../../../data/data_sources/friends.api.dart'
+    show FriendRequestExistsException;
 import '../../../domain/entities/friend_profile.entity.dart';
 import '../../../domain/entities/friend_request.entity.dart';
 import '../../widgets/friend_avatar.widget.dart';
@@ -58,16 +59,13 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
   Widget build(BuildContext context) {
     final padH = context.paddingH * 1.3;
     final searchMode = _query.isNotEmpty;
-    final friends =
-        ref.watch(friendsListProvider).valueOrNull ?? const [];
+    final friends = ref.watch(friendsListProvider).valueOrNull ?? const [];
     final requests =
         ref.watch(incomingFriendRequestsProvider).valueOrNull ?? const [];
     final outgoing =
         ref.watch(outgoingFriendRequestsProvider).valueOrNull ?? const [];
-    final showEmpty = !searchMode &&
-        friends.isEmpty &&
-        requests.isEmpty &&
-        outgoing.isEmpty;
+    final showEmpty =
+        !searchMode && friends.isEmpty && requests.isEmpty && outgoing.isEmpty;
 
     return Scaffold(
       body: SafeArea(
@@ -175,7 +173,10 @@ class _SearchField extends StatelessWidget {
       onChanged: onChanged,
       decoration: InputDecoration(
         hintText: 'Search by username or name',
-        prefixIcon: Icon(PhosphorIconsRegular.magnifyingGlass, color: cs.primary),
+        prefixIcon: Icon(
+          PhosphorIconsRegular.magnifyingGlass,
+          color: cs.primary,
+        ),
         suffixIcon: controller.text.isEmpty
             ? null
             : IconButton(
@@ -234,11 +235,16 @@ class _SearchResultsSection extends ConsumerWidget {
         if (results.isEmpty) {
           return Padding(
             padding: EdgeInsets.symmetric(
-                horizontal: context.paddingH * 1.3, vertical: context.l),
-            child: Text('No users found',
-                style: TextStyle(
-                    fontSize: context.bodyFont,
-                    color: cs.onSurfaceVariant)),
+              horizontal: context.paddingH * 1.3,
+              vertical: context.l,
+            ),
+            child: Text(
+              'No users found',
+              style: TextStyle(
+                fontSize: context.bodyFont,
+                color: cs.onSurfaceVariant,
+              ),
+            ),
           );
         }
         return Column(
@@ -246,10 +252,11 @@ class _SearchResultsSection extends ConsumerWidget {
             for (final p in results)
               Padding(
                 padding: EdgeInsets.fromLTRB(
-                    context.paddingH * 1.3,
-                    0,
-                    context.paddingH * 1.3,
-                    context.s),
+                  context.paddingH * 1.3,
+                  0,
+                  context.paddingH * 1.3,
+                  context.s,
+                ),
                 child: _SearchResultRow(profile: p),
               ),
           ],
@@ -261,8 +268,10 @@ class _SearchResultsSection extends ConsumerWidget {
       ),
       error: (e, _) => Padding(
         padding: EdgeInsets.all(context.l),
-        child: Text('Error: $e',
-            style: TextStyle(color: cs.error, fontSize: context.bodyFont)),
+        child: Text(
+          'Error: $e',
+          style: TextStyle(color: cs.error, fontSize: context.bodyFont),
+        ),
       ),
     );
   }
@@ -285,10 +294,11 @@ class _RequestsSection extends ConsumerWidget {
         for (final r in requests)
           Padding(
             padding: EdgeInsets.fromLTRB(
-                context.paddingH * 1.3,
-                0,
-                context.paddingH * 1.3,
-                context.s),
+              context.paddingH * 1.3,
+              0,
+              context.paddingH * 1.3,
+              context.s,
+            ),
             child: _RequestRow(request: r),
           ),
       ],
@@ -313,10 +323,11 @@ class _OutgoingRequestsSection extends ConsumerWidget {
         for (final r in outgoing)
           Padding(
             padding: EdgeInsets.fromLTRB(
-                context.paddingH * 1.3,
-                0,
-                context.paddingH * 1.3,
-                context.s),
+              context.paddingH * 1.3,
+              0,
+              context.paddingH * 1.3,
+              context.s,
+            ),
             child: _OutgoingRequestRow(request: r),
           ),
       ],
@@ -345,29 +356,41 @@ class _OutgoingRequestRow extends ConsumerWidget {
           if (profile != null)
             FriendAvatar(profile: profile, size: context.w * 0.12)
           else
-            Icon(PhosphorIconsRegular.user, size: context.w * 0.12, color: cs.outline),
+            Icon(
+              PhosphorIconsRegular.user,
+              size: context.w * 0.12,
+              color: cs.outline,
+            ),
           SizedBox(width: context.w * 0.04),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(name,
-                    style: TextStyle(
-                        fontSize: context.bodyFont,
-                        fontWeight: FontWeight.w600),
-                    overflow: TextOverflow.ellipsis),
+                Text(
+                  name,
+                  style: TextStyle(
+                    fontSize: context.bodyFont,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
                 SizedBox(height: context.xs * 0.5),
                 Row(
                   children: [
-                    Icon(PhosphorIconsRegular.clock,
-                        size: context.captionFont * 1.1,
-                        color: cs.primary),
+                    Icon(
+                      PhosphorIconsRegular.clock,
+                      size: context.captionFont * 1.1,
+                      color: cs.primary,
+                    ),
                     SizedBox(width: context.w * 0.015),
-                    Text('Request sent',
-                        style: TextStyle(
-                            fontSize: context.captionFont,
-                            color: cs.primary,
-                            fontWeight: FontWeight.w600)),
+                    Text(
+                      'Request sent',
+                      style: TextStyle(
+                        fontSize: context.captionFont,
+                        color: cs.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ],
                 ),
               ],
@@ -377,16 +400,20 @@ class _OutgoingRequestRow extends ConsumerWidget {
             onPressed: () => _confirmCancel(context, ref),
             style: TextButton.styleFrom(
               padding: EdgeInsets.symmetric(
-                  horizontal: context.w * 0.03,
-                  vertical: context.s),
+                horizontal: context.w * 0.03,
+                vertical: context.s,
+              ),
               minimumSize: Size.zero,
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
-            child: Text('Cancel',
-                style: TextStyle(
-                    fontSize: context.captionFont,
-                    color: cs.onSurfaceVariant,
-                    fontWeight: FontWeight.w600)),
+            child: Text(
+              'Cancel',
+              style: TextStyle(
+                fontSize: context.captionFont,
+                color: cs.onSurfaceVariant,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
         ],
       ),
@@ -394,7 +421,8 @@ class _OutgoingRequestRow extends ConsumerWidget {
   }
 
   Future<void> _confirmCancel(BuildContext context, WidgetRef ref) async {
-    final name = request.receiverProfile?.displayName ??
+    final name =
+        request.receiverProfile?.displayName ??
         request.receiverProfile?.username ??
         'this user';
     final confirmed = await showDialog<bool>(
@@ -404,11 +432,13 @@ class _OutgoingRequestRow extends ConsumerWidget {
         content: Text('Cancel your friend request to $name?'),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('Keep')),
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Keep'),
+          ),
           TextButton(
-              onPressed: () => Navigator.pop(ctx, true),
-              child: const Text('Cancel request')),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Cancel request'),
+          ),
         ],
       ),
     );
@@ -445,10 +475,11 @@ class _FriendsSection extends ConsumerWidget {
                 for (final f in friends)
                   Padding(
                     padding: EdgeInsets.fromLTRB(
-                        context.paddingH * 1.3,
-                        0,
-                        context.paddingH * 1.3,
-                        context.s),
+                      context.paddingH * 1.3,
+                      0,
+                      context.paddingH * 1.3,
+                      context.s,
+                    ),
                     child: _FriendRow(friend: f),
                   ),
               ],
@@ -460,9 +491,10 @@ class _FriendsSection extends ConsumerWidget {
           ),
           error: (e, _) => Padding(
             padding: EdgeInsets.all(context.l),
-            child: Text('Error: $e',
-                style:
-                    TextStyle(color: cs.error, fontSize: context.bodyFont)),
+            child: Text(
+              'Error: $e',
+              style: TextStyle(color: cs.error, fontSize: context.bodyFont),
+            ),
           ),
         ),
       ],
@@ -481,7 +513,9 @@ class _FriendRow extends ConsumerWidget {
       onTap: () => context.push(AppRoutes.friendProfilePath(friend.id)),
       child: Container(
         padding: EdgeInsets.symmetric(
-            horizontal: context.w * 0.04, vertical: context.m),
+          horizontal: context.w * 0.04,
+          vertical: context.m,
+        ),
         decoration: BoxDecoration(
           color: cs.surfaceContainer,
           borderRadius: BorderRadius.circular(context.w * 0.03),
@@ -497,22 +531,29 @@ class _FriendRow extends ConsumerWidget {
                   Text(
                     friend.displayName ?? friend.username ?? 'Unknown',
                     style: TextStyle(
-                        fontSize: context.bodyFont,
-                        fontWeight: FontWeight.w600),
+                      fontSize: context.bodyFont,
+                      fontWeight: FontWeight.w600,
+                    ),
                     overflow: TextOverflow.ellipsis,
                   ),
                   if (friend.username != null)
-                    Text('@${friend.username}',
-                        style: TextStyle(
-                            fontSize: context.captionFont,
-                            color: cs.onSurfaceVariant),
-                        overflow: TextOverflow.ellipsis),
+                    Text(
+                      '@${friend.username}',
+                      style: TextStyle(
+                        fontSize: context.captionFont,
+                        color: cs.onSurfaceVariant,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
                 ],
               ),
             ),
             IconButton(
-              icon: Icon(PhosphorIconsRegular.userMinus,
-                  color: cs.outline, size: context.w * 0.05),
+              icon: Icon(
+                PhosphorIconsRegular.userMinus,
+                color: cs.outline,
+                size: context.w * 0.05,
+              ),
               onPressed: () => _confirmRemove(context, ref),
             ),
           ],
@@ -527,19 +568,24 @@ class _FriendRow extends ConsumerWidget {
       builder: (ctx) => AlertDialog(
         title: const Text('Remove friend?'),
         content: Text(
-            'Remove ${friend.displayName ?? friend.username ?? 'this user'} from your friends?'),
+          'Remove ${friend.displayName ?? friend.username ?? 'this user'} from your friends?',
+        ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('Cancel')),
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
           TextButton(
-              onPressed: () => Navigator.pop(ctx, true),
-              child: const Text('Remove')),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Remove'),
+          ),
         ],
       ),
     );
     if (confirmed == true) {
-      await ref.read(friendsControllerProvider.notifier).removeFriend(friend.id);
+      await ref
+          .read(friendsControllerProvider.notifier)
+          .removeFriend(friend.id);
     }
   }
 }
@@ -564,34 +610,50 @@ class _RequestRow extends ConsumerWidget {
           if (profile != null)
             FriendAvatar(profile: profile, size: context.w * 0.12)
           else
-            Icon(PhosphorIconsRegular.user, size: context.w * 0.12, color: cs.outline),
+            Icon(
+              PhosphorIconsRegular.user,
+              size: context.w * 0.12,
+              color: cs.outline,
+            ),
           SizedBox(width: context.w * 0.04),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(name,
-                    style: TextStyle(
-                        fontSize: context.bodyFont,
-                        fontWeight: FontWeight.w600),
-                    overflow: TextOverflow.ellipsis),
-                Text('wants to be friends',
-                    style: TextStyle(
-                        fontSize: context.captionFont,
-                        color: cs.onSurfaceVariant)),
+                Text(
+                  name,
+                  style: TextStyle(
+                    fontSize: context.bodyFont,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Text(
+                  'wants to be friends',
+                  style: TextStyle(
+                    fontSize: context.captionFont,
+                    color: cs.onSurfaceVariant,
+                  ),
+                ),
               ],
             ),
           ),
           IconButton(
-            icon: Icon(PhosphorIconsRegular.checkCircle,
-                color: cs.primary, size: context.w * 0.07),
+            icon: Icon(
+              PhosphorIconsRegular.checkCircle,
+              color: cs.primary,
+              size: context.w * 0.07,
+            ),
             onPressed: () => ref
                 .read(friendsControllerProvider.notifier)
                 .acceptRequest(request.id),
           ),
           IconButton(
-            icon: Icon(PhosphorIconsRegular.xCircle,
-                color: cs.outline, size: context.w * 0.07),
+            icon: Icon(
+              PhosphorIconsRegular.xCircle,
+              color: cs.outline,
+              size: context.w * 0.07,
+            ),
             onPressed: () => ref
                 .read(friendsControllerProvider.notifier)
                 .declineRequest(request.id),
@@ -649,13 +711,13 @@ class _SearchResultRowState extends ConsumerState<_SearchResultRow> {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final friends =
-        ref.watch(friendsListProvider).valueOrNull ?? const [];
+    final friends = ref.watch(friendsListProvider).valueOrNull ?? const [];
     final outgoing =
         ref.watch(outgoingFriendRequestsProvider).valueOrNull ?? const [];
     final alreadyFriend = friends.any((f) => f.id == widget.profile.id);
-    final alreadyPending =
-        outgoing.any((r) => r.receiverId == widget.profile.id);
+    final alreadyPending = outgoing.any(
+      (r) => r.receiverId == widget.profile.id,
+    );
     return Container(
       padding: EdgeInsets.all(context.w * 0.04),
       decoration: BoxDecoration(
@@ -675,16 +737,20 @@ class _SearchResultRowState extends ConsumerState<_SearchResultRow> {
                       widget.profile.username ??
                       'Unknown',
                   style: TextStyle(
-                      fontSize: context.bodyFont,
-                      fontWeight: FontWeight.w600),
+                    fontSize: context.bodyFont,
+                    fontWeight: FontWeight.w600,
+                  ),
                   overflow: TextOverflow.ellipsis,
                 ),
                 if (widget.profile.username != null)
-                  Text('@${widget.profile.username}',
-                      style: TextStyle(
-                          fontSize: context.captionFont,
-                          color: cs.onSurfaceVariant),
-                      overflow: TextOverflow.ellipsis),
+                  Text(
+                    '@${widget.profile.username}',
+                    style: TextStyle(
+                      fontSize: context.captionFont,
+                      color: cs.onSurfaceVariant,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
               ],
             ),
           ),
@@ -736,17 +802,19 @@ class _SearchResultTrailing extends StatelessWidget {
       return SizedBox(
         width: context.w * 0.05,
         height: context.w * 0.05,
-        child:
-            CircularProgressIndicator(strokeWidth: 2, color: cs.primary),
+        child: CircularProgressIndicator(strokeWidth: 2, color: cs.primary),
       );
     }
     return TextButton(
       onPressed: onAdd,
-      child: Text('Add',
-          style: TextStyle(
-              fontSize: context.captionFont,
-              color: cs.primary,
-              fontWeight: FontWeight.w700)),
+      child: Text(
+        'Add',
+        style: TextStyle(
+          fontSize: context.captionFont,
+          color: cs.primary,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
     );
   }
 }
@@ -768,11 +836,14 @@ class _StatusChip extends StatelessWidget {
       children: [
         Icon(icon, size: context.captionFont * 1.2, color: color),
         SizedBox(width: context.w * 0.015),
-        Text(label,
-            style: TextStyle(
-                fontSize: context.captionFont,
-                color: color,
-                fontWeight: FontWeight.w600)),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: context.captionFont,
+            color: color,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ],
     );
   }
@@ -785,10 +856,12 @@ class _EmptyFriendsState extends ConsumerWidget {
   Future<void> _shareInvite(BuildContext context, WidgetRef ref) async {
     final userId = ref.read(currentUserIdProvider);
     if (userId == null) return;
-    ref.read(analyticsProvider).capture(
-      'friend_invite_share',
-      properties: const {'source': 'empty_state'},
-    );
+    ref
+        .read(analyticsProvider)
+        .capture(
+          'friend_invite_share',
+          properties: const {'source': 'empty_state'},
+        );
     final url = DeepLinkService.friendHttpsUri(userId);
     await Share.share(
       'Add me on Sippd 🍷 — we rate, taste, and share wines together.\n\n$url',
@@ -854,7 +927,10 @@ class _EmptyFriendsState extends ConsumerWidget {
             SizedBox(height: context.l),
             FilledButton.icon(
               onPressed: () => _shareInvite(context, ref),
-              icon: Icon(PhosphorIconsRegular.paperPlaneTilt, size: context.w * 0.045),
+              icon: Icon(
+                PhosphorIconsRegular.paperPlaneTilt,
+                size: context.w * 0.045,
+              ),
               label: Text(
                 'Invite friends',
                 style: TextStyle(
@@ -875,7 +951,10 @@ class _EmptyFriendsState extends ConsumerWidget {
             SizedBox(height: context.s),
             TextButton.icon(
               onPressed: onFindFriends,
-              icon: Icon(PhosphorIconsRegular.magnifyingGlass, size: context.w * 0.04),
+              icon: Icon(
+                PhosphorIconsRegular.magnifyingGlass,
+                size: context.w * 0.04,
+              ),
               label: Text(
                 'Find by username',
                 style: TextStyle(

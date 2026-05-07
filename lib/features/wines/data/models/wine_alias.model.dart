@@ -23,38 +23,38 @@ class WineAliasModel with _$WineAliasModel {
 
 extension WineAliasModelX on WineAliasModel {
   WineAliasEntity toEntity() => WineAliasEntity(
-        userId: userId,
-        localWineId: localWineId,
-        canonicalWineId: canonicalWineId,
-        source: WineAliasSourceX.fromWire(source),
-        createdAt: createdAt,
-      );
+    userId: userId,
+    localWineId: localWineId,
+    canonicalWineId: canonicalWineId,
+    source: WineAliasSourceX.fromWire(source),
+    createdAt: createdAt,
+  );
 }
 
 extension WineAliasEntityX on WineAliasEntity {
   WineAliasModel toModel() => WineAliasModel(
-        userId: userId,
-        localWineId: localWineId,
-        canonicalWineId: canonicalWineId,
-        source: source.wireValue,
-        createdAt: createdAt,
-      );
+    userId: userId,
+    localWineId: localWineId,
+    canonicalWineId: canonicalWineId,
+    source: source.wireValue,
+    createdAt: createdAt,
+  );
 
   WineAliasesTableCompanion toCompanion() => WineAliasesTableCompanion(
-        userId: Value(userId),
-        localWineId: Value(localWineId),
-        canonicalWineId: Value(canonicalWineId),
-        source: Value(source.wireValue),
-        createdAt: Value(createdAt),
-      );
+    userId: Value(userId),
+    localWineId: Value(localWineId),
+    canonicalWineId: Value(canonicalWineId),
+    source: Value(source.wireValue),
+    createdAt: Value(createdAt),
+  );
 }
 
 extension WineAliasTableDataX on WineAliasTableData {
   WineAliasEntity toEntity() => WineAliasEntity(
-        userId: userId,
-        localWineId: localWineId,
-        canonicalWineId: canonicalWineId,
-        source: WineAliasSourceX.fromWire(source),
-        createdAt: createdAt,
-      );
+    userId: userId,
+    localWineId: localWineId,
+    canonicalWineId: canonicalWineId,
+    source: WineAliasSourceX.fromWire(source),
+    createdAt: createdAt,
+  );
 }

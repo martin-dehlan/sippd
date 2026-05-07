@@ -77,9 +77,6 @@ class ExpertTastingApi {
     };
     await _client
         .from('wine_ratings_extended')
-        .upsert(
-          payload,
-          onConflict: 'user_id,canonical_wine_id,context',
-        );
+        .upsert(payload, onConflict: 'user_id,canonical_wine_id,context');
   }
 }

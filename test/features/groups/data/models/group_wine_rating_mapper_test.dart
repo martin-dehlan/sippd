@@ -3,23 +3,21 @@ import 'package:sippd/features/groups/data/models/group_wine_rating.model.dart';
 
 void main() {
   GroupWineRatingModel sampleModel() => GroupWineRatingModel(
-        groupId: 'g-1',
-        canonicalWineId: 'cw-1',
-        userId: 'u-1',
-        rating: 8.5,
-        notes: 'Lovely.',
-        updatedAt: DateTime.utc(2026, 5, 4),
-      );
+    groupId: 'g-1',
+    canonicalWineId: 'cw-1',
+    userId: 'u-1',
+    rating: 8.5,
+    notes: 'Lovely.',
+    updatedAt: DateTime.utc(2026, 5, 4),
+  );
 
   group('GroupWineRatingModel ↔ JSON', () {
     test('round-trips with snake_case keys', () {
       final json = sampleModel().toJson();
-      expect(json.keys, containsAll([
-        'group_id',
-        'canonical_wine_id',
-        'user_id',
-        'updated_at',
-      ]));
+      expect(
+        json.keys,
+        containsAll(['group_id', 'canonical_wine_id', 'user_id', 'updated_at']),
+      );
       expect(GroupWineRatingModel.fromJson(json), sampleModel());
     });
 

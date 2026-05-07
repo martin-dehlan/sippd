@@ -32,7 +32,14 @@ class DnaShape extends StatelessWidget {
   /// as [strokeWidth] — defaults match the in-app density.
   final double vertexRadius;
 
-  static const _axes = ['body', 'tannin', 'acidity', 'sweetness', 'oak', 'intensity'];
+  static const _axes = [
+    'body',
+    'tannin',
+    'acidity',
+    'sweetness',
+    'oak',
+    'intensity',
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +84,9 @@ class _DnaShapePainter extends CustomPainter {
     for (var i = 0; i < values.length; i++) {
       final angle = (math.pi * 2 / values.length) * i - math.pi / 2;
       final radius = r * (0.42 + values[i] * 0.58);
-      points.add(Offset(cx + math.cos(angle) * radius, cy + math.sin(angle) * radius));
+      points.add(
+        Offset(cx + math.cos(angle) * radius, cy + math.sin(angle) * radius),
+      );
     }
 
     final path = _catmullRomClosed(points);
@@ -118,8 +127,14 @@ class _DnaShapePainter extends CustomPainter {
       final p1 = at(i);
       final p2 = at(i + 1);
       final p3 = at(i + 2);
-      final c1 = Offset(p1.dx + (p2.dx - p0.dx) / 6, p1.dy + (p2.dy - p0.dy) / 6);
-      final c2 = Offset(p2.dx - (p3.dx - p1.dx) / 6, p2.dy - (p3.dy - p1.dy) / 6);
+      final c1 = Offset(
+        p1.dx + (p2.dx - p0.dx) / 6,
+        p1.dy + (p2.dy - p0.dy) / 6,
+      );
+      final c2 = Offset(
+        p2.dx - (p3.dx - p1.dx) / 6,
+        p2.dy - (p3.dy - p1.dy) / 6,
+      );
       path.cubicTo(c1.dx, c1.dy, c2.dx, c2.dy, p2.dx, p2.dy);
     }
     path.close();

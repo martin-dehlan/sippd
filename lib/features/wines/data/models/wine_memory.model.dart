@@ -22,42 +22,42 @@ class WineMemoryModel with _$WineMemoryModel {
 
 extension WineMemoryModelToEntity on WineMemoryModel {
   WineMemoryEntity toEntity() => WineMemoryEntity(
-        id: id,
-        wineId: wineId,
-        userId: userId,
-        imageUrl: imageUrl,
-        localImagePath: localImagePath,
-        createdAt: createdAt,
-      );
+    id: id,
+    wineId: wineId,
+    userId: userId,
+    imageUrl: imageUrl,
+    localImagePath: localImagePath,
+    createdAt: createdAt,
+  );
 }
 
 extension WineMemoryEntityToModel on WineMemoryEntity {
   WineMemoryModel toModel() => WineMemoryModel(
-        id: id,
-        wineId: wineId,
-        userId: userId,
-        imageUrl: imageUrl,
-        localImagePath: localImagePath,
-        createdAt: createdAt,
-      );
+    id: id,
+    wineId: wineId,
+    userId: userId,
+    imageUrl: imageUrl,
+    localImagePath: localImagePath,
+    createdAt: createdAt,
+  );
 
   WineMemoryTableData toTableData() => WineMemoryTableData(
-        id: id,
-        wineId: wineId,
-        userId: userId,
-        imageUrl: imageUrl,
-        localImagePath: localImagePath,
-        createdAt: createdAt,
-      );
+    id: id,
+    wineId: wineId,
+    userId: userId,
+    imageUrl: imageUrl,
+    localImagePath: localImagePath,
+    createdAt: createdAt,
+  );
 }
 
 extension WineMemoryTableDataToEntity on WineMemoryTableData {
   WineMemoryEntity toEntity() => WineMemoryEntity(
-        id: id,
-        wineId: wineId,
-        userId: userId,
-        imageUrl: imageUrl,
-        localImagePath: localImagePath,
-        createdAt: createdAt,
-      );
+    id: id,
+    wineId: wineId,
+    userId: userId,
+    imageUrl: imageUrl,
+    localImagePath: localImagePath,
+    createdAt: createdAt,
+  );
 }

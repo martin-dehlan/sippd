@@ -8,16 +8,15 @@ void main() {
     required String userId,
     required double rating,
     String? cid,
-  }) =>
-      WineEntity(
-        id: id,
-        name: id,
-        rating: rating,
-        type: WineType.red,
-        userId: userId,
-        canonicalWineId: cid ?? id,
-        createdAt: DateTime(2026),
-      );
+  }) => WineEntity(
+    id: id,
+    name: id,
+    rating: rating,
+    type: WineType.red,
+    userId: userId,
+    canonicalWineId: cid ?? id,
+    createdAt: DateTime(2026),
+  );
 
   group('computeGroupWineRanks', () {
     test('owner-only: rank order matches descending rating', () {
@@ -74,9 +73,7 @@ void main() {
       // Owner of "a" wrote BOTH wines.rating (8) and a group_wine_rating
       // row (2). The duplicate from the owner must be ignored.
       final ranks = computeGroupWineRanks(
-        wines: [
-          wine(id: 'a', userId: 'owner-a', rating: 8),
-        ],
+        wines: [wine(id: 'a', userId: 'owner-a', rating: 8)],
         memberRatings: [
           const MemberRatingRow(
             canonicalWineId: 'a',

@@ -22,8 +22,7 @@ class ProfilesTable extends Table {
   TextColumn get stylesCsv => text().withDefault(const Constant(''))();
   TextColumn get drinkFrequency => text().nullable()();
   TextColumn get tasteEmoji => text().nullable()();
-  DateTimeColumn get updatedAt =>
-      dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
 
   @override
   Set<Column> get primaryKey => {id};

@@ -16,11 +16,7 @@ class MemoryDraft {
   final String? imageUrl;
   final String? localImagePath;
 
-  const MemoryDraft({
-    required this.id,
-    this.imageUrl,
-    this.localImagePath,
-  });
+  const MemoryDraft({required this.id, this.imageUrl, this.localImagePath});
 }
 
 class WineMemoriesEditor extends ConsumerStatefulWidget {
@@ -34,8 +30,7 @@ class WineMemoriesEditor extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<WineMemoriesEditor> createState() =>
-      _WineMemoriesEditorState();
+  ConsumerState<WineMemoriesEditor> createState() => _WineMemoriesEditorState();
 }
 
 class _WineMemoriesEditorState extends ConsumerState<WineMemoriesEditor> {
@@ -129,10 +124,7 @@ class _WineMemoriesEditorState extends ConsumerState<WineMemoriesEditor> {
             runSpacing: context.w * 0.025,
             children: [
               for (final m in widget.memories)
-                _MemoryThumb(
-                  memory: m,
-                  onRemove: () => _confirmRemove(m.id),
-                ),
+                _MemoryThumb(memory: m, onRemove: () => _confirmRemove(m.id)),
               _AddTile(
                 isLoading: _isUploading,
                 onTap: _isUploading ? null : _pickAndAdd,
@@ -203,15 +195,18 @@ class _MemoryThumb extends StatelessWidget {
               Image.network(
                 memory.imageUrl!,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Icon(
+                errorBuilder: (_, _, _) => Icon(
                   PhosphorIconsRegular.image,
                   color: cs.outline,
                   size: size * 0.4,
                 ),
               )
             else
-              Icon(PhosphorIconsRegular.image,
-                  color: cs.outline, size: size * 0.4),
+              Icon(
+                PhosphorIconsRegular.image,
+                color: cs.outline,
+                size: size * 0.4,
+              ),
             Positioned(
               top: context.xs,
               right: context.xs,
@@ -268,8 +263,11 @@ class _AddTile extends StatelessWidget {
             : Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(PhosphorIconsRegular.cameraPlus,
-                      size: context.w * 0.07, color: cs.outline),
+                  Icon(
+                    PhosphorIconsRegular.cameraPlus,
+                    size: context.w * 0.07,
+                    color: cs.outline,
+                  ),
                   SizedBox(height: context.xs),
                   Text(
                     'Add',
@@ -299,15 +297,18 @@ Future<ImageSource?> _showSourceSheet(BuildContext context) {
             children: [
               ListTile(
                 leading: Icon(PhosphorIconsRegular.camera, color: cs.primary),
-                title: Text('Take photo',
-                    style: TextStyle(fontSize: ctx.bodyFont)),
+                title: Text(
+                  'Take photo',
+                  style: TextStyle(fontSize: ctx.bodyFont),
+                ),
                 onTap: () => Navigator.pop(ctx, ImageSource.camera),
               ),
               ListTile(
-                leading:
-                    Icon(PhosphorIconsRegular.images, color: cs.primary),
-                title: Text('Choose from gallery',
-                    style: TextStyle(fontSize: ctx.bodyFont)),
+                leading: Icon(PhosphorIconsRegular.images, color: cs.primary),
+                title: Text(
+                  'Choose from gallery',
+                  style: TextStyle(fontSize: ctx.bodyFont),
+                ),
                 onTap: () => Navigator.pop(ctx, ImageSource.gallery),
               ),
             ],

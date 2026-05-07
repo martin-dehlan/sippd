@@ -106,8 +106,10 @@ class _FilterChip extends StatelessWidget {
               Container(
                 width: context.w * 0.018,
                 height: context.w * 0.018,
-                decoration:
-                    BoxDecoration(color: dotColor, shape: BoxShape.circle),
+                decoration: BoxDecoration(
+                  color: dotColor,
+                  shape: BoxShape.circle,
+                ),
               ),
               SizedBox(width: context.w * 0.015),
             ],
@@ -116,8 +118,7 @@ class _FilterChip extends StatelessWidget {
               style: TextStyle(
                 fontSize: context.captionFont,
                 fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
-                color:
-                    isSelected ? cs.onPrimaryContainer : cs.onSurfaceVariant,
+                color: isSelected ? cs.onPrimaryContainer : cs.onSurfaceVariant,
               ),
             ),
           ],

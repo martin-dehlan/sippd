@@ -69,10 +69,7 @@ class CompassShareCard extends StatelessWidget {
           _Tagline(tagline: data.archetypeTagline),
           const Spacer(flex: 2),
           Center(
-            child: _LabeledShape(
-              dna: data.dna,
-              color: data.archetypeColor,
-            ),
+            child: _LabeledShape(dna: data.dna, color: data.archetypeColor),
           ),
           const Spacer(flex: 2),
           _TraitsBlock(dna: data.dna, accent: data.archetypeColor),
@@ -114,11 +111,7 @@ class _Header extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Icon(
-              PhosphorIconsRegular.wine,
-              color: accent,
-              size: 38,
-            ),
+            Icon(PhosphorIconsRegular.wine, color: accent, size: 38),
             const SizedBox(width: 16),
             Text(
               'WINE PERSONALITY',
@@ -369,11 +362,7 @@ class _TraitsBlock extends StatelessWidget {
         const SizedBox(height: 24),
         for (var i = 0; i < ranked.length; i++) ...[
           if (i > 0) const SizedBox(height: 18),
-          _TraitRow(
-            rank: i + 1,
-            axis: ranked[i].$1,
-            value: ranked[i].$2,
-          ),
+          _TraitRow(rank: i + 1, axis: ranked[i].$1, value: ranked[i].$2),
         ],
       ],
     );

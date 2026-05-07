@@ -30,35 +30,44 @@ String traitLabel(String axis) => _kLabels[axis] ?? axis;
 /// that taste_traits surfaces to the user. Buckets match the existing
 /// in-app copy 1:1 — keep these in sync if either ever moves.
 String traitDescriptor(String axis, double v) => switch (axis) {
-      'body' => v < 0.4
-          ? 'Light, easy-drinking'
-          : v < 0.65
-              ? 'Balanced'
-              : 'Bold, full-bodied',
-      'tannin' => v < 0.4
-          ? 'Soft, low-grip'
-          : v < 0.65
-              ? 'Medium grip'
-              : 'Grippy, structured',
-      'acidity' => v < 0.4
-          ? 'Soft, round'
-          : v < 0.65
-              ? 'Balanced'
-              : 'Crisp, bright',
-      'sweetness' =>
-        v < 0.15 ? 'Bone dry' : v < 0.4 ? 'Off-dry' : 'Sweet-leaning',
-      'oak' => v < 0.3
-          ? 'Unoaked, fresh'
-          : v < 0.55
-              ? 'Touch of oak'
-              : 'Oak-forward',
-      'intensity' => v < 0.4
-          ? 'Subtle aromatics'
-          : v < 0.7
-              ? 'Expressive'
-              : 'Bold, aromatic',
-      _ => '',
-    };
+  'body' =>
+    v < 0.4
+        ? 'Light, easy-drinking'
+        : v < 0.65
+        ? 'Balanced'
+        : 'Bold, full-bodied',
+  'tannin' =>
+    v < 0.4
+        ? 'Soft, low-grip'
+        : v < 0.65
+        ? 'Medium grip'
+        : 'Grippy, structured',
+  'acidity' =>
+    v < 0.4
+        ? 'Soft, round'
+        : v < 0.65
+        ? 'Balanced'
+        : 'Crisp, bright',
+  'sweetness' =>
+    v < 0.15
+        ? 'Bone dry'
+        : v < 0.4
+        ? 'Off-dry'
+        : 'Sweet-leaning',
+  'oak' =>
+    v < 0.3
+        ? 'Unoaked, fresh'
+        : v < 0.55
+        ? 'Touch of oak'
+        : 'Oak-forward',
+  'intensity' =>
+    v < 0.4
+        ? 'Subtle aromatics'
+        : v < 0.7
+        ? 'Expressive'
+        : 'Bold, aromatic',
+  _ => '',
+};
 
 /// Returns the user's axes ranked by distance from neutral (0.5),
 /// most-opinionated first. The top entries are what makes someone's

@@ -37,7 +37,8 @@ class WinePersonalityHero extends ConsumerStatefulWidget {
   final bool showShareCta;
 
   @override
-  ConsumerState<WinePersonalityHero> createState() => _WinePersonalityHeroState();
+  ConsumerState<WinePersonalityHero> createState() =>
+      _WinePersonalityHeroState();
 }
 
 class _WinePersonalityHeroState extends ConsumerState<WinePersonalityHero> {
@@ -69,7 +70,9 @@ class _WinePersonalityHeroState extends ConsumerState<WinePersonalityHero> {
         _Hairline(color: accent),
         GestureDetector(
           behavior: HitTestBehavior.opaque,
-          onTap: canExpand ? () => setState(() => _expanded = !_expanded) : null,
+          onTap: canExpand
+              ? () => setState(() => _expanded = !_expanded)
+              : null,
           child: _CompactHeader(
             compass: compass,
             match: match,
@@ -91,8 +94,9 @@ class _WinePersonalityHeroState extends ConsumerState<WinePersonalityHero> {
                   compass: compass,
                   dna: dna,
                   onUpgradeTap: () => _onUpgrade(),
-                  onShareTap:
-                      widget.showShareCta ? () => _onShare(match, compass, dna) : null,
+                  onShareTap: widget.showShareCta
+                      ? () => _onShare(match, compass, dna)
+                      : null,
                 )
               : const SizedBox(width: double.infinity),
         ),
@@ -104,7 +108,10 @@ class _WinePersonalityHeroState extends ConsumerState<WinePersonalityHero> {
   void _onUpgrade() {
     final isPro = ref.read(isProProvider);
     if (isPro) return;
-    context.push(AppRoutes.paywall, extra: const {'source': 'personality_hero'});
+    context.push(
+      AppRoutes.paywall,
+      extra: const {'source': 'personality_hero'},
+    );
   }
 
   Future<void> _onShare(
@@ -112,8 +119,7 @@ class _WinePersonalityHeroState extends ConsumerState<WinePersonalityHero> {
     TasteCompassEntity compass,
     UserStyleDna? dna,
   ) async {
-    final username =
-        ref.read(currentProfileProvider).valueOrNull?.username;
+    final username = ref.read(currentProfileProvider).valueOrNull?.username;
     final data = CompassShareCardData(
       username: username,
       archetypeName: match.archetype.name,
@@ -123,7 +129,9 @@ class _WinePersonalityHeroState extends ConsumerState<WinePersonalityHero> {
       totalWines: compass.totalCount,
       date: DateTime.now(),
     );
-    await ref.read(shareCardProvider).shareCompassCard(
+    await ref
+        .read(shareCardProvider)
+        .shareCompassCard(
           context: context,
           data: data,
           source: 'personality_hero',
@@ -235,7 +243,9 @@ class _CompactHeader extends StatelessWidget {
       final score = match.score.round();
       parts.add(match.isTentative ? '~$score% match' : '$score% match');
     }
-    parts.add('${compass.totalCount} wine${compass.totalCount == 1 ? '' : 's'}');
+    parts.add(
+      '${compass.totalCount} wine${compass.totalCount == 1 ? '' : 's'}',
+    );
     if (compass.overallAvg != null) {
       parts.add('${compass.overallAvg!.toStringAsFixed(1)}★ avg');
     }
@@ -338,9 +348,6 @@ class _Hairline extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 1,
-      color: color.withValues(alpha: 0.35),
-    );
+    return Container(height: 1, color: color.withValues(alpha: 0.35));
   }
 }

@@ -15,8 +15,8 @@ Future<void> addTastingToCalendar({
   );
   final ok = await a2c.Add2Calendar.addEvent2Cal(event);
   if (!ok && context.mounted) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Could not open calendar')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Could not open calendar')));
   }
 }

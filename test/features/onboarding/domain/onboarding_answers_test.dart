@@ -43,8 +43,11 @@ void main() {
         'frequency': 'rare',
       };
       final a = OnboardingAnswers.fromJson(j);
-      expect(a.tasteLevel, isNull,
-          reason: 'unknown taste level → null, not crash');
+      expect(
+        a.tasteLevel,
+        isNull,
+        reason: 'unknown taste level → null, not crash',
+      );
       expect(a.goals, {OnboardingGoal.remember});
       expect(a.styles, {WineType.red});
       expect(a.frequency, DrinkFrequency.rare);
@@ -69,8 +72,9 @@ void main() {
       );
       expect(next.tasteLevel, TasteLevel.pro);
       expect(next.notificationsAsked, isTrue);
-      expect(next.goals, {OnboardingGoal.remember},
-          reason: 'unspecified field carries over');
+      expect(next.goals, {
+        OnboardingGoal.remember,
+      }, reason: 'unspecified field carries over');
     });
   });
 }

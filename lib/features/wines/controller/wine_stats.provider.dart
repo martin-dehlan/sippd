@@ -110,17 +110,14 @@ List<Tally> statsTopWineries(StatsTopWineriesRef ref) {
 @riverpod
 List<WineEntity> statsTopWines(StatsTopWinesRef ref) {
   final wines = ref.watch(_wineListProvider);
-  final sorted = [...wines]
-    ..sort((a, b) => b.rating.compareTo(a.rating));
+  final sorted = [...wines]..sort((a, b) => b.rating.compareTo(a.rating));
   return sorted.take(10).toList();
 }
 
 @riverpod
 List<WineEntity> statsWinesWithLocation(StatsWinesWithLocationRef ref) {
   final wines = ref.watch(_wineListProvider);
-  return wines
-      .where((w) => w.latitude != null && w.longitude != null)
-      .toList();
+  return wines.where((w) => w.latitude != null && w.longitude != null).toList();
 }
 
 class StatsSpending {
@@ -168,8 +165,9 @@ StatsSpending statsSpending(StatsSpendingRef ref) {
   final sameCcy = priced.where((w) => w.currency == currency).toList();
   final total = sameCcy.fold<double>(0, (acc, w) => acc + (w.price ?? 0));
   final avg = sameCcy.isEmpty ? 0.0 : total / sameCcy.length;
-  final mostExpensive = sameCcy
-      .reduce((a, b) => (a.price ?? 0) >= (b.price ?? 0) ? a : b);
+  final mostExpensive = sameCcy.reduce(
+    (a, b) => (a.price ?? 0) >= (b.price ?? 0) ? a : b,
+  );
   final bestValue = sameCcy.reduce((a, b) {
     final ra = (a.price ?? 0) == 0 ? 0.0 : a.rating / a.price!;
     final rb = (b.price ?? 0) == 0 ? 0.0 : b.rating / b.price!;
@@ -224,9 +222,11 @@ Future<List<DrinkingPartnerEntity>> statsDrinkingPartners(
   );
   if (raw is! List) return const [];
   return raw
-      .map((row) => DrinkingPartnerModel.fromJson(
-            Map<String, dynamic>.from(row as Map),
-          ).toEntity())
+      .map(
+        (row) => DrinkingPartnerModel.fromJson(
+          Map<String, dynamic>.from(row as Map),
+        ).toEntity(),
+      )
       .toList(growable: false);
 }
 

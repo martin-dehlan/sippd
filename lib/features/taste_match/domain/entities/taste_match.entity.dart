@@ -4,11 +4,7 @@ part 'taste_match.entity.freezed.dart';
 
 enum MatchConfidence { low, medium, high }
 
-enum MatchUnavailableReason {
-  unavailable,
-  notEnoughRatings,
-  notEnoughOverlap,
-}
+enum MatchUnavailableReason { unavailable, notEnoughRatings, notEnoughOverlap }
 
 @freezed
 class TasteMatchEntity with _$TasteMatchEntity {

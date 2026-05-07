@@ -19,9 +19,9 @@ class FriendProfileModel with _$FriendProfileModel {
 
 extension FriendProfileModelX on FriendProfileModel {
   FriendProfileEntity toEntity() => FriendProfileEntity(
-        id: id,
-        username: username,
-        displayName: displayName,
-        avatarUrl: avatarUrl,
-      );
+    id: id,
+    username: username,
+    displayName: displayName,
+    avatarUrl: avatarUrl,
+  );
 }

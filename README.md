@@ -64,7 +64,7 @@ See [`CLAUDE.md`](./CLAUDE.md) and [`.claude/RULES/`](./.claude/RULES/) for the 
 
 ```bash
 # Clone
-git clone https://github.com/<your-user>/sippd.git
+git clone https://github.com/martin-dehlan/sippd.git
 cd sippd
 
 # Install dependencies
@@ -165,6 +165,22 @@ features/<feature>/
 
 ---
 
+## Database
+
+Drift is the source of truth on-device; Supabase is the sync backend
+(Auth + Postgres + Storage + Realtime). The schema currently sits at
+`schemaVersion = 1` with no in-place migrations — this is an
+intentional pre-launch reset that consolidates earlier 1→6 migrations
+into a single baseline. Existing TestFlight/beta installs need a
+fresh install to pick up the v1 schema; that's compatible with the
+data-wipe scheduled for the 1.0 store launch.
+
+The Supabase migrations live under `supabase/migrations/` and document
+the production schema (RLS policies, functions, realtime publications).
+
+---
+
 ## License
 
-Private — all rights reserved.
+See [LICENSE](./LICENSE) — source-available for review and study, not
+licensed for production / commercial reuse without permission.

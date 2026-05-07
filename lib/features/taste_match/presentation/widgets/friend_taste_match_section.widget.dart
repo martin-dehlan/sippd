@@ -9,6 +9,7 @@ import '../../../paywall/controller/paywall.provider.dart';
 import '../../controller/taste_match.provider.dart';
 import 'shared_bottles.widget.dart';
 import 'taste_match_score.widget.dart';
+
 class FriendTasteMatchSection extends ConsumerWidget {
   const FriendTasteMatchSection({
     super.key,

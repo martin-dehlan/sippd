@@ -272,8 +272,7 @@ Future<void> _changePassword(
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text("Couldn't send link"),
-        content: Text(describeAppError(e,
-            fallback: 'Try again in a moment.')),
+        content: Text(describeAppError(e, fallback: 'Try again in a moment.')),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),

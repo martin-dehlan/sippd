@@ -75,17 +75,14 @@ void main() {
           authControllerProvider.overrideWith(() => fake),
           connectivityStateProvider.overrideWith(() => _FakeConn(true)),
         ],
-        child: const MaterialApp(
-          home: LoginScreen(),
-        ),
+        child: const MaterialApp(home: LoginScreen()),
       ),
     );
     await tester.pumpAndSettle();
     return fake;
   }
 
-  testWidgets('starts in sign-in mode with Welcome back copy',
-      (tester) async {
+  testWidgets('starts in sign-in mode with Welcome back copy', (tester) async {
     await pumpLogin(tester);
     expect(find.text('Welcome back'), findsOneWidget);
     expect(find.text('Sign In'), findsOneWidget);
@@ -93,8 +90,9 @@ void main() {
     expect(find.text('Display Name'), findsNothing);
   });
 
-  testWidgets('toggles to sign-up mode and shows Display Name field',
-      (tester) async {
+  testWidgets('toggles to sign-up mode and shows Display Name field', (
+    tester,
+  ) async {
     await pumpLogin(tester);
     await tester.tap(find.text('Don\'t have an account? Sign Up'));
     await tester.pumpAndSettle();
@@ -103,14 +101,19 @@ void main() {
     expect(find.text('Display Name'), findsOneWidget);
   });
 
-  testWidgets('submit calls signIn with the entered credentials',
-      (tester) async {
+  testWidgets('submit calls signIn with the entered credentials', (
+    tester,
+  ) async {
     final fake = await pumpLogin(tester);
 
     await tester.enterText(
-        find.widgetWithText(TextFormField, 'Email'), 'me@example.com');
+      find.widgetWithText(TextFormField, 'Email'),
+      'me@example.com',
+    );
     await tester.enterText(
-        find.widgetWithText(TextFormField, 'Password'), 'hunter2');
+      find.widgetWithText(TextFormField, 'Password'),
+      'hunter2',
+    );
     await tester.tap(find.text('Sign In'));
     await tester.pumpAndSettle();
 
@@ -119,8 +122,9 @@ void main() {
     expect(fake.lastPassword, 'hunter2');
   });
 
-  testWidgets('does not call signIn when validators block submission',
-      (tester) async {
+  testWidgets('does not call signIn when validators block submission', (
+    tester,
+  ) async {
     final fake = await pumpLogin(tester);
     // Empty email + password → form invalid.
     await tester.tap(find.text('Sign In'));
@@ -132,9 +136,13 @@ void main() {
     final fake = await pumpLogin(tester, signInThrows: StateError('bad'));
 
     await tester.enterText(
-        find.widgetWithText(TextFormField, 'Email'), 'me@example.com');
+      find.widgetWithText(TextFormField, 'Email'),
+      'me@example.com',
+    );
     await tester.enterText(
-        find.widgetWithText(TextFormField, 'Password'), 'hunter2');
+      find.widgetWithText(TextFormField, 'Password'),
+      'hunter2',
+    );
     await tester.tap(find.text('Sign In'));
     await tester.pumpAndSettle();
 
@@ -146,18 +154,23 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('sign-up submit hits signUp instead of signIn',
-      (tester) async {
+  testWidgets('sign-up submit hits signUp instead of signIn', (tester) async {
     final fake = await pumpLogin(tester);
     await tester.tap(find.text('Don\'t have an account? Sign Up'));
     await tester.pumpAndSettle();
 
     await tester.enterText(
-        find.widgetWithText(TextFormField, 'Display Name'), 'Martin');
+      find.widgetWithText(TextFormField, 'Display Name'),
+      'Martin',
+    );
     await tester.enterText(
-        find.widgetWithText(TextFormField, 'Email'), 'me@example.com');
+      find.widgetWithText(TextFormField, 'Email'),
+      'me@example.com',
+    );
     await tester.enterText(
-        find.widgetWithText(TextFormField, 'Password'), 'hunter2');
+      find.widgetWithText(TextFormField, 'Password'),
+      'hunter2',
+    );
 
     // Default fake returns SignUpOutcome.signedIn → no context.go,
     // so we don't need a real router. Lock in that signUp landed.

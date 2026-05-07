@@ -9,10 +9,8 @@ import '../../domain/entities/canonical_grape.entity.dart';
 /// (id + name) or a free-text fallback the user typed.
 class GrapePickerResult {
   const GrapePickerResult.canonical({required this.id, required this.name})
-      : freetext = null;
-  const GrapePickerResult.freetext(this.freetext)
-      : id = null,
-        name = null;
+    : freetext = null;
+  const GrapePickerResult.freetext(this.freetext) : id = null, name = null;
 
   final String? id;
   final String? name;
@@ -32,8 +30,9 @@ Future<GrapePickerResult?> showGrapePickerSheet({
     isScrollControlled: true,
     backgroundColor: Theme.of(context).colorScheme.surface,
     shape: RoundedRectangleBorder(
-      borderRadius:
-          BorderRadius.vertical(top: Radius.circular(context.w * 0.05)),
+      borderRadius: BorderRadius.vertical(
+        top: Radius.circular(context.w * 0.05),
+      ),
     ),
     builder: (ctx) => _GrapePickerSheet(
       initialCanonicalId: initialCanonicalId,
@@ -43,10 +42,7 @@ Future<GrapePickerResult?> showGrapePickerSheet({
 }
 
 class _GrapePickerSheet extends ConsumerStatefulWidget {
-  const _GrapePickerSheet({
-    this.initialCanonicalId,
-    this.initialFreetext,
-  });
+  const _GrapePickerSheet({this.initialCanonicalId, this.initialFreetext});
 
   final String? initialCanonicalId;
   final String? initialFreetext;
@@ -147,7 +143,9 @@ class _GrapePickerSheetState extends ConsumerState<_GrapePickerSheet> {
                             },
                           ),
                     filled: true,
-                    fillColor: cs.surfaceContainerHighest.withValues(alpha: 0.5),
+                    fillColor: cs.surfaceContainerHighest.withValues(
+                      alpha: 0.5,
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(context.w * 0.03),
                       borderSide: BorderSide.none,
@@ -170,9 +168,10 @@ class _GrapePickerSheetState extends ConsumerState<_GrapePickerSheet> {
                         child: CircularProgressIndicator(),
                       ),
                     ),
-                    error: (_, __) => _ErrorState(
-                      onUseFreetext:
-                          _query.trim().isEmpty ? null : _selectFreetext,
+                    error: (_, _) => _ErrorState(
+                      onUseFreetext: _query.trim().isEmpty
+                          ? null
+                          : _selectFreetext,
                     ),
                   ),
                 ),
@@ -217,10 +216,7 @@ class _ResultsList extends StatelessWidget {
           padding: EdgeInsets.all(context.l),
           child: Text(
             'No grapes available yet.',
-            style: TextStyle(
-              fontSize: context.captionFont,
-              color: cs.outline,
-            ),
+            style: TextStyle(fontSize: context.captionFont, color: cs.outline),
           ),
         ),
       );
@@ -352,7 +348,11 @@ class _GrapeTile extends StatelessWidget {
               ),
             ),
             if (selected)
-              Icon(Icons.check, color: cs.primary, size: context.bodyFont * 1.2),
+              Icon(
+                Icons.check,
+                color: cs.primary,
+                size: context.bodyFont * 1.2,
+              ),
           ],
         ),
       ),
@@ -375,10 +375,7 @@ class _ErrorState extends StatelessWidget {
         children: [
           Text(
             "Couldn't load grape catalog.",
-            style: TextStyle(
-              fontSize: context.captionFont,
-              color: cs.outline,
-            ),
+            style: TextStyle(fontSize: context.captionFont, color: cs.outline),
           ),
           if (onUseFreetext != null) ...[
             SizedBox(height: context.s),

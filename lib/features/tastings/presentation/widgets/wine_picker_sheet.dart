@@ -15,8 +15,9 @@ Future<List<String>?> showWinePickerSheet({
     isScrollControlled: true,
     backgroundColor: Theme.of(context).colorScheme.surface,
     shape: RoundedRectangleBorder(
-      borderRadius:
-          BorderRadius.vertical(top: Radius.circular(context.w * 0.05)),
+      borderRadius: BorderRadius.vertical(
+        top: Radius.circular(context.w * 0.05),
+      ),
     ),
     builder: (ctx) => _Sheet(alreadyInLineup: alreadyInLineup),
   );
@@ -79,28 +80,33 @@ class _SheetState extends ConsumerState<_Sheet> {
                           'You have no wines yet.',
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                              fontSize: context.captionFont,
-                              color: cs.onSurfaceVariant),
+                            fontSize: context.captionFont,
+                            color: cs.onSurfaceVariant,
+                          ),
                         ),
                       );
                     }
                     final sorted = List<WineEntity>.from(wines)
                       ..sort((a, b) {
                         final aIn =
-                            widget.alreadyInLineup.contains(a.canonicalWineId) ? 1 : 0;
+                            widget.alreadyInLineup.contains(a.canonicalWineId)
+                            ? 1
+                            : 0;
                         final bIn =
-                            widget.alreadyInLineup.contains(b.canonicalWineId) ? 1 : 0;
+                            widget.alreadyInLineup.contains(b.canonicalWineId)
+                            ? 1
+                            : 0;
                         if (aIn != bIn) return aIn - bIn;
                         return b.rating.compareTo(a.rating);
                       });
                     return ListView.separated(
                       itemCount: sorted.length,
-                      separatorBuilder: (_, _) =>
-                          SizedBox(height: context.xs),
+                      separatorBuilder: (_, _) => SizedBox(height: context.xs),
                       itemBuilder: (_, i) {
                         final wine = sorted[i];
-                        final inLineup =
-                            widget.alreadyInLineup.contains(wine.canonicalWineId);
+                        final inLineup = widget.alreadyInLineup.contains(
+                          wine.canonicalWineId,
+                        );
                         return _WinePickerRow(
                           wine: wine,
                           inLineup: inLineup,
@@ -123,10 +129,13 @@ class _SheetState extends ConsumerState<_Sheet> {
                   loading: () =>
                       const Center(child: CircularProgressIndicator()),
                   error: (e, _) => Center(
-                    child: Text('Error: $e',
-                        style: TextStyle(
-                            fontSize: context.captionFont,
-                            color: cs.error)),
+                    child: Text(
+                      'Error: $e',
+                      style: TextStyle(
+                        fontSize: context.captionFont,
+                        color: cs.error,
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -149,8 +158,9 @@ class _SheetState extends ConsumerState<_Sheet> {
                         ? 'Add wines'
                         : 'Add ${_selected.length} wine${_selected.length == 1 ? '' : 's'}',
                     style: TextStyle(
-                        fontSize: context.bodyFont,
-                        fontWeight: FontWeight.w600),
+                      fontSize: context.bodyFont,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ),
@@ -207,13 +217,16 @@ class _WinePickerRow extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(wine.name,
-                          style: TextStyle(
-                              fontSize: context.bodyFont,
-                              fontWeight: FontWeight.w700,
-                              height: 1.2),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis),
+                      Text(
+                        wine.name,
+                        style: TextStyle(
+                          fontSize: context.bodyFont,
+                          fontWeight: FontWeight.w700,
+                          height: 1.2,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                       SizedBox(height: context.xs * 0.5),
                       Row(
                         children: [
@@ -227,8 +240,9 @@ class _WinePickerRow extends StatelessWidget {
                                 if (wine.country != null) wine.country,
                               ].join(' · '),
                               style: TextStyle(
-                                  fontSize: context.captionFont,
-                                  color: cs.onSurfaceVariant),
+                                fontSize: context.captionFont,
+                                color: cs.onSurfaceVariant,
+                              ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -243,7 +257,9 @@ class _WinePickerRow extends StatelessWidget {
                   _AddedChip()
                 else
                   Icon(
-                    selected ? PhosphorIconsRegular.checkCircle : PhosphorIconsRegular.circle,
+                    selected
+                        ? PhosphorIconsRegular.checkCircle
+                        : PhosphorIconsRegular.circle,
                     color: selected ? cs.primary : cs.outline,
                     size: context.w * 0.06,
                   ),
@@ -262,7 +278,9 @@ class _AddedChip extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
     return Container(
       padding: EdgeInsets.symmetric(
-          horizontal: context.w * 0.025, vertical: context.xs),
+        horizontal: context.w * 0.025,
+        vertical: context.xs,
+      ),
       decoration: BoxDecoration(
         color: cs.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(context.w * 0.02),
@@ -270,8 +288,11 @@ class _AddedChip extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(PhosphorIconsRegular.check,
-              size: context.w * 0.035, color: cs.onSurfaceVariant),
+          Icon(
+            PhosphorIconsRegular.check,
+            size: context.w * 0.035,
+            color: cs.onSurfaceVariant,
+          ),
           SizedBox(width: context.xs),
           Text(
             'Added',

@@ -28,17 +28,17 @@ class SharedBottleModel with _$SharedBottleModel {
 
 extension SharedBottleModelX on SharedBottleModel {
   SharedBottleEntity toEntity() => SharedBottleEntity(
-        groupId: groupId,
-        wineId: wineId,
-        wineName: wineName,
-        winery: winery,
-        region: region,
-        country: country,
-        type: type,
-        vintage: vintage,
-        myRating: myRating,
-        theirRating: theirRating,
-        delta: delta,
-        ratedAt: ratedAt,
-      );
+    groupId: groupId,
+    wineId: wineId,
+    wineName: wineName,
+    winery: winery,
+    region: region,
+    country: country,
+    type: type,
+    vintage: vintage,
+    myRating: myRating,
+    theirRating: theirRating,
+    delta: delta,
+    ratedAt: ratedAt,
+  );
 }

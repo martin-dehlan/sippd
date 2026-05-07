@@ -99,8 +99,7 @@ class DeepLinkService {
   static final _inviteCodeRe = RegExp(r'^[A-Za-z0-9_-]{1,32}$');
 
   bool _isValidUuid(String? s) => s != null && _uuidRe.hasMatch(s);
-  bool _isValidInviteCode(String? s) =>
-      s != null && _inviteCodeRe.hasMatch(s);
+  bool _isValidInviteCode(String? s) => s != null && _inviteCodeRe.hasMatch(s);
 
   Future<void> dispose() async {
     await _sub?.cancel();
@@ -114,21 +113,19 @@ class DeepLinkService {
 
   // HTTPS shareable URLs — chat apps (WhatsApp, iMessage) linkify these,
   // custom schemes they don't. Landing page on sippd.xyz redirects into app.
-  static String tastingHttpsUri(String id) =>
-      'https://sippd.xyz/tasting/$id';
+  static String tastingHttpsUri(String id) => 'https://sippd.xyz/tasting/$id';
   static String groupInviteHttpsUri(String code) =>
       'https://sippd.xyz/group/$code';
-  static String friendHttpsUri(String id) =>
-      'https://sippd.xyz/friend/$id';
+  static String friendHttpsUri(String id) => 'https://sippd.xyz/friend/$id';
 
   // Compact wire format for SharedPreferences storage when a deep link
   // arrives before the user is ready to consume it. Keep human-readable so
   // the next session can debug the stash if it gets stuck.
   static String serializeTarget(DeepLinkTarget t) => switch (t) {
-        DeepLinkGroupInvite(:final inviteCode) => 'group:$inviteCode',
-        DeepLinkTasting(:final tastingId) => 'tasting:$tastingId',
-        DeepLinkFriend(:final friendId) => 'friend:$friendId',
-      };
+    DeepLinkGroupInvite(:final inviteCode) => 'group:$inviteCode',
+    DeepLinkTasting(:final tastingId) => 'tasting:$tastingId',
+    DeepLinkFriend(:final friendId) => 'friend:$friendId',
+  };
 
   static DeepLinkTarget? deserializeTarget(String s) {
     final i = s.indexOf(':');

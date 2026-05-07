@@ -52,7 +52,6 @@ class TastingDetailScreen extends ConsumerWidget {
   }
 }
 
-
 class _WhenRow extends StatelessWidget {
   final DateTime when;
   const _WhenRow({required this.when});
@@ -62,8 +61,11 @@ class _WhenRow extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
     return Row(
       children: [
-        Icon(PhosphorIconsRegular.calendarBlank,
-            size: context.w * 0.04, color: cs.onSurfaceVariant),
+        Icon(
+          PhosphorIconsRegular.calendarBlank,
+          size: context.w * 0.04,
+          color: cs.onSurfaceVariant,
+        ),
         SizedBox(width: context.xs),
         Text(
           DateFormat.yMMMEd().format(when),
@@ -74,8 +76,11 @@ class _WhenRow extends StatelessWidget {
           ),
         ),
         SizedBox(width: context.m),
-        Icon(PhosphorIconsRegular.clock,
-            size: context.w * 0.04, color: cs.onSurfaceVariant),
+        Icon(
+          PhosphorIconsRegular.clock,
+          size: context.w * 0.04,
+          color: cs.onSurfaceVariant,
+        ),
         SizedBox(width: context.xs),
         Text(
           DateFormat.Hm().format(when),
@@ -130,8 +135,9 @@ class _Body extends ConsumerWidget {
         SizedBox(height: context.xl * 1.5),
         Padding(
           padding: EdgeInsets.only(
-              left: context.paddingH * 1.3,
-              right: context.paddingH * 0.8),
+            left: context.paddingH * 1.3,
+            right: context.paddingH * 0.8,
+          ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
@@ -156,7 +162,9 @@ class _Body extends ConsumerWidget {
                       icon: PhosphorIconsRegular.calendarBlank,
                       label: 'Add to calendar',
                       onTap: () => addTastingToCalendar(
-                          context: context, tasting: tasting),
+                        context: context,
+                        tasting: tasting,
+                      ),
                     ),
                     OverflowMenuItem(
                       icon: PhosphorIconsRegular.shareNetwork,
@@ -172,8 +180,8 @@ class _Body extends ConsumerWidget {
                       OverflowMenuItem(
                         icon: PhosphorIconsRegular.pencilSimple,
                         label: 'Edit tasting',
-                        onTap: () => context
-                            .push(AppRoutes.tastingEditPath(tasting.id)),
+                        onTap: () =>
+                            context.push(AppRoutes.tastingEditPath(tasting.id)),
                       ),
                       OverflowMenuItem(
                         icon: PhosphorIconsRegular.calendarX,
@@ -189,16 +197,13 @@ class _Body extends ConsumerWidget {
         ),
         SizedBox(height: context.s),
         Padding(
-          padding:
-              EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
+          padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
           child: _WhenRow(when: local),
         ),
-        if (tasting.description != null &&
-            tasting.description!.isNotEmpty) ...[
+        if (tasting.description != null && tasting.description!.isNotEmpty) ...[
           SizedBox(height: context.s),
           Padding(
-            padding:
-                EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
+            padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
             child: Text(
               tasting.description!,
               style: TextStyle(
@@ -246,7 +251,10 @@ class _Body extends ConsumerWidget {
   }
 
   Future<void> _confirmDelete(
-      BuildContext context, WidgetRef ref, TastingEntity t) async {
+    BuildContext context,
+    WidgetRef ref,
+    TastingEntity t,
+  ) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -259,9 +267,10 @@ class _Body extends ConsumerWidget {
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text('Cancel',
-                style:
-                    TextStyle(color: Theme.of(ctx).colorScheme.error)),
+            child: Text(
+              'Cancel',
+              style: TextStyle(color: Theme.of(ctx).colorScheme.error),
+            ),
           ),
         ],
       ),
@@ -288,17 +297,17 @@ class _PhaseBanner extends ConsumerWidget {
     final cs = Theme.of(context).colorScheme;
     return switch (tasting.state) {
       TastingState.upcoming => _UpcomingBanner(
-          tasting: tasting,
-          isOwner: isOwner,
-          cs: cs,
-          onStart: () => _start(context, ref),
-        ),
+        tasting: tasting,
+        isOwner: isOwner,
+        cs: cs,
+        onStart: () => _start(context, ref),
+      ),
       TastingState.active => _ActiveBanner(
-          tasting: tasting,
-          isOwner: isOwner,
-          cs: cs,
-          onEnd: () => _confirmEnd(context, ref),
-        ),
+        tasting: tasting,
+        isOwner: isOwner,
+        cs: cs,
+        onEnd: () => _confirmEnd(context, ref),
+      ),
       TastingState.concluded => _ConcludedBanner(cs: cs),
     };
   }
@@ -315,7 +324,8 @@ class _PhaseBanner extends ConsumerWidget {
       builder: (ctx) => AlertDialog(
         title: const Text('End tasting?'),
         content: const Text(
-            'This locks the recap. Attendees can still add ratings briefly afterwards.'),
+          'This locks the recap. Attendees can still add ratings briefly afterwards.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
@@ -545,13 +555,15 @@ class _Section extends StatelessWidget {
       children: [
         Padding(
           padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
-          child: Text(label.toUpperCase(),
-              style: TextStyle(
-                fontSize: context.captionFont * 0.95,
-                fontWeight: FontWeight.w700,
-                color: cs.onSurface.withValues(alpha: 0.72),
-                letterSpacing: 1.2,
-              )),
+          child: Text(
+            label.toUpperCase(),
+            style: TextStyle(
+              fontSize: context.captionFont * 0.95,
+              fontWeight: FontWeight.w700,
+              color: cs.onSurface.withValues(alpha: 0.72),
+              letterSpacing: 1.2,
+            ),
+          ),
         ),
         SizedBox(height: context.s),
         child,
@@ -567,47 +579,50 @@ class _RsvpBar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
-    final attendeesAsync =
-        ref.watch(tastingAttendeesProvider(tasting.id));
+    final attendeesAsync = ref.watch(tastingAttendeesProvider(tasting.id));
     final currentUid = ref.watch(currentUserIdProvider);
-    final myStatus = attendeesAsync.whenOrNull(data: (list) {
-          try {
-            return list.firstWhere((a) => a.userId == currentUid).status;
-          } catch (_) {
-            return RsvpStatus.noResponse;
-          }
-        }) ??
+    final myStatus =
+        attendeesAsync.whenOrNull(
+          data: (list) {
+            try {
+              return list.firstWhere((a) => a.userId == currentUid).status;
+            } catch (_) {
+              return RsvpStatus.noResponse;
+            }
+          },
+        ) ??
         RsvpStatus.noResponse;
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
       child: Row(
         children: [
-          Text('Your response',
-              style: TextStyle(
-                fontSize: context.captionFont,
-                color: cs.onSurfaceVariant,
-                fontWeight: FontWeight.w500,
-                letterSpacing: 0.2,
-              )),
+          Text(
+            'Your response',
+            style: TextStyle(
+              fontSize: context.captionFont,
+              color: cs.onSurfaceVariant,
+              fontWeight: FontWeight.w500,
+              letterSpacing: 0.2,
+            ),
+          ),
           const Spacer(),
           SegmentedButton<RsvpStatus>(
             showSelectedIcon: false,
             style: ButtonStyle(
               visualDensity: VisualDensity.compact,
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              textStyle: WidgetStateProperty.all(TextStyle(
-                fontSize: context.captionFont,
-                fontWeight: FontWeight.w600,
-              )),
+              textStyle: WidgetStateProperty.all(
+                TextStyle(
+                  fontSize: context.captionFont,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
             segments: const [
-              ButtonSegment(
-                  value: RsvpStatus.going, label: Text('Going')),
-              ButtonSegment(
-                  value: RsvpStatus.maybe, label: Text('Maybe')),
-              ButtonSegment(
-                  value: RsvpStatus.declined, label: Text('No')),
+              ButtonSegment(value: RsvpStatus.going, label: Text('Going')),
+              ButtonSegment(value: RsvpStatus.maybe, label: Text('Maybe')),
+              ButtonSegment(value: RsvpStatus.declined, label: Text('No')),
             ],
             selected: myStatus == RsvpStatus.noResponse
                 ? const <RsvpStatus>{}
@@ -708,15 +723,20 @@ class _PlaceCard extends StatelessWidget {
                               'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                           userAgentPackageName: 'xyz.sippd.app',
                         ),
-                        MarkerLayer(markers: [
-                          Marker(
-                            point: LatLng(latitude!, longitude!),
-                            width: context.w * 0.1,
-                            height: context.w * 0.1,
-                            child: Icon(PhosphorIconsFill.mapPin,
-                                size: context.w * 0.1, color: cs.primary),
-                          ),
-                        ]),
+                        MarkerLayer(
+                          markers: [
+                            Marker(
+                              point: LatLng(latitude!, longitude!),
+                              width: context.w * 0.1,
+                              height: context.w * 0.1,
+                              child: Icon(
+                                PhosphorIconsFill.mapPin,
+                                size: context.w * 0.1,
+                                color: cs.primary,
+                              ),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   ),
@@ -726,23 +746,30 @@ class _PlaceCard extends StatelessWidget {
                     bottom: context.m,
                     child: Container(
                       padding: EdgeInsets.symmetric(
-                          horizontal: context.m, vertical: context.s),
+                        horizontal: context.m,
+                        vertical: context.s,
+                      ),
                       decoration: BoxDecoration(
                         color: cs.surface.withValues(alpha: 0.92),
                         borderRadius: BorderRadius.circular(context.w * 0.02),
                       ),
                       child: Row(
                         children: [
-                          Icon(PhosphorIconsRegular.mapPin,
-                              size: context.w * 0.045, color: cs.primary),
+                          Icon(
+                            PhosphorIconsRegular.mapPin,
+                            size: context.w * 0.045,
+                            color: cs.primary,
+                          ),
                           SizedBox(width: context.w * 0.02),
                           Expanded(
-                            child: Text(location,
-                                style: TextStyle(
-                                  fontSize: context.bodyFont,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                                overflow: TextOverflow.ellipsis),
+                            child: Text(
+                              location,
+                              style: TextStyle(
+                                fontSize: context.bodyFont,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
                         ],
                       ),
@@ -751,11 +778,13 @@ class _PlaceCard extends StatelessWidget {
                 ],
               )
             : Center(
-                child: Text(location,
-                    style: TextStyle(
-                      fontSize: context.bodyFont,
-                      fontWeight: FontWeight.w600,
-                    )),
+                child: Text(
+                  location,
+                  style: TextStyle(
+                    fontSize: context.bodyFont,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
       ),
     );
@@ -765,18 +794,18 @@ class _PlaceCard extends StatelessWidget {
 typedef _AttendeeEntry = ({FriendProfileEntity profile, RsvpStatus status});
 
 Color _rsvpColor(RsvpStatus s, ColorScheme cs) => switch (s) {
-      RsvpStatus.going => const Color(0xFF6DC383),
-      RsvpStatus.maybe => const Color(0xFFE0A860),
-      RsvpStatus.declined => cs.error,
-      RsvpStatus.noResponse => cs.outline,
-    };
+  RsvpStatus.going => const Color(0xFF6DC383),
+  RsvpStatus.maybe => const Color(0xFFE0A860),
+  RsvpStatus.declined => cs.error,
+  RsvpStatus.noResponse => cs.outline,
+};
 
 int _rsvpOrder(RsvpStatus s) => switch (s) {
-      RsvpStatus.going => 0,
-      RsvpStatus.maybe => 1,
-      RsvpStatus.noResponse => 2,
-      RsvpStatus.declined => 3,
-    };
+  RsvpStatus.going => 0,
+  RsvpStatus.maybe => 1,
+  RsvpStatus.noResponse => 2,
+  RsvpStatus.declined => 3,
+};
 
 class _AttendeesCard extends ConsumerWidget {
   final TastingEntity tasting;
@@ -785,8 +814,7 @@ class _AttendeesCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
-    final attendeesAsync =
-        ref.watch(tastingAttendeesProvider(tasting.id));
+    final attendeesAsync = ref.watch(tastingAttendeesProvider(tasting.id));
     final membersAsync = ref.watch(groupMembersProvider(tasting.groupId));
 
     final attendees = attendeesAsync.valueOrNull ?? const [];
@@ -795,8 +823,7 @@ class _AttendeesCard extends ConsumerWidget {
     if (members.isEmpty && attendeesAsync.isLoading ||
         membersAsync.isLoading && members.isEmpty) {
       return Padding(
-        padding:
-            EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
+        padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
         child: SizedBox(
           height: context.w * 0.11,
           child: Align(
@@ -805,7 +832,9 @@ class _AttendeesCard extends ConsumerWidget {
               width: context.w * 0.05,
               height: context.w * 0.05,
               child: CircularProgressIndicator(
-                  strokeWidth: 2, color: cs.primary),
+                strokeWidth: 2,
+                color: cs.primary,
+              ),
             ),
           ),
         ),
@@ -824,21 +853,22 @@ class _AttendeesCard extends ConsumerWidget {
 
     if (combined.isEmpty) {
       return Padding(
-        padding:
-            EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
-        child: Text('No one invited yet.',
-            style: TextStyle(
-                fontSize: context.captionFont,
-                color: cs.onSurfaceVariant)),
+        padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
+        child: Text(
+          'No one invited yet.',
+          style: TextStyle(
+            fontSize: context.captionFont,
+            color: cs.onSurfaceVariant,
+          ),
+        ),
       );
     }
 
-    final going =
-        combined.where((e) => e.status == RsvpStatus.going).length;
-    final maybe =
-        combined.where((e) => e.status == RsvpStatus.maybe).length;
-    final declined =
-        combined.where((e) => e.status == RsvpStatus.declined).length;
+    final going = combined.where((e) => e.status == RsvpStatus.going).length;
+    final maybe = combined.where((e) => e.status == RsvpStatus.maybe).length;
+    final declined = combined
+        .where((e) => e.status == RsvpStatus.declined)
+        .length;
     final pending = combined
         .where((e) => e.status == RsvpStatus.noResponse)
         .length;
@@ -873,8 +903,7 @@ class _AttendeesCard extends ConsumerWidget {
   }
 }
 
-void _showAttendeesSheet(
-    BuildContext context, List<_AttendeeEntry> all) {
+void _showAttendeesSheet(BuildContext context, List<_AttendeeEntry> all) {
   showModalBottomSheet(
     context: context,
     backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
@@ -907,10 +936,7 @@ class _AvatarCluster extends StatelessWidget {
           for (int i = 0; i < visibleCount; i++)
             Positioned(
               left: i * step,
-              child: _AvatarWithStatus(
-                item: items[i],
-                size: avatarSize,
-              ),
+              child: _AvatarWithStatus(item: items[i], size: avatarSize),
             ),
           if (showOverflow)
             Positioned(
@@ -929,12 +955,14 @@ class _AvatarCluster extends StatelessWidget {
                     shape: BoxShape.circle,
                   ),
                   alignment: Alignment.center,
-                  child: Text('+$overflow',
-                      style: TextStyle(
-                        fontSize: context.captionFont * 0.9,
-                        fontWeight: FontWeight.w700,
-                        color: cs.onSurface,
-                      )),
+                  child: Text(
+                    '+$overflow',
+                    style: TextStyle(
+                      fontSize: context.captionFont * 0.9,
+                      fontWeight: FontWeight.w700,
+                      color: cs.onSurface,
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -1005,73 +1033,77 @@ class _AttendeesSheet extends StatelessWidget {
     ];
 
     final children = <Widget>[];
-    children.add(Center(
-      child: Container(
-        width: context.w * 0.12,
-        height: 4,
-        margin: EdgeInsets.only(bottom: context.m),
-        decoration: BoxDecoration(
-          color: cs.outlineVariant,
-          borderRadius: BorderRadius.circular(2),
+    children.add(
+      Center(
+        child: Container(
+          width: context.w * 0.12,
+          height: 4,
+          margin: EdgeInsets.only(bottom: context.m),
+          decoration: BoxDecoration(
+            color: cs.outlineVariant,
+            borderRadius: BorderRadius.circular(2),
+          ),
         ),
       ),
-    ));
+    );
 
     for (final (label, status) in groups) {
-      final members =
-          all.where((a) => a.status == status).toList();
+      final members = all.where((a) => a.status == status).toList();
       if (members.isEmpty) continue;
-      children.add(Padding(
-        padding: EdgeInsets.only(top: context.s, bottom: context.xs),
-        child: Row(
-          children: [
-            Container(
-              width: context.w * 0.025,
-              height: context.w * 0.025,
-              decoration: BoxDecoration(
-                color: _rsvpColor(status, cs),
-                shape: BoxShape.circle,
+      children.add(
+        Padding(
+          padding: EdgeInsets.only(top: context.s, bottom: context.xs),
+          child: Row(
+            children: [
+              Container(
+                width: context.w * 0.025,
+                height: context.w * 0.025,
+                decoration: BoxDecoration(
+                  color: _rsvpColor(status, cs),
+                  shape: BoxShape.circle,
+                ),
               ),
-            ),
-            SizedBox(width: context.s),
-            Text('$label · ${members.length}',
+              SizedBox(width: context.s),
+              Text(
+                '$label · ${members.length}',
                 style: TextStyle(
                   fontSize: context.captionFont,
                   fontWeight: FontWeight.w700,
                   color: cs.onSurface.withValues(alpha: 0.72),
                   letterSpacing: 1.2,
-                )),
-          ],
+                ),
+              ),
+            ],
+          ),
         ),
-      ));
+      );
       for (final m in members) {
-        children.add(InkWell(
-          onTap: () {
-            Navigator.pop(context);
-            context.push(AppRoutes.friendProfilePath(m.profile.id));
-          },
-          child: Padding(
-            padding: EdgeInsets.symmetric(vertical: context.xs),
-            child: Row(
-              children: [
-                FriendAvatar(
-                    profile: m.profile, size: context.w * 0.1),
-                SizedBox(width: context.m),
-                Expanded(
-                  child: Text(
-                    m.profile.displayName ??
-                        m.profile.username ??
-                        'Unknown',
-                    style: TextStyle(
-                      fontSize: context.bodyFont,
-                      fontWeight: FontWeight.w600,
+        children.add(
+          InkWell(
+            onTap: () {
+              Navigator.pop(context);
+              context.push(AppRoutes.friendProfilePath(m.profile.id));
+            },
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: context.xs),
+              child: Row(
+                children: [
+                  FriendAvatar(profile: m.profile, size: context.w * 0.1),
+                  SizedBox(width: context.m),
+                  Expanded(
+                    child: Text(
+                      m.profile.displayName ?? m.profile.username ?? 'Unknown',
+                      style: TextStyle(
+                        fontSize: context.bodyFont,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-        ));
+        );
       }
     }
 
@@ -1079,11 +1111,10 @@ class _AttendeesSheet extends StatelessWidget {
       top: false,
       child: Padding(
         padding: EdgeInsets.symmetric(
-            horizontal: context.paddingH * 1.3, vertical: context.m),
-        child: ListView(
-          shrinkWrap: true,
-          children: children,
+          horizontal: context.paddingH * 1.3,
+          vertical: context.m,
         ),
+        child: ListView(shrinkWrap: true, children: children),
       ),
     );
   }
@@ -1106,31 +1137,34 @@ class _WinesSection extends ConsumerWidget {
     //   * Active    → any going-attendee can drop a bottle in (everyone
     //                 -brings home tastings + winery walk-ups need this)
     //   * Concluded → lineup is locked
-    final attendees = ref.watch(tastingAttendeesProvider(tasting.id))
-            .valueOrNull ??
+    final attendees =
+        ref.watch(tastingAttendeesProvider(tasting.id)).valueOrNull ??
         const <TastingAttendeeEntity>[];
     final currentUid = ref.watch(currentUserIdProvider);
-    final amGoing = attendees.any((a) =>
-        a.userId == currentUid && a.status == RsvpStatus.going);
-    final canAdd = (tasting.state == TastingState.upcoming && isOwner) ||
+    final amGoing = attendees.any(
+      (a) => a.userId == currentUid && a.status == RsvpStatus.going,
+    );
+    final canAdd =
+        (tasting.state == TastingState.upcoming && isOwner) ||
         (tasting.state == TastingState.active && (amGoing || isOwner));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding:
-              EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
+          padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
           child: Row(
             children: [
               Expanded(
-                child: Text('WINES',
-                    style: TextStyle(
-                      fontSize: context.captionFont * 0.95,
-                      fontWeight: FontWeight.w700,
-                      color: cs.onSurface.withValues(alpha: 0.72),
-                      letterSpacing: 1.2,
-                    )),
+                child: Text(
+                  'WINES',
+                  style: TextStyle(
+                    fontSize: context.captionFont * 0.95,
+                    fontWeight: FontWeight.w700,
+                    color: cs.onSurface.withValues(alpha: 0.72),
+                    letterSpacing: 1.2,
+                  ),
+                ),
               ),
               if (canAdd)
                 GestureDetector(
@@ -1155,15 +1189,20 @@ class _WinesSection extends ConsumerWidget {
                   },
                   child: Row(
                     children: [
-                      Icon(PhosphorIconsRegular.plus,
-                          size: context.w * 0.04, color: cs.primary),
+                      Icon(
+                        PhosphorIconsRegular.plus,
+                        size: context.w * 0.04,
+                        color: cs.primary,
+                      ),
                       SizedBox(width: context.w * 0.01),
-                      Text('Add wines',
-                          style: TextStyle(
-                            fontSize: context.captionFont,
-                            fontWeight: FontWeight.w600,
-                            color: cs.primary,
-                          )),
+                      Text(
+                        'Add wines',
+                        style: TextStyle(
+                          fontSize: context.captionFont,
+                          fontWeight: FontWeight.w600,
+                          color: cs.primary,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -1176,8 +1215,9 @@ class _WinesSection extends ConsumerWidget {
             if (wines.isEmpty) {
               return Padding(
                 padding: EdgeInsets.symmetric(
-                    horizontal: context.paddingH * 1.3,
-                    vertical: context.m),
+                  horizontal: context.paddingH * 1.3,
+                  vertical: context.m,
+                ),
                 child: _WinesEmptyState(
                   isOwner: isOwner,
                   lineupMode: tasting.lineupMode,
@@ -1188,10 +1228,9 @@ class _WinesSection extends ConsumerWidget {
             return ListView.separated(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              padding: EdgeInsets.symmetric(
-                  horizontal: context.paddingH * 1.3),
+              padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
               itemCount: wines.length,
-              separatorBuilder: (_, __) => SizedBox(height: context.s),
+              separatorBuilder: (_, _) => SizedBox(height: context.s),
               itemBuilder: (_, i) {
                 final cid = wines[i].canonicalWineId ?? wines[i].id;
                 return _WineLineupCard(
@@ -1210,7 +1249,7 @@ class _WinesSection extends ConsumerWidget {
             );
           },
           loading: () => const SizedBox.shrink(),
-          error: (_, __) => const SizedBox.shrink(),
+          error: (_, _) => const SizedBox.shrink(),
         ),
       ],
     );
@@ -1239,21 +1278,31 @@ class _WinesEmptyState extends StatelessWidget {
             width: context.w * 0.2,
             height: context.w * 0.2,
             decoration: BoxDecoration(
-                color: cs.primaryContainer, shape: BoxShape.circle),
-            child: Icon(PhosphorIconsRegular.wine,
-                size: context.w * 0.1, color: cs.primary),
+              color: cs.primaryContainer,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              PhosphorIconsRegular.wine,
+              size: context.w * 0.1,
+              color: cs.primary,
+            ),
           ),
           SizedBox(height: context.m),
-          Text(_title,
-              style: TextStyle(
-                  fontSize: context.bodyFont, fontWeight: FontWeight.w600)),
+          Text(
+            _title,
+            style: TextStyle(
+              fontSize: context.bodyFont,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
           SizedBox(height: context.xs),
           Text(
             _hint(isOwner: isOwner),
             textAlign: TextAlign.center,
             style: TextStyle(
-                fontSize: context.captionFont,
-                color: cs.onSurfaceVariant),
+              fontSize: context.captionFont,
+              color: cs.onSurfaceVariant,
+            ),
           ),
         ],
       ),
@@ -1261,16 +1310,14 @@ class _WinesEmptyState extends StatelessWidget {
   }
 
   String get _title {
-    if (lineupMode == TastingLineupMode.open &&
-        state == TastingState.active) {
+    if (lineupMode == TastingLineupMode.open && state == TastingState.active) {
       return 'Lineup fills as you go';
     }
     return 'No wines lined up yet';
   }
 
   String _hint({required bool isOwner}) {
-    if (lineupMode == TastingLineupMode.open &&
-        state == TastingState.active) {
+    if (lineupMode == TastingLineupMode.open && state == TastingState.active) {
       return 'Anyone going can add bottles as they appear';
     }
     if (lineupMode == TastingLineupMode.open) {
@@ -1367,8 +1414,11 @@ class _WineLineupCard extends ConsumerWidget {
                   color: cs.surface.withValues(alpha: 0.85),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(PhosphorIconsRegular.x,
-                    size: context.w * 0.04, color: cs.onSurfaceVariant),
+                child: Icon(
+                  PhosphorIconsRegular.x,
+                  size: context.w * 0.04,
+                  color: cs.onSurfaceVariant,
+                ),
               ),
             ),
           ),

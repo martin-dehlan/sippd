@@ -5,8 +5,10 @@ class FriendWinesApi {
   final SupabaseClient _client;
   FriendWinesApi(this._client);
 
-  Future<List<WineModel>> fetchFriendWines(String friendId,
-      {int limit = 50}) async {
+  Future<List<WineModel>> fetchFriendWines(
+    String friendId, {
+    int limit = 50,
+  }) async {
     final rows = await _client
         .from('wines')
         .select()

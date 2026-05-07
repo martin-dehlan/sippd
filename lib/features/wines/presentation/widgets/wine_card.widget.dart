@@ -98,15 +98,18 @@ class WineCardWidget extends StatelessWidget {
                             ),
                             decoration: BoxDecoration(
                               color: cs.primaryContainer,
-                              borderRadius:
-                                  BorderRadius.circular(context.w * 0.025),
+                              borderRadius: BorderRadius.circular(
+                                context.w * 0.025,
+                              ),
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(PhosphorIconsRegular.star,
-                                    size: context.w * 0.04,
-                                    color: const Color(0xFFD4A84B)),
+                                Icon(
+                                  PhosphorIconsRegular.star,
+                                  size: context.w * 0.04,
+                                  color: const Color(0xFFD4A84B),
+                                ),
                                 SizedBox(width: context.w * 0.008),
                                 Text(
                                   effectiveRating.toStringAsFixed(1),
@@ -184,11 +187,13 @@ class WineCardImage extends StatelessWidget {
                           fit: BoxFit.cover,
                           width: double.infinity,
                           height: double.infinity,
-                          errorBuilder: (_, __, ___) => Center(
+                          errorBuilder: (_, _, _) => Center(
                             child: Icon(
                               PhosphorIconsThin.wine,
                               size: size * 0.42,
-                              color: cs.onSurfaceVariant.withValues(alpha: 0.45),
+                              color: cs.onSurfaceVariant.withValues(
+                                alpha: 0.45,
+                              ),
                             ),
                           ),
                           frameBuilder: (_, child, frame, wasSync) {
@@ -197,8 +202,9 @@ class WineCardImage extends StatelessWidget {
                                 child: Icon(
                                   PhosphorIconsThin.wine,
                                   size: size * 0.42,
-                                  color:
-                                      cs.onSurfaceVariant.withValues(alpha: 0.45),
+                                  color: cs.onSurfaceVariant.withValues(
+                                    alpha: 0.45,
+                                  ),
                                 ),
                               );
                             }
@@ -210,8 +216,7 @@ class WineCardImage extends StatelessWidget {
                         child: Icon(
                           PhosphorIconsThin.wine,
                           size: size * 0.42,
-                          color:
-                              cs.onSurfaceVariant.withValues(alpha: 0.45),
+                          color: cs.onSurfaceVariant.withValues(alpha: 0.45),
                         ),
                       ),
               ),

@@ -43,8 +43,7 @@ class _EmailConfirmationScreenState
     super.dispose();
   }
 
-  bool get _isReset =>
-      widget.purpose == EmailConfirmationPurpose.resetPassword;
+  bool get _isReset => widget.purpose == EmailConfirmationPurpose.resetPassword;
 
   void _startCooldown() {
     _timer?.cancel();
@@ -146,11 +145,7 @@ class _EmailConfirmationScreenState
                       ),
                     ),
                     SizedBox(height: context.m),
-                    _Subtitle(
-                      email: widget.email,
-                      intro: intro,
-                      outro: outro,
-                    ),
+                    _Subtitle(email: widget.email, intro: intro, outro: outro),
                     SizedBox(height: context.xxl),
                     SizedBox(
                       height: context.h * 0.06,
@@ -262,10 +257,7 @@ class _Subtitle extends StatelessWidget {
           TextSpan(text: '$intro\n'),
           TextSpan(
             text: email,
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-              color: cs.onSurface,
-            ),
+            style: TextStyle(fontWeight: FontWeight.w600, color: cs.onSurface),
           ),
           TextSpan(text: outro),
         ],

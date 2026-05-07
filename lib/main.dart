@@ -35,9 +35,7 @@ void main() async {
 
   await dotenv.load();
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
   await Supabase.initialize(
@@ -102,12 +100,14 @@ class _SippdAppState extends ConsumerState<SippdApp> {
     // identified to PostHog or RevenueCat. Catch that case here.
     final bootUser = ref.read(authControllerProvider).valueOrNull;
     if (bootUser != null) {
-      ref.read(analyticsProvider).identify(
-        bootUser.id,
-        userProperties: {
-          if (bootUser.email != null) 'email': bootUser.email!,
-        },
-      );
+      ref
+          .read(analyticsProvider)
+          .identify(
+            bootUser.id,
+            userProperties: {
+              if (bootUser.email != null) 'email': bootUser.email!,
+            },
+          );
       ref.read(paywallProvider).identify(bootUser.id);
     }
   }
@@ -140,41 +140,38 @@ class _SippdAppState extends ConsumerState<SippdApp> {
     });
 
     // Route the app when a push is tapped.
-    ref.listen<AsyncValue<RemoteMessage>>(
-      pushTapsProvider,
-      (_, next) {
-        final msg = next.valueOrNull;
-        if (msg == null) return;
-        // Invalidate the caches that feed whichever screen we're about to
-        // land on — the underlying providers are one-shot Futures, so
-        // without this the destination screen shows stale data until
-        // manual refresh / app restart.
-        _invalidateForPush(ref, msg);
-        final route = _routeForPush(msg);
-        if (route == null) return;
-        if (_isShellTab(route)) {
-          router.go(route);
-        } else {
-          router.push(route);
-        }
-      },
-    );
+    ref.listen<AsyncValue<RemoteMessage>>(pushTapsProvider, (_, next) {
+      final msg = next.valueOrNull;
+      if (msg == null) return;
+      // Invalidate the caches that feed whichever screen we're about to
+      // land on — the underlying providers are one-shot Futures, so
+      // without this the destination screen shows stale data until
+      // manual refresh / app restart.
+      _invalidateForPush(ref, msg);
+      final route = _routeForPush(msg);
+      if (route == null) return;
+      if (_isShellTab(route)) {
+        router.go(route);
+      } else {
+        router.push(route);
+      }
+    });
 
     // Incoming deep link (io.sippd://…).
-    ref.listen<AsyncValue<DeepLinkTarget>>(
-      deepLinkStreamProvider,
-      (_, next) {
-        final target = next.valueOrNull;
-        if (target == null) return;
-        _handleDeepLink(ref, router, target);
-      },
-    );
+    ref.listen<AsyncValue<DeepLinkTarget>>(deepLinkStreamProvider, (_, next) {
+      final target = next.valueOrNull;
+      if (target == null) return;
+      _handleDeepLink(ref, router, target);
+    });
 
     // Replay any deep link that arrived while the user was unauthenticated
     // or mid-onboarding the moment the profile crosses into "ready" state.
     // This is what makes a guest tapping a group invite link actually land
     // inside the group post-signup instead of on /login with no context.
-    ref.listen<AsyncValue<ProfileEntity?>>(currentProfileProvider, (prev, next) {
+    ref.listen<AsyncValue<ProfileEntity?>>(currentProfileProvider, (
+      prev,
+      next,
+    ) {
       final wasReady = prev?.valueOrNull?.onboardingCompleted ?? false;
       final isReady = next.valueOrNull?.onboardingCompleted ?? false;
       if (!wasReady && isReady) {
@@ -216,21 +213,25 @@ Future<void> _consumePendingDeepLink(WidgetRef ref, GoRouter router) async {
 }
 
 Future<void> _handleDeepLink(
-    WidgetRef ref, GoRouter router, DeepLinkTarget target) async {
+  WidgetRef ref,
+  GoRouter router,
+  DeepLinkTarget target,
+) async {
   // Guest taps the link → no auth, no profile, can't joinGroup or push a
   // route the guard would just bounce back. Stash and replay later.
   if (!_readyForDeepLink(ref)) {
     await ref
         .read(sharedPreferencesProvider)
-        .setString(_kPendingDeepLinkKey, DeepLinkService.serializeTarget(target));
+        .setString(
+          _kPendingDeepLinkKey,
+          DeepLinkService.serializeTarget(target),
+        );
     return;
   }
   switch (target) {
     case DeepLinkGroupInvite(:final inviteCode):
       try {
-        await ref
-            .read(groupControllerProvider.notifier)
-            .joinGroup(inviteCode);
+        await ref.read(groupControllerProvider.notifier).joinGroup(inviteCode);
       } catch (_) {
         // Already a member or invalid code — try to resolve existing group.
       }

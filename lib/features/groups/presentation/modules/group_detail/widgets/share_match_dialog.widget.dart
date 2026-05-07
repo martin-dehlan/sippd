@@ -24,8 +24,9 @@ Future<ShareMatchResult?> showShareMatchDialog({
     isScrollControlled: true,
     backgroundColor: Theme.of(context).colorScheme.surface,
     shape: RoundedRectangleBorder(
-      borderRadius:
-          BorderRadius.vertical(top: Radius.circular(context.w * 0.05)),
+      borderRadius: BorderRadius.vertical(
+        top: Radius.circular(context.w * 0.05),
+      ),
     ),
     builder: (_) => ShareMatchSheet(mine: mine, candidates: candidates),
   );

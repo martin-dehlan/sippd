@@ -31,7 +31,8 @@ class WineListScreen extends ConsumerWidget {
             SliverToBoxAdapter(
               child: Padding(
                 padding: EdgeInsets.symmetric(
-                    horizontal: context.paddingH * 1.3),
+                  horizontal: context.paddingH * 1.3,
+                ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
@@ -73,9 +74,11 @@ class WineListScreen extends ConsumerWidget {
                           padding: EdgeInsets.all(context.w * 0.02),
                           child: Icon(
                             switch (sortMode) {
-                              WineSortMode.rating => PhosphorIconsRegular.sortAscending,
+                              WineSortMode.rating =>
+                                PhosphorIconsRegular.sortAscending,
                               WineSortMode.recent => PhosphorIconsRegular.clock,
-                              WineSortMode.name => PhosphorIconsRegular.sortAscending,
+                              WineSortMode.name =>
+                                PhosphorIconsRegular.sortAscending,
                             },
                             size: context.w * 0.055,
                             color: cs.onSurfaceVariant,
@@ -105,8 +108,9 @@ class WineListScreen extends ConsumerWidget {
             // Filter chips
             SliverToBoxAdapter(
               child: Padding(
-                padding:
-                    EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
+                padding: EdgeInsets.symmetric(
+                  horizontal: context.paddingH * 1.3,
+                ),
                 child: const WineTypeFilterBar(),
               ),
             ),
@@ -135,20 +139,21 @@ class WineListScreen extends ConsumerWidget {
                 };
                 final sorted = switch (sortMode) {
                   WineSortMode.rating => byRating,
-                  WineSortMode.recent => List<WineEntity>.from(filtered)
-                    ..sort((a, b) => b.createdAt.compareTo(a.createdAt)),
-                  WineSortMode.name => List<WineEntity>.from(filtered)
-                    ..sort((a, b) =>
-                        a.name.toLowerCase().compareTo(b.name.toLowerCase())),
+                  WineSortMode.recent => List<WineEntity>.from(
+                    filtered,
+                  )..sort((a, b) => b.createdAt.compareTo(a.createdAt)),
+                  WineSortMode.name =>
+                    List<WineEntity>.from(filtered)..sort(
+                      (a, b) =>
+                          a.name.toLowerCase().compareTo(b.name.toLowerCase()),
+                    ),
                 };
 
                 return SliverPadding(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: context.paddingH),
+                  padding: EdgeInsets.symmetric(horizontal: context.paddingH),
                   sliver: SliverList.separated(
                     itemCount: sorted.length,
-                    separatorBuilder: (_, _) =>
-                        SizedBox(height: context.s),
+                    separatorBuilder: (_, _) => SizedBox(height: context.s),
                     itemBuilder: (context, index) => AnimatedWineCard(
                       index: index,
                       child: WineCardWidget(
@@ -156,7 +161,8 @@ class WineListScreen extends ConsumerWidget {
                         rank: rankById[sorted[index].id] ?? index + 1,
                         compact: true,
                         onTap: () => context.push(
-                            AppRoutes.wineDetailPath(sorted[index].id)),
+                          AppRoutes.wineDetailPath(sorted[index].id),
+                        ),
                       ),
                     ),
                   ),
@@ -216,11 +222,7 @@ class AnimatedWineCard extends StatefulWidget {
   final int index;
   final Widget child;
 
-  const AnimatedWineCard({
-    super.key,
-    required this.index,
-    required this.child,
-  });
+  const AnimatedWineCard({super.key, required this.index, required this.child});
 
   @override
   State<AnimatedWineCard> createState() => _AnimatedWineCardState();
@@ -246,10 +248,7 @@ class _AnimatedWineCardState extends State<AnimatedWineCard>
     _slideAnimation = Tween<Offset>(
       begin: const Offset(0, 0.15),
       end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeOutCubic,
-    ));
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
 
     Future.delayed(Duration(milliseconds: 60 * widget.index), () {
       if (mounted) _controller.forward();
@@ -266,10 +265,7 @@ class _AnimatedWineCardState extends State<AnimatedWineCard>
   Widget build(BuildContext context) {
     return FadeTransition(
       opacity: _fadeAnimation,
-      child: SlideTransition(
-        position: _slideAnimation,
-        child: widget.child,
-      ),
+      child: SlideTransition(position: _slideAnimation, child: widget.child),
     );
   }
 }

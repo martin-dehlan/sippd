@@ -290,7 +290,11 @@ class _CandidateTile extends StatelessWidget {
               ),
             ),
             SizedBox(width: context.s),
-            Icon(Icons.arrow_forward, color: cs.primary, size: context.w * 0.05),
+            Icon(
+              Icons.arrow_forward,
+              color: cs.primary,
+              size: context.w * 0.05,
+            ),
           ],
         ),
       ),

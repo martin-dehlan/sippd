@@ -13,9 +13,9 @@ class WineAliasesDao extends DatabaseAccessor<AppDatabase>
     required String userId,
     required String localWineId,
   }) {
-    return (select(wineAliasesTable)
-          ..where((t) =>
-              t.userId.equals(userId) & t.localWineId.equals(localWineId)))
+    return (select(wineAliasesTable)..where(
+          (t) => t.userId.equals(userId) & t.localWineId.equals(localWineId),
+        ))
         .getSingleOrNull();
   }
 
@@ -31,9 +31,9 @@ class WineAliasesDao extends DatabaseAccessor<AppDatabase>
     required String userId,
     required String localWineId,
   }) {
-    return (delete(wineAliasesTable)
-          ..where((t) =>
-              t.userId.equals(userId) & t.localWineId.equals(localWineId)))
+    return (delete(wineAliasesTable)..where(
+          (t) => t.userId.equals(userId) & t.localWineId.equals(localWineId),
+        ))
         .go();
   }
 }

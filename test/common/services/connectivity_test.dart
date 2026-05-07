@@ -41,8 +41,7 @@ void main() {
       final probe = Provider<void>((ref) {
         ref.requireOnline();
       });
-      expect(() => container.read(probe),
-          throwsA(isA<OfflineError>()));
+      expect(() => container.read(probe), throwsA(isA<OfflineError>()));
     });
 
     test('does not throw when online', () async {
@@ -69,8 +68,10 @@ void main() {
 
     test('throws TimeoutException past the deadline', () async {
       expect(
-        () => Future.delayed(const Duration(seconds: 30), () => 42)
-            .withNetTimeout(const Duration(milliseconds: 50)),
+        () => Future.delayed(
+          const Duration(seconds: 30),
+          () => 42,
+        ).withNetTimeout(const Duration(milliseconds: 50)),
         throwsA(isA<Exception>()),
       );
     });
@@ -78,23 +79,16 @@ void main() {
 
   group('describeAppError', () {
     test('translates OfflineError to friendly copy', () {
-      expect(
-        describeAppError(const AppError.offline()),
-        contains('offline'),
-      );
+      expect(describeAppError(const AppError.offline()), contains('offline'));
     });
 
     test('translates NetworkError to friendly copy', () {
-      expect(
-        describeAppError(const AppError.network()),
-        contains('Network'),
-      );
+      expect(describeAppError(const AppError.network()), contains('Network'));
     });
 
     test('falls back for unknown errors', () {
       expect(
-        describeAppError(StateError('boom'),
-            fallback: 'Custom fallback.'),
+        describeAppError(StateError('boom'), fallback: 'Custom fallback.'),
         'Custom fallback.',
       );
     });

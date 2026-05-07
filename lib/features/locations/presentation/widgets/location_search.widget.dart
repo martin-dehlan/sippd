@@ -90,9 +90,7 @@ class _LocationSearchWidgetState extends ConsumerState<LocationSearchWidget> {
       if (!mounted) return;
       _onSelected(loc);
     } on LocationUnavailable catch (e) {
-      messenger?.showSnackBar(
-        SnackBar(content: Text(e.message)),
-      );
+      messenger?.showSnackBar(SnackBar(content: Text(e.message)));
     } catch (_) {
       messenger?.showSnackBar(
         const SnackBar(content: Text('Could not read current location')),
@@ -116,13 +114,18 @@ class _LocationSearchWidgetState extends ConsumerState<LocationSearchWidget> {
           style: TextStyle(fontSize: context.bodyFont),
           decoration: InputDecoration(
             hintText: 'Search location...',
-            prefixIcon: Icon(PhosphorIconsRegular.mapPin,
-                color: cs.primary, size: context.w * 0.05),
+            prefixIcon: Icon(
+              PhosphorIconsRegular.mapPin,
+              color: cs.primary,
+              size: context.w * 0.05,
+            ),
             suffixIcon: _controller.text.isNotEmpty
                 ? IconButton(
-                    icon: Icon(PhosphorIconsRegular.x,
-                        size: context.w * 0.05,
-                        color: cs.onSurfaceVariant),
+                    icon: Icon(
+                      PhosphorIconsRegular.x,
+                      size: context.w * 0.05,
+                      color: cs.onSurfaceVariant,
+                    ),
                     onPressed: () {
                       _controller.clear();
                       setState(() => _showResults = false);
@@ -136,10 +139,7 @@ class _LocationSearchWidgetState extends ConsumerState<LocationSearchWidget> {
           onChanged: _onSearchChanged,
         ),
         SizedBox(height: context.s),
-        _UseMyLocationButton(
-          busy: _gpsBusy,
-          onTap: _useCurrentLocation,
-        ),
+        _UseMyLocationButton(busy: _gpsBusy, onTap: _useCurrentLocation),
         if (_showResults) ...[
           SizedBox(height: context.s),
           Container(
@@ -154,10 +154,13 @@ class _LocationSearchWidgetState extends ConsumerState<LocationSearchWidget> {
                   ? Padding(
                       padding: EdgeInsets.all(context.w * 0.06),
                       child: Center(
-                        child: Text('No locations found',
-                            style: TextStyle(
-                                fontSize: context.captionFont,
-                                color: cs.onSurfaceVariant)),
+                        child: Text(
+                          'No locations found',
+                          style: TextStyle(
+                            fontSize: context.captionFont,
+                            color: cs.onSurfaceVariant,
+                          ),
+                        ),
                       ),
                     )
                   : ListView.separated(
@@ -170,21 +173,30 @@ class _LocationSearchWidgetState extends ConsumerState<LocationSearchWidget> {
                         final loc = results[index];
                         return ListTile(
                           dense: true,
-                          leading: Icon(PhosphorIconsRegular.mapPin,
-                              color: cs.primary, size: context.w * 0.05),
-                          title: Text(loc.displayName,
-                              style: TextStyle(
-                                  fontSize: context.captionFont,
-                                  fontWeight: FontWeight.w600),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis),
+                          leading: Icon(
+                            PhosphorIconsRegular.mapPin,
+                            color: cs.primary,
+                            size: context.w * 0.05,
+                          ),
+                          title: Text(
+                            loc.displayName,
+                            style: TextStyle(
+                              fontSize: context.captionFont,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                           subtitle: loc.subtitle.isNotEmpty
-                              ? Text(loc.subtitle,
+                              ? Text(
+                                  loc.subtitle,
                                   style: TextStyle(
-                                      fontSize: context.captionFont * 0.9,
-                                      color: cs.onSurfaceVariant),
+                                    fontSize: context.captionFont * 0.9,
+                                    color: cs.onSurfaceVariant,
+                                  ),
                                   maxLines: 1,
-                                  overflow: TextOverflow.ellipsis)
+                                  overflow: TextOverflow.ellipsis,
+                                )
                               : null,
                           onTap: () => _onSelected(loc),
                         );
@@ -193,16 +205,19 @@ class _LocationSearchWidgetState extends ConsumerState<LocationSearchWidget> {
               loading: () => Padding(
                 padding: EdgeInsets.all(context.w * 0.06),
                 child: Center(
-                    child:
-                        CircularProgressIndicator(color: cs.primary)),
+                  child: CircularProgressIndicator(color: cs.primary),
+                ),
               ),
               error: (_, _) => Padding(
                 padding: EdgeInsets.all(context.w * 0.06),
                 child: Center(
-                  child: Text('Search failed',
-                      style: TextStyle(
-                          fontSize: context.captionFont,
-                          color: cs.error)),
+                  child: Text(
+                    'Search failed',
+                    style: TextStyle(
+                      fontSize: context.captionFont,
+                      color: cs.error,
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -230,7 +245,9 @@ class _UseMyLocationButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(context.w * 0.03),
         child: Padding(
           padding: EdgeInsets.symmetric(
-              horizontal: context.w * 0.04, vertical: context.s * 1.5),
+            horizontal: context.w * 0.04,
+            vertical: context.s * 1.5,
+          ),
           child: Row(
             children: [
               SizedBox(
@@ -238,9 +255,14 @@ class _UseMyLocationButton extends StatelessWidget {
                 height: context.w * 0.05,
                 child: busy
                     ? CircularProgressIndicator(
-                        strokeWidth: 2, color: cs.primary)
-                    : Icon(PhosphorIconsRegular.crosshairSimple,
-                        size: context.w * 0.05, color: cs.primary),
+                        strokeWidth: 2,
+                        color: cs.primary,
+                      )
+                    : Icon(
+                        PhosphorIconsRegular.crosshairSimple,
+                        size: context.w * 0.05,
+                        color: cs.primary,
+                      ),
               ),
               SizedBox(width: context.w * 0.03),
               Expanded(
@@ -253,8 +275,11 @@ class _UseMyLocationButton extends StatelessWidget {
                   ),
                 ),
               ),
-              Icon(PhosphorIconsRegular.caretRight,
-                  size: context.w * 0.05, color: cs.onSurfaceVariant),
+              Icon(
+                PhosphorIconsRegular.caretRight,
+                size: context.w * 0.05,
+                color: cs.onSurfaceVariant,
+              ),
             ],
           ),
         ),

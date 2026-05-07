@@ -10,11 +10,7 @@ import '../../domain/entities/user_style_dna.entity.dart';
 /// plus contextual bonuses (sparkling share, old-world share, region
 /// variety) to pick the closest archetype with a confidence label.
 class ArchetypeHeadline extends StatelessWidget {
-  const ArchetypeHeadline({
-    super.key,
-    required this.compass,
-    this.dna,
-  });
+  const ArchetypeHeadline({super.key, required this.compass, this.dna});
 
   final TasteCompassEntity compass;
   final UserStyleDna? dna;
@@ -25,17 +21,15 @@ class ArchetypeHeadline extends StatelessWidget {
     final match = matchArchetype(compass, dna);
     final a = match.archetype;
     final score = match.score.round();
-    final showScore = match.score > 0 && dna != null && dna!.attributedCount >= 3;
+    final showScore =
+        match.score > 0 && dna != null && dna!.attributedCount >= 3;
 
     return Container(
       padding: EdgeInsets.all(context.s * 1.4),
       decoration: BoxDecoration(
         color: cs.surface,
         borderRadius: BorderRadius.circular(context.w * 0.035),
-        border: Border.all(
-          color: a.color.withValues(alpha: 0.4),
-          width: 1,
-        ),
+        border: Border.all(color: a.color.withValues(alpha: 0.4), width: 1),
       ),
       child: Row(
         children: [
@@ -51,11 +45,7 @@ class ArchetypeHeadline extends StatelessWidget {
               ),
             ),
             alignment: Alignment.center,
-            child: Icon(
-              a.icon,
-              color: a.color,
-              size: context.w * 0.055,
-            ),
+            child: Icon(a.icon, color: a.color, size: context.w * 0.055),
           ),
           SizedBox(width: context.s),
           Expanded(

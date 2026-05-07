@@ -23,15 +23,18 @@ void main() {
         updatedAt: DateTime.utc(2026, 5, 4),
       );
       final json = original.toJson();
-      expect(json.keys, containsAll([
-        'user_id',
-        'tasting_reminders',
-        'tasting_reminder_hours',
-        'friend_activity',
-        'group_activity',
-        'group_wine_shared',
-        'updated_at',
-      ]));
+      expect(
+        json.keys,
+        containsAll([
+          'user_id',
+          'tasting_reminders',
+          'tasting_reminder_hours',
+          'friend_activity',
+          'group_activity',
+          'group_wine_shared',
+          'updated_at',
+        ]),
+      );
       expect(NotificationPrefsModel.fromJson(json), original);
     });
 
@@ -78,8 +81,7 @@ void main() {
       await db.close();
     });
 
-    test('getPrefs returns defaults when no local + no remote row',
-        () async {
+    test('getPrefs returns defaults when no local + no remote row', () async {
       when(() => api.fetch(any())).thenAnswer((_) async => null);
 
       final prefs = await repo.getPrefs('user-1');
@@ -88,10 +90,11 @@ void main() {
       expect(prefs.tastingReminders, isTrue);
     });
 
-    test('getPrefs hydrates local from remote when remote returns a row',
-        () async {
-      when(() => api.fetch('user-1')).thenAnswer((_) async =>
-          NotificationPrefsModel(
+    test(
+      'getPrefs hydrates local from remote when remote returns a row',
+      () async {
+        when(() => api.fetch('user-1')).thenAnswer(
+          (_) async => NotificationPrefsModel(
             userId: 'user-1',
             tastingReminders: false,
             tastingReminderHours: 6,
@@ -99,64 +102,69 @@ void main() {
             groupActivity: true,
             groupWineShared: false,
             updatedAt: DateTime.utc(2026, 5, 4),
-          ));
+          ),
+        );
 
-      final prefs = await repo.getPrefs('user-1');
+        final prefs = await repo.getPrefs('user-1');
 
-      expect(prefs.tastingReminders, isFalse);
-      expect(prefs.tastingReminderHours, 6);
-      // Confirm the remote row landed in the local mirror.
-      final cached =
-          await db.notificationPrefsDao.getByUser('user-1');
-      expect(cached, isNotNull);
-    });
+        expect(prefs.tastingReminders, isFalse);
+        expect(prefs.tastingReminderHours, 6);
+        // Confirm the remote row landed in the local mirror.
+        final cached = await db.notificationPrefsDao.getByUser('user-1');
+        expect(cached, isNotNull);
+      },
+    );
 
-    test('getPrefs falls back to defaults when remote fetch errors',
-        () async {
+    test('getPrefs falls back to defaults when remote fetch errors', () async {
       when(() => api.fetch(any())).thenThrow(StateError('offline'));
 
       final prefs = await repo.getPrefs('user-1');
-      expect(prefs.tastingReminders, isTrue,
-          reason: 'defaults() served on offline');
-    });
-
-    test('updatePrefs writes locally + syncs + writes back server row',
-        () async {
-      final updated = NotificationPrefsEntity.defaults('user-1').copyWith(
-        tastingReminders: false,
-        groupActivity: false,
+      expect(
+        prefs.tastingReminders,
+        isTrue,
+        reason: 'defaults() served on offline',
       );
-      when(() => api.upsert(any())).thenAnswer((inv) async {
-        final m = inv.positionalArguments.first as NotificationPrefsModel;
-        // Simulate server stamping a fresh updated_at.
-        return m.copyWith(updatedAt: DateTime.utc(2099));
-      });
-
-      await repo.updatePrefs(updated);
-
-      final cached =
-          await db.notificationPrefsDao.getByUser('user-1');
-      expect(cached?.tastingReminders, isFalse);
-      expect(cached?.groupActivity, isFalse);
-      // Server-stamped updated_at should be the one cached, not the
-      // optimistic local stamp. Drift round-trips DateTime through
-      // epoch ints so we compare moments rather than zone-tagged
-      // DateTime equality.
-      expect(cached?.updatedAt.isAtSameMomentAs(DateTime.utc(2099)),
-          isTrue);
     });
+
+    test(
+      'updatePrefs writes locally + syncs + writes back server row',
+      () async {
+        final updated = NotificationPrefsEntity.defaults(
+          'user-1',
+        ).copyWith(tastingReminders: false, groupActivity: false);
+        when(() => api.upsert(any())).thenAnswer((inv) async {
+          final m = inv.positionalArguments.first as NotificationPrefsModel;
+          // Simulate server stamping a fresh updated_at.
+          return m.copyWith(updatedAt: DateTime.utc(2099));
+        });
+
+        await repo.updatePrefs(updated);
+
+        final cached = await db.notificationPrefsDao.getByUser('user-1');
+        expect(cached?.tastingReminders, isFalse);
+        expect(cached?.groupActivity, isFalse);
+        // Server-stamped updated_at should be the one cached, not the
+        // optimistic local stamp. Drift round-trips DateTime through
+        // epoch ints so we compare moments rather than zone-tagged
+        // DateTime equality.
+        expect(cached?.updatedAt.isAtSameMomentAs(DateTime.utc(2099)), isTrue);
+      },
+    );
 
     test('updatePrefs local write survives Supabase failure', () async {
       when(() => api.upsert(any())).thenThrow(StateError('500'));
 
-      final updated = NotificationPrefsEntity.defaults('user-1')
-          .copyWith(friendActivity: false);
+      final updated = NotificationPrefsEntity.defaults(
+        'user-1',
+      ).copyWith(friendActivity: false);
       await repo.updatePrefs(updated);
 
-      final cached =
-          await db.notificationPrefsDao.getByUser('user-1');
-      expect(cached?.friendActivity, isFalse,
-          reason: 'local write stands even when sync fails');
+      final cached = await db.notificationPrefsDao.getByUser('user-1');
+      expect(
+        cached?.friendActivity,
+        isFalse,
+        reason: 'local write stands even when sync fails',
+      );
     });
   });
 }

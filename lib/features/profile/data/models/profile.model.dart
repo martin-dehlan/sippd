@@ -49,35 +49,34 @@ extension ProfileModelX on ProfileModel {
   );
 
   ProfileTableData toTableData() => ProfileTableData(
-        id: id,
-        username: username,
-        displayName: displayName,
-        avatarUrl: avatarUrl,
-        onboardingCompleted: onboardingCompleted,
-        tasteLevel: tasteLevel,
-        goalsCsv: goals.join(','),
-        stylesCsv: styles.join(','),
-        drinkFrequency: drinkFrequency,
-        tasteEmoji: tasteEmoji,
-        updatedAt: DateTime.now(),
-      );
+    id: id,
+    username: username,
+    displayName: displayName,
+    avatarUrl: avatarUrl,
+    onboardingCompleted: onboardingCompleted,
+    tasteLevel: tasteLevel,
+    goalsCsv: goals.join(','),
+    stylesCsv: styles.join(','),
+    drinkFrequency: drinkFrequency,
+    tasteEmoji: tasteEmoji,
+    updatedAt: DateTime.now(),
+  );
 }
 
 extension ProfileTableDataX on ProfileTableData {
   ProfileModel toModel() => ProfileModel(
-        id: id,
-        username: username,
-        displayName: displayName,
-        avatarUrl: avatarUrl,
-        onboardingCompleted: onboardingCompleted,
-        tasteLevel: tasteLevel,
-        goals: goalsCsv.isEmpty ? const [] : goalsCsv.split(','),
-        styles: stylesCsv.isEmpty ? const [] : stylesCsv.split(','),
-        drinkFrequency: drinkFrequency,
-        tasteEmoji: tasteEmoji,
-      );
+    id: id,
+    username: username,
+    displayName: displayName,
+    avatarUrl: avatarUrl,
+    onboardingCompleted: onboardingCompleted,
+    tasteLevel: tasteLevel,
+    goals: goalsCsv.isEmpty ? const [] : goalsCsv.split(','),
+    styles: stylesCsv.isEmpty ? const [] : stylesCsv.split(','),
+    drinkFrequency: drinkFrequency,
+    tasteEmoji: tasteEmoji,
+  );
 }
-
 
 T? _enumByName<T extends Enum>(List<T> values, String? name) {
   if (name == null) return null;

@@ -19,8 +19,9 @@ class WinesDao extends DatabaseAccessor<AppDatabase> with _$WinesDaoMixin {
   }
 
   Future<WineTableData?> getWineById(String id) {
-    return (select(winesTable)..where((w) => w.id.equals(id)))
-        .getSingleOrNull();
+    return (select(
+      winesTable,
+    )..where((w) => w.id.equals(id))).getSingleOrNull();
   }
 
   Future<void> insertWine(WineTableData wine) {
@@ -48,7 +49,8 @@ class WinesDao extends DatabaseAccessor<AppDatabase> with _$WinesDaoMixin {
   }
 
   Stream<WineTableData?> watchWineById(String id) {
-    return (select(winesTable)..where((w) => w.id.equals(id)))
-        .watchSingleOrNull();
+    return (select(
+      winesTable,
+    )..where((w) => w.id.equals(id))).watchSingleOrNull();
   }
 }

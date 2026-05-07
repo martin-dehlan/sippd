@@ -9,12 +9,10 @@ class NotificationPrefsTable extends Table {
       integer().withDefault(const Constant(1))();
   BoolColumn get friendActivity =>
       boolean().withDefault(const Constant(true))();
-  BoolColumn get groupActivity =>
-      boolean().withDefault(const Constant(true))();
+  BoolColumn get groupActivity => boolean().withDefault(const Constant(true))();
   BoolColumn get groupWineShared =>
       boolean().withDefault(const Constant(true))();
-  DateTimeColumn get updatedAt =>
-      dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
 
   @override
   Set<Column> get primaryKey => {userId};
