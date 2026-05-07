@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../../../../common/services/analytics/analytics.provider.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/error_view.widget.dart';
@@ -162,7 +165,6 @@ class GroupListScreen extends ConsumerWidget {
   }
 
   void _showCreateSheet(BuildContext context, WidgetRef ref) {
-    final nameController = TextEditingController();
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -174,25 +176,14 @@ class GroupListScreen extends ConsumerWidget {
         ),
       ),
       builder: (ctx) => _CreateSheet(
-        nameController: nameController,
-        onSubmit: () async {
-          final name = nameController.text.trim();
-          if (name.isEmpty) return;
-          final created = await ref
-              .read(groupControllerProvider.notifier)
-              .createGroup(name);
-          if (!ctx.mounted) return;
-          Navigator.pop(ctx);
-          // Group is fresh and empty — chain straight into the invite sheet
-          // so the user fills it before they leave the moment.
-          if (created != null && context.mounted) {
-            await InviteShareSheet.show(
-              context,
-              code: created.inviteCode,
-              groupId: created.id,
-              groupName: created.name,
-            );
-          }
+        onCreated: (created) async {
+          if (!context.mounted) return;
+          await InviteShareSheet.show(
+            context,
+            code: created.inviteCode,
+            groupId: created.id,
+            groupName: created.name,
+          );
         },
       ),
     );
@@ -440,16 +431,159 @@ class _GroupEmptyState extends StatelessWidget {
   }
 }
 
-class _CreateSheet extends StatelessWidget {
-  final TextEditingController nameController;
-  final VoidCallback onSubmit;
+/// New-group sheet. Lets the user pick a group portrait *before*
+/// creating, so the moment they hit Create the group lands with its
+/// final identity instead of "Untitled photo, edit later". Image is
+/// only uploaded after the row exists (Storage path needs the
+/// groupId), then attached via `updateGroup` — same code path used
+/// by the edit sheet.
+class _CreateSheet extends ConsumerStatefulWidget {
+  final Future<void> Function(GroupEntity created) onCreated;
+  const _CreateSheet({required this.onCreated});
 
-  const _CreateSheet({required this.nameController, required this.onSubmit});
+  @override
+  ConsumerState<_CreateSheet> createState() => _CreateSheetState();
+}
+
+class _CreateSheetState extends ConsumerState<_CreateSheet> {
+  final _nameController = TextEditingController();
+  String? _pickedImagePath;
+  bool _busy = false;
+  String? _errorMessage;
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
+  }
+
+  Future<ImageSource?> _pickSource() {
+    final cs = Theme.of(context).colorScheme;
+    return showModalBottomSheet<ImageSource>(
+      context: context,
+      backgroundColor: cs.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(context.w * 0.05),
+        ),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(height: context.s),
+            ListTile(
+              leading: const Icon(PhosphorIconsRegular.camera),
+              title: const Text('Camera'),
+              onTap: () => Navigator.pop(ctx, ImageSource.camera),
+            ),
+            ListTile(
+              leading: const Icon(PhosphorIconsRegular.images),
+              title: const Text('Gallery'),
+              onTap: () => Navigator.pop(ctx, ImageSource.gallery),
+            ),
+            if (_pickedImagePath != null)
+              ListTile(
+                leading: Icon(PhosphorIconsRegular.trash, color: cs.error),
+                title: Text(
+                  'Remove photo',
+                  style: TextStyle(color: cs.error),
+                ),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  setState(() => _pickedImagePath = null);
+                },
+              ),
+            SizedBox(height: context.m),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _pickImage() async {
+    if (_busy) return;
+    final source = await _pickSource();
+    if (source == null || !mounted) return;
+    final picker = ImagePicker();
+    try {
+      final photo = await picker.pickImage(
+        source: source,
+        maxWidth: 1200,
+        maxHeight: 1200,
+        imageQuality: 80,
+        requestFullMetadata: false,
+      );
+      if (photo == null || !mounted) return;
+      setState(() => _pickedImagePath = photo.path);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Pick failed: $e')));
+    }
+  }
+
+  Future<void> _create() async {
+    final name = _nameController.text.trim();
+    if (name.isEmpty || _busy) return;
+    setState(() {
+      _busy = true;
+      _errorMessage = null;
+    });
+    try {
+      final created = await ref
+          .read(groupControllerProvider.notifier)
+          .createGroup(name);
+      if (created == null) {
+        if (mounted) {
+          setState(() {
+            _busy = false;
+            _errorMessage = "Couldn't create group. Try again.";
+          });
+        }
+        return;
+      }
+      // Image upload only fires when there's something to upload, and
+      // is best-effort — the group already exists either way, so a
+      // failure here just leaves the creator with a placeholder
+      // avatar to retry from the edit sheet.
+      if (_pickedImagePath != null) {
+        try {
+          final service = ref.read(groupImageServiceProvider);
+          final url = await service.uploadImage(
+            groupId: created.id,
+            filePath: _pickedImagePath!,
+          );
+          await ref
+              .read(groupControllerProvider.notifier)
+              .updateGroup(groupId: created.id, imageUrl: url);
+        } catch (e) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Photo upload failed: $e')),
+            );
+          }
+        }
+      }
+      if (!mounted) return;
+      Navigator.pop(context);
+      await widget.onCreated(created);
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _busy = false;
+          _errorMessage = 'Save failed: $e';
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final bottom = MediaQuery.of(context).viewInsets.bottom;
+    final avatarSize = context.w * 0.26;
     return Padding(
       padding: EdgeInsets.only(bottom: bottom),
       child: SafeArea(
@@ -481,33 +615,100 @@ class _CreateSheet extends StatelessWidget {
                   color: cs.onSurfaceVariant,
                 ),
               ),
-              SizedBox(height: context.s),
+              SizedBox(height: context.l),
+              Center(
+                child: GestureDetector(
+                  onTap: _busy ? null : _pickImage,
+                  child: Stack(
+                    children: [
+                      Container(
+                        width: avatarSize,
+                        height: avatarSize,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: cs.surfaceContainer,
+                          image: _pickedImagePath != null
+                              ? DecorationImage(
+                                  image: FileImage(File(_pickedImagePath!)),
+                                  fit: BoxFit.cover,
+                                )
+                              : null,
+                        ),
+                        child: _pickedImagePath == null
+                            ? Icon(
+                                PhosphorIconsRegular.usersThree,
+                                size: avatarSize * 0.45,
+                                color: cs.onSurfaceVariant,
+                              )
+                            : null,
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: Container(
+                          padding: EdgeInsets.all(context.xs * 1.4),
+                          decoration: BoxDecoration(
+                            color: cs.primary,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: cs.surface, width: 2),
+                          ),
+                          child: Icon(
+                            PhosphorIconsRegular.camera,
+                            size: context.w * 0.04,
+                            color: cs.onPrimary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(height: context.l),
               _BorderlessField(
-                controller: nameController,
+                controller: _nameController,
                 hint: 'Group name',
                 autofocus: true,
                 big: true,
                 maxLength: 30,
               ),
+              if (_errorMessage != null) ...[
+                SizedBox(height: context.s),
+                Text(
+                  _errorMessage!,
+                  style: TextStyle(
+                    color: cs.error,
+                    fontSize: context.captionFont,
+                  ),
+                ),
+              ],
               SizedBox(height: context.l),
               SizedBox(
                 width: double.infinity,
                 height: context.h * 0.055,
                 child: FilledButton(
-                  onPressed: onSubmit,
+                  onPressed: _busy ? null : _create,
                   style: FilledButton.styleFrom(
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(context.w * 0.03),
                     ),
                   ),
-                  child: Text(
-                    'Create',
-                    style: TextStyle(
-                      fontSize: context.bodyFont,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+                  child: _busy
+                      ? SizedBox(
+                          width: context.w * 0.045,
+                          height: context.w * 0.045,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: cs.onPrimary,
+                          ),
+                        )
+                      : Text(
+                          'Create',
+                          style: TextStyle(
+                            fontSize: context.bodyFont,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                 ),
               ),
               SizedBox(height: context.s),
