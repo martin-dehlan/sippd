@@ -194,7 +194,8 @@ class ShareCardService {
     final file = await _renderToFile(
       context: context,
       card: card,
-      filenamePrefix: 'sippd_invite_${(data.username ?? 'me').replaceAll(RegExp(r"[^A-Za-z0-9_-]"), "_")}',
+      filenamePrefix:
+          'sippd_invite_${(data.username ?? 'me').replaceAll(RegExp(r"[^A-Za-z0-9_-]"), "_")}',
     );
 
     final fallbackText =

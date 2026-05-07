@@ -110,7 +110,10 @@ class _Body extends StatelessWidget {
             if (axes.isNotEmpty) _AxesGrid(axes: axes),
             if (tasting.aromaTags.isNotEmpty) ...[
               SizedBox(height: context.m),
-              Container(height: 1, color: cs.outlineVariant.withValues(alpha: 0.4)),
+              Container(
+                height: 1,
+                color: cs.outlineVariant.withValues(alpha: 0.4),
+              ),
               SizedBox(height: context.m),
               _AromaLine(tags: tasting.aromaTags),
             ],
@@ -251,7 +254,9 @@ class _DotTrack extends StatelessWidget {
             height: size,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: filled ? cs.primary : cs.outlineVariant.withValues(alpha: 0.7),
+              color: filled
+                  ? cs.primary
+                  : cs.outlineVariant.withValues(alpha: 0.7),
             ),
           ),
         );
@@ -281,9 +286,7 @@ class _AromaLine extends StatelessWidget {
         ),
         SizedBox(height: context.xs * 1.2),
         Text.rich(
-          TextSpan(
-            children: _interleave(tags, cs).toList(),
-          ),
+          TextSpan(children: _interleave(tags, cs).toList()),
           style: GoogleFonts.playfairDisplay(
             fontSize: context.bodyFont,
             fontWeight: FontWeight.w500,

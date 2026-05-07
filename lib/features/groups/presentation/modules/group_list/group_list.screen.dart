@@ -485,10 +485,7 @@ class _CreateSheetState extends ConsumerState<_CreateSheet> {
             if (_pickedImagePath != null)
               ListTile(
                 leading: Icon(PhosphorIconsRegular.trash, color: cs.error),
-                title: Text(
-                  'Remove photo',
-                  style: TextStyle(color: cs.error),
-                ),
+                title: Text('Remove photo', style: TextStyle(color: cs.error)),
                 onTap: () {
                   Navigator.pop(ctx);
                   setState(() => _pickedImagePath = null);
@@ -560,9 +557,9 @@ class _CreateSheetState extends ConsumerState<_CreateSheet> {
               .updateGroup(groupId: created.id, imageUrl: url);
         } catch (e) {
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Photo upload failed: $e')),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text('Photo upload failed: $e')));
           }
         }
       }

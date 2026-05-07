@@ -21,8 +21,7 @@ Future<ExpertTastingEntity?> myExpertTasting(
   MyExpertTastingRef ref,
   String canonicalWineId,
 ) {
-  return ref.watch(expertTastingApiProvider).getMine(
-    canonicalWineId: canonicalWineId,
-    context: 'personal',
-  );
+  return ref
+      .watch(expertTastingApiProvider)
+      .getMine(canonicalWineId: canonicalWineId, context: 'personal');
 }

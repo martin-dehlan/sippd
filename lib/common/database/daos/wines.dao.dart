@@ -73,10 +73,11 @@ class WinesDao extends DatabaseAccessor<AppDatabase> with _$WinesDaoMixin {
     String? grapeFreetext,
   }) async {
     if (nameNorm.isEmpty) return null;
-    final candidates = await (select(winesTable)
-          ..where((w) => w.userId.equals(userId))
-          ..where((w) => w.nameNorm.equals(nameNorm)))
-        .get();
+    final candidates =
+        await (select(winesTable)
+              ..where((w) => w.userId.equals(userId))
+              ..where((w) => w.nameNorm.equals(nameNorm)))
+            .get();
     for (final w in candidates) {
       // Vintage must match (treat both null as a match).
       if (w.vintage != vintage) continue;

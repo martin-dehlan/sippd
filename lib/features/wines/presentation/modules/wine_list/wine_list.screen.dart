@@ -77,8 +77,7 @@ class WineListScreen extends ConsumerWidget {
                             // visibly shifts on each tap (rating ↔ recent
                             // ↔ name had only two icons before).
                             switch (sortMode) {
-                              WineSortMode.rating =>
-                                PhosphorIconsRegular.star,
+                              WineSortMode.rating => PhosphorIconsRegular.star,
                               WineSortMode.recent => PhosphorIconsRegular.clock,
                               WineSortMode.name => PhosphorIconsRegular.textAa,
                             },

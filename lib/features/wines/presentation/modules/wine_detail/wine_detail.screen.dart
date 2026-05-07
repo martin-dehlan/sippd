@@ -241,10 +241,7 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
                       );
                       return;
                     }
-                    showExpertTastingSheet(
-                      context: context,
-                      wine: widget.wine,
-                    );
+                    showExpertTastingSheet(context: context, wine: widget.wine);
                   },
                 ),
               ],

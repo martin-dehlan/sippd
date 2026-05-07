@@ -259,8 +259,9 @@ extension on TastingRecapSection {
     // NetworkImage on the off-screen render canvas. The card simply
     // renders without the photo if the URL hasn't synced yet, so the
     // share still works.
-    final topImageUrl =
-        (top.wine.imageUrl ?? '').trim().isNotEmpty ? top.wine.imageUrl : null;
+    final topImageUrl = (top.wine.imageUrl ?? '').trim().isNotEmpty
+        ? top.wine.imageUrl
+        : null;
     final data = TastingRecapCardData(
       groupName: group?.name ?? 'Group tasting',
       groupAvatarUrl: group?.imageUrl,
@@ -415,8 +416,7 @@ class _TopWineCard extends StatelessWidget {
                           color: cs.onPrimaryContainer.withValues(alpha: 0.55),
                         )
                       : ClipRRect(
-                          borderRadius:
-                              BorderRadius.circular(context.w * 0.03),
+                          borderRadius: BorderRadius.circular(context.w * 0.03),
                           child: Image(
                             image: image,
                             width: imageSize,
@@ -581,9 +581,7 @@ class _RecapWineRowState extends State<_RecapWineRow> {
                             : PhosphorIconsRegular.caretDown)
                       : PhosphorIconsRegular.minus,
                   size: context.captionFont * 1.05,
-                  color: canExpand
-                      ? cs.onSurfaceVariant
-                      : cs.outlineVariant,
+                  color: canExpand ? cs.onSurfaceVariant : cs.outlineVariant,
                 ),
               ],
             ),

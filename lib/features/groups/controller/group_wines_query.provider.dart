@@ -166,7 +166,8 @@ Future<List<WineEntity>> groupWines(GroupWinesRef ref, String groupId) async {
       final m = r as Map<String, dynamic>;
       final cid = m['canonical_wine_id'] as String;
       final url = m['image_url'] as String?;
-      if (url != null && url.isNotEmpty &&
+      if (url != null &&
+          url.isNotEmpty &&
           !imageUrlByCanonical.containsKey(cid)) {
         imageUrlByCanonical[cid] = url;
       }
