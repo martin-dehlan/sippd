@@ -43,9 +43,106 @@ Wine ranking & sharing app built with Flutter. Rate, organize, and share wines w
 Domain (pure Dart) → Data (Supabase/Drift) → Controller (Riverpod) → Presentation (UI)
 ```
 
-Feature-based structure — each feature (wines, auth, groups) is self-contained with its own `domain/`, `data/`, `controller/`, and `presentation/` layers.
+Feature-based — each feature (`wines`, `auth`, `groups`, `tastings`,
+`taste_match`, `friends`, `share_cards`, `paywall`) is self-contained
+with its own `domain/`, `data/`, `controller/`, `presentation/`. The
+domain layer is pure Dart (no Flutter, no Riverpod, no external
+imports). See [`CLAUDE.md`](./CLAUDE.md) and
+[`.claude/RULES/`](./.claude/RULES/) for the full conventions.
 
-See [`CLAUDE.md`](./CLAUDE.md) and [`.claude/RULES/`](./.claude/RULES/) for the full architecture, naming conventions, and coding standards.
+A few specific patterns worth flagging — they're the parts that took
+real architectural thought rather than autopilot scaffolding:
+
+### Local-first sync (Drift = source of truth, Supabase = sync backend)
+
+Wines, ratings, group memberships, tasting state, and profile data
+are written to Drift first and emitted to the UI from there. The
+repository layer fires the corresponding Supabase write in the
+background; if the network call fails, the local row stands and a
+later sync picks it up. Image uploads have a dedicated
+`PendingImageUploadsDao` outbox that retries on launch and on
+connectivity flips so a failed photo upload never silently leaves
+a wine without an `image_url`.
+
+```
+UI ← Drift (synchronous read) ← repository.updateWine(local)
+                                          ↓ background
+                                     Supabase upsert
+                                          ↓ on failure
+                                     stays local + outbox retry
+```
+
+The full surface lives in `lib/features/*/data/repositories/` and
+`lib/common/database/`.
+
+### Canonical wine identity
+
+`public.wines` mixes "wine identity" (an abstract bottle anyone
+might rate) with "wine entry" (a per-user instance). That mix breaks
+every cross-user feature — drinking partners, taste-match, shared
+bottles — because string-matching on names fails on accents, typos,
+and NV-vs-vintage drift.
+
+Phase 1 of the canonical-wine architecture (shipped) introduces:
+
+- `public.canonical_wine` — server-side catalog keyed by
+  `(name_norm, winery_norm, vintage)` with a `confidence` flag
+- `wines.canonical_wine_id` — FK that backfills via a
+  `BEFORE INSERT/UPDATE` trigger calling `resolve_canonical_wine()`
+- A Tier-2 fuzzy-match modal in `wine_form` that asks "Same wine?"
+  before inserting a near-duplicate (similarity ≥ 0.6 via `pg_trgm`)
+- A `ratings` view that unions `wines.rating`,
+  `group_wine_ratings.rating`, and `tasting_ratings.rating` so all
+  cross-user RPCs query one logical surface
+
+The trigger is hardened against autosave-driven pollution (preserves
+`OLD.canonical_wine_id` on UPDATE; rejects `name_norm` shorter than
+3 chars). Migration files in `supabase/migrations/`.
+
+### Honest-first taste-match
+
+Match-% is built around three constraints we wrote down before any
+math:
+
+1. **Confidence-tiered, never naked.** Every score ships with a
+   sample-size + overlap-count badge, and the UI maps score colour
+   to confidence so a "Strong" 87% reads visibly differently from
+   a "Solid" 72% or a low-confidence early signal.
+2. **No naive cosine.** Direction-only similarity over averaged
+   preference vectors lies through its teeth on sparse rating data.
+   The RPC blends three signals — region/country/type bucket
+   overlap (weighted Δrating), Style-DNA Manhattan distance over
+   six WSET-aligned axes, and a same-canonical agreement bonus —
+   then clamps confidence by `min(both users' attributed counts)`.
+3. **Sample minimums are gates, not warnings.** Below the floor
+   (5 ratings each, 3 bucket overlap), the UI returns a
+   "not_enough_overlap" empty-state, not a confident-looking
+   number. Better to say nothing than to lie politely.
+
+`get_taste_match()` lives in `supabase/migrations/...taste_match*.sql`;
+the consuming widgets are under
+`lib/features/taste_match/presentation/`.
+
+### Realtime sync for tastings
+
+During an active group tasting, every attendee's screen needs to
+reflect adds, ratings, RSVPs, and host state-transitions in real
+time. Rather than polling, five Riverpod providers each open a
+filtered Supabase postgres-changes subscription and call
+`ref.invalidateSelf()` on any event:
+
+| Provider | Source table | Filter | Effect |
+|---|---|---|---|
+| `tastingDetailProvider` | `group_tastings` | `id` | Start / End / edit broadcasts |
+| `tastingWinesProvider` | `tasting_wines` | `tasting_id` | Lineup add / remove |
+| `tastingWineRatingsProvider` | `tasting_ratings` | `tasting_id` | Avg pill recompute |
+| `tastingRecapEntriesProvider` | `tasting_ratings` | `tasting_id` | Recap chips refresh |
+| `tastingAttendeesProvider` | `tasting_attendees` | `tasting_id` | RSVP cluster + `canAdd` rule |
+
+Channel cleanup runs from `ref.onDispose`. RLS already filters by
+group membership, so subscribers only get events for rows they
+could `SELECT` — no application-level access checking needed on the
+push path.
 
 ---
 
