@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 import '../../../taste_match/domain/entities/user_style_dna.entity.dart';
-import '../../../taste_match/presentation/widgets/dna_shape.widget.dart';
+import '../../../taste_match/presentation/widgets/dna_monolith.widget.dart';
 import 'share_card_branding.widget.dart';
 
 const _bg = Color(0xFF14101A);
@@ -193,7 +193,7 @@ class _DnaHero extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: DnaShape(dna: dna, color: color, size: 640),
+      child: DnaMonolith(dna: dna, color: color, size: 640),
     );
   }
 }
