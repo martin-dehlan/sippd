@@ -30,6 +30,12 @@ jobs:
       - name: pub get
         run: flutter pub get
 
+      # Stand up a placeholder firebase_options.dart so the import in
+      # main.dart resolves. The real file is gitignored — only the
+      # public-API-key-free template is checked in.
+      - name: stub firebase_options.dart
+        run: cp lib/firebase_options.template.dart lib/firebase_options.dart
+
       # Generated files (Freezed, Riverpod, Drift, json_serializable) are
       # checked in, so codegen runs only when an annotated source has
       # drifted out of sync with its generated output.

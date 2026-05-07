@@ -55,13 +55,9 @@ app.*.map.json
 .env.*
 !.env.example
 
-# Firebase config
-# `lib/firebase_options.dart` is FlutterFire-generated and only contains
-# the public client identifiers (anon key, project id, sender id, app id).
-# Per FlutterFire's own recommendation it is safe to commit so CI can
-# satisfy `import 'firebase_options.dart'` in main.dart without a
-# generation step. Platform-native configs stay ignored — they're only
-# needed at iOS/Android build time and remain per-developer.
+# Firebase config — gitignored. Real values stay per-developer; CI uses
+# a placeholder copy from `lib/firebase_options.template.dart`.
+lib/firebase_options.dart
 android/app/google-services.json
 ios/Runner/GoogleService-Info.plist
 ios/firebase_app_id_file.json
