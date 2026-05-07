@@ -110,8 +110,9 @@ class ShareCardService {
   }
 
   /// Renders a tasting recap card off-screen at IG-story dimensions
-  /// and hands it to the native share sheet. Card is fully typographic
-  /// (no remote images), so no precache step is needed.
+  /// and hands it to the native share sheet. Top wine photo + group
+  /// avatar are remote URLs — precache them first so the off-screen
+  /// render captures the actual pixels rather than empty placeholders.
   Future<void> shareTastingRecapCard({
     required BuildContext context,
     required String tastingId,
@@ -124,6 +125,16 @@ class ShareCardService {
     );
 
     final shareOrigin = shareOriginFor(context);
+
+    for (final url in [data.topWineImageUrl, data.groupAvatarUrl]) {
+      if (url == null || url.trim().isEmpty) continue;
+      try {
+        await precacheImage(NetworkImage(url), context);
+      } catch (_) {
+        // Card falls back to placeholder.
+      }
+      if (!context.mounted) return;
+    }
 
     final card = TastingRecapCard(data: data);
     final file = await _renderToFile(

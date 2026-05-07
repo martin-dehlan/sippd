@@ -16,6 +16,7 @@ const _divider = Color(0xFF2A2330);
 /// from the on-screen entity model so the card stays presentation-pure.
 class TastingRecapCardData {
   final String groupName;
+  final String? groupAvatarUrl;
   final String tastingTitle;
   final DateTime date;
   final String? location;
@@ -23,11 +24,13 @@ class TastingRecapCardData {
   final String? topWineWinery;
   final int? topWineVintage;
   final double? topWineAvg;
+  final String? topWineImageUrl;
   final List<TastingRecapCardLine> ranked;
   final int attendeeCount;
 
   const TastingRecapCardData({
     required this.groupName,
+    this.groupAvatarUrl,
     required this.tastingTitle,
     required this.date,
     this.location,
@@ -35,6 +38,7 @@ class TastingRecapCardData {
     this.topWineWinery,
     this.topWineVintage,
     this.topWineAvg,
+    this.topWineImageUrl,
     required this.ranked,
     required this.attendeeCount,
   });
@@ -67,6 +71,7 @@ class TastingRecapCard extends StatelessWidget {
           const Spacer(flex: 1),
           _GroupHeading(
             groupName: data.groupName,
+            groupAvatarUrl: data.groupAvatarUrl,
             tastingTitle: data.tastingTitle,
           ),
           const Spacer(flex: 1),
@@ -124,8 +129,13 @@ class _Header extends StatelessWidget {
 
 class _GroupHeading extends StatelessWidget {
   final String groupName;
+  final String? groupAvatarUrl;
   final String tastingTitle;
-  const _GroupHeading({required this.groupName, required this.tastingTitle});
+  const _GroupHeading({
+    required this.groupName,
+    required this.groupAvatarUrl,
+    required this.tastingTitle,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -155,18 +165,67 @@ class _GroupHeading extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 22),
-        Text(
-          groupName,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: GoogleFonts.playfairDisplay(
-            fontSize: 44,
-            fontStyle: FontStyle.italic,
-            color: _onBgMuted,
-            height: 1,
-          ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _GroupAvatar(url: groupAvatarUrl, name: groupName),
+            const SizedBox(width: 18),
+            Flexible(
+              child: Text(
+                groupName,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: GoogleFonts.playfairDisplay(
+                  fontSize: 44,
+                  fontStyle: FontStyle.italic,
+                  color: _onBgMuted,
+                  height: 1,
+                ),
+              ),
+            ),
+          ],
         ),
       ],
+    );
+  }
+}
+
+/// Small circular group portrait next to the group name in the heading.
+/// Falls back to a typographic monogram on the brand-primary swatch
+/// when no avatar exists, so the heading still reads as a group tile
+/// rather than a bare line of italic text.
+class _GroupAvatar extends StatelessWidget {
+  final String? url;
+  final String name;
+  const _GroupAvatar({required this.url, required this.name});
+
+  @override
+  Widget build(BuildContext context) {
+    const size = 64.0;
+    final hasUrl = (url ?? '').trim().isNotEmpty;
+    final initial = name.trim().isEmpty ? '·' : name.trim()[0].toUpperCase();
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: _primary,
+        image: hasUrl
+            ? DecorationImage(image: NetworkImage(url!), fit: BoxFit.cover)
+            : null,
+      ),
+      alignment: Alignment.center,
+      child: hasUrl
+          ? null
+          : Text(
+              initial,
+              style: GoogleFonts.playfairDisplay(
+                fontSize: 34,
+                color: _onBg,
+                fontWeight: FontWeight.w800,
+                height: 1,
+              ),
+            ),
     );
   }
 }
@@ -181,6 +240,7 @@ class _TopWineBlock extends StatelessWidget {
       if ((data.topWineWinery ?? '').isNotEmpty) data.topWineWinery!,
       if (data.topWineVintage != null) data.topWineVintage.toString(),
     ].join(' · ');
+    final hasImage = (data.topWineImageUrl ?? '').trim().isNotEmpty;
 
     return Container(
       width: double.infinity,
@@ -208,60 +268,97 @@ class _TopWineBlock extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 28),
-          Text(
-            data.topWineName!,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: GoogleFonts.playfairDisplay(
-              fontSize: 80,
-              fontWeight: FontWeight.w900,
-              color: _onBg,
-              height: 1,
-              letterSpacing: -1.5,
-            ),
-          ),
-          if (subtitle.isNotEmpty) ...[
-            const SizedBox(height: 18),
-            Text(
-              subtitle,
-              style: TextStyle(
-                fontSize: 32,
-                color: _onBg.withValues(alpha: 0.85),
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-          if (data.topWineAvg != null) ...[
-            const SizedBox(height: 28),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  data.topWineAvg!.toStringAsFixed(1),
-                  style: GoogleFonts.playfairDisplay(
-                    fontSize: 150,
-                    fontWeight: FontWeight.w900,
-                    color: _onBg,
-                    height: 1,
-                    letterSpacing: -6,
-                  ),
-                ),
-                const SizedBox(width: 14),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 28),
-                  child: Text(
-                    '/ 10',
-                    style: TextStyle(
-                      fontSize: 44,
-                      color: _onBg.withValues(alpha: 0.7),
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (hasImage) ...[
+                _TopWinePhoto(url: data.topWineImageUrl!),
+                const SizedBox(width: 32),
               ],
-            ),
-          ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      data.topWineName!,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.playfairDisplay(
+                        fontSize: hasImage ? 64 : 80,
+                        fontWeight: FontWeight.w900,
+                        color: _onBg,
+                        height: 1,
+                        letterSpacing: -1.5,
+                      ),
+                    ),
+                    if (subtitle.isNotEmpty) ...[
+                      const SizedBox(height: 16),
+                      Text(
+                        subtitle,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 28,
+                          color: _onBg.withValues(alpha: 0.85),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                    if (data.topWineAvg != null) ...[
+                      const SizedBox(height: 24),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            data.topWineAvg!.toStringAsFixed(1),
+                            style: GoogleFonts.playfairDisplay(
+                              fontSize: 120,
+                              fontWeight: FontWeight.w900,
+                              color: _onBg,
+                              height: 1,
+                              letterSpacing: -5,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 22),
+                            child: Text(
+                              '/ 10',
+                              style: TextStyle(
+                                fontSize: 36,
+                                color: _onBg.withValues(alpha: 0.7),
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ),
         ],
+      ),
+    );
+  }
+}
+
+class _TopWinePhoto extends StatelessWidget {
+  final String url;
+  const _TopWinePhoto({required this.url});
+
+  @override
+  Widget build(BuildContext context) {
+    const size = 260.0;
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: _bg.withValues(alpha: 0.3),
+        borderRadius: BorderRadius.circular(28),
+        image: DecorationImage(image: NetworkImage(url), fit: BoxFit.cover),
       ),
     );
   }
