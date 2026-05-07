@@ -287,7 +287,7 @@ class _GroupMembersProviderElement
   String get groupId => (origin as GroupMembersProvider).groupId;
 }
 
-String _$groupWinesHash() => r'fcda7e7c3c501e3f75100da595ef148ad84179c8';
+String _$groupWinesHash() => r'719bf0766593e3a04aad240ef287399842e02169';
 
 /// Wines shared into [groupId]. Returned entities are catalog-keyed:
 /// `id` is the canonical_wine.id and `userId` is the original sharer
