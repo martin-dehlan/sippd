@@ -165,7 +165,7 @@ class _GroupTastingsProviderElement
   String get groupId => (origin as GroupTastingsProvider).groupId;
 }
 
-String _$tastingDetailHash() => r'46341b7e5804c1f49c68b3d297f7ea5884ab7141';
+String _$tastingDetailHash() => r'17c376225e9df929e326900c381467cf8170ffa9';
 
 /// See also [tastingDetail].
 @ProviderFor(tastingDetail)
@@ -285,7 +285,7 @@ class _TastingDetailProviderElement
   String get tastingId => (origin as TastingDetailProvider).tastingId;
 }
 
-String _$tastingWinesHash() => r'5fe5793e576b8c118be7a7b2edffd2d33d705ee8';
+String _$tastingWinesHash() => r'b33eb7350915f145c51159797a07a69d3d7b3a7f';
 
 /// See also [tastingWines].
 @ProviderFor(tastingWines)
@@ -406,7 +406,7 @@ class _TastingWinesProviderElement
 }
 
 String _$tastingWineRatingsHash() =>
-    r'd72d5013127d6272ecddee5d53b6519c6896d2bd';
+    r'fd6409be173ec1796eb6a975a2146db3ccd6976b';
 
 /// Group-context rating average per canonical wine for the tasting's
 /// lineup. Mirrors `groupWineRatings`: owner of each canonical (via
@@ -602,7 +602,7 @@ class _TastingWineRatingsProviderElement
 }
 
 String _$tastingRecapEntriesHash() =>
-    r'b2b26064ead0bc2dc8b4bff2c5e01744fdc36528';
+    r'353b98ae05eac4ef7f83758bdcb71982ae11a4e9';
 
 /// All submitted ratings for the tasting joined with rater profiles.
 /// Powers the concluded-state recap view (top wine + per-wine
@@ -911,7 +911,7 @@ class _MyTastingRatingProviderElement
       (origin as MyTastingRatingProvider).canonicalWineId;
 }
 
-String _$tastingAttendeesHash() => r'5da5e01641c554a1b9c8882d7c5989ee8f3b86aa';
+String _$tastingAttendeesHash() => r'80c4ca180fd8a4d4103e502b2dfb10f08c20574c';
 
 /// See also [tastingAttendees].
 @ProviderFor(tastingAttendees)
@@ -1037,7 +1037,7 @@ class _TastingAttendeesProviderElement
 }
 
 String _$tastingsControllerHash() =>
-    r'b4edad0b5b3160fb7b0b99af7b979d7b7bb21adc';
+    r'976bb469206e586b32d483d8ab0bc302f77021d7';
 
 /// See also [TastingsController].
 @ProviderFor(TastingsController)

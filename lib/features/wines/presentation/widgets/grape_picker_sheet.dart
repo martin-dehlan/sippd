@@ -28,6 +28,11 @@ Future<GrapePickerResult?> showGrapePickerSheet({
   return showModalBottomSheet<GrapePickerResult>(
     context: context,
     isScrollControlled: true,
+    // useSafeArea keeps the sheet's top edge below the status bar so the
+    // drag handle is always reachable for swipe-to-dismiss. Without it the
+    // 0.75 maxHeight + keyboard insets push the handle off-screen on
+    // smaller phones, leaving no way to close except picking a result.
+    useSafeArea: true,
     backgroundColor: Theme.of(context).colorScheme.surface,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(
@@ -93,8 +98,11 @@ class _GrapePickerSheetState extends ConsumerState<_GrapePickerSheet> {
     return Padding(
       padding: EdgeInsets.only(bottom: bottomInset),
       child: SafeArea(
+        // Cap content height a bit shy of the safe-area max so even with the
+        // keyboard up there's a finger's worth of grab-area above the drag
+        // handle.
         child: ConstrainedBox(
-          constraints: BoxConstraints(maxHeight: context.h * 0.75),
+          constraints: BoxConstraints(maxHeight: context.h * 0.7),
           child: Padding(
             padding: EdgeInsets.symmetric(
               horizontal: context.paddingH,
