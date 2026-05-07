@@ -6,7 +6,7 @@ part of 'group_ratings.provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$groupWineRatingsHash() => r'94e1a39f3a37f574b193e17dbda455df70eb2d6f';
+String _$groupWineRatingsHash() => r'd2e9f9f4cdb406b51bdad32ac265c69ae7a3d457';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -199,7 +199,7 @@ class _GroupWineRatingsProviderElement
       (origin as GroupWineRatingsProvider).canonicalWineId;
 }
 
-String _$groupWineRanksHash() => r'fbe8788c934e6a047c472c9f7819447ebbdaf95b';
+String _$groupWineRanksHash() => r'b2e86825a3c70f3c2a6349bee16db627b0b577e3';
 
 /// Map from canonical_wine_id → 1-based rank inside [groupId], averaged
 /// across owner + member ratings. Ties share a rank.

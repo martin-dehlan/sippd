@@ -1,4 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../common/services/analytics/analytics.provider.dart';
 import '../../../common/services/connectivity/connectivity.provider.dart';
@@ -23,6 +24,29 @@ Future<List<GroupWineRatingEntity>> groupWineRatings(
 ) async {
   ref.requireOnline();
   final client = ref.read(supabaseClientProvider);
+
+  // Realtime: another member rates this same bottle → re-pull so the
+  // avg in the footer + the rank computation update without the user
+  // having to leave + re-enter the group.
+  final channel = client.channel(
+    'group_wine_ratings_${groupId}_$canonicalWineId',
+  );
+  channel
+      .onPostgresChanges(
+        event: PostgresChangeEvent.all,
+        schema: 'public',
+        table: 'group_wine_ratings',
+        filter: PostgresChangeFilter(
+          type: PostgresChangeFilterType.eq,
+          column: 'canonical_wine_id',
+          value: canonicalWineId,
+        ),
+        callback: (_) => ref.invalidateSelf(),
+      )
+      .subscribe();
+  ref.onDispose(() {
+    client.removeChannel(channel);
+  });
 
   // Owner = the original sharer of the bottle in this group.
   final shareRow = await client
@@ -206,6 +230,27 @@ Future<Map<String, int>> groupWineRanks(
   if (wines.isEmpty) return const {};
   ref.requireOnline();
   final client = ref.read(supabaseClientProvider);
+
+  // Realtime: refresh the rank map whenever any rating in this group
+  // changes. Without this, member ratings landing on other devices
+  // would only re-rank after a manual refresh / re-enter.
+  final channel = client.channel('group_wine_ranks_$groupId');
+  channel
+      .onPostgresChanges(
+        event: PostgresChangeEvent.all,
+        schema: 'public',
+        table: 'group_wine_ratings',
+        filter: PostgresChangeFilter(
+          type: PostgresChangeFilterType.eq,
+          column: 'group_id',
+          value: groupId,
+        ),
+        callback: (_) => ref.invalidateSelf(),
+      )
+      .subscribe();
+  ref.onDispose(() {
+    client.removeChannel(channel);
+  });
   final canonicalIds = <String>[
     for (final w in wines)
       if (w.canonicalWineId != null) w.canonicalWineId!,

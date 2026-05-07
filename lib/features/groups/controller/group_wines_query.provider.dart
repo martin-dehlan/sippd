@@ -1,4 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../common/services/connectivity/connectivity.provider.dart';
 import '../../auth/controller/auth.provider.dart';
@@ -77,6 +78,30 @@ Future<List<WineEntity>> groupWines(GroupWinesRef ref, String groupId) async {
 
   ref.requireOnline();
   final client = ref.read(supabaseClientProvider);
+
+  // Realtime: re-pull whenever a member shares (or unshares) a bottle
+  // in this group, so the carousel updates without the user having to
+  // leave + re-enter the group. Mirrors the pattern used for memberships
+  // and tasting attendees. Initial-snapshot suppression is automatic
+  // for `onPostgresChanges` (vs `.stream()`).
+  final channel = client.channel('group_wines_$groupId');
+  channel
+      .onPostgresChanges(
+        event: PostgresChangeEvent.all,
+        schema: 'public',
+        table: 'group_wines',
+        filter: PostgresChangeFilter(
+          type: PostgresChangeFilterType.eq,
+          column: 'group_id',
+          value: groupId,
+        ),
+        callback: (_) => ref.invalidateSelf(),
+      )
+      .subscribe();
+  ref.onDispose(() {
+    client.removeChannel(channel);
+  });
+
   final shareRows =
       (await client
               .from('group_wines')
@@ -102,11 +127,14 @@ Future<List<WineEntity>> groupWines(GroupWinesRef ref, String groupId) async {
       .toSet()
       .toList();
   final canonicalById = <String, Map<String, dynamic>>{};
-  // image_url lives on the original sharer's `wines` row, not on
-  // canonical_wine — fetch it separately so other group members see
-  // the photo too. RLS policy `wines_select_shared` already allows
-  // group members to read these rows by canonical_wine_id.
+  // image_url + the sharer's own rating live on the original sharer's
+  // `wines` row, not on canonical_wine — fetch them separately so
+  // other group members see the photo and the rank computation gets
+  // the same numbers everyone else does. RLS policy
+  // `wines_select_shared` already allows group members to read these
+  // rows by canonical_wine_id.
   final imageUrlByCanonical = <String, String>{};
+  final ownerRatingByCanonical = <String, double>{};
   if (missing.isNotEmpty) {
     final canonicalRows =
         (await client
@@ -123,19 +151,29 @@ Future<List<WineEntity>> groupWines(GroupWinesRef ref, String groupId) async {
     final wineRows =
         (await client
                 .from('wines')
-                .select('canonical_wine_id, image_url, updated_at')
-                .inFilter('canonical_wine_id', missing)
-                .not('image_url', 'is', null))
+                .select(
+                  'canonical_wine_id, user_id, rating, image_url, updated_at',
+                )
+                .inFilter('canonical_wine_id', missing))
             as List;
     // Multiple users may have a personal wines row for the same
-    // canonical bottle — prefer the most recently updated one's image.
+    // canonical bottle. For images we prefer any non-null URL (first
+    // seen wins). For ratings we want the *original sharer's* rating
+    // so every member's rank computation matches what the sharer sees
+    // on their own device — without this, non-owners see the wine as
+    // rated 0 and the rank slot drops.
     for (final r in wineRows) {
       final m = r as Map<String, dynamic>;
       final cid = m['canonical_wine_id'] as String;
       final url = m['image_url'] as String?;
-      if (url == null || url.isEmpty) continue;
-      if (!imageUrlByCanonical.containsKey(cid)) {
+      if (url != null && url.isNotEmpty &&
+          !imageUrlByCanonical.containsKey(cid)) {
         imageUrlByCanonical[cid] = url;
+      }
+      final uid = m['user_id'] as String?;
+      if (uid != null && uid == sharerByCanonical[cid]) {
+        final r = (m['rating'] as num?)?.toDouble();
+        if (r != null) ownerRatingByCanonical[cid] = r;
       }
     }
   }
@@ -159,7 +197,7 @@ Future<List<WineEntity>> groupWines(GroupWinesRef ref, String groupId) async {
       WineEntity(
         id: cid,
         name: (m['name'] as String?) ?? 'Unknown',
-        rating: 0,
+        rating: ownerRatingByCanonical[cid] ?? 0,
         type: _parseType(m['type'] as String?) ?? WineType.red,
         country: m['country'] as String?,
         region: m['region'] as String?,
