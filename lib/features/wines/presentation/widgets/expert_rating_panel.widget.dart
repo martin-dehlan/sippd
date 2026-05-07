@@ -27,24 +27,34 @@ class ExpertRatingChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final filled = expanded;
+    // Three-state palette: expanded = filled primary lockup; collapsed =
+    // soft primaryContainer pill (discoverable on light + dark sheets, no
+    // outline-on-outline aliasing); locked (non-Pro) = neutral surface so
+    // the upsell doesn't shout in the rating eyebrow.
+    final Color bg;
+    final Color fg;
+    if (filled) {
+      bg = cs.primary;
+      fg = cs.onPrimary;
+    } else if (isPro) {
+      bg = cs.primaryContainer;
+      fg = cs.onPrimaryContainer;
+    } else {
+      bg = cs.surfaceContainerHighest;
+      fg = cs.onSurfaceVariant;
+    }
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 180),
         padding: EdgeInsets.symmetric(
-          horizontal: context.w * 0.03,
-          vertical: context.h * 0.006,
+          horizontal: context.w * 0.035,
+          vertical: context.h * 0.007,
         ),
         decoration: BoxDecoration(
-          color: filled ? cs.primary : Colors.transparent,
+          color: bg,
           borderRadius: BorderRadius.circular(context.w * 0.05),
-          border: Border.all(
-            color: filled
-                ? Colors.transparent
-                : cs.primary.withValues(alpha: 0.55),
-            width: 1,
-          ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -56,15 +66,15 @@ class ExpertRatingChip extends StatelessWidget {
                         : PhosphorIconsRegular.notebook)
                   : PhosphorIconsFill.lock,
               size: context.captionFont * 1.05,
-              color: filled ? cs.onPrimary : cs.primary,
+              color: fg,
             ),
             SizedBox(width: context.xs * 1.2),
             Text(
               'Tasting notes',
               style: TextStyle(
                 fontSize: context.captionFont * 0.85,
-                fontWeight: FontWeight.w600,
-                color: filled ? cs.onPrimary : cs.primary,
+                fontWeight: FontWeight.w700,
+                color: fg,
                 letterSpacing: 0.1,
               ),
             ),

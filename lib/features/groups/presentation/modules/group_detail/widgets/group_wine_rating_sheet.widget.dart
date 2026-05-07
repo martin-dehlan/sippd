@@ -342,7 +342,10 @@ class _SheetState extends ConsumerState<_Sheet> {
             const _SectionDivider(),
             SizedBox(height: context.m),
             YourRatingHeader(
-              showChip: widget.wine.canonicalWineId != null,
+              // Mirror the unified rating sheet — chip is always visible
+              // and the tap handler shows a "save the wine first" snackbar
+              // when canonical id is missing.
+              showChip: true,
               isPro: ref.watch(isProProvider),
               expanded: _expertExpanded,
               onChipTap: _toggleExpert,

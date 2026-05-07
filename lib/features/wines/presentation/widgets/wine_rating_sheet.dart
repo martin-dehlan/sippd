@@ -165,7 +165,6 @@ class _WineRatingSheetState extends ConsumerState<_WineRatingSheet> {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final isPro = ref.watch(isProProvider);
-    final canExpert = _canonicalId != null;
     final wine = widget.wine;
 
     return Padding(
@@ -190,8 +189,12 @@ class _WineRatingSheetState extends ConsumerState<_WineRatingSheet> {
               ),
             ),
             SizedBox(height: context.m),
+            // Always show the chip — the tap handler surfaces a "save the
+            // wine first" snackbar when canonical id is missing. Hiding it
+            // pre-save makes the initial rating sheet look stripped-down
+            // compared to the tasting rating sheet for the same wine.
             YourRatingHeader(
-              showChip: canExpert,
+              showChip: true,
               isPro: isPro,
               expanded: _expertExpanded,
               onChipTap: _toggleExpert,
