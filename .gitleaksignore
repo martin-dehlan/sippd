@@ -1,0 +1,24 @@
+# Allowlist of historical leaks already present in the public git
+# history. The keys named in these commits MUST be rotated in Google
+# Cloud Console — once rotated, the leaked values are inert and the
+# scanner-noise here is purely cosmetic. Do NOT add new entries to
+# this file by hand: the only correct response to a fresh leak is
+# (a) revoke the secret, (b) write a clean follow-up commit.
+#
+# Format: <commit-sha>:<file>:<rule-id>:<line>
+#
+25e71ae7fc67d42ec4d52530a30b26066e213aa7:lib/firebase_options.dart:firebase-api-key:53
+25e71ae7fc67d42ec4d52530a30b26066e213aa7:lib/firebase_options.dart:firebase-api-key:61
+25e71ae7fc67d42ec4d52530a30b26066e213aa7:lib/firebase_options.dart:gcp-api-key:53
+25e71ae7fc67d42ec4d52530a30b26066e213aa7:lib/firebase_options.dart:gcp-api-key:61
+9038075282b495bd89d9fb8c98e73bedb8f7470b:lib/firebase_options.dart:firebase-api-key:53
+9038075282b495bd89d9fb8c98e73bedb8f7470b:lib/firebase_options.dart:firebase-api-key:61
+9038075282b495bd89d9fb8c98e73bedb8f7470b:lib/firebase_options.dart:gcp-api-key:53
+9038075282b495bd89d9fb8c98e73bedb8f7470b:lib/firebase_options.dart:gcp-api-key:61
+bb89e9a207ec02638b7ebf61aa09abb9a9063133:android/app/google-services.json:firebase-api-key:18
+bb89e9a207ec02638b7ebf61aa09abb9a9063133:android/app/google-services.json:gcp-api-key:18
+bb89e9a207ec02638b7ebf61aa09abb9a9063133:ios/Runner/GoogleService-Info.plist:firebase-api-key:6
+bb89e9a207ec02638b7ebf61aa09abb9a9063133:lib/firebase_options.dart:firebase-api-key:53
+bb89e9a207ec02638b7ebf61aa09abb9a9063133:lib/firebase_options.dart:firebase-api-key:61
+bb89e9a207ec02638b7ebf61aa09abb9a9063133:lib/firebase_options.dart:gcp-api-key:53
+bb89e9a207ec02638b7ebf61aa09abb9a9063133:lib/firebase_options.dart:gcp-api-key:61

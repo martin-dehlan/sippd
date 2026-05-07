@@ -1,0 +1,37 @@
+# gitleaks config for Sippd. Runs as a pre-commit hook (see
+# scripts/git-hooks/pre-commit) and as a CI job. Catches anything that
+# looks like an API key, OAuth credential, private key, or service
+# account JSON before it reaches the public repo.
+
+title = "Sippd gitleaks config"
+
+# Inherit gitleaks' built-in rule set (Google API keys, AWS, GitHub
+# tokens, Slack, JWTs, generic high-entropy strings, …).
+[extend]
+useDefault = true
+
+# Project-specific rule: any line containing `AIzaSy...` is a Firebase
+# / Google client API key. The default ruleset already covers this but
+# we add a targeted rule with a clear message so the hook output points
+# straight at the thing we got burned on.
+[[rules]]
+id = "firebase-api-key"
+description = "Google Cloud / Firebase Web API key (AIzaSy…)"
+regex = '''AIzaSy[A-Za-z0-9_-]{33}'''
+keywords = ["AIzaSy"]
+
+# Allowlist — paths and patterns that legitimately contain key-shaped
+# strings without being secrets. Add narrowly, not broadly.
+[allowlist]
+description = "Files that are placeholders / docs / example values"
+paths = [
+  '''lib/firebase_options\.template\.dart''',
+  '''\.example$''',
+  '''README\.md$''',
+]
+regexes = [
+  '''PLACEHOLDER_FOR_CI_ONLY''',
+  # Match the literal string "AIzaSy" only when it appears inside the
+  # template's regex documentation, not the actual key shape.
+  '''AIzaSy\.\.\.''',
+]

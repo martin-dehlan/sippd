@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# Pre-commit hook: scan staged changes for secrets via gitleaks.
+# Blocks commit if anything matches. Activated by running
+# `bash scripts/install-git-hooks.sh` once after cloning.
+
+set -euo pipefail
+
+# gitleaks is required. If it's missing, fail loud rather than letting
+# the commit through silently — a missing scanner is exactly how leaks
+# happen.
+if ! command -v gitleaks >/dev/null 2>&1; then
+  echo "❌ gitleaks not installed. Run:  brew install gitleaks" >&2
+  echo "   (or download a binary from https://github.com/gitleaks/gitleaks/releases)" >&2
+  exit 1
+fi
+
+# --staged scans only what's about to be committed. --redact hides the
+# actual secret in the output so it doesn't end up in your terminal
+# scrollback.
+if ! gitleaks protect \
+    --staged \
+    --redact \
+    --config="$(git rev-parse --show-toplevel)/.gitleaks.toml" \
+    --no-banner; then
+  echo "" >&2
+  echo "❌ Commit blocked: secret-shaped content found in your staged changes." >&2
+  echo "   Remove the value, then re-stage and commit again." >&2
+  echo "   Override (only if you're certain it's a false positive):" >&2
+  echo "     git commit --no-verify" >&2
+  exit 1
+fi
