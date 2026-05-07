@@ -4,7 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../../../common/utils/name_normalizer.dart';
 import '../../../../../common/utils/responsive.dart';
+import '../../../../../core/routes/app.routes.dart';
 import '../../../../auth/controller/auth.provider.dart';
 import '../../../../locations/domain/entities/location.entity.dart';
 import '../../../../share_cards/presentation/widgets/wine_share_prompt_sheet.dart';
@@ -79,6 +81,34 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
 
     final userId = ref.read(currentUserIdProvider);
     if (userId == null) return;
+
+    // Same-bottle guard: warn before creating a second journal entry
+    // with the same name + winery + vintage + grape. Sippd is a
+    // journal so dupes aren't *forbidden* (different occasion, fresh
+    // notes), but creating one by accident is a much more common
+    // mistake than intentional re-logging.
+    final dupe = await ref
+        .read(appDatabaseProvider)
+        .winesDao
+        .findDuplicate(
+          userId: userId,
+          nameNorm: normalizeName(data.name),
+          wineryNorm: data.winery == null ? null : normalizeName(data.winery),
+          vintage: data.vintage,
+          canonicalGrapeId: data.canonicalGrapeId,
+          grapeFreetext: data.grapeFreetext ?? data.grape,
+        );
+    if (dupe != null && mounted) {
+      final action = await _showDuplicatePrompt(dupe.name);
+      if (!mounted) return;
+      if (action == _DupeAction.cancel) return;
+      if (action == _DupeAction.openExisting) {
+        setState(() => _allowPop = true);
+        context.pushReplacement(AppRoutes.wineDetailPath(dupe.id));
+        return;
+      }
+      // _DupeAction.addAnyway → fall through to normal save flow.
+    }
 
     // Tier 2 prompt: ask the user before creating a near-duplicate
     // canonical. Only fires when the suggestion RPC returns fuzzy
@@ -203,6 +233,40 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
     if (mounted) context.pop();
   }
 
+  Future<_DupeAction> _showDuplicatePrompt(String existingName) async {
+    final result = await showDialog<_DupeAction>(
+      context: context,
+      builder: (ctx) {
+        final cs = Theme.of(ctx).colorScheme;
+        return AlertDialog(
+          title: const Text('Looks like a duplicate'),
+          content: Text(
+            'You already logged "$existingName" with the same vintage, '
+            'winery and grape. Open the existing entry or add a new one anyway?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, _DupeAction.cancel),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, _DupeAction.addAnyway),
+              child: Text(
+                'Add anyway',
+                style: TextStyle(color: cs.onSurfaceVariant),
+              ),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, _DupeAction.openExisting),
+              child: const Text('Open existing'),
+            ),
+          ],
+        );
+      },
+    );
+    return result ?? _DupeAction.cancel;
+  }
+
   @override
   Widget build(BuildContext context) {
     return PopScope(
@@ -274,6 +338,8 @@ class _FloatingBackButton extends StatelessWidget {
     );
   }
 }
+
+enum _DupeAction { cancel, openExisting, addAnyway }
 
 class _SaveWineFab extends StatelessWidget {
   final VoidCallback onPressed;
