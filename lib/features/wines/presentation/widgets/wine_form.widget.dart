@@ -187,9 +187,17 @@ class WineFormState extends ConsumerState<WineForm>
   void _scheduleAutoSave() {
     widget.onChanged?.call(_collect());
     if (!widget.autoSave) return;
-    if (_nameController.text.trim().isEmpty) return;
+    // Cancel any in-flight debounce *before* the empty-name guard, not
+    // after — otherwise clearing the name field still lets a previously
+    // queued save fire 500ms later, which then writes the now-empty
+    // name into the wine row. (Repro: edit a wine, type a new name,
+    // immediately clear it before the debounce fires → wine ends up
+    // nameless.) Also re-check at fire time for the same reason.
     _autoSaveDebounce?.cancel();
+    if (_nameController.text.trim().isEmpty) return;
     _autoSaveDebounce = Timer(const Duration(milliseconds: 500), () {
+      if (!mounted) return;
+      if (_nameController.text.trim().isEmpty) return;
       widget.onSubmit(_collect());
     });
   }
