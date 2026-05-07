@@ -426,18 +426,24 @@ class _TopWineCard extends StatelessWidget {
                         ),
                 ),
                 Positioned(
-                  top: -context.xs * 0.6,
-                  left: -context.xs * 0.6,
+                  top: -context.xs * 0.8,
+                  left: -context.xs * 0.8,
                   child: Container(
-                    padding: EdgeInsets.all(context.xs * 0.6),
+                    padding: EdgeInsets.all(context.xs * 0.7),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: cs.onPrimaryContainer,
+                      // High-contrast amber/gold so the trophy reads
+                      // against both the primaryContainer card tint
+                      // and the surface-tinted image well behind it
+                      // (which previously matched the badge color and
+                      // made the icon disappear).
+                      color: const Color(0xFFE3B23C),
+                      border: Border.all(color: cs.primaryContainer, width: 2),
                     ),
-                    child: Icon(
+                    child: const Icon(
                       PhosphorIconsFill.trophy,
-                      size: context.captionFont,
-                      color: cs.primaryContainer,
+                      size: 16,
+                      color: Color(0xFF3A2208),
                     ),
                   ),
                 ),
