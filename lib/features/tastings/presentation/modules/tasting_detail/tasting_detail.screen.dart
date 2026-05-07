@@ -21,6 +21,7 @@ import '../../../domain/entities/tasting.entity.dart';
 import '../../../domain/entities/tasting_attendee.entity.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../../../../common/services/deep_link/deep_link.service.dart';
+import '../../../../../common/utils/share_origin.dart';
 import '../../widgets/calendar_export_sheet.dart';
 import '../../widgets/tasting_rate_sheet.dart';
 import '../../widgets/tasting_recap_section.widget.dart';
@@ -172,6 +173,7 @@ class _Body extends ConsumerWidget {
                       onTap: () => Share.share(
                         '${tasting.title}\n\n${DeepLinkService.tastingHttpsUri(tasting.id)}',
                         subject: tasting.title,
+                        sharePositionOrigin: shareOriginFor(context),
                       ),
                     ),
                   ],

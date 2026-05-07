@@ -7,6 +7,7 @@ import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../../common/services/analytics/analytics.service.dart';
+import '../../../../common/utils/share_origin.dart';
 import '../../../wines/domain/entities/wine.entity.dart';
 import '../../presentation/cards/compass_share_card.widget.dart';
 import '../../presentation/cards/share_card_branding.widget.dart';
@@ -32,6 +33,11 @@ class ShareCardService {
       properties: {'card_type': 'wine_rating', 'source': source},
     );
 
+    // Capture the share-sheet anchor *before* the async render — the
+    // triggering widget's render box is the right popover anchor on iPad,
+    // and BuildContext should not cross async gaps.
+    final shareOrigin = shareOriginFor(context);
+
     // Precache the wine photo so the off-screen render captures the
     // actual pixels rather than an empty placeholder.
     await _precacheWineImage(context, wine);
@@ -50,6 +56,7 @@ class ShareCardService {
       text:
           'Just rated ${wine.name} ${wine.rating.toStringAsFixed(1)}/10 '
           'on Sippd · $shareCardUrl',
+      sharePositionOrigin: shareOrigin,
     );
 
     _analytics.capture(
@@ -75,6 +82,8 @@ class ShareCardService {
       properties: {'card_type': 'compass', 'source': source},
     );
 
+    final shareOrigin = shareOriginFor(context);
+
     final card = CompassShareCard(data: data);
     final file = await _renderToFile(
       context: context,
@@ -88,6 +97,7 @@ class ShareCardService {
       text:
           'My wine personality: ${data.archetypeName} · '
           'find yours at $shareCardUrl',
+      sharePositionOrigin: shareOrigin,
     );
 
     _analytics.capture(
@@ -112,6 +122,8 @@ class ShareCardService {
       properties: {'card_type': 'tasting_recap', 'source': source},
     );
 
+    final shareOrigin = shareOriginFor(context);
+
     final card = TastingRecapCard(data: data);
     final file = await _renderToFile(
       context: context,
@@ -124,9 +136,11 @@ class ShareCardService {
         ? '${data.topWineName} took the night at '
               '${data.topWineAvg!.toStringAsFixed(1)}/10'
         : data.tastingTitle;
-    final result = await Share.shareXFiles([
-      XFile(file.path, mimeType: 'image/png'),
-    ], text: '$topLine · hosted on Sippd · $shareCardUrl');
+    final result = await Share.shareXFiles(
+      [XFile(file.path, mimeType: 'image/png')],
+      text: '$topLine · hosted on Sippd · $shareCardUrl',
+      sharePositionOrigin: shareOrigin,
+    );
 
     _analytics.capture(
       result.status == ShareResultStatus.success

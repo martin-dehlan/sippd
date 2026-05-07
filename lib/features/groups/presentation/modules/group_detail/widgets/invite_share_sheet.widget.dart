@@ -6,6 +6,7 @@ import 'package:share_plus/share_plus.dart';
 
 import '../../../../../../common/services/deep_link/deep_link.service.dart';
 import '../../../../../../common/utils/responsive.dart';
+import '../../../../../../common/utils/share_origin.dart';
 import '../../../../../../common/widgets/error_view.widget.dart';
 import '../../../../../friends/domain/entities/friend_profile.entity.dart';
 import '../../../../../friends/presentation/widgets/friend_avatar.widget.dart';
@@ -129,6 +130,7 @@ class InviteShareSheet extends ConsumerWidget {
     await Share.share(
       'Join "$groupName" on Sippd 🍷\n\n$_inviteUri\n\nOr enter code: $code',
       subject: 'Join $groupName on Sippd',
+      sharePositionOrigin: shareOriginFor(context),
     );
   }
 }

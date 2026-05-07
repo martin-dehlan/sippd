@@ -10,6 +10,7 @@ import 'package:share_plus/share_plus.dart';
 import '../../../../../common/services/analytics/analytics.provider.dart';
 import '../../../../../common/services/deep_link/deep_link.service.dart';
 import '../../../../../common/utils/responsive.dart';
+import '../../../../../common/utils/share_origin.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../../auth/controller/auth.provider.dart';
 import '../../../controller/friends.provider.dart';
@@ -866,6 +867,7 @@ class _EmptyFriendsState extends ConsumerWidget {
     await Share.share(
       'Add me on Sippd 🍷 — we rate, taste, and share wines together.\n\n$url',
       subject: 'Add me on Sippd',
+      sharePositionOrigin: shareOriginFor(context),
     );
   }
 
