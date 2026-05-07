@@ -6,11 +6,11 @@ import '../../domain/entities/expert_tasting.entity.dart';
 import '../../domain/entities/wine.entity.dart';
 import 'expert_tasting_sheet.dart' as ets;
 
-/// Pro chip that toggles the expert rating panel inline. For non-Pro
-/// users it visually locks and the parent should route to the paywall
-/// rather than expanding. Reused across the unified wine rating sheet
-/// (tasting + personal) and the group rating sheet so the entry point
-/// looks identical regardless of context.
+/// Pro chip that toggles the expert rating panel inline. Outline-only
+/// when collapsed (low visual weight on dark surface), filled when
+/// expanded. Locked icon for non-Pro users — parent routes to paywall.
+/// Reused across the unified wine rating sheet (personal + tasting) and
+/// the group rating sheet so the entry point is identical everywhere.
 class ExpertRatingChip extends StatelessWidget {
   const ExpertRatingChip({
     super.key,
@@ -33,14 +33,16 @@ class ExpertRatingChip extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 180),
         padding: EdgeInsets.symmetric(
-          horizontal: context.w * 0.025,
+          horizontal: context.w * 0.03,
           vertical: context.h * 0.006,
         ),
         decoration: BoxDecoration(
-          color: filled ? cs.primary : cs.primary.withValues(alpha: 0.12),
-          borderRadius: BorderRadius.circular(context.w * 0.04),
+          color: filled ? cs.primary : Colors.transparent,
+          borderRadius: BorderRadius.circular(context.w * 0.05),
           border: Border.all(
-            color: cs.primary.withValues(alpha: filled ? 0 : 0.4),
+            color: filled
+                ? Colors.transparent
+                : cs.primary.withValues(alpha: 0.55),
             width: 1,
           ),
         ),
@@ -51,24 +53,70 @@ class ExpertRatingChip extends StatelessWidget {
               isPro
                   ? (expanded
                       ? PhosphorIconsFill.caretUp
-                      : PhosphorIconsFill.notebook)
+                      : PhosphorIconsRegular.notebook)
                   : PhosphorIconsFill.lock,
-              size: context.captionFont * 1.0,
+              size: context.captionFont * 1.05,
               color: filled ? cs.onPrimary : cs.primary,
             ),
-            SizedBox(width: context.xs * 0.8),
+            SizedBox(width: context.xs * 1.2),
             Text(
               'Tasting notes',
               style: TextStyle(
                 fontSize: context.captionFont * 0.85,
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w600,
                 color: filled ? cs.onPrimary : cs.primary,
-                letterSpacing: -0.1,
+                letterSpacing: 0.1,
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Shared eyebrow row — `YOUR RATING` label on the left, optional
+/// [ExpertRatingChip] on the right. Single source of truth for the
+/// rating-sheet header used by both the unified sheet and the group
+/// sheet, so the entry surface stays identical and spacing stays in
+/// sync across contexts.
+class YourRatingHeader extends StatelessWidget {
+  const YourRatingHeader({
+    super.key,
+    required this.showChip,
+    required this.isPro,
+    required this.expanded,
+    required this.onChipTap,
+  });
+
+  final bool showChip;
+  final bool isPro;
+  final bool expanded;
+  final VoidCallback onChipTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            'YOUR RATING',
+            style: TextStyle(
+              fontSize: context.captionFont * 0.85,
+              fontWeight: FontWeight.w700,
+              color: cs.onSurfaceVariant,
+              letterSpacing: 1.6,
+            ),
+          ),
+        ),
+        if (showChip)
+          ExpertRatingChip(
+            isPro: isPro,
+            expanded: expanded,
+            onTap: onChipTap,
+          ),
+      ],
     );
   }
 }

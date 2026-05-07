@@ -68,7 +68,7 @@ class TasteMatchScoreWidget extends StatelessWidget {
               height: 1.4,
             ),
           ),
-          if (match.hasDna || match.sameCanonicalPairs > 0) ...[
+          if (match.hasDna) ...[
             SizedBox(height: context.s),
             _Breakdown(match: match),
           ],
@@ -137,18 +137,6 @@ class _Breakdown extends StatelessWidget {
               value: '${match.dnaScore!}%',
             ),
           ],
-          if (match.sameCanonicalPairs > 0) ...[
-            if (match.bucketScore != null) SizedBox(height: context.xs * 0.6),
-            _BreakdownRow(
-              label: 'Same wines rated',
-              value: '${match.sameCanonicalPairs} '
-                  '(${match.agreePairs} aligned, '
-                  '${match.disagreePairs} disagreed)',
-              accent: match.agreePairs > match.disagreePairs
-                  ? cs.primary
-                  : cs.error,
-            ),
-          ],
         ],
       ),
     );
@@ -159,12 +147,10 @@ class _BreakdownRow extends StatelessWidget {
   const _BreakdownRow({
     required this.label,
     required this.value,
-    this.accent,
   });
 
   final String label;
   final String value;
-  final Color? accent;
 
   @override
   Widget build(BuildContext context) {
@@ -185,7 +171,7 @@ class _BreakdownRow extends StatelessWidget {
           style: TextStyle(
             fontSize: context.captionFont * 0.95,
             fontWeight: FontWeight.w700,
-            color: accent ?? cs.onSurface,
+            color: cs.onSurface,
           ),
         ),
       ],

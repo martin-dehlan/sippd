@@ -340,27 +340,11 @@ class _SheetState extends ConsumerState<_Sheet> {
             SizedBox(height: context.m),
             const _SectionDivider(),
             SizedBox(height: context.m),
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    'YOUR RATING',
-                    style: TextStyle(
-                      fontSize: context.captionFont * 0.9,
-                      fontWeight: FontWeight.w800,
-                      color:
-                          Theme.of(context).colorScheme.onSurfaceVariant,
-                      letterSpacing: 1.4,
-                    ),
-                  ),
-                ),
-                if (widget.wine.canonicalWineId != null)
-                  ExpertRatingChip(
-                    isPro: ref.watch(isProProvider),
-                    expanded: _expertExpanded,
-                    onTap: _toggleExpert,
-                  ),
-              ],
+            YourRatingHeader(
+              showChip: widget.wine.canonicalWineId != null,
+              isPro: ref.watch(isProProvider),
+              expanded: _expertExpanded,
+              onChipTap: _toggleExpert,
             ),
             SizedBox(height: context.s),
             _RateZone(
@@ -494,22 +478,14 @@ class _RateZone extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.baseline,
+          textBaseline: TextBaseline.alphabetic,
           children: [
-            Text(
-              'Your rating',
-              style: TextStyle(
-                fontSize: context.captionFont,
-                fontWeight: FontWeight.w600,
-                color: cs.onSurface,
-                letterSpacing: 0.3,
-              ),
-            ),
             const Spacer(),
             Text(
               rating?.toStringAsFixed(1) ?? '—',
               style: TextStyle(
-                fontSize: context.titleFont * 0.9,
+                fontSize: context.titleFont * 0.95,
                 fontWeight: FontWeight.w800,
                 color: cs.primary,
                 height: 1,
@@ -517,7 +493,7 @@ class _RateZone extends StatelessWidget {
                 fontFeatures: const [FontFeature.tabularFigures()],
               ),
             ),
-            SizedBox(width: context.xs * 0.6),
+            SizedBox(width: context.xs * 0.8),
             Text(
               '/10',
               style: TextStyle(
