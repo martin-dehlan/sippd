@@ -295,13 +295,19 @@ class _RequestsSection extends ConsumerWidget {
         SizedBox(height: context.s),
         for (final r in requests)
           Padding(
+            // Stable key so the row's local _resolved/_busy state
+            // survives the stream's re-emit when the underlying row
+            // status flips to 'accepted' — without it the row would
+            // briefly re-render in its un-resolved state before the
+            // next emit drops it from the list.
+            key: ValueKey('incoming_${r.id}'),
             padding: EdgeInsets.fromLTRB(
               context.paddingH * 1.3,
               0,
               context.paddingH * 1.3,
               context.s,
             ),
-            child: _RequestRow(request: r),
+            child: _RequestRow(key: ValueKey(r.id), request: r),
           ),
       ],
     );
@@ -592,75 +598,126 @@ class _FriendRow extends ConsumerWidget {
   }
 }
 
-class _RequestRow extends ConsumerWidget {
+/// One incoming-request row. Stateful so accept/decline can collapse
+/// the tile locally on tap — without that the row "flickers" through
+/// the natural sequence of stream emits (request status → accepted,
+/// then friendships row inserts, the requests-stream re-emits twice
+/// in quick succession). Local collapse hides those rebuild seams
+/// and only resolves to the final state once the row is gone.
+class _RequestRow extends ConsumerStatefulWidget {
   final FriendRequestEntity request;
-  const _RequestRow({required this.request});
+  const _RequestRow({super.key, required this.request});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_RequestRow> createState() => _RequestRowState();
+}
+
+class _RequestRowState extends ConsumerState<_RequestRow>
+    with TickerProviderStateMixin {
+  bool _resolved = false;
+  bool _busy = false;
+
+  Future<void> _accept() async {
+    if (_busy || _resolved) return;
+    setState(() => _busy = true);
+    try {
+      await ref
+          .read(friendsControllerProvider.notifier)
+          .acceptRequest(widget.request.id);
+      if (!mounted) return;
+      setState(() => _resolved = true);
+    } catch (_) {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _decline() async {
+    if (_busy || _resolved) return;
+    setState(() => _busy = true);
+    try {
+      await ref
+          .read(friendsControllerProvider.notifier)
+          .declineRequest(widget.request.id);
+      if (!mounted) return;
+      setState(() => _resolved = true);
+    } catch (_) {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final profile = request.senderProfile;
+    final profile = widget.request.senderProfile;
     final name = profile?.displayName ?? profile?.username ?? 'Unknown';
-    return Container(
-      padding: EdgeInsets.all(context.w * 0.04),
-      decoration: BoxDecoration(
-        color: cs.surfaceContainer,
-        borderRadius: BorderRadius.circular(context.w * 0.03),
-      ),
-      child: Row(
-        children: [
-          if (profile != null)
-            FriendAvatar(profile: profile, size: context.w * 0.12)
-          else
-            Icon(
-              PhosphorIconsRegular.user,
-              size: context.w * 0.12,
-              color: cs.outline,
-            ),
-          SizedBox(width: context.w * 0.04),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  style: TextStyle(
-                    fontSize: context.bodyFont,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  overflow: TextOverflow.ellipsis,
+
+    return AnimatedSize(
+      duration: const Duration(milliseconds: 240),
+      curve: Curves.easeOutCubic,
+      alignment: Alignment.topCenter,
+      child: AnimatedOpacity(
+        duration: const Duration(milliseconds: 180),
+        opacity: _resolved ? 0 : 1,
+        child: _resolved
+            ? const SizedBox(width: double.infinity)
+            : Container(
+                padding: EdgeInsets.all(context.w * 0.04),
+                decoration: BoxDecoration(
+                  color: cs.surfaceContainer,
+                  borderRadius: BorderRadius.circular(context.w * 0.03),
                 ),
-                Text(
-                  'wants to be friends',
-                  style: TextStyle(
-                    fontSize: context.captionFont,
-                    color: cs.onSurfaceVariant,
-                  ),
+                child: Row(
+                  children: [
+                    if (profile != null)
+                      FriendAvatar(profile: profile, size: context.w * 0.12)
+                    else
+                      Icon(
+                        PhosphorIconsRegular.user,
+                        size: context.w * 0.12,
+                        color: cs.outline,
+                      ),
+                    SizedBox(width: context.w * 0.04),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            name,
+                            style: TextStyle(
+                              fontSize: context.bodyFont,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          Text(
+                            'wants to be friends',
+                            style: TextStyle(
+                              fontSize: context.captionFont,
+                              color: cs.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(
+                        PhosphorIconsRegular.checkCircle,
+                        color: cs.primary,
+                        size: context.w * 0.07,
+                      ),
+                      onPressed: _busy ? null : _accept,
+                    ),
+                    IconButton(
+                      icon: Icon(
+                        PhosphorIconsRegular.xCircle,
+                        color: cs.outline,
+                        size: context.w * 0.07,
+                      ),
+                      onPressed: _busy ? null : _decline,
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
-          IconButton(
-            icon: Icon(
-              PhosphorIconsRegular.checkCircle,
-              color: cs.primary,
-              size: context.w * 0.07,
-            ),
-            onPressed: () => ref
-                .read(friendsControllerProvider.notifier)
-                .acceptRequest(request.id),
-          ),
-          IconButton(
-            icon: Icon(
-              PhosphorIconsRegular.xCircle,
-              color: cs.outline,
-              size: context.w * 0.07,
-            ),
-            onPressed: () => ref
-                .read(friendsControllerProvider.notifier)
-                .declineRequest(request.id),
-          ),
-        ],
+              ),
       ),
     );
   }
