@@ -12,7 +12,15 @@ import '../../widgets/or_divider.widget.dart';
 import '../email_confirmation/email_confirmation.screen.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
-  const LoginScreen({super.key});
+  const LoginScreen({super.key, this.initialSignUp = false});
+
+  /// When true, the screen lands in "Create your account" mode instead
+  /// of "Welcome back". Set by the onboarding flow once a fresh user
+  /// has finished the quiz — they're definitionally a new account, not
+  /// a returning sign-in. Defaults false so direct `/login` taps (and
+  /// the welcome page's "Already have an account?" link) still default
+  /// to sign-in.
+  final bool initialSignUp;
 
   @override
   ConsumerState<LoginScreen> createState() => _LoginScreenState();
@@ -22,7 +30,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  bool _isSignUp = false;
+  late bool _isSignUp = widget.initialSignUp;
   final _displayNameController = TextEditingController();
   Object? _submitError;
 
