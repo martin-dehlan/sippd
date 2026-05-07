@@ -155,7 +155,14 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       // write failed — still exit the flow so the user isn't trapped.
     }
     if (!mounted) return;
-    context.go(authed ? AppRoutes.wines : AppRoutes.login);
+    if (authed) {
+      context.go(AppRoutes.wines);
+    } else {
+      // Pre-auth funnel ends → user is definitionally creating a new
+      // account. Land on sign-up mode so they don't have to flip the
+      // tab manually after running through the whole quiz.
+      context.go(AppRoutes.login, extra: const {'mode': 'signup'});
+    }
   }
 
   void _next() {

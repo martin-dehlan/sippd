@@ -193,7 +193,17 @@ GoRouter goRouter(GoRouterRef ref) {
       ),
       GoRoute(
         path: AppRoutes.login,
-        builder: (context, state) => const LoginScreen(),
+        builder: (context, state) {
+          // The onboarding flow passes `{'mode': 'signup'}` when a
+          // fresh user finishes the quiz so the screen lands in
+          // "Create your account" instead of "Welcome back". Other
+          // entry points (welcome page's "Already have an account?",
+          // delete-account redirect, sign-out redirect) pass nothing
+          // and get the default sign-in mode.
+          final extra = state.extra as Map<String, dynamic>? ?? const {};
+          final initialSignUp = extra['mode'] == 'signup';
+          return LoginScreen(initialSignUp: initialSignUp);
+        },
       ),
       GoRoute(
         path: AppRoutes.chooseUsername,
