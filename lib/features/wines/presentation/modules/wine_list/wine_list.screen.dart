@@ -73,12 +73,14 @@ class WineListScreen extends ConsumerWidget {
                         child: Padding(
                           padding: EdgeInsets.all(context.w * 0.02),
                           child: Icon(
+                            // One icon per sort mode so the toggle
+                            // visibly shifts on each tap (rating ↔ recent
+                            // ↔ name had only two icons before).
                             switch (sortMode) {
                               WineSortMode.rating =>
-                                PhosphorIconsRegular.sortAscending,
+                                PhosphorIconsRegular.star,
                               WineSortMode.recent => PhosphorIconsRegular.clock,
-                              WineSortMode.name =>
-                                PhosphorIconsRegular.sortAscending,
+                              WineSortMode.name => PhosphorIconsRegular.textAa,
                             },
                             size: context.w * 0.055,
                             color: cs.onSurfaceVariant,
