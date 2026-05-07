@@ -18,6 +18,7 @@ import '../../../controller/wine.provider.dart';
 import '../../../domain/entities/wine.entity.dart';
 import '../../../domain/entities/wine_memory.entity.dart';
 import '../../widgets/expert_tasting_sheet.dart';
+import '../../widgets/expert_tasting_summary.widget.dart';
 import '../../widgets/friend_ratings_strip.widget.dart';
 import '../../widgets/wine_detail_blocks.widget.dart';
 
@@ -224,6 +225,26 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
                 SizedBox(height: context.xl),
                 FriendRatingsStrip(
                   canonicalWineId: widget.wine.canonicalWineId!,
+                ),
+                // Read-only display of the user's own expert tasting
+                // dimensions for this wine. Renders nothing when empty,
+                // so non-Pro / unfilled wines stay clean.
+                ExpertTastingSummary(
+                  canonicalWineId: widget.wine.canonicalWineId!,
+                  onEdit: () {
+                    final isPro = ref.read(isProProvider);
+                    if (!isPro) {
+                      context.push(
+                        AppRoutes.paywall,
+                        extra: const {'source': 'expert_tasting_summary'},
+                      );
+                      return;
+                    }
+                    showExpertTastingSheet(
+                      context: context,
+                      wine: widget.wine,
+                    );
+                  },
                 ),
               ],
               if (widget.wine.notes != null &&
