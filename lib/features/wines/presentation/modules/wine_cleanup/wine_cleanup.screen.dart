@@ -40,8 +40,7 @@ class WineCleanupScreen extends ConsumerWidget {
         error: (e, _) => Center(
           child: ErrorView(
             title: "Couldn't load duplicates",
-            onRetry: () =>
-                ref.invalidate(canonicalMergeCandidatesProvider),
+            onRetry: () => ref.invalidate(canonicalMergeCandidatesProvider),
             error: e,
           ),
         ),
@@ -53,7 +52,7 @@ class WineCleanupScreen extends ConsumerWidget {
                 child: ListView.separated(
                   padding: EdgeInsets.all(context.paddingH),
                   itemCount: pairs.length,
-                  separatorBuilder: (_, __) => SizedBox(height: context.s),
+                  separatorBuilder: (_, _) => SizedBox(height: context.s),
                   itemBuilder: (_, i) => _PairCard(pair: pairs[i]),
                 ),
               ),
@@ -166,11 +165,7 @@ class _PairCard extends ConsumerWidget {
             children: [
               Expanded(
                 child: OutlinedButton(
-                  onPressed: () => _confirmAndMerge(
-                    context,
-                    ref,
-                    keep: 'A',
-                  ),
+                  onPressed: () => _confirmAndMerge(context, ref, keep: 'A'),
                   style: OutlinedButton.styleFrom(
                     side: BorderSide(color: cs.outlineVariant),
                     foregroundColor: cs.onSurface,
@@ -181,11 +176,7 @@ class _PairCard extends ConsumerWidget {
               SizedBox(width: context.s),
               Expanded(
                 child: OutlinedButton(
-                  onPressed: () => _confirmAndMerge(
-                    context,
-                    ref,
-                    keep: 'B',
-                  ),
+                  onPressed: () => _confirmAndMerge(context, ref, keep: 'B'),
                   style: OutlinedButton.styleFrom(
                     side: BorderSide(color: cs.outlineVariant),
                     foregroundColor: cs.onSurface,
@@ -257,9 +248,9 @@ class _PairCard extends ConsumerWidget {
           .read(canonicalMergeCandidatesProvider.notifier)
           .merge(loserId: loserId, winnerId: winnerId);
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Merged into "$keepName".')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Merged into "$keepName".')));
     } catch (e) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

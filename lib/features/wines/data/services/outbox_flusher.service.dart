@@ -32,12 +32,12 @@ class OutboxFlusher {
     required WineSupabaseApi? api,
     required String? userId,
     required AnalyticsService? analytics,
-  })  : _outbox = outbox,
-        _winesDao = winesDao,
-        _imageService = imageService,
-        _api = api,
-        _userId = userId,
-        _analytics = analytics;
+  }) : _outbox = outbox,
+       _winesDao = winesDao,
+       _imageService = imageService,
+       _api = api,
+       _userId = userId,
+       _analytics = analytics;
 
   Future<void> flush() async {
     if (_running) return; // Single-flight to avoid double-uploads.
@@ -65,7 +65,9 @@ class OutboxFlusher {
         final updated = row.toEntity().copyWith(imageUrl: url).toTableData();
         await _winesDao.updateWine(updated);
         // Mirror to Supabase so other devices see the photo.
-        await _api!.upsertWine(row.toEntity().copyWith(imageUrl: url).toModel());
+        await _api!.upsertWine(
+          row.toEntity().copyWith(imageUrl: url).toModel(),
+        );
       }
       await _outbox.remove(item.wineId);
     } catch (e) {

@@ -10,13 +10,15 @@ class ProfilesDao extends DatabaseAccessor<AppDatabase>
   ProfilesDao(super.db);
 
   Future<ProfileTableData?> getById(String id) {
-    return (select(profilesTable)..where((p) => p.id.equals(id)))
-        .getSingleOrNull();
+    return (select(
+      profilesTable,
+    )..where((p) => p.id.equals(id))).getSingleOrNull();
   }
 
   Stream<ProfileTableData?> watchById(String id) {
-    return (select(profilesTable)..where((p) => p.id.equals(id)))
-        .watchSingleOrNull();
+    return (select(
+      profilesTable,
+    )..where((p) => p.id.equals(id))).watchSingleOrNull();
   }
 
   Future<void> upsert(ProfileTableData data) {

@@ -16,15 +16,14 @@ class FriendRatingsApi {
   }) async {
     final raw = await _client.rpc(
       'get_friend_ratings_for_canonical_wine',
-      params: {
-        'p_canonical_wine_id': canonicalWineId,
-        'p_limit': limit,
-      },
+      params: {'p_canonical_wine_id': canonicalWineId, 'p_limit': limit},
     );
     if (raw is! List) return const [];
     return raw
-        .map((row) =>
-            FriendRatingModel.fromJson(Map<String, dynamic>.from(row as Map)))
+        .map(
+          (row) =>
+              FriendRatingModel.fromJson(Map<String, dynamic>.from(row as Map)),
+        )
         .toList(growable: false);
   }
 }

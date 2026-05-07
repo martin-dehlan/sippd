@@ -8,9 +8,8 @@ class CanonicalGrapeTable extends Table {
   TextColumn get id => text()();
   TextColumn get name => text()();
   TextColumn get color => text()(); // 'red' | 'white'
-  TextColumn get aliases => text()
-      .map(const AliasesConverter())
-      .withDefault(const Constant(''))();
+  TextColumn get aliases =>
+      text().map(const AliasesConverter()).withDefault(const Constant(''))();
 
   @override
   Set<Column> get primaryKey => {id};

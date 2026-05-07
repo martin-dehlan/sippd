@@ -6,11 +6,7 @@ class FriendAvatar extends StatelessWidget {
   final FriendProfileEntity profile;
   final double size;
 
-  const FriendAvatar({
-    super.key,
-    required this.profile,
-    required this.size,
-  });
+  const FriendAvatar({super.key, required this.profile, required this.size});
 
   @override
   Widget build(BuildContext context) {
@@ -23,8 +19,8 @@ class FriendAvatar extends StatelessWidget {
           width: size,
           height: size,
           fit: BoxFit.cover,
-          placeholder: (_, __) => _initialsFallback(context, size),
-          errorWidget: (_, __, ___) => _initialsFallback(context, size),
+          placeholder: (_, _) => _initialsFallback(context, size),
+          errorWidget: (_, _, _) => _initialsFallback(context, size),
         ),
       );
     }

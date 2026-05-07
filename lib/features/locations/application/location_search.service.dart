@@ -83,7 +83,8 @@ class LocationSearchService {
       houseNumber: result.address?['house_number'] ?? '',
       postcode: result.address?['postcode'] ?? '',
       borough: result.address?['borough'] ?? result.address?['suburb'] ?? '',
-      city: result.address?['city'] ??
+      city:
+          result.address?['city'] ??
           result.address?['town'] ??
           result.address?['village'] ??
           '',

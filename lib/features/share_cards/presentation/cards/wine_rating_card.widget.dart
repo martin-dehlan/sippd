@@ -20,21 +20,13 @@ class WineRatingCard extends StatelessWidget {
   final WineEntity wine;
   final String? username;
 
-  const WineRatingCard({
-    super.key,
-    required this.wine,
-    this.username,
-  });
+  const WineRatingCard({super.key, required this.wine, this.username});
 
   @override
   Widget build(BuildContext context) {
     final image = _resolveImage(wine);
     if (image != null) {
-      return _PhotoLayout(
-        wine: wine,
-        username: username,
-        image: image,
-      );
+      return _PhotoLayout(wine: wine, username: username, image: image);
     }
     return _TypographicLayout(wine: wine, username: username);
   }
@@ -112,11 +104,7 @@ class _PhotoLayout extends StatelessWidget {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Icon(
-                        PhosphorIconsFill.star,
-                        color: _primary,
-                        size: 110,
-                      ),
+                      Icon(PhosphorIconsFill.star, color: _primary, size: 110),
                       const SizedBox(width: 12),
                       Text(
                         wine.rating.toStringAsFixed(1),
@@ -209,11 +197,7 @@ class _TypographicLayout extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Icon(
-                PhosphorIconsFill.star,
-                color: _primary,
-                size: 140,
-              ),
+              Icon(PhosphorIconsFill.star, color: _primary, size: 140),
               const SizedBox(width: 18),
               Text(
                 wine.rating.toStringAsFixed(1),
@@ -275,7 +259,8 @@ class _NameBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final showWinery = wine.winery != null &&
+    final showWinery =
+        wine.winery != null &&
         wine.winery!.isNotEmpty &&
         wine.winery!.toLowerCase() != wine.name.toLowerCase();
     return Column(
@@ -455,8 +440,9 @@ String? _teaserFromNotes(String? notes) {
   final trimmed = notes.trim();
   if (trimmed.isEmpty) return null;
   final firstSentenceEnd = trimmed.indexOf(RegExp(r'[.!?]'));
-  String snippet =
-      firstSentenceEnd > 20 ? trimmed.substring(0, firstSentenceEnd) : trimmed;
+  String snippet = firstSentenceEnd > 20
+      ? trimmed.substring(0, firstSentenceEnd)
+      : trimmed;
   if (snippet.length > 90) snippet = '${snippet.substring(0, 87)}…';
   return snippet;
 }

@@ -15,8 +15,9 @@ void main() {
     service = MockPaywallService();
     // Default: empty stream so isProProvider falls back to the
     // service's cached isPro getter.
-    when(() => service.customerInfoStream)
-        .thenAnswer((_) => const Stream<CustomerInfo>.empty());
+    when(
+      () => service.customerInfoStream,
+    ).thenAnswer((_) => const Stream<CustomerInfo>.empty());
   });
 
   group('isProProvider — fallback path (stream not yet emitted)', () {
@@ -42,10 +43,8 @@ void main() {
     });
   });
 
-  group('currentCustomerInfoProvider — fallback to service.currentInfo',
-      () {
-    test('returns null when neither stream nor service has a value',
-        () async {
+  group('currentCustomerInfoProvider — fallback to service.currentInfo', () {
+    test('returns null when neither stream nor service has a value', () async {
       when(() => service.currentInfo).thenReturn(null);
 
       final c = makeContainer(

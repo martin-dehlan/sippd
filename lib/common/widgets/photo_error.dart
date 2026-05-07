@@ -56,15 +56,15 @@ class _PermissionDialog extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
     final (icon, title, body) = switch (kind) {
       _PermissionKind.camera => (
-          PhosphorIconsRegular.camera,
-          'Camera access off',
-          'Sippd needs camera access to capture wine photos. Enable it in Settings to continue.',
-        ),
+        PhosphorIconsRegular.camera,
+        'Camera access off',
+        'Sippd needs camera access to capture wine photos. Enable it in Settings to continue.',
+      ),
       _PermissionKind.photos => (
-          PhosphorIconsRegular.images,
-          'Photos access off',
-          'Sippd needs photo library access to attach images. Enable it in Settings to continue.',
-        ),
+        PhosphorIconsRegular.images,
+        'Photos access off',
+        'Sippd needs photo library access to attach images. Enable it in Settings to continue.',
+      ),
     };
 
     return Dialog(

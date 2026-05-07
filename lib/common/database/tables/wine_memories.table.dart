@@ -8,8 +8,7 @@ class WineMemoriesTable extends Table {
   TextColumn get imageUrl => text().nullable()();
   TextColumn get localImagePath => text().nullable()();
   TextColumn get caption => text().nullable()();
-  DateTimeColumn get createdAt =>
-      dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 
   @override
   Set<Column> get primaryKey => {id};

@@ -7,13 +7,15 @@ void main() {
   TasteCompassEntity compass({int total = 30}) =>
       TasteCompassEntity(totalCount: total);
 
-  UserStyleDna dna(Map<String, double> values,
-          {int attributedCount = 20, double confidence = 0.9}) =>
-      UserStyleDna(
-        values: values,
-        attributedCount: attributedCount,
-        confidence: confidence,
-      );
+  UserStyleDna dna(
+    Map<String, double> values, {
+    int attributedCount = 20,
+    double confidence = 0.9,
+  }) => UserStyleDna(
+    values: values,
+    attributedCount: attributedCount,
+    confidence: confidence,
+  );
 
   group('matchArchetype thresholds', () {
     test('newcomer when totalCount < 5', () {
@@ -33,8 +35,10 @@ void main() {
     });
 
     test('newcomer when attributedCount < 3', () {
-      final m =
-          matchArchetype(compass(), dna({'body': 0.5}, attributedCount: 2));
+      final m = matchArchetype(
+        compass(),
+        dna({'body': 0.5}, attributedCount: 2),
+      );
       expect(m.archetype.id, 'curious_newcomer');
     });
   });
@@ -54,14 +58,15 @@ void main() {
         }),
       );
       expect(m.archetype.id, 'bold_red_hunter');
-      expect(m.score, greaterThan(80),
-          reason: 'near-perfect vector should score high');
-      expect(m.isTentative, isFalse,
-          reason: 'confidence 0.9 → not tentative');
+      expect(
+        m.score,
+        greaterThan(80),
+        reason: 'near-perfect vector should score high',
+      );
+      expect(m.isTentative, isFalse, reason: 'confidence 0.9 → not tentative');
     });
 
-    test('light-acid-low-tannin matches Elegant Burgundian, not Bold Red',
-        () {
+    test('light-acid-low-tannin matches Elegant Burgundian, not Bold Red', () {
       final m = matchArchetype(
         compass(),
         dna({
@@ -79,15 +84,19 @@ void main() {
     test('low confidence DNA flips to tentative', () {
       final m = matchArchetype(
         compass(),
-        dna({'body': 0.85, 'tannin': 0.85, 'acidity': 0.55,
-              'sweetness': 0.0, 'oak': 0.65, 'intensity': 0.75},
-            confidence: 0.3),
+        dna({
+          'body': 0.85,
+          'tannin': 0.85,
+          'acidity': 0.55,
+          'sweetness': 0.0,
+          'oak': 0.65,
+          'intensity': 0.75,
+        }, confidence: 0.3),
       );
       expect(m.isTentative, isTrue);
     });
 
-    test('score is bounded to 0..100 even with strong contextual bonus',
-        () {
+    test('score is bounded to 0..100 even with strong contextual bonus', () {
       final m = matchArchetype(
         compass(),
         dna({

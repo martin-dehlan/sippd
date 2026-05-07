@@ -43,7 +43,7 @@ class AppDatabase extends _$AppDatabase {
 
   /// Test-only constructor. Tests pass `NativeDatabase.memory()` so
   /// they get an isolated, schema-fresh DB without touching disk.
-  AppDatabase.forTesting(QueryExecutor e) : super(e);
+  AppDatabase.forTesting(super.e);
 
   @override
   int get schemaVersion => 1;

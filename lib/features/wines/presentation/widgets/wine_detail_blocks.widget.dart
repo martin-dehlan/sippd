@@ -81,19 +81,23 @@ class WineDetailMetaLine extends ConsumerWidget {
     final spans = <InlineSpan>[];
     for (var i = 0; i < fixedParts.length; i++) {
       if (i > 0) {
-        spans.add(TextSpan(
-          text: '  ·  ',
-          style: TextStyle(color: cs.outline),
-        ));
+        spans.add(
+          TextSpan(
+            text: '  ·  ',
+            style: TextStyle(color: cs.outline),
+          ),
+        );
       }
       spans.add(TextSpan(text: fixedParts[i]));
     }
     if (grapeText != null) {
       if (spans.isNotEmpty) {
-        spans.add(TextSpan(
-          text: '  ·  ',
-          style: TextStyle(color: cs.outline),
-        ));
+        spans.add(
+          TextSpan(
+            text: '  ·  ',
+            style: TextStyle(color: cs.outline),
+          ),
+        );
       }
       spans.add(TextSpan(text: grapeText));
     }
@@ -159,7 +163,7 @@ class WineDetailImage extends StatelessWidget {
                   child: Image.network(
                     wine.imageUrl!,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Icon(
+                    errorBuilder: (_, _, _) => Icon(
                       PhosphorIconsRegular.wine,
                       size: context.w * 0.25,
                       color: typeColor.withValues(alpha: 0.6),

@@ -14,10 +14,7 @@ Future<YearPickerResult?> showYearPickerSheet({
 }) async {
   final maxYear = max ?? DateTime.now().year + 1;
   final minYear = min ?? 1900;
-  final years = List<int>.generate(
-    maxYear - minYear + 1,
-    (i) => maxYear - i,
-  );
+  final years = List<int>.generate(maxYear - minYear + 1, (i) => maxYear - i);
 
   final initialIndex = initial == null
       ? years.indexOf(DateTime.now().year)
@@ -31,15 +28,18 @@ Future<YearPickerResult?> showYearPickerSheet({
     isScrollControlled: true,
     backgroundColor: Theme.of(context).colorScheme.surface,
     shape: RoundedRectangleBorder(
-      borderRadius:
-          BorderRadius.vertical(top: Radius.circular(context.w * 0.05)),
+      borderRadius: BorderRadius.vertical(
+        top: Radius.circular(context.w * 0.05),
+      ),
     ),
     builder: (ctx) {
       final cs = Theme.of(ctx).colorScheme;
       return SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(
-              horizontal: ctx.paddingH, vertical: ctx.m),
+            horizontal: ctx.paddingH,
+            vertical: ctx.m,
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -73,8 +73,7 @@ Future<YearPickerResult?> showYearPickerSheet({
                       height: ctx.h * 0.06,
                       decoration: BoxDecoration(
                         color: cs.surfaceContainerHighest.withValues(alpha: .4),
-                        borderRadius:
-                            BorderRadius.circular(ctx.w * 0.025),
+                        borderRadius: BorderRadius.circular(ctx.w * 0.025),
                       ),
                     ),
                     ListWheelScrollView.useDelegate(
@@ -109,12 +108,11 @@ Future<YearPickerResult?> showYearPickerSheet({
                     child: SizedBox(
                       height: ctx.h * 0.055,
                       child: OutlinedButton(
-                        onPressed: () => Navigator.pop(
-                            ctx, const YearPickerResult(null)),
+                        onPressed: () =>
+                            Navigator.pop(ctx, const YearPickerResult(null)),
                         style: OutlinedButton.styleFrom(
                           shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(ctx.w * 0.03),
+                            borderRadius: BorderRadius.circular(ctx.w * 0.03),
                           ),
                           side: BorderSide(color: cs.outlineVariant),
                         ),
@@ -135,13 +133,12 @@ Future<YearPickerResult?> showYearPickerSheet({
                     child: SizedBox(
                       height: ctx.h * 0.055,
                       child: FilledButton(
-                        onPressed: () => Navigator.pop(
-                            ctx, YearPickerResult(selected)),
+                        onPressed: () =>
+                            Navigator.pop(ctx, YearPickerResult(selected)),
                         style: FilledButton.styleFrom(
                           elevation: 0,
                           shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(ctx.w * 0.03),
+                            borderRadius: BorderRadius.circular(ctx.w * 0.03),
                           ),
                         ),
                         child: Text(

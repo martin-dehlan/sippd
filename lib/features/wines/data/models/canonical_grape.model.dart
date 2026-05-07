@@ -21,31 +21,31 @@ class CanonicalGrapeModel with _$CanonicalGrapeModel {
 
 extension CanonicalGrapeModelToEntity on CanonicalGrapeModel {
   CanonicalGrapeEntity toEntity() => CanonicalGrapeEntity(
-        id: id,
-        name: name,
-        color: GrapeColor.values.firstWhere(
-          (c) => c.name == color,
-          orElse: () => GrapeColor.red,
-        ),
-        aliases: aliases,
-      );
+    id: id,
+    name: name,
+    color: GrapeColor.values.firstWhere(
+      (c) => c.name == color,
+      orElse: () => GrapeColor.red,
+    ),
+    aliases: aliases,
+  );
 
   CanonicalGrapeTableData toTableData() => CanonicalGrapeTableData(
-        id: id,
-        name: name,
-        color: color,
-        aliases: aliases,
-      );
+    id: id,
+    name: name,
+    color: color,
+    aliases: aliases,
+  );
 }
 
 extension CanonicalGrapeTableDataToEntity on CanonicalGrapeTableData {
   CanonicalGrapeEntity toEntity() => CanonicalGrapeEntity(
-        id: id,
-        name: name,
-        color: GrapeColor.values.firstWhere(
-          (c) => c.name == color,
-          orElse: () => GrapeColor.red,
-        ),
-        aliases: aliases,
-      );
+    id: id,
+    name: name,
+    color: GrapeColor.values.firstWhere(
+      (c) => c.name == color,
+      orElse: () => GrapeColor.red,
+    ),
+    aliases: aliases,
+  );
 }

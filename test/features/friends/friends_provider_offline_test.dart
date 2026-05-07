@@ -15,8 +15,9 @@ void main() {
     test('emits AppError.offline as a stream error when offline', () async {
       final repo = _MockRepo();
       // Repo should NEVER be called when offline.
-      when(() => repo.watchFriends()).thenAnswer(
-          (_) => Stream<List<FriendProfileEntity>>.value(const []));
+      when(
+        () => repo.watchFriends(),
+      ).thenAnswer((_) => Stream<List<FriendProfileEntity>>.value(const []));
 
       final container = ProviderContainer(
         overrides: [
@@ -36,15 +37,17 @@ void main() {
 
     test('returns repo stream when online', () async {
       final repo = _MockRepo();
-      when(() => repo.watchFriends()).thenAnswer((_) => Stream.value(const [
-            FriendProfileEntity(id: 'a'),
-          ]));
+      when(
+        () => repo.watchFriends(),
+      ).thenAnswer((_) => Stream.value(const [FriendProfileEntity(id: 'a')]));
       // Stub the request streams used by sibling providers if they fire
       // — they don't here, but mocktail throws on any unexpected call.
-      when(() => repo.watchIncomingRequests()).thenAnswer(
-          (_) => Stream<List<FriendRequestEntity>>.value(const []));
-      when(() => repo.watchOutgoingRequests()).thenAnswer(
-          (_) => Stream<List<FriendRequestEntity>>.value(const []));
+      when(
+        () => repo.watchIncomingRequests(),
+      ).thenAnswer((_) => Stream<List<FriendRequestEntity>>.value(const []));
+      when(
+        () => repo.watchOutgoingRequests(),
+      ).thenAnswer((_) => Stream<List<FriendRequestEntity>>.value(const []));
 
       final container = ProviderContainer(
         overrides: [

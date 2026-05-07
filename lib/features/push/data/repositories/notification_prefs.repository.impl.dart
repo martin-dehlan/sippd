@@ -13,9 +13,11 @@ class NotificationPrefsRepositoryImpl implements NotificationPrefsRepository {
   @override
   Stream<NotificationPrefsEntity> watchPrefs(String userId) {
     _syncFromRemote(userId);
-    return _dao.watchByUser(userId).map(
-      (row) => row?.toEntity() ?? NotificationPrefsEntity.defaults(userId),
-    );
+    return _dao
+        .watchByUser(userId)
+        .map(
+          (row) => row?.toEntity() ?? NotificationPrefsEntity.defaults(userId),
+        );
   }
 
   @override

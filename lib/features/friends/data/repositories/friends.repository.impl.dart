@@ -10,9 +10,8 @@ class FriendsRepositoryImpl implements FriendsRepository {
   FriendsRepositoryImpl(this._api);
 
   @override
-  Stream<List<FriendProfileEntity>> watchFriends() => _api
-      .watchFriends()
-      .map((list) => list.map((m) => m.toEntity()).toList());
+  Stream<List<FriendProfileEntity>> watchFriends() =>
+      _api.watchFriends().map((list) => list.map((m) => m.toEntity()).toList());
 
   @override
   Stream<List<FriendRequestEntity>> watchIncomingRequests() => _api
@@ -32,12 +31,10 @@ class FriendsRepositoryImpl implements FriendsRepository {
   }
 
   @override
-  Future<void> sendRequest(String receiverId) =>
-      _api.sendRequest(receiverId);
+  Future<void> sendRequest(String receiverId) => _api.sendRequest(receiverId);
 
   @override
-  Future<void> acceptRequest(String requestId) =>
-      _api.acceptRequest(requestId);
+  Future<void> acceptRequest(String requestId) => _api.acceptRequest(requestId);
 
   @override
   Future<void> declineRequest(String requestId) =>
@@ -47,6 +44,5 @@ class FriendsRepositoryImpl implements FriendsRepository {
   Future<void> removeFriend(String friendId) => _api.removeFriend(friendId);
 
   @override
-  Future<void> cancelRequest(String requestId) =>
-      _api.cancelRequest(requestId);
+  Future<void> cancelRequest(String requestId) => _api.cancelRequest(requestId);
 }

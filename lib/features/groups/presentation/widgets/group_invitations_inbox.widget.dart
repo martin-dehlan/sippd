@@ -51,9 +51,8 @@ class _InviteCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
-    final inviter = item.inviterDisplayName ??
-        item.inviterUsername ??
-        'Someone';
+    final inviter =
+        item.inviterDisplayName ?? item.inviterUsername ?? 'Someone';
     final size = context.w * 0.12;
 
     return Container(
@@ -84,8 +83,11 @@ class _InviteCard extends ConsumerWidget {
                       : null,
                 ),
                 child: item.groupImageUrl == null
-                    ? Icon(PhosphorIconsRegular.wine,
-                        color: cs.primary, size: size * 0.5)
+                    ? Icon(
+                        PhosphorIconsRegular.wine,
+                        color: cs.primary,
+                        size: size * 0.5,
+                      )
                     : null,
               ),
               SizedBox(width: context.w * 0.035),
@@ -128,8 +130,7 @@ class _InviteCard extends ConsumerWidget {
                     foregroundColor: cs.onSurfaceVariant,
                     side: BorderSide(color: cs.outlineVariant),
                     shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(context.w * 0.025),
+                      borderRadius: BorderRadius.circular(context.w * 0.025),
                     ),
                   ),
                   child: const Text('Decline'),
@@ -142,8 +143,7 @@ class _InviteCard extends ConsumerWidget {
                   style: FilledButton.styleFrom(
                     elevation: 0,
                     shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(context.w * 0.025),
+                      borderRadius: BorderRadius.circular(context.w * 0.025),
                     ),
                   ),
                   child: const Text('Accept'),

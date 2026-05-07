@@ -67,24 +67,22 @@ class TastingRecapSection extends ConsumerWidget {
       byCanonical.putIfAbsent(e.canonicalWineId, () => []).add(e);
     }
 
-    final ranked = safeWines
-        .map((w) {
+    final ranked =
+        safeWines.map((w) {
           final cid = w.canonicalWineId ?? w.id;
           final ratings = byCanonical[cid] ?? const <TastingRecapEntry>[];
           final avg = ratings.isEmpty
               ? null
               : ratings.map((r) => r.rating).reduce((a, b) => a + b) /
-                  ratings.length;
+                    ratings.length;
           return _RankedWine(wine: w, ratings: ratings, avg: avg);
-        })
-        .toList()
-      ..sort((a, b) {
-        final aHas = a.avg != null;
-        final bHas = b.avg != null;
-        if (aHas != bHas) return aHas ? -1 : 1;
-        if (a.avg == null) return 0;
-        return b.avg!.compareTo(a.avg!);
-      });
+        }).toList()..sort((a, b) {
+          final aHas = a.avg != null;
+          final bHas = b.avg != null;
+          if (aHas != bHas) return aHas ? -1 : 1;
+          if (a.avg == null) return 0;
+          return b.avg!.compareTo(a.avg!);
+        });
 
     final top = ranked.firstOrNull;
     final hasAnyRating = top?.avg != null;
@@ -126,16 +124,14 @@ class TastingRecapSection extends ConsumerWidget {
         else ...[
           SizedBox(height: context.m),
           Padding(
-            padding:
-                EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
+            padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
             child: _TopWineCard(top: top!, cs: cs),
           ),
           SizedBox(height: context.l),
           ListView.separated(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            padding:
-                EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
+            padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
             itemCount: ranked.length,
             separatorBuilder: (_, _) => Padding(
               padding: EdgeInsets.symmetric(vertical: context.s),
@@ -196,11 +192,7 @@ class _SectionShell extends StatelessWidget {
                   ),
                 ),
               ),
-              _ShareRecapButton(
-                cs: cs,
-                enabled: shareEnabled,
-                onTap: onShare,
-              ),
+              _ShareRecapButton(cs: cs, enabled: shareEnabled, onTap: onShare),
             ],
           ),
         ),
@@ -225,10 +217,7 @@ class _LoadingBody extends StatelessWidget {
         child: SizedBox(
           width: context.w * 0.06,
           height: context.w * 0.06,
-          child: CircularProgressIndicator(
-            strokeWidth: 2,
-            color: cs.primary,
-          ),
+          child: CircularProgressIndicator(strokeWidth: 2, color: cs.primary),
         ),
       ),
     );
@@ -241,11 +230,9 @@ extension on TastingRecapSection {
     WidgetRef ref,
     List<_RankedWine> ranked,
   ) async {
-    final group =
-        ref.read(groupDetailProvider(groupId)).valueOrNull;
-    final attendees = ref
-            .read(tastingAttendeesProvider(tastingId))
-            .valueOrNull ??
+    final group = ref.read(groupDetailProvider(groupId)).valueOrNull;
+    final attendees =
+        ref.read(tastingAttendeesProvider(tastingId)).valueOrNull ??
         const <TastingAttendeeEntity>[];
     final goingCount = attendees
         .where((a) => a.status == RsvpStatus.going)
@@ -269,7 +256,9 @@ extension on TastingRecapSection {
       ],
       attendeeCount: goingCount,
     );
-    await ref.read(shareCardProvider).shareTastingRecapCard(
+    await ref
+        .read(shareCardProvider)
+        .shareTastingRecapCard(
           context: context,
           tastingId: tastingId,
           data: data,
@@ -294,8 +283,11 @@ class _ShareRecapButton extends StatelessWidget {
     final inner = Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(PhosphorIconsRegular.shareNetwork,
-            size: context.w * 0.04, color: cs.primary),
+        Icon(
+          PhosphorIconsRegular.shareNetwork,
+          size: context.w * 0.04,
+          color: cs.primary,
+        ),
         SizedBox(width: context.w * 0.012),
         Text(
           'Share recap',
@@ -331,8 +323,11 @@ class _NoRatingsYet extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(PhosphorIconsRegular.wine,
-              size: context.bodyFont * 1.2, color: cs.onSurfaceVariant),
+          Icon(
+            PhosphorIconsRegular.wine,
+            size: context.bodyFont * 1.2,
+            color: cs.onSurfaceVariant,
+          ),
           SizedBox(width: context.w * 0.03),
           Expanded(
             child: Text(
@@ -387,8 +382,7 @@ class _TopWineCard extends StatelessWidget {
                     fontSize: context.captionFont * 0.85,
                     fontWeight: FontWeight.w800,
                     letterSpacing: 1.4,
-                    color:
-                        cs.onPrimaryContainer.withValues(alpha: 0.8),
+                    color: cs.onPrimaryContainer.withValues(alpha: 0.8),
                   ),
                 ),
                 SizedBox(height: context.xs),
@@ -409,8 +403,7 @@ class _TopWineCard extends StatelessWidget {
                     subtitle,
                     style: TextStyle(
                       fontSize: context.captionFont,
-                      color:
-                          cs.onPrimaryContainer.withValues(alpha: 0.7),
+                      color: cs.onPrimaryContainer.withValues(alpha: 0.7),
                     ),
                   ),
                 ],
@@ -508,8 +501,8 @@ class _RaterChip extends StatelessWidget {
     final label = (entry.displayName?.trim().isNotEmpty ?? false)
         ? entry.displayName!.trim()
         : (entry.username?.trim().isNotEmpty ?? false)
-            ? entry.username!.trim()
-            : 'Friend';
+        ? entry.username!.trim()
+        : 'Friend';
     final initial = label.characters.first.toUpperCase();
     final size = context.w * 0.06;
 

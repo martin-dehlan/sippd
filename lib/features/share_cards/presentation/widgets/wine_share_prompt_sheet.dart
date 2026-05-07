@@ -32,10 +32,8 @@ Future<void> showWineSharePromptSheet({
         top: Radius.circular(context.w * 0.06),
       ),
     ),
-    builder: (ctx) => _WineSharePromptSheet(
-      wine: wine,
-      triggerSource: triggerSource,
-    ),
+    builder: (ctx) =>
+        _WineSharePromptSheet(wine: wine, triggerSource: triggerSource),
   );
 }
 
@@ -59,10 +57,11 @@ class _WineSharePromptSheetState extends ConsumerState<_WineSharePromptSheet> {
   Future<void> _share() async {
     if (_sharing) return;
     setState(() => _sharing = true);
-    final username =
-        ref.read(currentProfileProvider).valueOrNull?.username;
+    final username = ref.read(currentProfileProvider).valueOrNull?.username;
     try {
-      await ref.read(shareCardProvider).shareWineRatingCard(
+      await ref
+          .read(shareCardProvider)
+          .shareWineRatingCard(
             context: context,
             wine: widget.wine,
             username: username,
@@ -79,8 +78,7 @@ class _WineSharePromptSheetState extends ConsumerState<_WineSharePromptSheet> {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final username =
-        ref.watch(currentProfileProvider).valueOrNull?.username;
+    final username = ref.watch(currentProfileProvider).valueOrNull?.username;
 
     return SingleChildScrollView(
       padding: EdgeInsets.fromLTRB(
@@ -162,10 +160,7 @@ class _WineSharePromptSheetState extends ConsumerState<_WineSharePromptSheet> {
           SizedBox(height: context.xl),
           Center(
             child: _PreviewFrame(
-              child: WineRatingCard(
-                wine: widget.wine,
-                username: username,
-              ),
+              child: WineRatingCard(wine: widget.wine, username: username),
             ),
           ),
           SizedBox(height: context.xl),

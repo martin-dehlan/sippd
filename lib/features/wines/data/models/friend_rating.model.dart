@@ -22,11 +22,11 @@ class FriendRatingModel with _$FriendRatingModel {
 
 extension FriendRatingModelToEntity on FriendRatingModel {
   FriendRatingEntity toEntity() => FriendRatingEntity(
-        userId: userId,
-        displayName: displayName,
-        username: username,
-        avatarUrl: avatarUrl,
-        rating: rating,
-        ratedAt: ratedAt,
-      );
+    userId: userId,
+    displayName: displayName,
+    username: username,
+    avatarUrl: avatarUrl,
+    rating: rating,
+    ratedAt: ratedAt,
+  );
 }

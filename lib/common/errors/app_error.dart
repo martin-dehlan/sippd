@@ -14,15 +14,11 @@ class AppError with _$AppError {
   /// [AppError.network] so error views can treat them identically.
   const factory AppError.offline() = OfflineError;
 
-  const factory AppError.database({
-    required String message,
-    String? table,
-  }) = DatabaseError;
+  const factory AppError.database({required String message, String? table}) =
+      DatabaseError;
 
-  const factory AppError.validation({
-    required String message,
-    String? field,
-  }) = ValidationError;
+  const factory AppError.validation({required String message, String? field}) =
+      ValidationError;
 
   const factory AppError.notFound({
     required String message,
@@ -30,9 +26,8 @@ class AppError with _$AppError {
     String? resourceId,
   }) = NotFoundError;
 
-  const factory AppError.unauthorized({
-    required String message,
-  }) = UnauthorizedError;
+  const factory AppError.unauthorized({required String message}) =
+      UnauthorizedError;
 
   const factory AppError.serverError({
     required String message,

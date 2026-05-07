@@ -86,14 +86,13 @@ class _WinePhotoPickerState extends ConsumerState<WinePhotoPicker> {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            if (hasPhoto) _PreviewImage(
-              imageUrl: widget.imageUrl,
-              localPath: widget.localPath,
-            )
-            else _EmptyState(
-              label: widget.label,
-              icon: widget.placeholderIcon,
-            ),
+            if (hasPhoto)
+              _PreviewImage(
+                imageUrl: widget.imageUrl,
+                localPath: widget.localPath,
+              )
+            else
+              _EmptyState(label: widget.label, icon: widget.placeholderIcon),
             if (_isLoading)
               Container(
                 color: Colors.black.withValues(alpha: 0.4),
@@ -125,14 +124,18 @@ Future<ImageSource?> _showSourceSheet(BuildContext context) {
             children: [
               ListTile(
                 leading: Icon(PhosphorIconsRegular.camera, color: cs.primary),
-                title: Text('Take photo',
-                    style: TextStyle(fontSize: ctx.bodyFont)),
+                title: Text(
+                  'Take photo',
+                  style: TextStyle(fontSize: ctx.bodyFont),
+                ),
                 onTap: () => Navigator.pop(ctx, ImageSource.camera),
               ),
               ListTile(
                 leading: Icon(PhosphorIconsRegular.images, color: cs.primary),
-                title: Text('Choose from gallery',
-                    style: TextStyle(fontSize: ctx.bodyFont)),
+                title: Text(
+                  'Choose from gallery',
+                  style: TextStyle(fontSize: ctx.bodyFont),
+                ),
                 onTap: () => Navigator.pop(ctx, ImageSource.gallery),
               ),
             ],
@@ -158,7 +161,7 @@ class _PreviewImage extends StatelessWidget {
     return Image.network(
       imageUrl!,
       fit: BoxFit.cover,
-      errorBuilder: (_, __, ___) => Container(
+      errorBuilder: (_, _, _) => Container(
         color: cs.surfaceContainer,
         alignment: Alignment.center,
         child: Icon(
@@ -184,12 +187,14 @@ class _EmptyState extends StatelessWidget {
       children: [
         Icon(icon, size: context.w * 0.1, color: cs.outline),
         SizedBox(height: context.s),
-        Text(label,
-            style: TextStyle(
-              fontSize: context.captionFont,
-              color: cs.outline,
-              fontWeight: FontWeight.w500,
-            )),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: context.captionFont,
+            color: cs.outline,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
       ],
     );
   }
@@ -209,8 +214,11 @@ class _ClearButton extends StatelessWidget {
           color: Colors.black.withValues(alpha: 0.6),
           shape: BoxShape.circle,
         ),
-        child: Icon(PhosphorIconsRegular.x,
-            color: Colors.white, size: context.w * 0.05),
+        child: Icon(
+          PhosphorIconsRegular.x,
+          color: Colors.white,
+          size: context.w * 0.05,
+        ),
       ),
     );
   }

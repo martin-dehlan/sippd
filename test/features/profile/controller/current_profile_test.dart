@@ -33,8 +33,9 @@ void main() {
     when(() => supabaseClient.auth).thenReturn(gotrue);
     when(() => gotrue.currentUser).thenReturn(user);
     when(() => user.id).thenReturn('user-1');
-    when(() => analytics.syncFailed(any(),
-        error: any(named: 'error'))).thenAnswer((_) async {});
+    when(
+      () => analytics.syncFailed(any(), error: any(named: 'error')),
+    ).thenAnswer((_) async {});
   });
 
   tearDown(() async {
@@ -42,21 +43,22 @@ void main() {
   });
 
   ProviderContainer container({bool authed = true}) {
-    return ProviderContainer(overrides: [
-      authControllerProvider.overrideWith(
-        () => FakeAuthController(user: authed ? user : null),
-      ),
-      supabaseClientProvider.overrideWithValue(supabaseClient),
-      appDatabaseProvider.overrideWithValue(db),
-      profileApiProvider.overrideWithValue(profileApi),
-      analyticsProvider.overrideWithValue(analytics),
-    ]);
+    return ProviderContainer(
+      overrides: [
+        authControllerProvider.overrideWith(
+          () => FakeAuthController(user: authed ? user : null),
+        ),
+        supabaseClientProvider.overrideWithValue(supabaseClient),
+        appDatabaseProvider.overrideWithValue(db),
+        profileApiProvider.overrideWithValue(profileApi),
+        analyticsProvider.overrideWithValue(analytics),
+      ],
+    );
   }
 
   group('currentProfile', () {
     test('emits null when unauthenticated', () async {
-      when(() => profileApi.fetchMyProfile())
-          .thenAnswer((_) async => null);
+      when(() => profileApi.fetchMyProfile()).thenAnswer((_) async => null);
       final c = container(authed: false);
 
       final emitted = await c.read(currentProfileProvider.future);
@@ -75,8 +77,7 @@ void main() {
       );
       await db.profilesDao.upsert(cached.toTableData());
 
-      when(() => profileApi.fetchMyProfile())
-          .thenAnswer((_) async => null);
+      when(() => profileApi.fetchMyProfile()).thenAnswer((_) async => null);
 
       final c = container();
 
@@ -98,8 +99,7 @@ void main() {
         displayName: 'Fresh User',
         onboardingCompleted: true,
       );
-      when(() => profileApi.fetchMyProfile())
-          .thenAnswer((_) async => fresh);
+      when(() => profileApi.fetchMyProfile()).thenAnswer((_) async => fresh);
 
       final c = container();
 
@@ -115,16 +115,16 @@ void main() {
     });
 
     test('swallowed fetch error fires syncFailed telemetry', () async {
-      when(() => profileApi.fetchMyProfile())
-          .thenThrow(StateError('500'));
+      when(() => profileApi.fetchMyProfile()).thenThrow(StateError('500'));
 
       final c = container();
 
       await c.read(currentProfileProvider.future);
       await Future<void>.delayed(Duration.zero);
 
-      verify(() => analytics.syncFailed('profile_fetch',
-          error: any(named: 'error'))).called(1);
+      verify(
+        () => analytics.syncFailed('profile_fetch', error: any(named: 'error')),
+      ).called(1);
       c.dispose();
     });
 
@@ -139,19 +139,16 @@ void main() {
       c.dispose();
     });
 
-    test(
-        'background fetch survives container disposal mid-flight '
+    test('background fetch survives container disposal mid-flight '
         '(no disposed-ref crash)', () async {
       // Slow API so the fire-and-forget is still pending when we
       // dispose. With the old ref.read inside the closure, this
       // would throw "Tried to read a provider from a disposed
       // ProviderContainer" and become an unhandled async error.
-      when(() => profileApi.fetchMyProfile()).thenAnswer(
-        (_) async {
-          await Future<void>.delayed(const Duration(milliseconds: 20));
-          return null;
-        },
-      );
+      when(() => profileApi.fetchMyProfile()).thenAnswer((_) async {
+        await Future<void>.delayed(const Duration(milliseconds: 20));
+        return null;
+      });
 
       final c = container();
       // Trigger the provider build (which schedules the fire-and-forget).

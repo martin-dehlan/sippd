@@ -25,16 +25,16 @@ class _WineEditScreenState extends ConsumerState<WineEditScreen> {
   void dispose() {
     // Force-flush any debounced remote sync so the latest autosave state
     // reaches Supabase even if the user navigates away mid-debounce.
-    ref
-        .read(wineRepositoryProvider)
-        .flushPendingSync(widget.wineId);
+    ref.read(wineRepositoryProvider).flushPendingSync(widget.wineId);
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final wineAsync = ref.watch(wineDetailProvider(widget.wineId));
-    final memoriesAsync = ref.watch(wineMemoriesControllerProvider(widget.wineId));
+    final memoriesAsync = ref.watch(
+      wineMemoriesControllerProvider(widget.wineId),
+    );
 
     return Scaffold(
       body: SafeArea(
@@ -76,8 +76,7 @@ class _WineEditScreenState extends ConsumerState<WineEditScreen> {
                   ref.invalidate(wineDetailProvider(widget.wineId));
                 },
               ),
-              loading: () =>
-                  const Center(child: CircularProgressIndicator()),
+              loading: () => const Center(child: CircularProgressIndicator()),
               error: (e, _) => Center(child: Text('Error: $e')),
             );
           },
@@ -91,7 +90,8 @@ class _WineEditScreenState extends ConsumerState<WineEditScreen> {
   }
 
   WineFormData _toFormData(WineEntity wine, List<WineMemoryEntity> memories) {
-    final hasLocation = wine.location != null ||
+    final hasLocation =
+        wine.location != null ||
         wine.latitude != null ||
         wine.longitude != null;
     return WineFormData(
@@ -102,7 +102,8 @@ class _WineEditScreenState extends ConsumerState<WineEditScreen> {
       vintage: wine.vintage,
       grape: wine.grape,
       canonicalGrapeId: wine.canonicalGrapeId,
-      grapeFreetext: wine.grapeFreetext ??
+      grapeFreetext:
+          wine.grapeFreetext ??
           (wine.canonicalGrapeId == null ? wine.grape : null),
       winery: wine.winery,
       country: wine.country,
@@ -118,11 +119,13 @@ class _WineEditScreenState extends ConsumerState<WineEditScreen> {
       imageUrl: wine.imageUrl,
       localImagePath: wine.localImagePath,
       memories: memories
-          .map((m) => MemoryDraft(
-                id: m.id,
-                imageUrl: m.imageUrl,
-                localImagePath: m.localImagePath,
-              ))
+          .map(
+            (m) => MemoryDraft(
+              id: m.id,
+              imageUrl: m.imageUrl,
+              localImagePath: m.localImagePath,
+            ),
+          )
           .toList(),
     );
   }
@@ -139,14 +142,16 @@ class _WineEditScreenState extends ConsumerState<WineEditScreen> {
 
     for (final m in next) {
       if (!currentIds.contains(m.id)) {
-        await repo.addMemory(WineMemoryEntity(
-          id: m.id,
-          wineId: wine.id,
-          userId: wine.userId,
-          imageUrl: m.imageUrl,
-          localImagePath: m.localImagePath,
-          createdAt: DateTime.now(),
-        ));
+        await repo.addMemory(
+          WineMemoryEntity(
+            id: m.id,
+            wineId: wine.id,
+            userId: wine.userId,
+            imageUrl: m.imageUrl,
+            localImagePath: m.localImagePath,
+            createdAt: DateTime.now(),
+          ),
+        );
       }
     }
     for (final m in current) {

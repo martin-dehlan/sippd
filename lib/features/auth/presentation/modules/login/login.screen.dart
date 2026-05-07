@@ -166,8 +166,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       prefixIcon: Icon(PhosphorIconsRegular.envelope),
                     ),
                     validator: (v) {
-                      if (v == null || !v.contains('@'))
+                      if (v == null || !v.contains('@')) {
                         return 'Valid email required';
+                      }
                       return null;
                     },
                   ),

@@ -10,15 +10,15 @@ class NotificationPrefsDao extends DatabaseAccessor<AppDatabase>
   NotificationPrefsDao(super.db);
 
   Future<NotificationPrefsTableData?> getByUser(String userId) {
-    return (select(notificationPrefsTable)
-          ..where((p) => p.userId.equals(userId)))
-        .getSingleOrNull();
+    return (select(
+      notificationPrefsTable,
+    )..where((p) => p.userId.equals(userId))).getSingleOrNull();
   }
 
   Stream<NotificationPrefsTableData?> watchByUser(String userId) {
-    return (select(notificationPrefsTable)
-          ..where((p) => p.userId.equals(userId)))
-        .watchSingleOrNull();
+    return (select(
+      notificationPrefsTable,
+    )..where((p) => p.userId.equals(userId))).watchSingleOrNull();
   }
 
   Future<void> upsert(NotificationPrefsTableData data) {

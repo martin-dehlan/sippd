@@ -24,16 +24,15 @@ extension GroupWineRatingModelX on GroupWineRatingModel {
     String? username,
     String? displayName,
     String? avatarUrl,
-  }) =>
-      GroupWineRatingEntity(
-        groupId: groupId,
-        canonicalWineId: canonicalWineId,
-        userId: userId,
-        rating: rating,
-        notes: notes,
-        updatedAt: updatedAt,
-        username: username,
-        displayName: displayName,
-        avatarUrl: avatarUrl,
-      );
+  }) => GroupWineRatingEntity(
+    groupId: groupId,
+    canonicalWineId: canonicalWineId,
+    userId: userId,
+    rating: rating,
+    notes: notes,
+    updatedAt: updatedAt,
+    username: username,
+    displayName: displayName,
+    avatarUrl: avatarUrl,
+  );
 }

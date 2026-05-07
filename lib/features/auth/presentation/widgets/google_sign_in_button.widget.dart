@@ -7,8 +7,7 @@ class GoogleSignInButton extends ConsumerStatefulWidget {
   const GoogleSignInButton({super.key});
 
   @override
-  ConsumerState<GoogleSignInButton> createState() =>
-      _GoogleSignInButtonState();
+  ConsumerState<GoogleSignInButton> createState() => _GoogleSignInButtonState();
 }
 
 class _GoogleSignInButtonState extends ConsumerState<GoogleSignInButton> {
@@ -21,7 +20,9 @@ class _GoogleSignInButtonState extends ConsumerState<GoogleSignInButton> {
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Google sign-in failed. Please try again.')),
+          const SnackBar(
+            content: Text('Google sign-in failed. Please try again.'),
+          ),
         );
       }
     } finally {

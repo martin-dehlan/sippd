@@ -29,13 +29,11 @@ class MembersSheet extends StatelessWidget {
       isScrollControlled: true,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
-            top: Radius.circular(context.w * 0.05)),
+          top: Radius.circular(context.w * 0.05),
+        ),
       ),
-      builder: (_) => MembersSheet(
-        groupId: groupId,
-        members: members,
-        ownerId: ownerId,
-      ),
+      builder: (_) =>
+          MembersSheet(groupId: groupId, members: members, ownerId: ownerId),
     );
   }
 
@@ -80,8 +78,7 @@ class MembersSheet extends StatelessWidget {
               child: ListView.separated(
                 shrinkWrap: true,
                 itemCount: members.length,
-                separatorBuilder: (_, _) =>
-                    SizedBox(height: context.xs),
+                separatorBuilder: (_, _) => SizedBox(height: context.xs),
                 itemBuilder: (_, i) => _MemberRow(
                   member: members[i],
                   isOwner: members[i].id == ownerId,
@@ -124,20 +121,24 @@ class _MemberRow extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(name,
-                      style: TextStyle(
-                        fontSize: context.bodyFont,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis),
+                  Text(
+                    name,
+                    style: TextStyle(
+                      fontSize: context.bodyFont,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                   if (member.username != null) ...[
                     SizedBox(height: context.xs * 0.4),
-                    Text('@${member.username}',
-                        style: TextStyle(
-                          fontSize: context.captionFont,
-                          color: cs.onSurfaceVariant,
-                        )),
+                    Text(
+                      '@${member.username}',
+                      style: TextStyle(
+                        fontSize: context.captionFont,
+                        color: cs.onSurfaceVariant,
+                      ),
+                    ),
                   ],
                 ],
               ),
@@ -152,13 +153,15 @@ class _MemberRow extends StatelessWidget {
                   color: cs.primaryContainer,
                   borderRadius: BorderRadius.circular(context.w * 0.02),
                 ),
-                child: Text('OWNER',
-                    style: TextStyle(
-                      fontSize: context.captionFont * 0.75,
-                      fontWeight: FontWeight.w700,
-                      color: cs.primary,
-                      letterSpacing: 0.5,
-                    )),
+                child: Text(
+                  'OWNER',
+                  style: TextStyle(
+                    fontSize: context.captionFont * 0.75,
+                    fontWeight: FontWeight.w700,
+                    color: cs.primary,
+                    letterSpacing: 0.5,
+                  ),
+                ),
               ),
           ],
         ),

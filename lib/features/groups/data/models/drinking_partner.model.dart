@@ -21,10 +21,10 @@ class DrinkingPartnerModel with _$DrinkingPartnerModel {
 
 extension DrinkingPartnerModelX on DrinkingPartnerModel {
   DrinkingPartnerEntity toEntity() => DrinkingPartnerEntity(
-        userId: userId,
-        username: username,
-        displayName: displayName,
-        avatarUrl: avatarUrl,
-        sharedWines: sharedWines,
-      );
+    userId: userId,
+    username: username,
+    displayName: displayName,
+    avatarUrl: avatarUrl,
+    sharedWines: sharedWines,
+  );
 }

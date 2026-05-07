@@ -37,7 +37,8 @@ Stream<List<FriendProfileEntity>> friendsList(FriendsListRef ref) {
 
 @riverpod
 Stream<List<FriendRequestEntity>> incomingFriendRequests(
-    IncomingFriendRequestsRef ref) {
+  IncomingFriendRequestsRef ref,
+) {
   final repo = ref.watch(friendsRepositoryProvider);
   if (repo == null) return Stream.value(const []);
   if (!ref.watch(isOnlineProvider)) {
@@ -48,7 +49,8 @@ Stream<List<FriendRequestEntity>> incomingFriendRequests(
 
 @riverpod
 Stream<List<FriendRequestEntity>> outgoingFriendRequests(
-    OutgoingFriendRequestsRef ref) {
+  OutgoingFriendRequestsRef ref,
+) {
   final repo = ref.watch(friendsRepositoryProvider);
   if (repo == null) return Stream.value(const []);
   if (!ref.watch(isOnlineProvider)) {
@@ -67,13 +69,13 @@ FriendWinesApi? friendWinesApi(FriendWinesApiRef ref) {
 
 @riverpod
 Future<List<WineEntity>> friendWines(
-    FriendWinesRef ref, String friendId) async {
+  FriendWinesRef ref,
+  String friendId,
+) async {
   final api = ref.watch(friendWinesApiProvider);
   if (api == null) return const [];
   ref.requireOnline();
-  final models = await api
-      .fetchFriendWines(friendId)
-      .withNetTimeout();
+  final models = await api.fetchFriendWines(friendId).withNetTimeout();
   return models.map((m) => m.toEntity()).toList();
 }
 
@@ -90,19 +92,22 @@ Future<List<ActivityItemEntity>> activityFeed(ActivityFeedRef ref) async {
   final api = ref.watch(activityApiProvider);
   if (api == null) return const [];
   ref.requireOnline();
-  final raw =
-      await api.fetchRecent().withNetTimeout();
+  final raw = await api.fetchRecent().withNetTimeout();
   return raw
-      .map((r) => ActivityItemEntity(
-            wine: r.wine.toEntity(),
-            friend: r.friend.toEntity(),
-          ))
+      .map(
+        (r) => ActivityItemEntity(
+          wine: r.wine.toEntity(),
+          friend: r.friend.toEntity(),
+        ),
+      )
       .toList();
 }
 
 @riverpod
 Future<FriendProfileEntity?> friendProfile(
-    FriendProfileRef ref, String friendId) async {
+  FriendProfileRef ref,
+  String friendId,
+) async {
   final repo = ref.watch(friendsRepositoryProvider);
   if (repo == null) return null;
   final friends = await repo.watchFriends().first;

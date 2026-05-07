@@ -13,22 +13,21 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 /// returns, so the verifier survives a process restart.
 class SecurePkceStorage extends GotrueAsyncStorage {
   SecurePkceStorage({FlutterSecureStorage? storage})
-      : _storage = storage ??
-            const FlutterSecureStorage(
-              aOptions: AndroidOptions(encryptedSharedPreferences: true),
-            );
+    : _storage =
+          storage ??
+          const FlutterSecureStorage(
+            aOptions: AndroidOptions(encryptedSharedPreferences: true),
+          );
 
   final FlutterSecureStorage _storage;
 
   @override
-  Future<String?> getItem({required String key}) =>
-      _storage.read(key: key);
+  Future<String?> getItem({required String key}) => _storage.read(key: key);
 
   @override
   Future<void> setItem({required String key, required String value}) =>
       _storage.write(key: key, value: value);
 
   @override
-  Future<void> removeItem({required String key}) =>
-      _storage.delete(key: key);
+  Future<void> removeItem({required String key}) => _storage.delete(key: key);
 }

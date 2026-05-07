@@ -140,8 +140,7 @@ class ProfileController extends _$ProfileController {
   }
 
   Future<void> deleteAccount() async {
-    final uid =
-        ref.read(supabaseClientProvider).auth.currentUser?.id;
+    final uid = ref.read(supabaseClientProvider).auth.currentUser?.id;
     await ref.read(profileApiProvider).deleteMyAccount();
     if (uid != null) {
       await ref.read(appDatabaseProvider).profilesDao.deleteById(uid);

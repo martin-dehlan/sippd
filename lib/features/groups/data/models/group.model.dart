@@ -20,15 +20,14 @@ class GroupModel with _$GroupModel {
 }
 
 extension GroupModelX on GroupModel {
-  GroupEntity toEntity({int memberCount = 0, int wineCount = 0}) =>
-      GroupEntity(
-        id: id,
-        name: name,
-        imageUrl: imageUrl,
-        inviteCode: inviteCode,
-        createdBy: createdBy,
-        createdAt: createdAt,
-        memberCount: memberCount,
-        wineCount: wineCount,
-      );
+  GroupEntity toEntity({int memberCount = 0, int wineCount = 0}) => GroupEntity(
+    id: id,
+    name: name,
+    imageUrl: imageUrl,
+    inviteCode: inviteCode,
+    createdBy: createdBy,
+    createdAt: createdAt,
+    memberCount: memberCount,
+    wineCount: wineCount,
+  );
 }

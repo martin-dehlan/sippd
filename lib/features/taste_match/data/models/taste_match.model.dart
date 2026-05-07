@@ -27,18 +27,18 @@ class TasteMatchModel with _$TasteMatchModel {
 
 extension TasteMatchModelX on TasteMatchModel {
   TasteMatchEntity toEntity() => TasteMatchEntity(
-        score: score,
-        confidence: _confidenceFromString(confidence),
-        overlapCount: overlapCount,
-        myTotal: myTotal,
-        theirTotal: theirTotal,
-        reason: _reasonFromString(reason),
-        bucketScore: bucketScore,
-        dnaScore: dnaScore,
-        sameCanonicalPairs: sameCanonicalPairs,
-        agreePairs: agreePairs,
-        disagreePairs: disagreePairs,
-      );
+    score: score,
+    confidence: _confidenceFromString(confidence),
+    overlapCount: overlapCount,
+    myTotal: myTotal,
+    theirTotal: theirTotal,
+    reason: _reasonFromString(reason),
+    bucketScore: bucketScore,
+    dnaScore: dnaScore,
+    sameCanonicalPairs: sameCanonicalPairs,
+    agreePairs: agreePairs,
+    disagreePairs: disagreePairs,
+  );
 }
 
 MatchConfidence? _confidenceFromString(String? raw) {

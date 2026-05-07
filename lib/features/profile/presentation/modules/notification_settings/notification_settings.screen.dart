@@ -33,8 +33,7 @@ class NotificationSettingsScreen extends ConsumerWidget {
         error: (e, _) => Center(
           child: ErrorView(
             title: "Couldn't load notification settings",
-            onRetry: () =>
-                ref.invalidate(notificationPrefsControllerProvider),
+            onRetry: () => ref.invalidate(notificationPrefsControllerProvider),
             error: e,
           ),
         ),
@@ -234,33 +233,34 @@ class _HourPicker extends StatelessWidget {
           Wrap(
             spacing: context.w * 0.02,
             runSpacing: context.s,
-            children: [
-              if (kDebugMode) _debugReminderHoursValue,
-              ..._reminderHourOptions,
-            ].map((h) {
-              final isSelected = h == selected;
-              final label = h == _debugReminderHoursValue
-                  ? '30s · debug'
-                  : (h == 1 ? '1h' : '${h}h');
-              return ChoiceChip(
-                label: Text(label),
-                selected: isSelected,
-                onSelected: (_) => onChanged(h),
-                selectedColor: cs.primary,
-                backgroundColor: cs.surface,
-                labelStyle: TextStyle(
-                  fontSize: context.captionFont,
-                  fontWeight: FontWeight.w600,
-                  color: isSelected ? cs.onPrimary : cs.onSurface,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(context.w * 0.025),
-                  side: BorderSide(
-                    color: isSelected ? cs.primary : cs.outlineVariant,
-                  ),
-                ),
-              );
-            }).toList(),
+            children:
+                [
+                  if (kDebugMode) _debugReminderHoursValue,
+                  ..._reminderHourOptions,
+                ].map((h) {
+                  final isSelected = h == selected;
+                  final label = h == _debugReminderHoursValue
+                      ? '30s · debug'
+                      : (h == 1 ? '1h' : '${h}h');
+                  return ChoiceChip(
+                    label: Text(label),
+                    selected: isSelected,
+                    onSelected: (_) => onChanged(h),
+                    selectedColor: cs.primary,
+                    backgroundColor: cs.surface,
+                    labelStyle: TextStyle(
+                      fontSize: context.captionFont,
+                      fontWeight: FontWeight.w600,
+                      color: isSelected ? cs.onPrimary : cs.onSurface,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(context.w * 0.025),
+                      side: BorderSide(
+                        color: isSelected ? cs.primary : cs.outlineVariant,
+                      ),
+                    ),
+                  );
+                }).toList(),
           ),
         ],
       ),

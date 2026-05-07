@@ -19,8 +19,9 @@ Future<void> showShareWineSheet({
     isScrollControlled: true,
     backgroundColor: Theme.of(context).colorScheme.surface,
     shape: RoundedRectangleBorder(
-      borderRadius:
-          BorderRadius.vertical(top: Radius.circular(context.w * 0.05)),
+      borderRadius: BorderRadius.vertical(
+        top: Radius.circular(context.w * 0.05),
+      ),
     ),
     builder: (_) => _ShareWineSheet(wineId: wineId),
   );
@@ -45,8 +46,9 @@ class _ShareWineSheetState extends ConsumerState<_ShareWineSheet> {
 
     setState(() => _busyGroupId = group.id);
     try {
-      final wine =
-          await ref.read(wineRepositoryProvider).getWineById(widget.wineId);
+      final wine = await ref
+          .read(wineRepositoryProvider)
+          .getWineById(widget.wineId);
       if (wine == null) return;
 
       final groupCtrl = ref.read(groupControllerProvider.notifier);
@@ -107,7 +109,9 @@ class _ShareWineSheetState extends ConsumerState<_ShareWineSheet> {
     return SafeArea(
       child: Padding(
         padding: EdgeInsets.symmetric(
-            horizontal: context.paddingH, vertical: context.m),
+          horizontal: context.paddingH,
+          vertical: context.m,
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -123,11 +127,14 @@ class _ShareWineSheetState extends ConsumerState<_ShareWineSheet> {
               ),
             ),
             SizedBox(height: context.m),
-            Text('Share to group',
-                style: TextStyle(
-                    fontSize: context.bodyFont,
-                    fontWeight: FontWeight.w600,
-                    color: cs.onSurfaceVariant)),
+            Text(
+              'Share to group',
+              style: TextStyle(
+                fontSize: context.bodyFont,
+                fontWeight: FontWeight.w600,
+                color: cs.onSurfaceVariant,
+              ),
+            ),
             SizedBox(height: context.m),
             groupsAsync.when(
               data: (groups) {
@@ -138,13 +145,15 @@ class _ShareWineSheetState extends ConsumerState<_ShareWineSheet> {
                       'You are not in any groups yet.',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                          fontSize: context.captionFont,
-                          color: cs.onSurfaceVariant),
+                        fontSize: context.captionFont,
+                        color: cs.onSurfaceVariant,
+                      ),
                     ),
                   );
                 }
-                final sharedAsync =
-                    ref.watch(groupsContainingWineProvider(widget.wineId));
+                final sharedAsync = ref.watch(
+                  groupsContainingWineProvider(widget.wineId),
+                );
                 final shared = sharedAsync.valueOrNull ?? const <String>{};
                 return Column(
                   children: [
@@ -162,11 +171,14 @@ class _ShareWineSheetState extends ConsumerState<_ShareWineSheet> {
                   ],
                 );
               },
-              loading: () =>
-                  const Center(child: CircularProgressIndicator()),
-              error: (e, _) => Text('Error: $e',
-                  style:
-                      TextStyle(fontSize: context.captionFont, color: cs.error)),
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (e, _) => Text(
+                'Error: $e',
+                style: TextStyle(
+                  fontSize: context.captionFont,
+                  color: cs.error,
+                ),
+              ),
             ),
             SizedBox(height: context.m),
           ],
@@ -223,8 +235,11 @@ class _GroupRow extends ConsumerWidget {
                         : null,
                   ),
                   child: group.imageUrl == null
-                      ? Icon(PhosphorIconsRegular.wine,
-                          color: cs.primary, size: context.w * 0.06)
+                      ? Icon(
+                          PhosphorIconsRegular.wine,
+                          color: cs.primary,
+                          size: context.w * 0.06,
+                        )
                       : null,
                 ),
                 SizedBox(width: context.w * 0.04),
@@ -232,21 +247,27 @@ class _GroupRow extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(group.name,
+                      Text(
+                        group.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: context.bodyFont,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: -0.2,
+                        ),
+                      ),
+                      if (subtitle != null) ...[
+                        SizedBox(height: context.xs),
+                        Text(
+                          subtitle,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                              fontSize: context.bodyFont,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: -0.2)),
-                      if (subtitle != null) ...[
-                        SizedBox(height: context.xs),
-                        Text(subtitle,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                                fontSize: context.captionFont,
-                                color: cs.onSurfaceVariant)),
+                            fontSize: context.captionFont,
+                            color: cs.onSurfaceVariant,
+                          ),
+                        ),
                       ],
                     ],
                   ),
@@ -259,16 +280,25 @@ class _GroupRow extends ConsumerWidget {
                     child: const CircularProgressIndicator(strokeWidth: 2),
                   )
                 else if (alreadyShared)
-                  Icon(PhosphorIconsRegular.checkCircle,
-                      size: context.w * 0.055, color: cs.primary)
+                  Icon(
+                    PhosphorIconsRegular.checkCircle,
+                    size: context.w * 0.055,
+                    color: cs.primary,
+                  )
                 else
                   membersAsync.maybeWhen(
                     data: (members) => members.isEmpty
-                        ? Icon(PhosphorIconsRegular.caretRight,
-                            size: context.w * 0.035, color: cs.outline)
+                        ? Icon(
+                            PhosphorIconsRegular.caretRight,
+                            size: context.w * 0.035,
+                            color: cs.outline,
+                          )
                         : _AvatarCluster(members: members),
-                    orElse: () => Icon(PhosphorIconsRegular.caretRight,
-                        size: context.w * 0.035, color: cs.outline),
+                    orElse: () => Icon(
+                      PhosphorIconsRegular.caretRight,
+                      size: context.w * 0.035,
+                      color: cs.outline,
+                    ),
                   ),
               ],
             ),
@@ -281,12 +311,16 @@ class _GroupRow extends ConsumerWidget {
   String? _subtitle() {
     final parts = <String>[];
     if (group.memberCount > 0) {
-      parts.add('${group.memberCount} '
-          '${group.memberCount == 1 ? 'member' : 'members'}');
+      parts.add(
+        '${group.memberCount} '
+        '${group.memberCount == 1 ? 'member' : 'members'}',
+      );
     }
     if (group.wineCount > 0) {
-      parts.add('${group.wineCount} '
-          '${group.wineCount == 1 ? 'wine' : 'wines'}');
+      parts.add(
+        '${group.wineCount} '
+        '${group.wineCount == 1 ? 'wine' : 'wines'}',
+      );
     }
     return parts.isEmpty ? null : parts.join(' · ');
   }
@@ -321,10 +355,7 @@ class _AvatarCluster extends StatelessWidget {
                   color: cs.surfaceContainer,
                   shape: BoxShape.circle,
                 ),
-                child: FriendAvatar(
-                  profile: visible[i],
-                  size: inner,
-                ),
+                child: FriendAvatar(profile: visible[i], size: inner),
               ),
             ),
           if (extra > 0)

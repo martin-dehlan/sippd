@@ -35,7 +35,9 @@ class GroupImageService {
     final fileName = '${const Uuid().v4()}.$ext';
     final storagePath = '$groupId/$fileName';
 
-    await _client.storage.from(bucket).upload(
+    await _client.storage
+        .from(bucket)
+        .upload(
           storagePath,
           file,
           fileOptions: const FileOptions(cacheControl: '3600', upsert: true),

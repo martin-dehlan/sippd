@@ -41,7 +41,9 @@ class _Divider extends StatelessWidget {
     return Container(
       width: 1,
       margin: EdgeInsets.symmetric(vertical: context.xs),
-      color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.4),
+      color: Theme.of(
+        context,
+      ).colorScheme.outlineVariant.withValues(alpha: 0.4),
     );
   }
 }

@@ -32,25 +32,48 @@ Future<void> showExpertTastingSheet({
     isScrollControlled: true,
     backgroundColor: Theme.of(context).colorScheme.surface,
     shape: RoundedRectangleBorder(
-      borderRadius:
-          BorderRadius.vertical(top: Radius.circular(context.w * 0.05)),
+      borderRadius: BorderRadius.vertical(
+        top: Radius.circular(context.w * 0.05),
+      ),
     ),
     builder: (_) => _ExpertSheet(wine: wine),
   );
 }
 
 const _aromaTags = [
-  'cherry', 'raspberry', 'strawberry', 'plum',
-  'blackcurrant', 'blackberry', 'blueberry',
-  'lemon', 'lime', 'grapefruit',
-  'pineapple', 'mango', 'passion fruit',
-  'peach', 'apricot',
-  'rose', 'violet', 'honeysuckle',
-  'bell pepper', 'mint', 'eucalyptus',
-  'leather', 'tobacco', 'mushroom',
-  'black pepper', 'vanilla', 'clove',
-  'toast', 'smoke', 'cedar',
-  'honey', 'butter', 'mineral',
+  'cherry',
+  'raspberry',
+  'strawberry',
+  'plum',
+  'blackcurrant',
+  'blackberry',
+  'blueberry',
+  'lemon',
+  'lime',
+  'grapefruit',
+  'pineapple',
+  'mango',
+  'passion fruit',
+  'peach',
+  'apricot',
+  'rose',
+  'violet',
+  'honeysuckle',
+  'bell pepper',
+  'mint',
+  'eucalyptus',
+  'leather',
+  'tobacco',
+  'mushroom',
+  'black pepper',
+  'vanilla',
+  'clove',
+  'toast',
+  'smoke',
+  'cedar',
+  'honey',
+  'butter',
+  'mineral',
 ];
 
 class _ExpertSheet extends ConsumerStatefulWidget {
@@ -77,8 +100,9 @@ class _ExpertSheetState extends ConsumerState<_ExpertSheet> {
 
   Future<void> _loadInitial() async {
     final api = ExpertTastingApi(ref.read(supabaseClientProvider));
-    final existing =
-        await api.getMine(canonicalWineId: widget.wine.canonicalWineId!);
+    final existing = await api.getMine(
+      canonicalWineId: widget.wine.canonicalWineId!,
+    );
     if (!mounted) return;
     setState(() {
       _draft = existing ?? const ExpertTastingEntity();
@@ -157,7 +181,8 @@ class _ExpertSheetState extends ConsumerState<_ExpertSheet> {
                             highLabel: 'gripping',
                             value: _draft.tannin,
                             onChanged: (v) => setState(
-                                () => _draft = _draft.copyWith(tannin: v)),
+                              () => _draft = _draft.copyWith(tannin: v),
+                            ),
                           ),
                         TastingCompactRow(
                           label: 'Acidity',
@@ -165,7 +190,8 @@ class _ExpertSheetState extends ConsumerState<_ExpertSheet> {
                           highLabel: 'crisp',
                           value: _draft.acidity,
                           onChanged: (v) => setState(
-                              () => _draft = _draft.copyWith(acidity: v)),
+                            () => _draft = _draft.copyWith(acidity: v),
+                          ),
                         ),
                         TastingCompactRow(
                           label: 'Sweetness',
@@ -173,7 +199,8 @@ class _ExpertSheetState extends ConsumerState<_ExpertSheet> {
                           highLabel: 'sweet',
                           value: _draft.sweetness,
                           onChanged: (v) => setState(
-                              () => _draft = _draft.copyWith(sweetness: v)),
+                            () => _draft = _draft.copyWith(sweetness: v),
+                          ),
                         ),
                         TastingCompactRow(
                           label: 'Oak',
@@ -187,14 +214,16 @@ class _ExpertSheetState extends ConsumerState<_ExpertSheet> {
                         TastingFinishRow(
                           value: _draft.finish,
                           onChanged: (v) => setState(
-                              () => _draft = _draft.copyWith(finish: v)),
+                            () => _draft = _draft.copyWith(finish: v),
+                          ),
                         ),
                         SizedBox(height: context.s),
                         TastingAromaSection(
                           expanded: _aromasExpanded,
                           selected: _draft.aromaTags,
                           onToggleExpand: () => setState(
-                              () => _aromasExpanded = !_aromasExpanded),
+                            () => _aromasExpanded = !_aromasExpanded,
+                          ),
                           onToggleTag: (tag) {
                             final next = [..._draft.aromaTags];
                             if (next.contains(tag)) {
@@ -203,7 +232,8 @@ class _ExpertSheetState extends ConsumerState<_ExpertSheet> {
                               next.add(tag);
                             }
                             setState(
-                                () => _draft = _draft.copyWith(aromaTags: next));
+                              () => _draft = _draft.copyWith(aromaTags: next),
+                            );
                           },
                         ),
                       ],
@@ -350,9 +380,7 @@ class TastingCompactRow extends StatelessWidget {
                         height: context.h * 0.034,
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
-                          color: i == value
-                              ? cs.primary
-                              : cs.surfaceContainer,
+                          color: i == value ? cs.primary : cs.surfaceContainer,
                           borderRadius: BorderRadius.circular(7),
                         ),
                         child: Text(
@@ -376,7 +404,11 @@ class TastingCompactRow extends StatelessWidget {
 }
 
 class TastingFinishRow extends StatelessWidget {
-  const TastingFinishRow({required this.value, required this.onChanged});
+  const TastingFinishRow({
+    super.key,
+    required this.value,
+    required this.onChanged,
+  });
 
   final int? value;
   final ValueChanged<int?> onChanged;
@@ -436,6 +468,7 @@ class TastingFinishRow extends StatelessWidget {
 
 class TastingAromaSection extends StatelessWidget {
   const TastingAromaSection({
+    super.key,
     required this.expanded,
     required this.selected,
     required this.onToggleExpand,

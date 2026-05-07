@@ -145,10 +145,7 @@ class _RankCorner extends StatelessWidget {
       decoration: BoxDecoration(
         color: isFirst ? cs.primary : cs.surfaceContainer,
         shape: BoxShape.circle,
-        border: Border.all(
-          color: cs.surface,
-          width: 1.5,
-        ),
+        border: Border.all(color: cs.surface, width: 1.5),
       ),
       child: isFirst
           ? Icon(
@@ -197,10 +194,7 @@ class _TopWineRowSkeleton extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SkeletonBox(
-                  width: context.w * 0.45,
-                  height: context.bodyFont,
-                ),
+                SkeletonBox(width: context.w * 0.45, height: context.bodyFont),
                 SizedBox(height: context.xs * 0.6),
                 SkeletonBox(
                   width: context.w * 0.3,

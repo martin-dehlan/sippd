@@ -261,10 +261,7 @@ class _SaveWineFab extends StatelessWidget {
         extendedIconLabelSpacing: context.w * 0.025,
         extendedPadding: EdgeInsets.symmetric(horizontal: context.w * 0.06),
         shape: const StadiumBorder(),
-        icon: Icon(
-          PhosphorIconsBold.check,
-          size: context.w * 0.05,
-        ),
+        icon: Icon(PhosphorIconsBold.check, size: context.w * 0.05),
         label: Text(
           'Save wine',
           style: TextStyle(

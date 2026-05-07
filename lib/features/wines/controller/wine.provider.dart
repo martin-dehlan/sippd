@@ -128,7 +128,10 @@ WineMemoryRepository wineMemoryRepository(WineMemoryRepositoryRef ref) {
   final db = ref.read(appDatabaseProvider);
   final api = ref.watch(wineMemorySupabaseApiProvider);
   return WineMemoryRepositoryImpl(
-      db.wineMemoriesDao, api, ref.read(analyticsProvider));
+    db.wineMemoriesDao,
+    api,
+    ref.read(analyticsProvider),
+  );
 }
 
 @riverpod
@@ -181,10 +184,7 @@ Future<List<CanonicalGrapeEntity>> canonicalGrapesSearch(
 
 /// Single grape lookup used by wine_detail to render the resolved name.
 @riverpod
-Future<CanonicalGrapeEntity?> canonicalGrape(
-  CanonicalGrapeRef ref,
-  String id,
-) {
+Future<CanonicalGrapeEntity?> canonicalGrape(CanonicalGrapeRef ref, String id) {
   return ref.read(canonicalGrapeRepositoryProvider).getById(id);
 }
 
@@ -250,27 +250,31 @@ class WineController extends _$WineController {
   Future<void> addWine(WineEntity wine) async {
     await ref.read(wineRepositoryProvider).addWine(wine);
     _invalidateTasteAggregates();
-    ref.read(analyticsProvider).capture(
-      'wine_added',
-      properties: {
-        'rating': wine.rating,
-        'type': wine.type.name,
-        'has_notes': (wine.notes ?? '').isNotEmpty,
-        'has_photo':
-            (wine.imageUrl ?? wine.localImagePath ?? '').isNotEmpty,
-        'has_location': wine.latitude != null && wine.longitude != null,
-        'visibility': wine.visibility,
-      },
-    );
+    ref
+        .read(analyticsProvider)
+        .capture(
+          'wine_added',
+          properties: {
+            'rating': wine.rating,
+            'type': wine.type.name,
+            'has_notes': (wine.notes ?? '').isNotEmpty,
+            'has_photo':
+                (wine.imageUrl ?? wine.localImagePath ?? '').isNotEmpty,
+            'has_location': wine.latitude != null && wine.longitude != null,
+            'visibility': wine.visibility,
+          },
+        );
   }
 
   Future<void> updateWine(WineEntity wine) async {
     await ref.read(wineRepositoryProvider).updateWine(wine);
     _invalidateTasteAggregates();
-    ref.read(analyticsProvider).capture(
-      'wine_updated',
-      properties: {'rating': wine.rating, 'type': wine.type.name},
-    );
+    ref
+        .read(analyticsProvider)
+        .capture(
+          'wine_updated',
+          properties: {'rating': wine.rating, 'type': wine.type.name},
+        );
   }
 
   // Personal-compass / DNA / top-grapes are server-aggregated and read by
@@ -391,8 +395,8 @@ class WineSort extends _$WineSort {
   }
 
   Future<void> toggle() async {
-    final next = WineSortMode
-        .values[(state.index + 1) % WineSortMode.values.length];
+    final next =
+        WineSortMode.values[(state.index + 1) % WineSortMode.values.length];
     final prefs = ref.read(sharedPreferencesProvider);
     await prefs.setString(_wineSortModeKey, next.name);
     state = next;

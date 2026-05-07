@@ -94,7 +94,7 @@ class _Body extends StatelessWidget {
           child: winesAsync.when(
             data: (wines) => StatsCard(stats: _statsFor(wines)),
             loading: () => StatsCard(stats: _statsFor(const [])),
-            error: (_, __) => const SizedBox.shrink(),
+            error: (_, _) => const SizedBox.shrink(),
           ),
         ),
         // Identity zone — who this person is, before how we relate to
@@ -136,11 +136,8 @@ class _Body extends StatelessWidget {
             padding: EdgeInsets.all(context.l),
             child: const Center(child: CircularProgressIndicator()),
           ),
-          error: (e, __) => ErrorView(
-            title: "Couldn't load wines",
-            compact: true,
-            error: e,
-          ),
+          error: (e, _) =>
+              ErrorView(title: "Couldn't load wines", compact: true, error: e),
         ),
         SizedBox(height: context.xl * 2),
       ],
@@ -201,7 +198,7 @@ List<StatEntry> _statsFor(List<WineEntity> wines) {
   final avg = wines.isEmpty
       ? '—'
       : (wines.map((w) => w.rating).reduce((a, b) => a + b) / wines.length)
-          .toStringAsFixed(1);
+            .toStringAsFixed(1);
   final countries = wines
       .map((w) => w.country)
       .whereType<String>()
@@ -210,7 +207,10 @@ List<StatEntry> _statsFor(List<WineEntity> wines) {
   return [
     (label: 'Wines', value: wines.length.toString()),
     (label: 'Avg', value: avg),
-    (label: countries == 1 ? 'Country' : 'Countries', value: countries.toString()),
+    (
+      label: countries == 1 ? 'Country' : 'Countries',
+      value: countries.toString(),
+    ),
   ];
 }
 
@@ -228,7 +228,7 @@ class _WinesList extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
       itemCount: wines.length,
-      separatorBuilder: (_, __) => SizedBox(height: context.s),
+      separatorBuilder: (_, _) => SizedBox(height: context.s),
       itemBuilder: (_, i) => _WineRow(wine: wines[i]),
     );
   }
@@ -389,9 +389,9 @@ class _WineThumbnail extends StatelessWidget {
             ? CachedNetworkImage(
                 imageUrl: wine.imageUrl!,
                 fit: BoxFit.cover,
-                placeholder: (_, __) =>
+                placeholder: (_, _) =>
                     _TypePlaceholder(typeColor: typeColor, size: size),
-                errorWidget: (_, __, ___) =>
+                errorWidget: (_, _, _) =>
                     _TypePlaceholder(typeColor: typeColor, size: size),
               )
             : _TypePlaceholder(typeColor: typeColor, size: size),

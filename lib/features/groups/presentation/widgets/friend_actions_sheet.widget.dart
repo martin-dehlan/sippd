@@ -19,20 +19,15 @@ Future<void> showFriendActionsSheet({
         top: Radius.circular(context.w * 0.05),
       ),
     ),
-    builder: (ctx) => _Sheet(
-      friendId: friendId,
-      friendDisplayName: friendDisplayName,
-    ),
+    builder: (ctx) =>
+        _Sheet(friendId: friendId, friendDisplayName: friendDisplayName),
   );
 }
 
 class _Sheet extends StatelessWidget {
   final String friendId;
   final String friendDisplayName;
-  const _Sheet({
-    required this.friendId,
-    required this.friendDisplayName,
-  });
+  const _Sheet({required this.friendId, required this.friendDisplayName});
 
   @override
   Widget build(BuildContext context) {
@@ -142,8 +137,11 @@ class _ActionTile extends StatelessWidget {
                   ),
                 ),
               ),
-              Icon(PhosphorIconsRegular.caretRight,
-                  size: context.w * 0.05, color: cs.outline),
+              Icon(
+                PhosphorIconsRegular.caretRight,
+                size: context.w * 0.05,
+                color: cs.outline,
+              ),
             ],
           ),
         ),
@@ -223,8 +221,7 @@ class _GroupPickerSheet extends ConsumerWidget {
                     ),
                   );
                 },
-                loading: () =>
-                    const Center(child: CircularProgressIndicator()),
+                loading: () => const Center(child: CircularProgressIndicator()),
                 error: (e, _) => ErrorView(
                   title: "Couldn't load groups",
                   compact: true,
@@ -251,15 +248,13 @@ class _GroupPickerSheet extends ConsumerWidget {
       if (!context.mounted) return;
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Invite sent to $friendDisplayName'),
-        ),
+        SnackBar(content: Text('Invite sent to $friendDisplayName')),
       );
     } catch (e) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not send invite: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Could not send invite: $e')));
     }
   }
 }
@@ -303,8 +298,11 @@ class _GroupRow extends StatelessWidget {
                       : null,
                 ),
                 child: group.imageUrl == null
-                    ? Icon(PhosphorIconsRegular.wine,
-                        color: cs.primary, size: size * 0.5)
+                    ? Icon(
+                        PhosphorIconsRegular.wine,
+                        color: cs.primary,
+                        size: size * 0.5,
+                      )
                     : null,
               ),
               SizedBox(width: context.w * 0.04),
@@ -318,8 +316,11 @@ class _GroupRow extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              Icon(PhosphorIconsRegular.paperPlaneRight,
-                  size: context.w * 0.045, color: cs.primary),
+              Icon(
+                PhosphorIconsRegular.paperPlaneRight,
+                size: context.w * 0.045,
+                color: cs.primary,
+              ),
             ],
           ),
         ),

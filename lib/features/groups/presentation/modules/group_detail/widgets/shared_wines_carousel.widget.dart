@@ -29,8 +29,7 @@ class _RatingFooter extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
     final hasRatings = ratings.isNotEmpty;
     final avg = hasRatings
-        ? ratings.map((r) => r.rating).reduce((a, b) => a + b) /
-            ratings.length
+        ? ratings.map((r) => r.rating).reduce((a, b) => a + b) / ratings.length
         : fallback;
 
     return Row(
@@ -49,11 +48,13 @@ class _RatingFooter extends StatelessWidget {
         SizedBox(width: context.xs * 0.5),
         Padding(
           padding: EdgeInsets.only(top: context.xs * 0.8),
-          child: Text('/10',
-              style: TextStyle(
-                fontSize: context.captionFont * 0.9,
-                color: cs.onSurfaceVariant,
-              )),
+          child: Text(
+            '/10',
+            style: TextStyle(
+              fontSize: context.captionFont * 0.9,
+              color: cs.onSurfaceVariant,
+            ),
+          ),
         ),
         const Spacer(),
         _DetailsButton(onTap: onDetails),
@@ -116,8 +117,9 @@ class SharedWinesCarousel extends ConsumerStatefulWidget {
 }
 
 class _SharedWinesCarouselState extends ConsumerState<SharedWinesCarousel> {
-  late final PageController _pageController =
-      PageController(viewportFraction: 0.62);
+  late final PageController _pageController = PageController(
+    viewportFraction: 0.62,
+  );
   double _page = 0;
 
   @override
@@ -139,7 +141,7 @@ class _SharedWinesCarouselState extends ConsumerState<SharedWinesCarousel> {
     final winesAsync = ref.watch(groupWinesProvider(widget.groupId));
     final ranks =
         ref.watch(groupWineRanksProvider(widget.groupId)).valueOrNull ??
-            const <String, int>{};
+        const <String, int>{};
 
     return winesAsync.when(
       // Keep showing the previous wine list while a save / refresh is
@@ -155,7 +157,8 @@ class _SharedWinesCarouselState extends ConsumerState<SharedWinesCarousel> {
                 WinePickerSheet.show(context, groupId: widget.groupId),
           );
         }
-        final sorted = [...wines]..sort((a, b) {
+        final sorted = [...wines]
+          ..sort((a, b) {
             final ra = ranks[a.canonicalWineId ?? a.id];
             final rb = ranks[b.canonicalWineId ?? b.id];
             if (ra == null && rb == null) return 0;
@@ -261,8 +264,11 @@ class _EmptyStateCard extends StatelessWidget {
                 color: cs.surfaceContainerHighest,
               ),
               alignment: Alignment.center,
-              child: Icon(icon,
-                  size: context.w * 0.07, color: cs.onSurfaceVariant),
+              child: Icon(
+                icon,
+                size: context.w * 0.07,
+                color: cs.onSurfaceVariant,
+              ),
             ),
             SizedBox(height: context.m),
             Text(
@@ -299,8 +305,11 @@ class _EmptyStateCard extends StatelessWidget {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(buttonIcon,
-                          size: context.w * 0.045, color: cs.onPrimary),
+                      Icon(
+                        buttonIcon,
+                        size: context.w * 0.045,
+                        color: cs.onPrimary,
+                      ),
                       SizedBox(width: context.w * 0.015),
                       Text(
                         buttonLabel,
@@ -350,8 +359,7 @@ class _CarouselSkeleton extends StatelessWidget {
                 child: Container(
                   width: cardWidth,
                   height: cardHeight,
-                  margin:
-                      EdgeInsets.symmetric(horizontal: context.w * 0.015),
+                  margin: EdgeInsets.symmetric(horizontal: context.w * 0.015),
                   padding: EdgeInsets.all(context.w * 0.05),
                   decoration: BoxDecoration(
                     color: cs.surfaceContainerHigh,
@@ -365,8 +373,7 @@ class _CarouselSkeleton extends StatelessWidget {
                         width: context.w * 0.14,
                         decoration: BoxDecoration(
                           color: cs.surfaceContainerHighest,
-                          borderRadius:
-                              BorderRadius.circular(context.w * 0.02),
+                          borderRadius: BorderRadius.circular(context.w * 0.02),
                         ),
                       ),
                       SizedBox(height: context.m),
@@ -375,8 +382,7 @@ class _CarouselSkeleton extends StatelessWidget {
                         width: double.infinity,
                         decoration: BoxDecoration(
                           color: cs.surfaceContainerHighest,
-                          borderRadius:
-                              BorderRadius.circular(context.w * 0.01),
+                          borderRadius: BorderRadius.circular(context.w * 0.01),
                         ),
                       ),
                       SizedBox(height: context.xs),
@@ -385,8 +391,7 @@ class _CarouselSkeleton extends StatelessWidget {
                         width: context.w * 0.3,
                         decoration: BoxDecoration(
                           color: cs.surfaceContainerHighest,
-                          borderRadius:
-                              BorderRadius.circular(context.w * 0.01),
+                          borderRadius: BorderRadius.circular(context.w * 0.01),
                         ),
                       ),
                     ],
@@ -414,8 +419,7 @@ class _WineCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
-    final ratingsAsync =
-        ref.watch(groupWineRatingsProvider(groupId, wine.id));
+    final ratingsAsync = ref.watch(groupWineRatingsProvider(groupId, wine.id));
     final ranksAsync = ref.watch(groupWineRanksProvider(groupId));
     final rank = ranksAsync.valueOrNull?[wine.canonicalWineId ?? wine.id];
     final currentUserId = ref.watch(currentUserIdProvider);
@@ -428,10 +432,10 @@ class _WineCard extends ConsumerWidget {
     };
 
     void openRateSheet() => showGroupWineRatingSheet(
-          context: context,
-          groupId: groupId,
-          wine: wine,
-        );
+      context: context,
+      groupId: groupId,
+      wine: wine,
+    );
 
     return GestureDetector(
       onTap: openRateSheet,
@@ -496,10 +500,7 @@ class _WineCard extends ConsumerWidget {
               fallback: wine.rating,
               onDetails: () {
                 if (isOwner) {
-                  context.push(
-                    AppRoutes.wineDetailPath(wine.id),
-                    extra: wine,
-                  );
+                  context.push(AppRoutes.wineDetailPath(wine.id), extra: wine);
                 } else {
                   final cid = wine.canonicalWineId ?? wine.id;
                   context.push(
@@ -516,11 +517,11 @@ class _WineCard extends ConsumerWidget {
   }
 
   String _typeLabel(WineType type) => switch (type) {
-        WineType.red => 'RED',
-        WineType.white => 'WHITE',
-        WineType.rose => 'ROSÉ',
-        WineType.sparkling => 'SPARKLING',
-      };
+    WineType.red => 'RED',
+    WineType.white => 'WHITE',
+    WineType.rose => 'ROSÉ',
+    WineType.sparkling => 'SPARKLING',
+  };
 }
 
 class _WineImageArea extends StatelessWidget {
@@ -576,7 +577,9 @@ class _TypePill extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
     return Container(
       padding: EdgeInsets.symmetric(
-          horizontal: context.w * 0.022, vertical: context.xs),
+        horizontal: context.w * 0.022,
+        vertical: context.xs,
+      ),
       decoration: BoxDecoration(
         color: cs.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(context.w * 0.015),
@@ -590,13 +593,15 @@ class _TypePill extends StatelessWidget {
             decoration: BoxDecoration(color: color, shape: BoxShape.circle),
           ),
           SizedBox(width: context.xs),
-          Text(label,
-              style: TextStyle(
-                fontSize: context.captionFont * 0.8,
-                fontWeight: FontWeight.w700,
-                color: cs.onSurface,
-                letterSpacing: 0.6,
-              )),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: context.captionFont * 0.8,
+              fontWeight: FontWeight.w700,
+              color: cs.onSurface,
+              letterSpacing: 0.6,
+            ),
+          ),
         ],
       ),
     );
@@ -612,7 +617,9 @@ class _RankBadge extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
     return Container(
       padding: EdgeInsets.symmetric(
-          horizontal: context.w * 0.025, vertical: context.xs * 1.2),
+        horizontal: context.w * 0.025,
+        vertical: context.xs * 1.2,
+      ),
       decoration: BoxDecoration(
         color: cs.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(context.w * 0.03),
@@ -630,4 +637,3 @@ class _RankBadge extends StatelessWidget {
     );
   }
 }
-

@@ -68,9 +68,9 @@ class _EditGroupSheetState extends ConsumerState<EditGroupSheet> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Upload failed: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Upload failed: $e')));
       }
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -87,9 +87,9 @@ class _EditGroupSheetState extends ConsumerState<EditGroupSheet> {
       if (mounted) setState(() => _imageUrl = null);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Delete failed: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Delete failed: $e')));
       }
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -124,8 +124,7 @@ class _EditGroupSheetState extends ConsumerState<EditGroupSheet> {
             if (_imageUrl != null)
               ListTile(
                 leading: Icon(PhosphorIconsRegular.trash, color: cs.error),
-                title: Text('Remove photo',
-                    style: TextStyle(color: cs.error)),
+                title: Text('Remove photo', style: TextStyle(color: cs.error)),
                 onTap: () {
                   Navigator.pop(ctx);
                   _removeImage();
@@ -153,7 +152,9 @@ class _EditGroupSheetState extends ConsumerState<EditGroupSheet> {
       _errorMessage = null;
     });
     try {
-      await ref.read(groupControllerProvider.notifier).updateGroup(
+      await ref
+          .read(groupControllerProvider.notifier)
+          .updateGroup(
             groupId: widget.group.id,
             name: changedName ? name : null,
             imageUrl: changedImage && _imageUrl != null ? _imageUrl : null,
@@ -223,9 +224,11 @@ class _EditGroupSheetState extends ConsumerState<EditGroupSheet> {
                           : null,
                     ),
                     child: _imageUrl == null
-                        ? Icon(PhosphorIconsRegular.usersThree,
+                        ? Icon(
+                            PhosphorIconsRegular.usersThree,
                             size: avatarSize * 0.45,
-                            color: cs.onSurfaceVariant)
+                            color: cs.onSurfaceVariant,
+                          )
                         : null,
                   ),
                   Positioned(
@@ -238,8 +241,11 @@ class _EditGroupSheetState extends ConsumerState<EditGroupSheet> {
                         shape: BoxShape.circle,
                         border: Border.all(color: cs.surface, width: 2),
                       ),
-                      child: Icon(PhosphorIconsRegular.camera,
-                          size: context.w * 0.04, color: cs.onPrimary),
+                      child: Icon(
+                        PhosphorIconsRegular.camera,
+                        size: context.w * 0.04,
+                        color: cs.onPrimary,
+                      ),
                     ),
                   ),
                 ],
@@ -247,12 +253,14 @@ class _EditGroupSheetState extends ConsumerState<EditGroupSheet> {
             ),
           ),
           SizedBox(height: context.l),
-          Text('Name',
-              style: TextStyle(
-                fontSize: context.captionFont,
-                color: cs.onSurfaceVariant,
-                fontWeight: FontWeight.w600,
-              )),
+          Text(
+            'Name',
+            style: TextStyle(
+              fontSize: context.captionFont,
+              color: cs.onSurfaceVariant,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
           SizedBox(height: context.s),
           TextField(
             controller: _nameController,
@@ -277,10 +285,7 @@ class _EditGroupSheetState extends ConsumerState<EditGroupSheet> {
             SizedBox(height: context.m),
             Text(
               _errorMessage!,
-              style: TextStyle(
-                color: cs.error,
-                fontSize: context.captionFont,
-              ),
+              style: TextStyle(color: cs.error, fontSize: context.captionFont),
             ),
           ],
           SizedBox(height: context.xl),

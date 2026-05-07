@@ -72,9 +72,7 @@ class NotificationPrefsController extends _$NotificationPrefsController {
     if (userId == null) {
       return Stream.value(NotificationPrefsEntity.defaults(''));
     }
-    return ref
-        .watch(notificationPrefsRepositoryProvider)
-        .watchPrefs(userId);
+    return ref.watch(notificationPrefsRepositoryProvider).watchPrefs(userId);
   }
 
   Future<void> _update(
@@ -85,9 +83,7 @@ class NotificationPrefsController extends _$NotificationPrefsController {
     final current =
         state.valueOrNull ?? NotificationPrefsEntity.defaults(userId);
     final next = mutate(current);
-    await ref
-        .read(notificationPrefsRepositoryProvider)
-        .updatePrefs(next);
+    await ref.read(notificationPrefsRepositoryProvider).updatePrefs(next);
   }
 
   Future<void> setTastingReminders(bool value) =>

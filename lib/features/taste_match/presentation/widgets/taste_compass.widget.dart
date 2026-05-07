@@ -36,8 +36,7 @@ class TasteCompassWidget extends ConsumerStatefulWidget {
   final bool allowProGated;
 
   @override
-  ConsumerState<TasteCompassWidget> createState() =>
-      _TasteCompassWidgetState();
+  ConsumerState<TasteCompassWidget> createState() => _TasteCompassWidgetState();
 }
 
 class _TasteCompassWidgetState extends ConsumerState<TasteCompassWidget> {
@@ -56,7 +55,8 @@ class _TasteCompassWidgetState extends ConsumerState<TasteCompassWidget> {
     final grapesAsync = (widget.userId != null && _mode == CompassMode.grapes)
         ? ref.watch(userTopGrapesProvider(widget.userId!))
         : null;
-    final dnaAsync = (widget.userId != null &&
+    final dnaAsync =
+        (widget.userId != null &&
             (_mode == CompassMode.dna || _mode == CompassMode.style))
         ? ref.watch(userStyleDnaProvider(widget.userId!))
         : null;
@@ -84,10 +84,7 @@ class _TasteCompassWidgetState extends ConsumerState<TasteCompassWidget> {
           if (!hasMin) ...[
             _CompassEmpty(totalCount: compass.totalCount),
           ] else ...[
-            ArchetypeHeadline(
-              compass: compass,
-              dna: dnaAsync?.valueOrNull,
-            ),
+            ArchetypeHeadline(compass: compass, dna: dnaAsync?.valueOrNull),
             SizedBox(height: context.s),
             _ModeSelector(
               selected: _mode,
@@ -126,11 +123,9 @@ class _TasteCompassWidgetState extends ConsumerState<TasteCompassWidget> {
             ),
             SizedBox(height: context.m),
             if (_mode == CompassMode.style && compass.topRegions.isNotEmpty)
-              _BucketStrip(
-                heading: 'Top regions',
-                buckets: compass.topRegions,
-              ),
-            if (_mode == CompassMode.style && compass.topCountries.isNotEmpty) ...[
+              _BucketStrip(heading: 'Top regions', buckets: compass.topRegions),
+            if (_mode == CompassMode.style &&
+                compass.topCountries.isNotEmpty) ...[
               SizedBox(height: context.s),
               _BucketStrip(
                 heading: 'Top countries',
@@ -356,7 +351,8 @@ class _ModeBody extends StatelessWidget {
       CompassMode.dna => dna == null ? <RadarAxis>[] : buildDnaAxes(dna!),
     };
 
-    final loading = (mode == CompassMode.grapes && grapesLoading) ||
+    final loading =
+        (mode == CompassMode.grapes && grapesLoading) ||
         (mode == CompassMode.dna && dnaLoading);
 
     if (loading) {
@@ -376,9 +372,7 @@ class _ModeBody extends StatelessWidget {
         ),
       );
     }
-    if (mode == CompassMode.dna &&
-        dna != null &&
-        dna!.attributedCount < 3) {
+    if (mode == CompassMode.dna && dna != null && dna!.attributedCount < 3) {
       return SizedBox(
         height: context.h * 0.32,
         child: Center(
@@ -460,11 +454,13 @@ class _BucketStrip extends StatelessWidget {
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    Text('★',
-                        style: TextStyle(
-                          fontSize: context.captionFont * 0.9,
-                          color: cs.primary,
-                        )),
+                    Text(
+                      '★',
+                      style: TextStyle(
+                        fontSize: context.captionFont * 0.9,
+                        color: cs.primary,
+                      ),
+                    ),
                   ],
                 ),
               ),

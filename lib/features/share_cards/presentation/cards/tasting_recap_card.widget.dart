@@ -125,10 +125,7 @@ class _Header extends StatelessWidget {
 class _GroupHeading extends StatelessWidget {
   final String groupName;
   final String tastingTitle;
-  const _GroupHeading({
-    required this.groupName,
-    required this.tastingTitle,
-  });
+  const _GroupHeading({required this.groupName, required this.tastingTitle});
 
   @override
   Widget build(BuildContext context) {
@@ -197,11 +194,7 @@ class _TopWineBlock extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(
-                PhosphorIconsFill.trophy,
-                color: _onBg,
-                size: 56,
-              ),
+              const Icon(PhosphorIconsFill.trophy, color: _onBg, size: 56),
               const SizedBox(width: 16),
               Text(
                 'TOP WINE OF THE NIGHT',

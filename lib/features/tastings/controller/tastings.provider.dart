@@ -59,7 +59,9 @@ TastingsApi? tastingsApi(TastingsApiRef ref) {
 
 @riverpod
 Future<List<TastingEntity>> groupTastings(
-    GroupTastingsRef ref, String groupId) async {
+  GroupTastingsRef ref,
+  String groupId,
+) async {
   final api = ref.watch(tastingsApiProvider);
   if (api == null) return const [];
   ref.requireOnline();
@@ -69,7 +71,9 @@ Future<List<TastingEntity>> groupTastings(
 
 @riverpod
 Future<TastingEntity?> tastingDetail(
-    TastingDetailRef ref, String tastingId) async {
+  TastingDetailRef ref,
+  String tastingId,
+) async {
   final api = ref.watch(tastingsApiProvider);
   if (api == null) return null;
   ref.requireOnline();
@@ -90,7 +94,9 @@ Future<TastingEntity?> tastingDetail(
 
 @riverpod
 Future<List<WineEntity>> tastingWines(
-    TastingWinesRef ref, String tastingId) async {
+  TastingWinesRef ref,
+  String tastingId,
+) async {
   final api = ref.watch(tastingsApiProvider);
   if (api == null) return const [];
   // Realtime: any going-attendee can drop a wine into the lineup
@@ -144,7 +150,9 @@ WineEntity _mergeLocalImage(WineEntity remote, WineEntity? local) {
 /// score in tonight's flight than in last weekend's group dinner.
 @riverpod
 Future<Map<String, double>> tastingWineRatings(
-    TastingWineRatingsRef ref, String tastingId) async {
+  TastingWineRatingsRef ref,
+  String tastingId,
+) async {
   final api = ref.watch(tastingsApiProvider);
   if (api == null) return const {};
   ref.requireOnline();
@@ -209,7 +217,9 @@ Future<double?> myTastingRating(
 
 @riverpod
 Future<List<TastingAttendeeEntity>> tastingAttendees(
-    TastingAttendeesRef ref, String tastingId) async {
+  TastingAttendeesRef ref,
+  String tastingId,
+) async {
   final api = ref.watch(tastingsApiProvider);
   if (api == null) return const [];
   // Realtime: RSVP transitions (going / maybe / declined / no_response)
@@ -226,12 +236,14 @@ Future<List<TastingAttendeeEntity>> tastingAttendees(
   ref.requireOnline();
   final rows = await api.fetchAttendees(tastingId).withNetTimeout();
   return rows
-      .map((r) => TastingAttendeeEntity(
-            tastingId: r.tastingId,
-            userId: r.userId,
-            status: RsvpStatusX.fromWire(r.status),
-            profile: r.profile?.toEntity(),
-          ))
+      .map(
+        (r) => TastingAttendeeEntity(
+          tastingId: r.tastingId,
+          userId: r.userId,
+          status: RsvpStatusX.fromWire(r.status),
+          profile: r.profile?.toEntity(),
+        ),
+      )
       .toList();
 }
 
@@ -267,15 +279,17 @@ class TastingsController extends _$TastingsController {
     if (wineIds.isNotEmpty) {
       await api.addWines(model.id, wineIds);
     }
-    ref.read(analyticsProvider).capture(
-      'tasting_created',
-      properties: {
-        'wine_count': wineIds.length,
-        'has_description': (description ?? '').isNotEmpty,
-        'has_location': latitude != null && longitude != null,
-        'lineup_mode': lineupMode.name,
-      },
-    );
+    ref
+        .read(analyticsProvider)
+        .capture(
+          'tasting_created',
+          properties: {
+            'wine_count': wineIds.length,
+            'has_description': (description ?? '').isNotEmpty,
+            'has_location': latitude != null && longitude != null,
+            'lineup_mode': lineupMode.name,
+          },
+        );
     // Reminder delivery is handled server-side: the `tasting-reminders`
     // edge function (cron) reads scheduled_at + the creator's
     // user_notification_prefs and pushes via FCM at the right moment. No
@@ -288,10 +302,9 @@ class TastingsController extends _$TastingsController {
     final api = ref.read(tastingsApiProvider);
     if (api == null || wineIds.isEmpty) return;
     await api.addWines(tastingId, wineIds);
-    ref.read(analyticsProvider).capture(
-      'tasting_wines_added',
-      properties: {'count': wineIds.length},
-    );
+    ref
+        .read(analyticsProvider)
+        .capture('tasting_wines_added', properties: {'count': wineIds.length});
     ref.invalidate(tastingWinesProvider(tastingId));
   }
 
@@ -306,10 +319,9 @@ class TastingsController extends _$TastingsController {
     final api = ref.read(tastingsApiProvider);
     if (api == null) return;
     await api.setMyRsvp(tastingId: tastingId, status: status.wire);
-    ref.read(analyticsProvider).capture(
-      'tasting_rsvp_set',
-      properties: {'status': status.wire},
-    );
+    ref
+        .read(analyticsProvider)
+        .capture('tasting_rsvp_set', properties: {'status': status.wire});
     ref.invalidate(tastingAttendeesProvider(tastingId));
   }
 
@@ -324,8 +336,10 @@ class TastingsController extends _$TastingsController {
   /// Host transitions tasting from upcoming → active. UI gates this so
   /// only the creator can call it; here we trust the caller and let RLS
   /// reject anyone else server-side.
-  Future<TastingEntity?> startTasting(String tastingId,
-      {String? groupId}) async {
+  Future<TastingEntity?> startTasting(
+    String tastingId, {
+    String? groupId,
+  }) async {
     final api = ref.read(tastingsApiProvider);
     if (api == null) return null;
     final model = await api.startTasting(tastingId);
@@ -338,8 +352,7 @@ class TastingsController extends _$TastingsController {
   /// Host transitions active → concluded. No auto-end exists — the
   /// host must explicitly mark the event over (events run longer than
   /// scheduled).
-  Future<TastingEntity?> endTasting(String tastingId,
-      {String? groupId}) async {
+  Future<TastingEntity?> endTasting(String tastingId, {String? groupId}) async {
     final api = ref.read(tastingsApiProvider);
     if (api == null) return null;
     final model = await api.endTasting(tastingId);
@@ -380,10 +393,9 @@ class TastingsController extends _$TastingsController {
       rating: rating,
       notes: notes,
     );
-    ref.read(analyticsProvider).capture(
-      'tasting_wine_rated',
-      properties: {'rating': rating},
-    );
+    ref
+        .read(analyticsProvider)
+        .capture('tasting_wine_rated', properties: {'rating': rating});
     ref.invalidate(myTastingRatingProvider(tastingId, canonicalWineId));
     ref.invalidate(tastingWineRatingsProvider(tastingId));
     ref.invalidate(tastingRecapEntriesProvider(tastingId));

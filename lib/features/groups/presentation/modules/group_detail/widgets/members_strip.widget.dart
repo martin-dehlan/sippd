@@ -29,14 +29,18 @@ class MembersStrip extends ConsumerWidget {
         return InkWell(
           onTap: members.isEmpty
               ? null
-              : () => MembersSheet.show(context,
+              : () => MembersSheet.show(
+                  context,
                   groupId: groupId,
                   members: members,
-                  ownerId: ownerId),
+                  ownerId: ownerId,
+                ),
           borderRadius: BorderRadius.circular(context.w * 0.1),
           child: Padding(
             padding: EdgeInsets.symmetric(
-                vertical: context.xs, horizontal: context.xs),
+              vertical: context.xs,
+              horizontal: context.xs,
+            ),
             child: _AvatarStack(
               members: members.take(5).toList(),
               extra: members.length > 5 ? members.length - 5 : 0,
@@ -66,7 +70,9 @@ class _MembersSkeleton extends StatelessWidget {
       alignment: Alignment.centerLeft,
       child: Padding(
         padding: EdgeInsets.symmetric(
-            vertical: context.xs, horizontal: context.xs),
+          vertical: context.xs,
+          horizontal: context.xs,
+        ),
         child: SizedBox(
           width: width,
           height: size,
@@ -136,10 +142,7 @@ class _AvatarStack extends StatelessWidget {
                   color: cs.surface,
                   shape: BoxShape.circle,
                 ),
-                child: FriendAvatar(
-                  profile: members[i],
-                  size: inner,
-                ),
+                child: FriendAvatar(profile: members[i], size: inner),
               ),
             ),
           if (extra > 0)

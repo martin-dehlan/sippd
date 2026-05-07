@@ -52,8 +52,8 @@ class ExpertRatingChip extends StatelessWidget {
             Icon(
               isPro
                   ? (expanded
-                      ? PhosphorIconsFill.caretUp
-                      : PhosphorIconsRegular.notebook)
+                        ? PhosphorIconsFill.caretUp
+                        : PhosphorIconsRegular.notebook)
                   : PhosphorIconsFill.lock,
               size: context.captionFont * 1.05,
               color: filled ? cs.onPrimary : cs.primary,
@@ -111,11 +111,7 @@ class YourRatingHeader extends StatelessWidget {
           ),
         ),
         if (showChip)
-          ExpertRatingChip(
-            isPro: isPro,
-            expanded: expanded,
-            onTap: onChipTap,
-          ),
+          ExpertRatingChip(isPro: isPro, expanded: expanded, onTap: onChipTap),
       ],
     );
   }
@@ -190,24 +186,21 @@ class ExpertRatingPanel extends StatelessWidget {
               lowLabel: 'soft',
               highLabel: 'gripping',
               value: tasting.tannin,
-              onChanged: (v) =>
-                  onTastingChange(tasting.copyWith(tannin: v)),
+              onChanged: (v) => onTastingChange(tasting.copyWith(tannin: v)),
             ),
           ets.TastingCompactRow(
             label: 'Acidity',
             lowLabel: 'soft',
             highLabel: 'crisp',
             value: tasting.acidity,
-            onChanged: (v) =>
-                onTastingChange(tasting.copyWith(acidity: v)),
+            onChanged: (v) => onTastingChange(tasting.copyWith(acidity: v)),
           ),
           ets.TastingCompactRow(
             label: 'Sweetness',
             lowLabel: 'dry',
             highLabel: 'sweet',
             value: tasting.sweetness,
-            onChanged: (v) =>
-                onTastingChange(tasting.copyWith(sweetness: v)),
+            onChanged: (v) => onTastingChange(tasting.copyWith(sweetness: v)),
           ),
           ets.TastingCompactRow(
             label: 'Oak',

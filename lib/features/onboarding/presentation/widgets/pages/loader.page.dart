@@ -70,8 +70,7 @@ class _LoaderPageState extends ConsumerState<LoaderPage>
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final pickedIconKey =
-        ref.watch(onboardingAnswersControllerProvider).emoji;
+    final pickedIconKey = ref.watch(onboardingAnswersControllerProvider).emoji;
     final pickedIcon = avatarIconForKey(pickedIconKey);
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: context.paddingH),

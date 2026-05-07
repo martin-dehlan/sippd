@@ -14,10 +14,7 @@ extension PumpProviderApp on WidgetTester {
     await pumpWidget(
       ProviderScope(
         overrides: overrides,
-        child: MaterialApp(
-          home: child,
-          debugShowCheckedModeBanner: false,
-        ),
+        child: MaterialApp(home: child, debugShowCheckedModeBanner: false),
       ),
     );
   }

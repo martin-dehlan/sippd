@@ -31,32 +31,32 @@ class TastingModel with _$TastingModel {
 
 extension TastingModelX on TastingModel {
   TastingEntity toEntity() => TastingEntity(
-        id: id,
-        groupId: groupId,
-        title: title,
-        description: description,
-        location: location,
-        latitude: latitude,
-        longitude: longitude,
-        scheduledAt: scheduledAt,
-        createdBy: createdBy,
-        isBlind: isBlind,
-        isRevealed: isRevealed,
-        state: _stateFromString(state),
-        lineupMode: _lineupModeFromString(lineupMode),
-        startedAt: startedAt,
-        endedAt: endedAt,
-        createdAt: createdAt,
-      );
+    id: id,
+    groupId: groupId,
+    title: title,
+    description: description,
+    location: location,
+    latitude: latitude,
+    longitude: longitude,
+    scheduledAt: scheduledAt,
+    createdBy: createdBy,
+    isBlind: isBlind,
+    isRevealed: isRevealed,
+    state: _stateFromString(state),
+    lineupMode: _lineupModeFromString(lineupMode),
+    startedAt: startedAt,
+    endedAt: endedAt,
+    createdAt: createdAt,
+  );
 }
 
 TastingState _stateFromString(String raw) => switch (raw) {
-      'active' => TastingState.active,
-      'concluded' => TastingState.concluded,
-      _ => TastingState.upcoming,
-    };
+  'active' => TastingState.active,
+  'concluded' => TastingState.concluded,
+  _ => TastingState.upcoming,
+};
 
 TastingLineupMode _lineupModeFromString(String raw) => switch (raw) {
-      'open' => TastingLineupMode.open,
-      _ => TastingLineupMode.planned,
-    };
+  'open' => TastingLineupMode.open,
+  _ => TastingLineupMode.planned,
+};

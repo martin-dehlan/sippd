@@ -20,8 +20,9 @@ class FriendRatingsStrip extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final async =
-        ref.watch(friendRatingsForCanonicalWineProvider(canonicalWineId));
+    final async = ref.watch(
+      friendRatingsForCanonicalWineProvider(canonicalWineId),
+    );
 
     return async.maybeWhen(
       data: (ratings) {
@@ -102,12 +103,11 @@ class _FriendRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final label =
-        (rating.displayName?.trim().isNotEmpty ?? false)
-            ? rating.displayName!.trim()
-            : (rating.username?.trim().isNotEmpty ?? false)
-                ? rating.username!.trim()
-                : 'Friend';
+    final label = (rating.displayName?.trim().isNotEmpty ?? false)
+        ? rating.displayName!.trim()
+        : (rating.username?.trim().isNotEmpty ?? false)
+        ? rating.username!.trim()
+        : 'Friend';
 
     return InkWell(
       onTap: () => context.push(AppRoutes.friendProfilePath(rating.userId)),
@@ -154,7 +154,9 @@ class _Avatar extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final size = context.w * 0.085;
-    final initial = label.isNotEmpty ? label.characters.first.toUpperCase() : '?';
+    final initial = label.isNotEmpty
+        ? label.characters.first.toUpperCase()
+        : '?';
 
     if (url != null && url!.isNotEmpty) {
       return CircleAvatar(

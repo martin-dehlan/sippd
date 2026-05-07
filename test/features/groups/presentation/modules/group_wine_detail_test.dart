@@ -13,18 +13,18 @@ import 'package:sippd/features/wines/domain/entities/wine.entity.dart';
 
 void main() {
   WineEntity sampleWine() => WineEntity(
-        id: 'cw-1',
-        name: 'Brunello',
-        rating: 0,
-        type: WineType.red,
-        winery: 'Biondi-Santi',
-        vintage: 2018,
-        region: 'Toscana',
-        country: 'IT',
-        canonicalWineId: 'cw-1',
-        userId: 'sharer-1',
-        createdAt: DateTime(2026),
-      );
+    id: 'cw-1',
+    name: 'Brunello',
+    rating: 0,
+    type: WineType.red,
+    winery: 'Biondi-Santi',
+    vintage: 2018,
+    region: 'Toscana',
+    country: 'IT',
+    canonicalWineId: 'cw-1',
+    userId: 'sharer-1',
+    createdAt: DateTime(2026),
+  );
 
   GroupWineRatingEntity rating({
     required String userId,
@@ -32,18 +32,17 @@ void main() {
     String? notes,
     String? displayName,
     bool isOwner = false,
-  }) =>
-      GroupWineRatingEntity(
-        groupId: 'g-1',
-        canonicalWineId: 'cw-1',
-        userId: userId,
-        rating: score,
-        notes: notes,
-        displayName: displayName,
-        username: displayName?.toLowerCase(),
-        updatedAt: DateTime.utc(2026, 5, 1),
-        isOwner: isOwner,
-      );
+  }) => GroupWineRatingEntity(
+    groupId: 'g-1',
+    canonicalWineId: 'cw-1',
+    userId: userId,
+    rating: score,
+    notes: notes,
+    displayName: displayName,
+    username: displayName?.toLowerCase(),
+    updatedAt: DateTime.utc(2026, 5, 1),
+    isOwner: isOwner,
+  );
 
   void useIPhoneViewport(WidgetTester tester) {
     tester.view.physicalSize = const Size(390 * 2, 844 * 2);
@@ -61,12 +60,15 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          groupWinesProvider('g-1')
-              .overrideWith((ref) async => [sampleWine()]),
-          groupWineRatingsProvider('g-1', 'cw-1')
-              .overrideWith((ref) async => ratings),
-          groupWineShareDetailsProvider('g-1', 'cw-1')
-              .overrideWith((ref) async => share),
+          groupWinesProvider('g-1').overrideWith((ref) async => [sampleWine()]),
+          groupWineRatingsProvider(
+            'g-1',
+            'cw-1',
+          ).overrideWith((ref) async => ratings),
+          groupWineShareDetailsProvider(
+            'g-1',
+            'cw-1',
+          ).overrideWith((ref) async => share),
         ],
         child: MaterialApp(
           home: GroupWineDetailScreen(
@@ -93,8 +95,9 @@ void main() {
     expect(find.text('No group ratings yet.'), findsOneWidget);
   });
 
-  testWidgets('renders SHARED BY block when share details available',
-      (tester) async {
+  testWidgets('renders SHARED BY block when share details available', (
+    tester,
+  ) async {
     await pumpScreen(
       tester,
       ratings: const [],
@@ -112,12 +115,16 @@ void main() {
     expect(find.textContaining('d ago'), findsOneWidget);
   });
 
-  testWidgets('renders one row per group rating with score + notes',
-      (tester) async {
-    await pumpScreen(tester, ratings: [
-      rating(userId: 'u1', score: 8.5, notes: 'Lovely', displayName: 'Anna'),
-      rating(userId: 'u2', score: 6.0, displayName: 'Ben'),
-    ]);
+  testWidgets('renders one row per group rating with score + notes', (
+    tester,
+  ) async {
+    await pumpScreen(
+      tester,
+      ratings: [
+        rating(userId: 'u1', score: 8.5, notes: 'Lovely', displayName: 'Anna'),
+        rating(userId: 'u2', score: 6.0, displayName: 'Ben'),
+      ],
+    );
     expect(find.text('Anna'), findsOneWidget);
     expect(find.text('Ben'), findsOneWidget);
     expect(find.text('8.5'), findsOneWidget);
@@ -127,19 +134,24 @@ void main() {
     expect(find.text('No group ratings yet.'), findsNothing);
   });
 
-  testWidgets('group avg surfaces in stats column when ratings present',
-      (tester) async {
-    await pumpScreen(tester, ratings: [
-      rating(userId: 'u1', score: 8),
-      rating(userId: 'u2', score: 6),
-    ]);
+  testWidgets('group avg surfaces in stats column when ratings present', (
+    tester,
+  ) async {
+    await pumpScreen(
+      tester,
+      ratings: [
+        rating(userId: 'u1', score: 8),
+        rating(userId: 'u2', score: 6),
+      ],
+    );
     // Average = 7.0
     expect(find.text('7.0'), findsOneWidget);
     expect(find.text('GROUP AVG'), findsOneWidget);
   });
 
-  testWidgets('renders without layout overflow on a small viewport',
-      (tester) async {
+  testWidgets('renders without layout overflow on a small viewport', (
+    tester,
+  ) async {
     // iPhone SE 1st gen height (568pt) — the original
     // SizedBox(h * 0.32) gave ~182px which couldn't fit 3 StatItems.
     // After the IntrinsicHeight + tighter spacing fix this should
@@ -152,12 +164,15 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          groupWinesProvider('g-1')
-              .overrideWith((ref) async => [sampleWine()]),
-          groupWineRatingsProvider('g-1', 'cw-1')
-              .overrideWith((ref) async => const <GroupWineRatingEntity>[]),
-          groupWineShareDetailsProvider('g-1', 'cw-1')
-              .overrideWith((ref) async => null),
+          groupWinesProvider('g-1').overrideWith((ref) async => [sampleWine()]),
+          groupWineRatingsProvider(
+            'g-1',
+            'cw-1',
+          ).overrideWith((ref) async => const <GroupWineRatingEntity>[]),
+          groupWineShareDetailsProvider(
+            'g-1',
+            'cw-1',
+          ).overrideWith((ref) async => null),
         ],
         child: MaterialApp(
           home: GroupWineDetailScreen(
@@ -169,12 +184,16 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    expect(tester.takeException(), isNull,
-        reason: 'no RenderFlex overflow on a small viewport');
+    expect(
+      tester.takeException(),
+      isNull,
+      reason: 'no RenderFlex overflow on a small viewport',
+    );
   });
 
-  testWidgets('shows loading spinner when initial is null and remote empty',
-      (tester) async {
+  testWidgets('shows loading spinner when initial is null and remote empty', (
+    tester,
+  ) async {
     useIPhoneViewport(tester);
     final pending = Completer<List<WineEntity>>();
     addTearDown(() => pending.complete(const <WineEntity>[]));
@@ -182,12 +201,15 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          groupWinesProvider('g-1')
-              .overrideWith((ref) => pending.future),
-          groupWineRatingsProvider('g-1', 'cw-1')
-              .overrideWith((ref) async => []),
-          groupWineShareDetailsProvider('g-1', 'cw-1')
-              .overrideWith((ref) async => null),
+          groupWinesProvider('g-1').overrideWith((ref) => pending.future),
+          groupWineRatingsProvider(
+            'g-1',
+            'cw-1',
+          ).overrideWith((ref) async => []),
+          groupWineShareDetailsProvider(
+            'g-1',
+            'cw-1',
+          ).overrideWith((ref) async => null),
         ],
         child: const MaterialApp(
           home: GroupWineDetailScreen(

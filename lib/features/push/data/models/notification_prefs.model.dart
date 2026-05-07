@@ -11,8 +11,7 @@ class NotificationPrefsModel with _$NotificationPrefsModel {
   const factory NotificationPrefsModel({
     @JsonKey(name: 'user_id') required String userId,
     @JsonKey(name: 'tasting_reminders') required bool tastingReminders,
-    @JsonKey(name: 'tasting_reminder_hours')
-    required int tastingReminderHours,
+    @JsonKey(name: 'tasting_reminder_hours') required int tastingReminderHours,
     @JsonKey(name: 'friend_activity') required bool friendActivity,
     @JsonKey(name: 'group_activity') required bool groupActivity,
     @JsonKey(name: 'group_wine_shared') required bool groupWineShared,

@@ -65,7 +65,10 @@ class RegionSkyline extends StatelessWidget {
                         if (idx < 0 || idx >= visible.length) {
                           return const SizedBox.shrink();
                         }
-                        return _BarCaption(item: visible[idx], isHero: idx == 0);
+                        return _BarCaption(
+                          item: visible[idx],
+                          isHero: idx == 0,
+                        );
                       },
                     ),
                   ),

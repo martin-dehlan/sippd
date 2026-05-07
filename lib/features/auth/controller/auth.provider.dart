@@ -48,17 +48,21 @@ class AuthController extends _$AuthController {
       );
       if (response.session == null) {
         state = const AsyncValue.data(null);
-        ref.read(analyticsProvider).capture(
-          'auth_signup',
-          properties: const {'confirmation_required': true},
-        );
+        ref
+            .read(analyticsProvider)
+            .capture(
+              'auth_signup',
+              properties: const {'confirmation_required': true},
+            );
         return SignUpOutcome.confirmationRequired;
       }
       state = AsyncValue.data(response.user);
-      ref.read(analyticsProvider).capture(
-        'auth_signup',
-        properties: const {'confirmation_required': false},
-      );
+      ref
+          .read(analyticsProvider)
+          .capture(
+            'auth_signup',
+            properties: const {'confirmation_required': false},
+          );
       return SignUpOutcome.signedIn;
     } catch (e, st) {
       state = AsyncValue.error(e, st);
@@ -66,10 +70,7 @@ class AuthController extends _$AuthController {
     }
   }
 
-  Future<void> signIn({
-    required String email,
-    required String password,
-  }) async {
+  Future<void> signIn({required String email, required String password}) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
       final client = ref.read(supabaseClientProvider);
@@ -80,19 +81,17 @@ class AuthController extends _$AuthController {
       return response.user;
     });
     if (!state.hasError) {
-      ref.read(analyticsProvider).capture(
-        'auth_login',
-        properties: const {'method': 'email'},
-      );
+      ref
+          .read(analyticsProvider)
+          .capture('auth_login', properties: const {'method': 'email'});
     }
   }
 
   Future<void> signInWithGoogle() async {
     final client = ref.read(supabaseClientProvider);
-    ref.read(analyticsProvider).capture(
-      'auth_login_attempt',
-      properties: const {'method': 'google'},
-    );
+    ref
+        .read(analyticsProvider)
+        .capture('auth_login_attempt', properties: const {'method': 'google'});
     await client.auth.signInWithOAuth(
       OAuthProvider.google,
       redirectTo: 'io.sippd://login-callback/',

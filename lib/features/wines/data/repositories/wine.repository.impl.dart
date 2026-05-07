@@ -26,12 +26,12 @@ class WineRepositoryImpl implements WineRepository {
     WineImageService? imageService,
     AnalyticsService? analytics,
     PendingImageUploadsDao? outbox,
-  })  : _dao = dao,
-        _api = api,
-        _userId = userId,
-        _imageService = imageService,
-        _analytics = analytics,
-        _outbox = outbox;
+  }) : _dao = dao,
+       _api = api,
+       _userId = userId,
+       _imageService = imageService,
+       _analytics = analytics,
+       _outbox = outbox;
 
   /// Per-wine timers debouncing remote sync so 500ms-keystroke autosave
   /// in wine_edit only writes to Drift; the round-trip to Supabase fires
@@ -103,8 +103,8 @@ class WineRepositoryImpl implements WineRepository {
     // Trigger sync, return local stream
     _syncFromRemote();
     return _dao.watchAllWines().map(
-          (list) => list.map((td) => td.toEntity()).toList(),
-        );
+      (list) => list.map((td) => td.toEntity()).toList(),
+    );
   }
 
   @override
@@ -156,9 +156,9 @@ class WineRepositoryImpl implements WineRepository {
       // (includeToJson: false) but local rendering still wants the file.
       final fresh = await _api.fetchWineById(toSync.id);
       if (fresh != null) {
-        final merged = fresh
-            .toEntity()
-            .copyWith(localImagePath: toSync.localImagePath);
+        final merged = fresh.toEntity().copyWith(
+          localImagePath: toSync.localImagePath,
+        );
         await _dao.updateWine(_withNameNorm(merged).toTableData());
       }
     } catch (e) {
@@ -183,4 +183,3 @@ class WineRepositoryImpl implements WineRepository {
     }
   }
 }
-

@@ -21,10 +21,10 @@ class CompassBucketModel with _$CompassBucketModel {
 
 extension CompassBucketModelX on CompassBucketModel {
   CompassBucket toEntity() => CompassBucket(
-        label: region ?? country ?? type ?? '',
-        count: count,
-        avgRating: avgRating,
-      );
+    label: region ?? country ?? type ?? '',
+    count: count,
+    avgRating: avgRating,
+  );
 }
 
 @freezed
@@ -49,10 +49,10 @@ class TasteCompassModel with _$TasteCompassModel {
 
 extension TasteCompassModelX on TasteCompassModel {
   TasteCompassEntity toEntity() => TasteCompassEntity(
-        totalCount: totalCount,
-        overallAvg: overallAvg,
-        topRegions: topRegions.map((b) => b.toEntity()).toList(),
-        topCountries: topCountries.map((b) => b.toEntity()).toList(),
-        typeBreakdown: typeBreakdown.map((b) => b.toEntity()).toList(),
-      );
+    totalCount: totalCount,
+    overallAvg: overallAvg,
+    topRegions: topRegions.map((b) => b.toEntity()).toList(),
+    topCountries: topCountries.map((b) => b.toEntity()).toList(),
+    typeBreakdown: typeBreakdown.map((b) => b.toEntity()).toList(),
+  );
 }

@@ -64,8 +64,7 @@ class WineThumb extends StatelessWidget {
                     // Same lean placeholder regardless of the failure
                     // mode — keeps the row from flashing the default
                     // red-X glyph or shifting backgrounds.
-                    errorBuilder: (_, __, ___) =>
-                        _Placeholder(size: size),
+                    errorBuilder: (_, _, _) => _Placeholder(size: size),
                     frameBuilder: (_, child, frame, wasSync) {
                       if (frame == null && !wasSync) {
                         return _Placeholder(size: size);
@@ -76,7 +75,11 @@ class WineThumb extends StatelessWidget {
                 : _Placeholder(size: size),
           ),
           if (cornerOverlay != null)
-            Positioned(top: -size * 0.06, left: -size * 0.06, child: cornerOverlay!),
+            Positioned(
+              top: -size * 0.06,
+              left: -size * 0.06,
+              child: cornerOverlay!,
+            ),
         ],
       ),
     );

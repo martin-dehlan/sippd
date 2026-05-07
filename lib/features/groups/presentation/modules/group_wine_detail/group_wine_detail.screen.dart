@@ -58,10 +58,12 @@ class _Body extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final canonicalId = wine.canonicalWineId ?? wine.id;
-    final ratingsAsync =
-        ref.watch(groupWineRatingsProvider(groupId, canonicalId));
-    final shareAsync =
-        ref.watch(groupWineShareDetailsProvider(groupId, canonicalId));
+    final ratingsAsync = ref.watch(
+      groupWineRatingsProvider(groupId, canonicalId),
+    );
+    final shareAsync = ref.watch(
+      groupWineShareDetailsProvider(groupId, canonicalId),
+    );
 
     return SafeArea(
       child: ListView(
@@ -169,10 +171,11 @@ class _GroupStatsColumn extends StatelessWidget {
             _StatItem(label: 'Country', value: wine.country!, isText: true)
           else
             _StatItem(
-                label: 'Origin',
-                value: '–',
-                isText: true,
-                subtleColor: cs.onSurfaceVariant),
+              label: 'Origin',
+              value: '–',
+              isText: true,
+              subtleColor: cs.onSurfaceVariant,
+            ),
         ],
       ),
     );
@@ -200,42 +203,50 @@ class _StatItem extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        Text(label.toUpperCase(),
-            style: TextStyle(
-              fontSize: context.captionFont * 0.95,
-              fontWeight: FontWeight.w700,
-              color: cs.onSurface.withValues(alpha: 0.72),
-              letterSpacing: 1.2,
-            )),
+        Text(
+          label.toUpperCase(),
+          style: TextStyle(
+            fontSize: context.captionFont * 0.95,
+            fontWeight: FontWeight.w700,
+            color: cs.onSurface.withValues(alpha: 0.72),
+            letterSpacing: 1.2,
+          ),
+        ),
         SizedBox(height: context.xs * 0.3),
         if (isText)
-          Text(value,
-              textAlign: TextAlign.right,
-              style: TextStyle(
-                fontSize: context.bodyFont * 1.1,
-                fontWeight: FontWeight.bold,
-                color: subtleColor,
-              ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis)
+          Text(
+            value,
+            textAlign: TextAlign.right,
+            style: TextStyle(
+              fontSize: context.bodyFont * 1.1,
+              fontWeight: FontWeight.bold,
+              color: subtleColor,
+            ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          )
         else
           Row(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.baseline,
             textBaseline: TextBaseline.alphabetic,
             children: [
-              Text(value,
-                  style: TextStyle(
-                    fontSize: context.headingFont * 1.4,
-                    fontWeight: FontWeight.bold,
-                  )),
+              Text(
+                value,
+                style: TextStyle(
+                  fontSize: context.headingFont * 1.4,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               if (unit != null) ...[
                 SizedBox(width: context.w * 0.01),
-                Text(unit!,
-                    style: TextStyle(
-                      fontSize: context.captionFont,
-                      color: cs.onSurfaceVariant,
-                    )),
+                Text(
+                  unit!,
+                  style: TextStyle(
+                    fontSize: context.captionFont,
+                    color: cs.onSurfaceVariant,
+                  ),
+                ),
               ],
             ],
           ),
@@ -251,9 +262,7 @@ class _SharedByBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final name = share.sharer.displayName ??
-        share.sharer.username ??
-        'someone';
+    final name = share.sharer.displayName ?? share.sharer.username ?? 'someone';
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
       child: Row(
@@ -298,11 +307,7 @@ class _RatingsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (ratings.isEmpty) return const _EmptyRatings();
-    return Column(
-      children: [
-        for (final r in ratings) _RatingRow(rating: r),
-      ],
-    );
+    return Column(children: [for (final r in ratings) _RatingRow(rating: r)]);
   }
 }
 
@@ -444,4 +449,3 @@ String _relativeTime(DateTime then) {
   if (diff.inDays < 365) return '${(diff.inDays / 30).floor()}mo ago';
   return '${(diff.inDays / 365).floor()}y ago';
 }
-

@@ -5,34 +5,36 @@ import 'package:sippd/features/wines/domain/entities/wine.entity.dart';
 
 void main() {
   ProfileModel sampleModel() => const ProfileModel(
-        id: 'user-1',
-        username: 'martin',
-        displayName: 'Martin',
-        avatarUrl: 'https://cdn/m.png',
-        onboardingCompleted: true,
-        tasteLevel: 'enthusiast',
-        goals: ['remember', 'discover'],
-        styles: ['red', 'white'],
-        drinkFrequency: 'weekly',
-        tasteEmoji: '🍷',
-      );
+    id: 'user-1',
+    username: 'martin',
+    displayName: 'Martin',
+    avatarUrl: 'https://cdn/m.png',
+    onboardingCompleted: true,
+    tasteLevel: 'enthusiast',
+    goals: ['remember', 'discover'],
+    styles: ['red', 'white'],
+    drinkFrequency: 'weekly',
+    tasteEmoji: '🍷',
+  );
 
   group('ProfileModel ↔ JSON', () {
     test('round-trips with snake_case keys', () {
       final json = sampleModel().toJson();
-      expect(json.keys, containsAll([
-        'display_name',
-        'avatar_url',
-        'onboarding_completed',
-        'taste_level',
-        'drink_frequency',
-        'taste_emoji',
-      ]));
+      expect(
+        json.keys,
+        containsAll([
+          'display_name',
+          'avatar_url',
+          'onboarding_completed',
+          'taste_level',
+          'drink_frequency',
+          'taste_emoji',
+        ]),
+      );
       expect(ProfileModel.fromJson(json), sampleModel());
     });
 
-    test('defaults onboardingCompleted=false and empty lists when absent',
-        () {
+    test('defaults onboardingCompleted=false and empty lists when absent', () {
       final m = ProfileModel.fromJson({'id': 'u'});
       expect(m.onboardingCompleted, isFalse);
       expect(m.goals, isEmpty);
@@ -45,8 +47,7 @@ void main() {
       final e = sampleModel().toEntity();
       expect(e.tasteLevel, TasteLevel.enthusiast);
       expect(e.drinkFrequency, DrinkFrequency.weekly);
-      expect(e.goals,
-          {OnboardingGoal.remember, OnboardingGoal.discover});
+      expect(e.goals, {OnboardingGoal.remember, OnboardingGoal.discover});
       expect(e.styles, {WineType.red, WineType.white});
     });
 

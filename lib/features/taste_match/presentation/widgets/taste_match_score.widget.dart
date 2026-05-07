@@ -91,10 +91,9 @@ class TasteMatchScoreWidget extends StatelessWidget {
   String _supportingText(TasteMatchEntity m) {
     final c = m.confidence!;
     final overlap = m.overlapCount;
-    final dnaPart = m.hasDna
-        ? ' + WSET style overlap'
-        : '';
-    final base = 'Based on $overlap shared region/type bucket'
+    final dnaPart = m.hasDna ? ' + WSET style overlap' : '';
+    final base =
+        'Based on $overlap shared region/type bucket'
         '${overlap == 1 ? '' : 's'}$dnaPart.';
     switch (c) {
       case MatchConfidence.high:
@@ -120,8 +119,10 @@ class _Breakdown extends StatelessWidget {
       decoration: BoxDecoration(
         color: cs.surface,
         borderRadius: BorderRadius.circular(context.w * 0.025),
-        border: Border.all(color: cs.outlineVariant.withValues(alpha: 0.6),
-            width: 0.6),
+        border: Border.all(
+          color: cs.outlineVariant.withValues(alpha: 0.6),
+          width: 0.6,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -132,10 +133,7 @@ class _Breakdown extends StatelessWidget {
               value: '${match.bucketScore!}%',
             ),
             SizedBox(height: context.xs * 0.6),
-            _BreakdownRow(
-              label: 'Style DNA fit',
-              value: '${match.dnaScore!}%',
-            ),
+            _BreakdownRow(label: 'Style DNA fit', value: '${match.dnaScore!}%'),
           ],
         ],
       ),
@@ -144,10 +142,7 @@ class _Breakdown extends StatelessWidget {
 }
 
 class _BreakdownRow extends StatelessWidget {
-  const _BreakdownRow({
-    required this.label,
-    required this.value,
-  });
+  const _BreakdownRow({required this.label, required this.value});
 
   final String label;
   final String value;

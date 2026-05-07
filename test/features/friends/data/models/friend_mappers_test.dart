@@ -50,10 +50,12 @@ void main() {
         sender: const FriendProfileModel(id: 'a', username: 'anna'),
         receiver: const FriendProfileModel(id: 'b', username: 'ben'),
       );
-      final wire = jsonDecode(jsonEncode(original.toJson()))
-          as Map<String, dynamic>;
-      expect(wire.keys,
-          containsAll(['sender_id', 'receiver_id', 'created_at']));
+      final wire =
+          jsonDecode(jsonEncode(original.toJson())) as Map<String, dynamic>;
+      expect(
+        wire.keys,
+        containsAll(['sender_id', 'receiver_id', 'created_at']),
+      );
       final round = FriendRequestModel.fromJson(wire);
       expect(round.id, original.id);
       expect(round.senderId, original.senderId);
@@ -100,8 +102,7 @@ void main() {
       expect(m.toEntity().status, FriendRequestStatus.pending);
     });
 
-    test('toEntity hydrates sender/receiver entities from embedded models',
-        () {
+    test('toEntity hydrates sender/receiver entities from embedded models', () {
       final m = FriendRequestModel(
         id: 'fr-1',
         senderId: 'a',

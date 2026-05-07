@@ -390,9 +390,7 @@ GoRouter goRouter(GoRouterRef ref) {
   // forbids mutating another provider during a build, and goRouter is
   // building right now.
   if (ref.read(isAuthenticatedProvider)) {
-    Future.microtask(
-      () => ref.read(splashDeadlineProvider.notifier)._arm(),
-    );
+    Future.microtask(() => ref.read(splashDeadlineProvider.notifier)._arm());
   }
   ref.listen(authControllerProvider, (prev, next) {
     // Any successful auth (sign-in or sign-up) means the device has

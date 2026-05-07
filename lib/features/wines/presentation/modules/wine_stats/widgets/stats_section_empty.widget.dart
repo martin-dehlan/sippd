@@ -50,11 +50,7 @@ class StatsSectionEmpty extends StatelessWidget {
                     color: cs.primary.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(context.w * 0.03),
                   ),
-                  child: Icon(
-                    icon,
-                    color: cs.primary,
-                    size: context.w * 0.055,
-                  ),
+                  child: Icon(icon, color: cs.primary, size: context.w * 0.055),
                 ),
                 SizedBox(width: context.s),
                 Expanded(

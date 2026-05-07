@@ -39,8 +39,9 @@ Future<double?> showWineRatingSheet({
     useSafeArea: true,
     backgroundColor: Theme.of(context).colorScheme.surface,
     shape: RoundedRectangleBorder(
-      borderRadius:
-          BorderRadius.vertical(top: Radius.circular(context.w * 0.06)),
+      borderRadius: BorderRadius.vertical(
+        top: Radius.circular(context.w * 0.06),
+      ),
     ),
     builder: (ctx) => _WineRatingSheet(
       wine: wine,
@@ -98,10 +99,7 @@ class _WineRatingSheetState extends ConsumerState<_WineRatingSheet> {
     if (!isPro) {
       Navigator.pop(context);
       // ignore: use_build_context_synchronously
-      context.push(
-        AppRoutes.paywall,
-        extra: {'source': _paywallSource},
-      );
+      context.push(AppRoutes.paywall, extra: {'source': _paywallSource});
       return;
     }
 
@@ -152,9 +150,9 @@ class _WineRatingSheetState extends ConsumerState<_WineRatingSheet> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not save: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Could not save: $e')));
       }
     }
     if (mounted) {
@@ -214,7 +212,9 @@ class _WineRatingSheetState extends ConsumerState<_WineRatingSheet> {
               ),
             ],
             SizedBox(height: context.l),
-            Center(child: _Hero(value: _value, cs: cs)),
+            Center(
+              child: _Hero(value: _value, cs: cs),
+            ),
             SizedBox(height: context.m),
             _Slider(
               value: _value,
@@ -230,10 +230,9 @@ class _WineRatingSheetState extends ConsumerState<_WineRatingSheet> {
                       wineType: wine.type,
                       tasting: _tasting,
                       aromasExpanded: _aromasExpanded,
-                      onTastingChange: (t) =>
-                          setState(() => _tasting = t),
-                      onToggleAromas: () => setState(
-                          () => _aromasExpanded = !_aromasExpanded),
+                      onTastingChange: (t) => setState(() => _tasting = t),
+                      onToggleAromas: () =>
+                          setState(() => _aromasExpanded = !_aromasExpanded),
                     )
                   : const SizedBox(width: double.infinity),
             ),

@@ -102,10 +102,11 @@ class _PasswordRecoveryScreenState
                     prefixIcon: const Icon(PhosphorIconsRegular.lockSimple),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _obscure ? PhosphorIconsRegular.eyeSlash : PhosphorIconsRegular.eye,
+                        _obscure
+                            ? PhosphorIconsRegular.eyeSlash
+                            : PhosphorIconsRegular.eye,
                       ),
-                      onPressed: () =>
-                          setState(() => _obscure = !_obscure),
+                      onPressed: () => setState(() => _obscure = !_obscure),
                     ),
                   ),
                   validator: (v) {

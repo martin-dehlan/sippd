@@ -28,11 +28,7 @@ class DrinkingPartners extends StatelessWidget {
           children: [
             for (int i = 0; i < visible.length; i++) ...[
               if (i > 0) SizedBox(height: context.s),
-              _PartnerRow(
-                rank: i + 1,
-                partner: visible[i],
-                delay: i * 60,
-              ),
+              _PartnerRow(rank: i + 1, partner: visible[i], delay: i * 60),
             ],
           ],
         ),

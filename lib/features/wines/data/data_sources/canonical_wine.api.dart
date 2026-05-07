@@ -18,22 +18,20 @@ class CanonicalWineApi {
   }) async {
     final data = await _client.rpc(
       'suggest_canonical_match',
-      params: {
-        'p_name': name,
-        'p_winery': winery,
-        'p_vintage': vintage,
-      },
+      params: {'p_name': name, 'p_winery': winery, 'p_vintage': vintage},
     );
     if (data == null) return const [];
     return (data as List)
-        .map((row) => CanonicalWineCandidate(
-              id: row['candidate_id'] as String,
-              name: row['name'] as String,
-              winery: row['winery'] as String?,
-              vintage: row['vintage'] as int?,
-              similarity: (row['similarity'] as num).toDouble(),
-              isExact: row['is_exact'] as bool,
-            ))
+        .map(
+          (row) => CanonicalWineCandidate(
+            id: row['candidate_id'] as String,
+            name: row['name'] as String,
+            winery: row['winery'] as String?,
+            vintage: row['vintage'] as int?,
+            similarity: (row['similarity'] as num).toDouble(),
+            isExact: row['is_exact'] as bool,
+          ),
+        )
         .toList();
   }
 
@@ -66,24 +64,23 @@ class CanonicalWineApi {
   }) async {
     final data = await _client.rpc(
       'find_canonical_merge_candidates',
-      params: {
-        'p_min_similarity': minSimilarity,
-        'p_limit': limit,
-      },
+      params: {'p_min_similarity': minSimilarity, 'p_limit': limit},
     );
     if (data == null) return const [];
     return (data as List)
-        .map((row) => CanonicalMergePair(
-              loserId: row['loser_id'] as String,
-              winnerId: row['winner_id'] as String,
-              loserName: row['loser_name'] as String,
-              winnerName: row['winner_name'] as String,
-              loserWinery: row['loser_winery'] as String?,
-              winnerWinery: row['winner_winery'] as String?,
-              loserVintage: row['loser_vintage'] as int?,
-              winnerVintage: row['winner_vintage'] as int?,
-              similarity: (row['similarity'] as num).toDouble(),
-            ))
+        .map(
+          (row) => CanonicalMergePair(
+            loserId: row['loser_id'] as String,
+            winnerId: row['winner_id'] as String,
+            loserName: row['loser_name'] as String,
+            winnerName: row['winner_name'] as String,
+            loserWinery: row['loser_winery'] as String?,
+            winnerWinery: row['winner_winery'] as String?,
+            loserVintage: row['loser_vintage'] as int?,
+            winnerVintage: row['winner_vintage'] as int?,
+            similarity: (row['similarity'] as num).toDouble(),
+          ),
+        )
         .toList();
   }
 
@@ -96,10 +93,7 @@ class CanonicalWineApi {
   }) async {
     await _client.rpc(
       'merge_canonical_wines',
-      params: {
-        'p_loser_id': loserId,
-        'p_winner_id': winnerId,
-      },
+      params: {'p_loser_id': loserId, 'p_winner_id': winnerId},
     );
   }
 }

@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
@@ -30,8 +29,7 @@ class PushHandlerService {
   StreamSubscription<RemoteMessage>? _openedSub;
 
   Future<void> init() async {
-    const androidInit =
-        AndroidInitializationSettings('ic_notification');
+    const androidInit = AndroidInitializationSettings('ic_notification');
     const iosInit = DarwinInitializationSettings(
       requestAlertPermission: false,
       requestBadgePermission: false,
@@ -42,8 +40,8 @@ class PushHandlerService {
       onDidReceiveNotificationResponse: (resp) {
         if (resp.payload == null) return;
         try {
-          final data =
-              (jsonDecode(resp.payload!) as Map).cast<String, dynamic>();
+          final data = (jsonDecode(resp.payload!) as Map)
+              .cast<String, dynamic>();
           _tapStream.add(_fakeRemoteMessage(data));
         } catch (_) {}
       },
@@ -56,11 +54,11 @@ class PushHandlerService {
     );
     await _local
         .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
+          AndroidFlutterLocalNotificationsPlugin
+        >()
         ?.createNotificationChannel(channel);
 
-    _foregroundSub =
-        FirebaseMessaging.onMessage.listen(_onForegroundMessage);
+    _foregroundSub = FirebaseMessaging.onMessage.listen(_onForegroundMessage);
     _openedSub = FirebaseMessaging.onMessageOpenedApp.listen(_tapStream.add);
 
     // Cold-start: opened from terminated.

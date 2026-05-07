@@ -25,16 +25,19 @@ void main() {
       final round = TasteMatchModel.fromJson(original.toJson());
       expect(round, original);
       // Lock the snake_case wire layout — RPC depends on these keys.
-      expect(original.toJson().keys, containsAll([
-        'overlap_count',
-        'my_total',
-        'their_total',
-        'bucket_score',
-        'dna_score',
-        'same_canonical_pairs',
-        'agree_pairs',
-        'disagree_pairs',
-      ]));
+      expect(
+        original.toJson().keys,
+        containsAll([
+          'overlap_count',
+          'my_total',
+          'their_total',
+          'bucket_score',
+          'dna_score',
+          'same_canonical_pairs',
+          'agree_pairs',
+          'disagree_pairs',
+        ]),
+      );
     });
 
     test('confidence string parses into typed enum', () {
@@ -45,8 +48,7 @@ void main() {
     });
 
     test('unknown confidence string parses to null (no crash)', () {
-      final m = TasteMatchModel.fromJson({'confidence': 'mystery'})
-          .toEntity();
+      final m = TasteMatchModel.fromJson({'confidence': 'mystery'}).toEntity();
       expect(m.confidence, isNull);
     });
 
@@ -86,8 +88,8 @@ void main() {
           CompassBucketModel(type: 'red', count: 7, avgRating: 7.5),
         ],
       );
-      final wire = jsonDecode(jsonEncode(original.toJson()))
-          as Map<String, dynamic>;
+      final wire =
+          jsonDecode(jsonEncode(original.toJson())) as Map<String, dynamic>;
       final round = TasteCompassModel.fromJson(wire);
       expect(round, original);
     });
@@ -101,8 +103,7 @@ void main() {
       expect(t.toEntity().label, 'red');
     });
 
-    test('CompassBucket falls back to empty label when all axes null',
-        () {
+    test('CompassBucket falls back to empty label when all axes null', () {
       const b = CompassBucketModel(count: 1, avgRating: 5);
       expect(b.toEntity().label, '');
     });
@@ -124,14 +125,17 @@ void main() {
         delta: 2,
         ratedAt: DateTime.utc(2026, 5, 1),
       );
-      expect(original.toJson().keys, containsAll([
-        'group_id',
-        'wine_id',
-        'wine_name',
-        'my_rating',
-        'their_rating',
-        'rated_at',
-      ]));
+      expect(
+        original.toJson().keys,
+        containsAll([
+          'group_id',
+          'wine_id',
+          'wine_name',
+          'my_rating',
+          'their_rating',
+          'rated_at',
+        ]),
+      );
       expect(SharedBottleModel.fromJson(original.toJson()), original);
     });
 

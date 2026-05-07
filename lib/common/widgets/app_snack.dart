@@ -17,11 +17,7 @@ class AppSnack {
   static void info(BuildContext context, String message) =>
       _show(context, message, _SnackKind.info);
 
-  static void _show(
-    BuildContext context,
-    String message,
-    _SnackKind kind,
-  ) {
+  static void _show(BuildContext context, String message, _SnackKind kind) {
     final cs = Theme.of(context).colorScheme;
     final (IconData icon, Color accent) = switch (kind) {
       _SnackKind.success => (PhosphorIconsRegular.checkCircle, cs.secondary),

@@ -12,8 +12,9 @@ Future<LocationEntity?> showLocationSearchSheet({
     isScrollControlled: true,
     backgroundColor: Theme.of(context).colorScheme.surface,
     shape: RoundedRectangleBorder(
-      borderRadius:
-          BorderRadius.vertical(top: Radius.circular(context.w * 0.05)),
+      borderRadius: BorderRadius.vertical(
+        top: Radius.circular(context.w * 0.05),
+      ),
     ),
     builder: (ctx) {
       final cs = Theme.of(ctx).colorScheme;
@@ -23,7 +24,9 @@ Future<LocationEntity?> showLocationSearchSheet({
         child: SafeArea(
           child: Padding(
             padding: EdgeInsets.symmetric(
-                horizontal: ctx.paddingH, vertical: ctx.m),
+              horizontal: ctx.paddingH,
+              vertical: ctx.m,
+            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -39,11 +42,14 @@ Future<LocationEntity?> showLocationSearchSheet({
                   ),
                 ),
                 SizedBox(height: ctx.m),
-                Text('Where did you drink it?',
-                    style: TextStyle(
-                        fontSize: context.bodyFont,
-                        fontWeight: FontWeight.w600,
-                        color: cs.onSurfaceVariant)),
+                Text(
+                  'Where did you drink it?',
+                  style: TextStyle(
+                    fontSize: context.bodyFont,
+                    fontWeight: FontWeight.w600,
+                    color: cs.onSurfaceVariant,
+                  ),
+                ),
                 SizedBox(height: ctx.s),
                 LocationSearchWidget(
                   initialValue: initial?.shortDisplay,

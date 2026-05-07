@@ -17,7 +17,7 @@ class ShareCardService {
   final AnalyticsService _analytics;
 
   ShareCardService({required AnalyticsService analytics})
-      : _analytics = analytics;
+    : _analytics = analytics;
 
   /// Renders a wine rating card off-screen at IG-story dimensions and
   /// hands it to the native share sheet.
@@ -29,10 +29,7 @@ class ShareCardService {
   }) async {
     _analytics.capture(
       'share_card_generated',
-      properties: {
-        'card_type': 'wine_rating',
-        'source': source,
-      },
+      properties: {'card_type': 'wine_rating', 'source': source},
     );
 
     // Precache the wine photo so the off-screen render captures the
@@ -50,7 +47,8 @@ class ShareCardService {
 
     final result = await Share.shareXFiles(
       [XFile(file.path, mimeType: 'image/png')],
-      text: 'Just rated ${wine.name} ${wine.rating.toStringAsFixed(1)}/10 '
+      text:
+          'Just rated ${wine.name} ${wine.rating.toStringAsFixed(1)}/10 '
           'on Sippd · $shareCardUrl',
     );
 
@@ -58,10 +56,7 @@ class ShareCardService {
       result.status == ShareResultStatus.success
           ? 'share_card_shared'
           : 'share_card_cancelled',
-      properties: {
-        'card_type': 'wine_rating',
-        'source': source,
-      },
+      properties: {'card_type': 'wine_rating', 'source': source},
     );
   }
 
@@ -77,10 +72,7 @@ class ShareCardService {
   }) async {
     _analytics.capture(
       'share_card_generated',
-      properties: {
-        'card_type': 'compass',
-        'source': source,
-      },
+      properties: {'card_type': 'compass', 'source': source},
     );
 
     final card = CompassShareCard(data: data);
@@ -93,7 +85,8 @@ class ShareCardService {
 
     final result = await Share.shareXFiles(
       [XFile(file.path, mimeType: 'image/png')],
-      text: 'My wine personality: ${data.archetypeName} · '
+      text:
+          'My wine personality: ${data.archetypeName} · '
           'find yours at $shareCardUrl',
     );
 
@@ -101,10 +94,7 @@ class ShareCardService {
       result.status == ShareResultStatus.success
           ? 'share_card_shared'
           : 'share_card_cancelled',
-      properties: {
-        'card_type': 'compass',
-        'source': source,
-      },
+      properties: {'card_type': 'compass', 'source': source},
     );
   }
 
@@ -119,10 +109,7 @@ class ShareCardService {
   }) async {
     _analytics.capture(
       'share_card_generated',
-      properties: {
-        'card_type': 'tasting_recap',
-        'source': source,
-      },
+      properties: {'card_type': 'tasting_recap', 'source': source},
     );
 
     final card = TastingRecapCard(data: data);
@@ -135,28 +122,21 @@ class ShareCardService {
 
     final topLine = data.topWineName != null && data.topWineAvg != null
         ? '${data.topWineName} took the night at '
-            '${data.topWineAvg!.toStringAsFixed(1)}/10'
+              '${data.topWineAvg!.toStringAsFixed(1)}/10'
         : data.tastingTitle;
-    final result = await Share.shareXFiles(
-      [XFile(file.path, mimeType: 'image/png')],
-      text: '$topLine · hosted on Sippd · $shareCardUrl',
-    );
+    final result = await Share.shareXFiles([
+      XFile(file.path, mimeType: 'image/png'),
+    ], text: '$topLine · hosted on Sippd · $shareCardUrl');
 
     _analytics.capture(
       result.status == ShareResultStatus.success
           ? 'share_card_shared'
           : 'share_card_cancelled',
-      properties: {
-        'card_type': 'tasting_recap',
-        'source': source,
-      },
+      properties: {'card_type': 'tasting_recap', 'source': source},
     );
   }
 
-  Future<void> _precacheWineImage(
-    BuildContext context,
-    WineEntity wine,
-  ) async {
+  Future<void> _precacheWineImage(BuildContext context, WineEntity wine) async {
     final local = wine.localImagePath;
     if (local != null && local.isNotEmpty) {
       final file = File(local);
@@ -185,11 +165,7 @@ class ShareCardService {
   }) async {
     final controller = ScreenshotController();
     final bytes = await controller.captureFromWidget(
-      SizedBox(
-        width: shareCardWidth,
-        height: shareCardHeight,
-        child: card,
-      ),
+      SizedBox(width: shareCardWidth, height: shareCardHeight, child: card),
       context: context,
       pixelRatio: 1,
       delay: const Duration(milliseconds: 80),

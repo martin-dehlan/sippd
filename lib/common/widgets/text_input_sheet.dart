@@ -16,8 +16,9 @@ Future<String?> showTextInputSheet({
     isScrollControlled: true,
     backgroundColor: Theme.of(context).colorScheme.surface,
     shape: RoundedRectangleBorder(
-      borderRadius:
-          BorderRadius.vertical(top: Radius.circular(context.w * 0.05)),
+      borderRadius: BorderRadius.vertical(
+        top: Radius.circular(context.w * 0.05),
+      ),
     ),
     builder: (ctx) {
       final cs = Theme.of(ctx).colorScheme;
@@ -27,7 +28,9 @@ Future<String?> showTextInputSheet({
         child: SafeArea(
           child: Padding(
             padding: EdgeInsets.symmetric(
-                horizontal: ctx.paddingH, vertical: ctx.m),
+              horizontal: ctx.paddingH,
+              vertical: ctx.m,
+            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -43,11 +46,14 @@ Future<String?> showTextInputSheet({
                   ),
                 ),
                 SizedBox(height: ctx.m),
-                Text(title,
-                    style: TextStyle(
-                        fontSize: context.bodyFont,
-                        fontWeight: FontWeight.w600,
-                        color: cs.onSurfaceVariant)),
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: context.bodyFont,
+                    fontWeight: FontWeight.w600,
+                    color: cs.onSurfaceVariant,
+                  ),
+                ),
                 SizedBox(height: ctx.s),
                 TextField(
                   controller: controller,
@@ -57,10 +63,10 @@ Future<String?> showTextInputSheet({
                   cursorColor: cs.primary,
                   cursorWidth: 1.5,
                   style: TextStyle(
-                    fontSize:
-                        maxLines > 1 ? ctx.bodyFont : ctx.titleFont * 1.1,
-                    fontWeight:
-                        maxLines > 1 ? FontWeight.w500 : FontWeight.bold,
+                    fontSize: maxLines > 1 ? ctx.bodyFont : ctx.titleFont * 1.1,
+                    fontWeight: maxLines > 1
+                        ? FontWeight.w500
+                        : FontWeight.bold,
                     height: maxLines > 1 ? 1.5 : 1.1,
                     color: cs.onSurface,
                     letterSpacing: maxLines > 1 ? 0 : -0.5,
@@ -100,10 +106,7 @@ Future<String?> showTextInputSheet({
                   },
                 ),
                 SizedBox(height: ctx.s),
-                Container(
-                  height: 1,
-                  color: cs.outlineVariant,
-                ),
+                Container(height: 1, color: cs.outlineVariant),
                 SizedBox(height: ctx.l),
                 SizedBox(
                   width: double.infinity,
@@ -119,10 +122,13 @@ Future<String?> showTextInputSheet({
                         borderRadius: BorderRadius.circular(ctx.w * 0.03),
                       ),
                     ),
-                    child: Text('Save',
-                        style: TextStyle(
-                            fontSize: ctx.bodyFont,
-                            fontWeight: FontWeight.w600)),
+                    child: Text(
+                      'Save',
+                      style: TextStyle(
+                        fontSize: ctx.bodyFont,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
                 ),
                 SizedBox(height: ctx.s),

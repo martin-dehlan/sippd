@@ -24,10 +24,8 @@ class WinesTable extends Table {
   TextColumn get winery => text().nullable()();
   TextColumn get nameNorm => text().nullable()();
   TextColumn get userId => text()();
-  TextColumn get visibility =>
-      text().withDefault(const Constant('friends'))();
-  DateTimeColumn get createdAt =>
-      dateTime().withDefault(currentDateAndTime)();
+  TextColumn get visibility => text().withDefault(const Constant('friends'))();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get updatedAt => dateTime().nullable()();
 
   @override

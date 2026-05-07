@@ -76,7 +76,9 @@ class PaywallPlanCard extends StatelessWidget {
                           subtitle,
                           style: TextStyle(
                             fontSize: context.captionFont,
-                            color: hasSavings ? cs.primary : cs.onSurfaceVariant,
+                            color: hasSavings
+                                ? cs.primary
+                                : cs.onSurfaceVariant,
                             fontWeight: hasSavings
                                 ? FontWeight.w800
                                 : FontWeight.w500,

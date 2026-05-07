@@ -132,8 +132,7 @@ class _Body extends ConsumerWidget {
           action: _SectionAction(
             icon: PhosphorIconsRegular.plus,
             label: 'Share',
-            onTap: () =>
-                WinePickerSheet.show(context, groupId: group.id),
+            onTap: () => WinePickerSheet.show(context, groupId: group.id),
           ),
         ),
         SizedBox(height: context.s),
@@ -144,8 +143,7 @@ class _Body extends ConsumerWidget {
           action: _SectionAction(
             icon: PhosphorIconsRegular.plus,
             label: 'Plan',
-            onTap: () =>
-                context.push(AppRoutes.tastingCreatePath(group.id)),
+            onTap: () => context.push(AppRoutes.tastingCreatePath(group.id)),
           ),
         ),
         SizedBox(height: context.s),
@@ -172,9 +170,10 @@ class _Body extends ConsumerWidget {
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text('Leave',
-                style:
-                    TextStyle(color: Theme.of(ctx).colorScheme.error)),
+            child: Text(
+              'Leave',
+              style: TextStyle(color: Theme.of(ctx).colorScheme.error),
+            ),
           ),
         ],
       ),
@@ -203,9 +202,10 @@ class _Body extends ConsumerWidget {
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text('Delete',
-                style:
-                    TextStyle(color: Theme.of(ctx).colorScheme.error)),
+            child: Text(
+              'Delete',
+              style: TextStyle(color: Theme.of(ctx).colorScheme.error),
+            ),
           ),
         ],
       ),
@@ -323,4 +323,3 @@ class _SectionAction extends StatelessWidget {
     );
   }
 }
-

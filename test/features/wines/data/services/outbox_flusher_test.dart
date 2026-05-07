@@ -42,64 +42,73 @@ void main() {
   }
 
   Future<void> seedWine(String id, {String? imageUrl}) async {
-    await db.winesDao.insertWine(WineTableData(
-      id: id,
-      name: 'Pinot',
-      rating: 8,
-      type: 'red',
-      currency: 'EUR',
-      visibility: 'friends',
-      userId: 'user-1',
-      imageUrl: imageUrl,
-      createdAt: DateTime(2026),
-    ));
+    await db.winesDao.insertWine(
+      WineTableData(
+        id: id,
+        name: 'Pinot',
+        rating: 8,
+        type: 'red',
+        currency: 'EUR',
+        visibility: 'friends',
+        userId: 'user-1',
+        imageUrl: imageUrl,
+        createdAt: DateTime(2026),
+      ),
+    );
   }
 
   group('OutboxFlusher.flush', () {
-    test('uploads, updates wine row, mirrors to Supabase, removes outbox',
-        () async {
-      await seedWine('wine-1');
-      await db.pendingImageUploadsDao.enqueue('wine-1', '/tmp/a.jpg');
+    test(
+      'uploads, updates wine row, mirrors to Supabase, removes outbox',
+      () async {
+        await seedWine('wine-1');
+        await db.pendingImageUploadsDao.enqueue('wine-1', '/tmp/a.jpg');
 
-      when(() => imageService.uploadImage(
+        when(
+          () => imageService.uploadImage(
             userId: any(named: 'userId'),
             filePath: any(named: 'filePath'),
-          )).thenAnswer((_) async => 'https://cdn/a.jpg');
-      when(() => api.upsertWine(any())).thenAnswer((_) async {});
+          ),
+        ).thenAnswer((_) async => 'https://cdn/a.jpg');
+        when(() => api.upsertWine(any())).thenAnswer((_) async {});
 
-      await buildFlusher().flush();
+        await buildFlusher().flush();
 
-      // Outbox drained.
-      final remaining = await db.pendingImageUploadsDao.due(DateTime(2099));
-      expect(remaining, isEmpty);
+        // Outbox drained.
+        final remaining = await db.pendingImageUploadsDao.due(DateTime(2099));
+        expect(remaining, isEmpty);
 
-      // Local wine row carries the resolved URL.
-      final updated = await db.winesDao.getWineById('wine-1');
-      expect(updated?.imageUrl, 'https://cdn/a.jpg');
+        // Local wine row carries the resolved URL.
+        final updated = await db.winesDao.getWineById('wine-1');
+        expect(updated?.imageUrl, 'https://cdn/a.jpg');
 
-      // Supabase received the mirrored upsert with the URL.
-      final captured =
-          verify(() => api.upsertWine(captureAny())).captured;
-      expect(captured, hasLength(1));
-      expect((captured.single as WineModel).imageUrl, 'https://cdn/a.jpg');
-    });
+        // Supabase received the mirrored upsert with the URL.
+        final captured = verify(() => api.upsertWine(captureAny())).captured;
+        expect(captured, hasLength(1));
+        expect((captured.single as WineModel).imageUrl, 'https://cdn/a.jpg');
+      },
+    );
 
     test('upload failure → recordFailure + analytics + row stays', () async {
       await seedWine('wine-1');
       await db.pendingImageUploadsDao.enqueue('wine-1', '/tmp/a.jpg');
 
-      when(() => imageService.uploadImage(
-            userId: any(named: 'userId'),
-            filePath: any(named: 'filePath'),
-          )).thenThrow(StateError('storage 500'));
-      when(() => analytics.syncFailed(any(),
-          error: any(named: 'error'))).thenAnswer((_) async {});
+      when(
+        () => imageService.uploadImage(
+          userId: any(named: 'userId'),
+          filePath: any(named: 'filePath'),
+        ),
+      ).thenThrow(StateError('storage 500'));
+      when(
+        () => analytics.syncFailed(any(), error: any(named: 'error')),
+      ).thenAnswer((_) async {});
 
       await buildFlusher().flush();
 
       // Outbox row still present, attempts incremented.
-      final due = await db.pendingImageUploadsDao
-          .due(DateTime.now().add(const Duration(days: 1)));
+      final due = await db.pendingImageUploadsDao.due(
+        DateTime.now().add(const Duration(days: 1)),
+      );
       expect(due, hasLength(1));
       expect(due.first.attempts, 1);
 
@@ -111,8 +120,12 @@ void main() {
       verifyNever(() => api.upsertWine(any()));
 
       // Telemetry captured the swallow.
-      verify(() => analytics.syncFailed('outbox_image_upload',
-          error: any(named: 'error'))).called(1);
+      verify(
+        () => analytics.syncFailed(
+          'outbox_image_upload',
+          error: any(named: 'error'),
+        ),
+      ).called(1);
     });
 
     test('no-op when imageService is null', () async {
@@ -129,10 +142,10 @@ void main() {
       await flusher.flush();
 
       verifyNever(() => api.upsertWine(any()));
-      final due = await db.pendingImageUploadsDao
-          .due(DateTime.now().add(const Duration(days: 1)));
-      expect(due, hasLength(1),
-          reason: 'untouched when service unavailable');
+      final due = await db.pendingImageUploadsDao.due(
+        DateTime.now().add(const Duration(days: 1)),
+      );
+      expect(due, hasLength(1), reason: 'untouched when service unavailable');
     });
 
     test('no-op when userId is null (signed-out)', () async {
@@ -141,10 +154,12 @@ void main() {
 
       await flusher.flush();
 
-      verifyNever(() => imageService.uploadImage(
-            userId: any(named: 'userId'),
-            filePath: any(named: 'filePath'),
-          ));
+      verifyNever(
+        () => imageService.uploadImage(
+          userId: any(named: 'userId'),
+          filePath: any(named: 'filePath'),
+        ),
+      );
     });
 
     test('drains multiple due rows in one pass', () async {
@@ -153,46 +168,56 @@ void main() {
       await db.pendingImageUploadsDao.enqueue('wine-1', '/tmp/a.jpg');
       await db.pendingImageUploadsDao.enqueue('wine-2', '/tmp/b.jpg');
 
-      when(() => imageService.uploadImage(
-            userId: any(named: 'userId'),
-            filePath: any(named: 'filePath'),
-          )).thenAnswer((inv) async {
-        final path =
-            inv.namedArguments[const Symbol('filePath')] as String;
+      when(
+        () => imageService.uploadImage(
+          userId: any(named: 'userId'),
+          filePath: any(named: 'filePath'),
+        ),
+      ).thenAnswer((inv) async {
+        final path = inv.namedArguments[const Symbol('filePath')] as String;
         return 'https://cdn/${path.split('/').last}';
       });
       when(() => api.upsertWine(any())).thenAnswer((_) async {});
 
       await buildFlusher().flush();
 
-      final remaining =
-          await db.pendingImageUploadsDao.due(DateTime(2099));
+      final remaining = await db.pendingImageUploadsDao.due(DateTime(2099));
       expect(remaining, isEmpty);
-      expect((await db.winesDao.getWineById('wine-1'))?.imageUrl,
-          'https://cdn/a.jpg');
-      expect((await db.winesDao.getWineById('wine-2'))?.imageUrl,
-          'https://cdn/b.jpg');
+      expect(
+        (await db.winesDao.getWineById('wine-1'))?.imageUrl,
+        'https://cdn/a.jpg',
+      );
+      expect(
+        (await db.winesDao.getWineById('wine-2'))?.imageUrl,
+        'https://cdn/b.jpg',
+      );
     });
 
-    test('skips silently when wine row was deleted between enqueue + flush',
-        () async {
-      // Outbox rows can outlive the wine they reference (user deletes
-      // the wine before an upload retry succeeds). The flusher must
-      // not crash, and must still drain the outbox row.
-      await db.pendingImageUploadsDao.enqueue('ghost', '/tmp/a.jpg');
+    test(
+      'skips silently when wine row was deleted between enqueue + flush',
+      () async {
+        // Outbox rows can outlive the wine they reference (user deletes
+        // the wine before an upload retry succeeds). The flusher must
+        // not crash, and must still drain the outbox row.
+        await db.pendingImageUploadsDao.enqueue('ghost', '/tmp/a.jpg');
 
-      when(() => imageService.uploadImage(
+        when(
+          () => imageService.uploadImage(
             userId: any(named: 'userId'),
             filePath: any(named: 'filePath'),
-          )).thenAnswer((_) async => 'https://cdn/a.jpg');
+          ),
+        ).thenAnswer((_) async => 'https://cdn/a.jpg');
 
-      await buildFlusher().flush();
+        await buildFlusher().flush();
 
-      verifyNever(() => api.upsertWine(any()));
-      final due = await db.pendingImageUploadsDao.due(DateTime(2099));
-      expect(due, isEmpty,
-          reason:
-              'orphan outbox row should still be removed after upload');
-    });
+        verifyNever(() => api.upsertWine(any()));
+        final due = await db.pendingImageUploadsDao.due(DateTime(2099));
+        expect(
+          due,
+          isEmpty,
+          reason: 'orphan outbox row should still be removed after upload',
+        );
+      },
+    );
   });
 }

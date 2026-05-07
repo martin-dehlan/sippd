@@ -11,7 +11,10 @@ import '../utils/responsive.dart';
 /// network failures get a connectivity-specific copy; everything else
 /// falls back to [fallback]. Centralized so every error UI tells the
 /// user the same thing.
-String describeAppError(Object error, {String fallback = "Something went wrong."}) {
+String describeAppError(
+  Object error, {
+  String fallback = "Something went wrong.",
+}) {
   return switch (error) {
     OfflineError() => "You're offline. Reconnect to try again.",
     NetworkError() => "Network error. Check your connection.",
@@ -28,13 +31,11 @@ class InlineFieldError extends ConsumerWidget {
   final String? message;
   final String? fallback;
 
-  const InlineFieldError({
-    super.key,
-    this.error,
-    this.message,
-    this.fallback,
-  }) : assert(error != null || message != null,
-            'Provide either error or message');
+  const InlineFieldError({super.key, this.error, this.message, this.fallback})
+    : assert(
+        error != null || message != null,
+        'Provide either error or message',
+      );
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -42,11 +43,9 @@ class InlineFieldError extends ConsumerWidget {
     // Re-render on connectivity change so a stale "Network error" caption
     // updates to the right state once the user reconnects.
     ref.watch(isOnlineProvider);
-    final text = message ??
-        describeAppError(
-          error!,
-          fallback: fallback ?? 'Something went wrong.',
-        );
+    final text =
+        message ??
+        describeAppError(error!, fallback: fallback ?? 'Something went wrong.');
 
     return Padding(
       padding: EdgeInsets.only(top: context.xs * 1.4),
@@ -122,9 +121,9 @@ class RetryActionButton extends ConsumerWidget {
     final hasError = error != null;
     final label = hasError
         ? (retryLabel ??
-            (error is OfflineError || error is NetworkError
-                ? "Offline · Retry"
-                : "Couldn't save · Retry"))
+              (error is OfflineError || error is NetworkError
+                  ? "Offline · Retry"
+                  : "Couldn't save · Retry"))
         : idleLabel;
 
     return SizedBox(

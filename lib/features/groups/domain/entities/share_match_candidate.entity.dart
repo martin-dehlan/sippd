@@ -7,8 +7,5 @@ class ShareMatchCandidate {
   final WineEntity wine;
   final String? sharedByUsername;
 
-  const ShareMatchCandidate({
-    required this.wine,
-    this.sharedByUsername,
-  });
+  const ShareMatchCandidate({required this.wine, this.sharedByUsername});
 }

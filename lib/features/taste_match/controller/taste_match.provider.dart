@@ -66,10 +66,7 @@ Future<List<UserGrapeShare>> userTopGrapes(
 }
 
 @riverpod
-Future<UserStyleDna> userStyleDna(
-  UserStyleDnaRef ref,
-  String userId,
-) async {
+Future<UserStyleDna> userStyleDna(UserStyleDnaRef ref, String userId) async {
   final isAuth = ref.watch(isAuthenticatedProvider);
   if (!isAuth) {
     return const UserStyleDna(values: {}, attributedCount: 0, confidence: 0);
