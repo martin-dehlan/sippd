@@ -82,6 +82,11 @@ class _WineRatingSheetState extends ConsumerState<_WineRatingSheet> {
   bool _aromasExpanded = false;
   bool _saving = false;
   ExpertTastingEntity _tasting = const ExpertTastingEntity();
+  // True once the server fetch for this sheet's session has completed.
+  // Subsequent collapse/expand cycles reuse the in-memory _tasting so any
+  // edits the user already typed survive — the previous always-refetch
+  // behaviour silently overwrote them with whatever was on the server.
+  bool _expertLoaded = false;
 
   String? get _canonicalId => widget.wine?.canonicalWineId;
   String get _paywallSource => 'expert_tasting_${widget.ratingContext}';
@@ -108,6 +113,13 @@ class _WineRatingSheetState extends ConsumerState<_WineRatingSheet> {
       return;
     }
 
+    // Re-expand after a collapse: keep the locally-typed _tasting; only
+    // fetch from server the first time the panel opens this session.
+    if (_expertLoaded) {
+      setState(() => _expertExpanded = true);
+      return;
+    }
+
     setState(() {
       _expertExpanded = true;
       _expertLoading = true;
@@ -124,6 +136,7 @@ class _WineRatingSheetState extends ConsumerState<_WineRatingSheet> {
       _tasting = existing ?? const ExpertTastingEntity();
       _aromasExpanded = (existing?.aromaTags ?? const []).isNotEmpty;
       _expertLoading = false;
+      _expertLoaded = true;
     });
   }
 

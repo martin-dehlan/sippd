@@ -62,6 +62,10 @@ class _SheetState extends ConsumerState<_Sheet> {
   bool _expertLoading = false;
   bool _aromasExpanded = false;
   ExpertTastingEntity _tasting = const ExpertTastingEntity();
+  // First-fetch latch — see wine_rating_sheet for rationale. Without it
+  // every collapse/re-expand re-pulls from the server and overwrites the
+  // user's locally-typed dimensions before they hit Save.
+  bool _expertLoaded = false;
 
   @override
   void initState() {
@@ -110,6 +114,10 @@ class _SheetState extends ConsumerState<_Sheet> {
       setState(() => _expertExpanded = false);
       return;
     }
+    if (_expertLoaded) {
+      setState(() => _expertExpanded = true);
+      return;
+    }
     setState(() {
       _expertExpanded = true;
       _expertLoading = true;
@@ -125,6 +133,7 @@ class _SheetState extends ConsumerState<_Sheet> {
       _tasting = existing ?? const ExpertTastingEntity();
       _aromasExpanded = (existing?.aromaTags ?? const []).isNotEmpty;
       _expertLoading = false;
+      _expertLoaded = true;
     });
   }
 
