@@ -101,8 +101,24 @@ class _Header extends StatelessWidget {
         : '@$username · $stamp';
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        const ShareCardWordmark(color: _onBg, size: 44),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Brand glyph alongside the wordmark — same baseline-height
+            // as the SIPPD letters so the lockup reads as one unit.
+            Image.asset(
+              'assets/branding/logo.png',
+              height: 64,
+              fit: BoxFit.contain,
+              filterQuality: FilterQuality.high,
+            ),
+            const SizedBox(width: 14),
+            const ShareCardWordmark(color: _onBg, size: 44),
+          ],
+        ),
         Flexible(
           child: Text(
             byLine,
