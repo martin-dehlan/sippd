@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../taste_match/domain/entities/user_style_dna.entity.dart';
 import '../../../taste_match/domain/trait_descriptors.dart';
@@ -129,14 +130,15 @@ class _Eyebrow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Container(
-          width: 56,
-          height: 4,
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(2),
-          ),
+        // Subtle "this is a wine app" tell — replaces the previous
+        // colour bar so the eyebrow does double duty as accent +
+        // category-glyph without adding a separate decorative element.
+        Icon(
+          PhosphorIconsRegular.wine,
+          color: color,
+          size: 40,
         ),
         const SizedBox(width: 18),
         Text(
