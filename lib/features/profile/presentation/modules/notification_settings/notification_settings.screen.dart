@@ -7,6 +7,7 @@ import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/error_view.widget.dart';
 import '../../../../push/controller/push.provider.dart';
 import '../../../../push/domain/entities/notification_prefs.entity.dart';
+import '../../../../push/presentation/widgets/push_diagnostic.widget.dart';
 
 const _reminderHourOptions = [1, 2, 3, 4, 6, 12, 24];
 // Sentinel for the debug-only "30 seconds before" mapping in
@@ -111,6 +112,10 @@ class _Body extends StatelessWidget {
           value: prefs.groupWineShared,
           onChanged: controller.setGroupWineShared,
         ),
+        if (kDebugMode) ...[
+          SizedBox(height: context.xl),
+          const PushDiagnosticPanel(),
+        ],
       ],
     );
   }
