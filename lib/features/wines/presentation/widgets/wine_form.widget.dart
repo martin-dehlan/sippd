@@ -16,6 +16,7 @@ import '../../../../common/widgets/year_picker_sheet.dart';
 import '../../../locations/domain/entities/location.entity.dart';
 import '../../../locations/presentation/widgets/location_search_sheet.dart';
 import '../../controller/wine.provider.dart';
+import '../../domain/entities/expert_tasting.entity.dart';
 import '../../domain/entities/wine.entity.dart';
 import 'grape_picker_sheet.dart';
 import 'wine_rating_sheet.dart';
@@ -48,6 +49,13 @@ class WineFormData {
   final String? localImagePath;
   final List<MemoryDraft> memories;
 
+  /// Pro expert tasting dimensions the user typed inside the rating
+  /// sheet during *initial* wine creation. Null for edits and for
+  /// add-flows where the user never opened the tasting-notes panel.
+  /// Persisted to `wine_ratings_extended` by the host screen after the
+  /// wine row lands and a canonical id has been resolved.
+  final ExpertTastingEntity? pendingExpertTasting;
+
   const WineFormData({
     required this.name,
     required this.rating,
@@ -65,6 +73,7 @@ class WineFormData {
     this.imageUrl,
     this.localImagePath,
     this.memories = const [],
+    this.pendingExpertTasting,
   });
 }
 
@@ -125,6 +134,9 @@ class WineFormState extends ConsumerState<WineForm>
   String? _imageUrl;
   String? _localImagePath;
   List<MemoryDraft> _memories = const [];
+  // Expert tasting typed during initial wine creation, persisted by the
+  // host screen after canonical id resolves. Survives sheet re-opens.
+  ExpertTastingEntity? _pendingExpertTasting;
 
   Timer? _autoSaveDebounce;
 
@@ -199,6 +211,7 @@ class WineFormState extends ConsumerState<WineForm>
     imageUrl: _imageUrl,
     localImagePath: _localImagePath,
     memories: _memories,
+    pendingExpertTasting: _pendingExpertTasting,
   );
 
   Future<void> _submit() async {
@@ -228,10 +241,22 @@ class WineFormState extends ConsumerState<WineForm>
       initial: _rating,
       ratingContext: 'personal',
       wine: widget.wine,
+      // Re-seed any expert dimensions the user typed in a previous open
+      // of the sheet during this same add-wine flow, so re-opening
+      // shows what was typed instead of starting empty.
+      initialExpert: _pendingExpertTasting,
     );
     if (!mounted) return;
     if (result == null) return;
-    setState(() => _rating = result);
+    setState(() {
+      _rating = result.rating;
+      // Only overwrite when the sheet handed us pending dims (initial
+      // wine creation path). For an existing wine the sheet wrote them
+      // inline and `pendingExpert` is null — don't clobber prior state.
+      if (result.pendingExpert != null) {
+        _pendingExpertTasting = result.pendingExpert;
+      }
+    });
     _scheduleAutoSave();
   }
 

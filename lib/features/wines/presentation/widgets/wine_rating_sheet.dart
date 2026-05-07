@@ -14,6 +14,20 @@ import '../../domain/entities/expert_tasting.entity.dart';
 import '../../domain/entities/wine.entity.dart';
 import 'expert_rating_panel.widget.dart';
 
+/// Result of a [showWineRatingSheet] commit. [pendingExpert] is set
+/// only when the user typed expert dimensions during the *initial*
+/// wine creation flow — the wine doesn't yet have a canonical id, so
+/// the sheet can't write to `wine_ratings_extended` itself. The caller
+/// (wine_form → wine_add) is then responsible for resolving the
+/// canonical id after the wine is saved and writing the dimensions.
+/// In every other context (existing wine, tasting, group) the sheet
+/// has saved the dimensions inline and [pendingExpert] is null.
+class WineRatingResult {
+  const WineRatingResult({required this.rating, this.pendingExpert});
+  final double rating;
+  final ExpertTastingEntity? pendingExpert;
+}
+
 /// Single source of truth for personal + tasting wine rating UX. Lean
 /// editorial layout (handle, eyebrow, wine name, big hero number,
 /// slider) with an optional Pro expert tasting panel that expands
@@ -21,20 +35,23 @@ import 'expert_rating_panel.widget.dart';
 /// per context — wines.rating, tasting_ratings.rating, etc.) via
 /// [onSave]; expert dimensions are persisted internally to
 /// `wine_ratings_extended` keyed by [ratingContext] + optional
-/// [groupId] / [tastingId].
+/// [groupId] / [tastingId] when the wine already has a canonical id.
+/// During initial wine creation the canonical id doesn't exist yet,
+/// so the dimensions are returned via [WineRatingResult.pendingExpert]
+/// for the caller to persist after the wine row lands.
 ///
-/// Returns the saved rating value, or null if the user dismissed
-/// without committing.
-Future<double?> showWineRatingSheet({
+/// Returns null if the user dismissed without committing.
+Future<WineRatingResult?> showWineRatingSheet({
   required BuildContext context,
   required double initial,
   required String ratingContext,
   WineEntity? wine,
+  ExpertTastingEntity? initialExpert,
   Future<void> Function(double rating)? onSave,
   String? groupId,
   String? tastingId,
 }) {
-  return showModalBottomSheet<double>(
+  return showModalBottomSheet<WineRatingResult>(
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
@@ -47,6 +64,7 @@ Future<double?> showWineRatingSheet({
     builder: (ctx) => _WineRatingSheet(
       wine: wine,
       initial: initial,
+      initialExpert: initialExpert,
       ratingContext: ratingContext,
       groupId: groupId,
       tastingId: tastingId,
@@ -59,6 +77,7 @@ class _WineRatingSheet extends ConsumerStatefulWidget {
   const _WineRatingSheet({
     required this.wine,
     required this.initial,
+    required this.initialExpert,
     required this.ratingContext,
     required this.groupId,
     required this.tastingId,
@@ -67,6 +86,7 @@ class _WineRatingSheet extends ConsumerStatefulWidget {
 
   final WineEntity? wine;
   final double initial;
+  final ExpertTastingEntity? initialExpert;
   final String ratingContext;
   final String? groupId;
   final String? tastingId;
@@ -80,27 +100,23 @@ class _WineRatingSheetState extends ConsumerState<_WineRatingSheet> {
   late double _value = widget.initial.clamp(0.0, 10.0);
   bool _expertExpanded = false;
   bool _expertLoading = false;
-  bool _aromasExpanded = false;
+  late bool _aromasExpanded =
+      (widget.initialExpert?.aromaTags ?? const []).isNotEmpty;
   bool _saving = false;
-  ExpertTastingEntity _tasting = const ExpertTastingEntity();
+  late ExpertTastingEntity _tasting =
+      widget.initialExpert ?? const ExpertTastingEntity();
   // True once the server fetch for this sheet's session has completed.
   // Subsequent collapse/expand cycles reuse the in-memory _tasting so any
   // edits the user already typed survive — the previous always-refetch
   // behaviour silently overwrote them with whatever was on the server.
-  bool _expertLoaded = false;
+  // Pre-seeded entries (initialExpert) also flip this true so the sheet
+  // doesn't try to fetch over them.
+  late bool _expertLoaded = widget.initialExpert != null;
 
   String? get _canonicalId => widget.wine?.canonicalWineId;
   String get _paywallSource => 'expert_tasting_${widget.ratingContext}';
 
   Future<void> _toggleExpert() async {
-    if (_canonicalId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Save the wine first — tasting notes attach to it.'),
-        ),
-      );
-      return;
-    }
     final isPro = ref.read(isProProvider);
     if (!isPro) {
       Navigator.pop(context);
@@ -116,8 +132,13 @@ class _WineRatingSheetState extends ConsumerState<_WineRatingSheet> {
 
     // Re-expand after a collapse: keep the locally-typed _tasting; only
     // fetch from server the first time the panel opens this session.
-    if (_expertLoaded) {
-      setState(() => _expertExpanded = true);
+    // Same path applies pre-canonical (no row to fetch) — the in-memory
+    // entity is the source of truth until the wine is saved.
+    if (_expertLoaded || _canonicalId == null) {
+      setState(() {
+        _expertExpanded = true;
+        _expertLoaded = true;
+      });
       return;
     }
 
@@ -145,24 +166,31 @@ class _WineRatingSheetState extends ConsumerState<_WineRatingSheet> {
     if (_saving) return;
     setState(() => _saving = true);
     HapticFeedback.lightImpact();
+    ExpertTastingEntity? pending;
     try {
       // Caller's basic rating write — wines.rating / tasting_ratings /
       // group_wine_ratings, depending on the context.
       await widget.onSave?.call(_value);
       // Expert dims persist via wine_ratings_extended; only fires when
-      // the panel was expanded for this session (matches the previous
-      // rating sheet behaviour — collapsed = nothing to save).
-      if (_expertExpanded && _canonicalId != null) {
-        final api = ExpertTastingApi(ref.read(supabaseClientProvider));
-        await api.upsert(
-          canonicalWineId: _canonicalId!,
-          tasting: _tasting,
-          context: widget.ratingContext,
-          groupId: widget.groupId,
-          tastingId: widget.tastingId,
-        );
-        // Refresh the wine-detail summary that reads the same row.
-        ref.invalidate(myExpertTastingProvider(_canonicalId!));
+      // the panel was expanded AND the wine already has a canonical id.
+      // For initial wine creation the canonical id doesn't exist yet,
+      // so the dimensions come back through WineRatingResult for the
+      // caller to write after the wine row lands.
+      if (_expertExpanded) {
+        if (_canonicalId != null) {
+          final api = ExpertTastingApi(ref.read(supabaseClientProvider));
+          await api.upsert(
+            canonicalWineId: _canonicalId!,
+            tasting: _tasting,
+            context: widget.ratingContext,
+            groupId: widget.groupId,
+            tastingId: widget.tastingId,
+          );
+          // Refresh the wine-detail summary that reads the same row.
+          ref.invalidate(myExpertTastingProvider(_canonicalId!));
+        } else if (!_tasting.isEmpty) {
+          pending = _tasting;
+        }
       }
     } catch (e) {
       if (mounted) {
@@ -173,7 +201,9 @@ class _WineRatingSheetState extends ConsumerState<_WineRatingSheet> {
     }
     if (mounted) {
       setState(() => _saving = false);
-      Navigator.of(context).pop(_value);
+      Navigator.of(
+        context,
+      ).pop(WineRatingResult(rating: _value, pendingExpert: pending));
     }
   }
 
