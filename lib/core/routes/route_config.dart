@@ -94,6 +94,7 @@ GoRouter goRouter(GoRouterRef ref) {
       final authed = ref.read(isAuthenticatedProvider);
       final seen = ref.read(onboardingSeenProvider);
       final profileAsync = ref.read(currentProfileProvider);
+      final profileSynced = ref.read(profileSyncedProvider);
       final inRecovery = ref.read(passwordRecoveryControllerProvider);
       final splashTimedOut = ref.read(splashDeadlineProvider);
 
@@ -130,13 +131,21 @@ GoRouter goRouter(GoRouterRef ref) {
       if (authed) {
         final profile = profileAsync.valueOrNull;
         if (profile == null) {
-          // No profile yet. If we never got a successful response, we
-          // can't tell "new signup with empty profile" from "offline,
-          // can't fetch". Hold splash until the deadline, then optimistically
-          // release returning users to /wines (cached Drift data still
-          // works). If the server later confirms a real null profile, the
-          // next refresh will route to /choose-username.
-          if (!profileAsync.hasValue) {
+          // The Drift watch stream emits `null` immediately whenever
+          // the local profile row hasn't been fetched yet for the
+          // current user — `hasValue` becomes true on that null but it
+          // does NOT mean the server has confirmed an empty profile.
+          // Sign-in races land here: auth flips, stream emits null,
+          // server fetch is still in flight. Without the synced flag
+          // we'd flash chooseUsername for ~200-500ms before the real
+          // profile lands.
+          //
+          // profileSynced flips true once the first server fetch
+          // attempt for this user resolves (success OR failure). Until
+          // then, hold splash. If the splash deadline times out before
+          // sync (offline new install), fall back to the optimistic
+          // path so the user isn't trapped.
+          if (!profileSynced) {
             if (!splashTimedOut) {
               return loc == AppRoutes.splash ? null : AppRoutes.splash;
             }
@@ -147,7 +156,8 @@ GoRouter goRouter(GoRouterRef ref) {
             }
             return null;
           }
-          // Confirmed empty profile from server → genuine new signup.
+          // Synced && still null → server has confirmed there's no
+          // profile row → genuine new signup.
           return loc == AppRoutes.chooseUsername
               ? null
               : AppRoutes.chooseUsername;

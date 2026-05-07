@@ -22,6 +22,31 @@ ProfileImageService? profileImageService(ProfileImageServiceRef ref) {
   return ProfileImageService(ref.watch(supabaseClientProvider));
 }
 
+/// Tracks whether we've completed at least one server fetch attempt
+/// for the currently-authenticated user. Lets the router distinguish
+/// "Drift watch stream emitted null because the row hasn't synced
+/// yet on this device" from "server has been asked and confirms the
+/// profile is empty (genuine new signup → choose_username)". Without
+/// this, the gap between auth flipping true and the first fetch
+/// completing produces a chooseUsername flash on every sign-in
+/// because the Drift stream emits `null` immediately.
+///
+/// Resets to `false` whenever auth state changes (sign-in, sign-out)
+/// because [build] watches `isAuthenticatedProvider`.
+@riverpod
+class ProfileSynced extends _$ProfileSynced {
+  @override
+  bool build() {
+    ref.watch(isAuthenticatedProvider);
+    return false;
+  }
+
+  void confirm() {
+    if (state) return;
+    state = true;
+  }
+}
+
 /// Local-first profile stream. Drift is the source of truth — the
 /// returned stream tracks the cached row so the router and profile UI
 /// render immediately on cold start, including offline. A background
@@ -46,17 +71,32 @@ Stream<ProfileEntity?> currentProfile(CurrentProfileRef ref) {
   // owned by the wider ProviderContainer.
   final api = ref.read(profileApiProvider);
   final analytics = ref.read(analyticsProvider);
+  final syncedNotifier = ref.read(profileSyncedProvider.notifier);
 
   // Fire-and-forget: pull fresh row + persist. Any error is swallowed
   // (offline, disposed-ref, unexpected) so the consuming UI never
-  // throws — the local stream keeps serving the cached row.
+  // throws — the local stream keeps serving the cached row. Synced
+  // flag flips true regardless of fresh result so the router can stop
+  // holding splash; offline failures release into the existing
+  // fallback path rather than trapping the user.
   Future(() async {
     try {
       final fresh = await api.fetchMyProfile();
       if (fresh != null) {
         await dao.upsert(fresh.toTableData());
       }
+      try {
+        syncedNotifier.confirm();
+      } catch (_) {
+        // Notifier disposed (sign-out raced the fetch). Safe to
+        // ignore — next sign-in rebuilds the provider.
+      }
     } catch (e) {
+      try {
+        syncedNotifier.confirm();
+      } catch (_) {
+        // see above.
+      }
       try {
         analytics.syncFailed('profile_fetch', error: e);
       } catch (_) {
