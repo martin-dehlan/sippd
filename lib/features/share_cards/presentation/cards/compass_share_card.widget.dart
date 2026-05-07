@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -64,10 +66,9 @@ class CompassShareCard extends StatelessWidget {
           _Tagline(tagline: data.archetypeTagline),
           const Spacer(flex: 2),
           Center(
-            child: DnaShape(
+            child: _LabeledShape(
               dna: data.dna,
               color: data.archetypeColor,
-              size: 380,
             ),
           ),
           const Spacer(flex: 2),
@@ -188,6 +189,91 @@ class _Tagline extends StatelessWidget {
         fontStyle: FontStyle.italic,
         color: _onBgMuted,
         height: 1.3,
+      ),
+    );
+  }
+}
+
+/// DnaShape with the six axis labels positioned around it at the same
+/// angles the painter uses for vertices. Lean — no grid, no rings, no
+/// axis lines — but viewer can immediately read each lobe of the shape
+/// as Body / Tannin / etc, which is what the previous "naked blob"
+/// version was missing.
+class _LabeledShape extends StatelessWidget {
+  final UserStyleDna? dna;
+  final Color color;
+  const _LabeledShape({required this.dna, required this.color});
+
+  // Same axis order DnaShape paints, top-anchored. The painter uses
+  // (2π/n)*i - π/2, so axes go: top → upper-right → lower-right →
+  // bottom → lower-left → upper-left.
+  static const _axes = [
+    'body',
+    'tannin',
+    'acidity',
+    'sweetness',
+    'oak',
+    'intensity',
+  ];
+
+  static const double _shapeSize = 380;
+  static const double _labelRadius = 250;
+  static const double _outerSize = 620;
+
+  @override
+  Widget build(BuildContext context) {
+    final cx = _outerSize / 2;
+    final cy = _outerSize / 2;
+    return SizedBox(
+      width: _outerSize,
+      height: _outerSize,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Center(
+            child: DnaShape(
+              dna: dna,
+              color: color,
+              size: _shapeSize,
+            ),
+          ),
+          for (var i = 0; i < _axes.length; i++)
+            _axisLabel(i: i, cx: cx, cy: cy, label: traitLabel(_axes[i])),
+        ],
+      ),
+    );
+  }
+
+  Widget _axisLabel({
+    required int i,
+    required double cx,
+    required double cy,
+    required String label,
+  }) {
+    final angle = (math.pi * 2 / _axes.length) * i - math.pi / 2;
+    final dx = math.cos(angle) * _labelRadius;
+    final dy = math.sin(angle) * _labelRadius;
+    // Anchor the label box around its centre so each label sits exactly
+    // on the axis tick. Box is sized generously to absorb the longest
+    // copy ("SWEETNESS") at the chosen typography.
+    const boxW = 220.0;
+    const boxH = 60.0;
+    return Positioned(
+      left: cx + dx - boxW / 2,
+      top: cy + dy - boxH / 2,
+      width: boxW,
+      height: boxH,
+      child: Center(
+        child: Text(
+          label.toUpperCase(),
+          style: TextStyle(
+            fontSize: 26,
+            fontWeight: FontWeight.w800,
+            color: _onBgMuted,
+            letterSpacing: 4,
+            height: 1,
+          ),
+        ),
       ),
     );
   }
