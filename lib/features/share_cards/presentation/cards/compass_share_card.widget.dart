@@ -3,7 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 import '../../../taste_match/domain/entities/user_style_dna.entity.dart';
-import '../../../taste_match/presentation/widgets/dna_monolith.widget.dart';
+import '../../../taste_match/domain/trait_descriptors.dart';
+import '../../../taste_match/presentation/widgets/dna_shape.widget.dart';
 import 'share_card_branding.widget.dart';
 
 const _bg = Color(0xFF14101A);
@@ -35,11 +36,10 @@ class CompassShareCardData {
 }
 
 /// 1080×1920 IG-story share card celebrating the user's wine
-/// personality. Editorial typographic layout — Playfair big-name +
-/// large DNA shape on dark bg, matching the brand voice of
-/// `WineRatingCard` and `TastingRecapCard`. Hidden behind the caller
-/// when the archetype is "Curious Newcomer" (data-thin) so we don't
-/// push a half-baked identity to a public IG story.
+/// personality. Carries actual narrative weight so the artifact reads
+/// as a statement, not a decorative blob: archetype name + tagline +
+/// editorial top-three traits ranked by how opinionated they are. The
+/// DnaShape silhouette stays as a smaller centerpiece accent.
 class CompassShareCard extends StatelessWidget {
   const CompassShareCard({super.key, required this.data});
 
@@ -62,8 +62,16 @@ class CompassShareCard extends StatelessWidget {
           _ArchetypeName(name: data.archetypeName),
           const SizedBox(height: 22),
           _Tagline(tagline: data.archetypeTagline),
-          const Spacer(flex: 1),
-          _DnaHero(dna: data.dna, color: data.archetypeColor),
+          const Spacer(flex: 2),
+          Center(
+            child: DnaShape(
+              dna: data.dna,
+              color: data.archetypeColor,
+              size: 380,
+            ),
+          ),
+          const Spacer(flex: 2),
+          _TraitsBlock(dna: data.dna, accent: data.archetypeColor),
           const Spacer(flex: 1),
           _SampleSize(total: data.totalWines),
           const SizedBox(height: 36),
@@ -185,15 +193,81 @@ class _Tagline extends StatelessWidget {
   }
 }
 
-class _DnaHero extends StatelessWidget {
+/// Ranked top-three trait statements — the actual "what defines me"
+/// payload. Falls back silently when the user has no DNA signal yet
+/// (newcomer flag is the caller's gate, but this stays defensive).
+class _TraitsBlock extends StatelessWidget {
   final UserStyleDna? dna;
-  final Color color;
-  const _DnaHero({required this.dna, required this.color});
+  final Color accent;
+  const _TraitsBlock({required this.dna, required this.accent});
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: DnaMonolith(dna: dna, color: color, size: 640),
+    final ranked = rankedTraits(dna).take(3).toList(growable: false);
+    if (ranked.isEmpty) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'WHAT DEFINES ME',
+          style: TextStyle(
+            fontSize: 26,
+            color: _onBgMuted,
+            letterSpacing: 4,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+        const SizedBox(height: 24),
+        for (var i = 0; i < ranked.length; i++) ...[
+          if (i > 0) const SizedBox(height: 18),
+          _TraitRow(axis: ranked[i].$1, value: ranked[i].$2),
+        ],
+      ],
+    );
+  }
+}
+
+class _TraitRow extends StatelessWidget {
+  final String axis;
+  final double value;
+  const _TraitRow({required this.axis, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    final pct = (value * 100).round();
+    final descriptor = traitDescriptor(axis, value);
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.baseline,
+      textBaseline: TextBaseline.alphabetic,
+      children: [
+        SizedBox(
+          width: 130,
+          child: Text(
+            '$pct%',
+            style: GoogleFonts.playfairDisplay(
+              fontSize: 56,
+              fontWeight: FontWeight.w900,
+              color: _onBg,
+              height: 1,
+            ),
+          ),
+        ),
+        Expanded(
+          child: Text(
+            '${descriptor.toUpperCase()}  ·  ${traitLabel(axis).toUpperCase()}',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: 30,
+              color: _onBg,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 1.2,
+              height: 1.1,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

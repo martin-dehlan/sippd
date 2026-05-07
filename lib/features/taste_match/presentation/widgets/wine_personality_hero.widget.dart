@@ -13,7 +13,7 @@ import '../../controller/taste_match.provider.dart';
 import '../../domain/archetype_match.dart';
 import '../../domain/entities/taste_compass.entity.dart';
 import '../../domain/entities/user_style_dna.entity.dart';
-import 'dna_monolith.widget.dart';
+import 'dna_shape.widget.dart';
 import 'taste_traits.widget.dart';
 
 /// Compact-by-default identity block on the user's profile. Collapsed
@@ -287,7 +287,7 @@ class _ExpandedDetail extends StatelessWidget {
                 ),
               ),
               SizedBox(width: context.s),
-              DnaMonolith(
+              DnaShape(
                 dna: dna,
                 color: match.archetype.color,
                 size: context.w * 0.22,
