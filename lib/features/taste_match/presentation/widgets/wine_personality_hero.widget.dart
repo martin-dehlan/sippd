@@ -6,6 +6,9 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../../../common/utils/responsive.dart';
 import '../../../../core/routes/app.routes.dart';
 import '../../../paywall/controller/paywall.provider.dart';
+import '../../../profile/controller/profile.provider.dart';
+import '../../../share_cards/controller/share_card.provider.dart';
+import '../../../share_cards/presentation/cards/compass_share_card.widget.dart';
 import '../../controller/taste_match.provider.dart';
 import '../../domain/archetype_match.dart';
 import '../../domain/entities/taste_compass.entity.dart';
@@ -19,9 +22,19 @@ import 'taste_traits.widget.dart';
 /// Locked states (too few wines / thin DNA) render a single tight row
 /// with no expansion to keep the page settings-first.
 class WinePersonalityHero extends ConsumerStatefulWidget {
-  const WinePersonalityHero({super.key, required this.userId});
+  const WinePersonalityHero({
+    super.key,
+    required this.userId,
+    this.showShareCta = false,
+  });
 
   final String userId;
+
+  /// When true, the expanded body adds an elevated "Share" button at the
+  /// bottom that hands the archetype + DNA to the IG-story share card.
+  /// Caller decides — defaulted off so friend-profile embeds don't
+  /// accidentally surface a button to share someone else's identity.
+  final bool showShareCta;
 
   @override
   ConsumerState<WinePersonalityHero> createState() => _WinePersonalityHeroState();
@@ -78,6 +91,8 @@ class _WinePersonalityHeroState extends ConsumerState<WinePersonalityHero> {
                   compass: compass,
                   dna: dna,
                   onUpgradeTap: () => _onUpgrade(),
+                  onShareTap:
+                      widget.showShareCta ? () => _onShare(match, compass, dna) : null,
                 )
               : const SizedBox(width: double.infinity),
         ),
@@ -90,6 +105,29 @@ class _WinePersonalityHeroState extends ConsumerState<WinePersonalityHero> {
     final isPro = ref.read(isProProvider);
     if (isPro) return;
     context.push(AppRoutes.paywall, extra: const {'source': 'personality_hero'});
+  }
+
+  Future<void> _onShare(
+    ArchetypeMatch match,
+    TasteCompassEntity compass,
+    UserStyleDna? dna,
+  ) async {
+    final username =
+        ref.read(currentProfileProvider).valueOrNull?.username;
+    final data = CompassShareCardData(
+      username: username,
+      archetypeName: match.archetype.name,
+      archetypeTagline: match.archetype.tagline,
+      archetypeColor: match.archetype.color,
+      dna: dna,
+      totalWines: compass.totalCount,
+      date: DateTime.now(),
+    );
+    await ref.read(shareCardProvider).shareCompassCard(
+          context: context,
+          data: data,
+          source: 'personality_hero',
+        );
   }
 }
 
@@ -212,6 +250,7 @@ class _ExpandedDetail extends StatelessWidget {
     required this.compass,
     required this.dna,
     required this.onUpgradeTap,
+    this.onShareTap,
   });
 
   final String userId;
@@ -219,6 +258,11 @@ class _ExpandedDetail extends StatelessWidget {
   final TasteCompassEntity compass;
   final UserStyleDna? dna;
   final VoidCallback onUpgradeTap;
+
+  /// Provided only on surfaces where sharing this identity is the
+  /// caller's intent (own profile). Friend-profile embeds leave this
+  /// null so the button never appears for someone else's identity.
+  final VoidCallback? onShareTap;
 
   @override
   Widget build(BuildContext context) {
@@ -252,6 +296,35 @@ class _ExpandedDetail extends StatelessWidget {
           ),
           SizedBox(height: context.m),
           TasteTraits(userId: userId),
+          if (onShareTap != null) ...[
+            SizedBox(height: context.m),
+            SizedBox(
+              width: double.infinity,
+              height: context.h * 0.06,
+              child: FilledButton.icon(
+                onPressed: onShareTap,
+                style: FilledButton.styleFrom(
+                  backgroundColor: cs.primary,
+                  foregroundColor: cs.onPrimary,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(context.w * 0.04),
+                  ),
+                ),
+                icon: Icon(
+                  PhosphorIconsRegular.shareNetwork,
+                  size: context.bodyFont,
+                ),
+                label: Text(
+                  'Share',
+                  style: TextStyle(
+                    fontSize: context.bodyFont,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: -0.1,
+                  ),
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );
