@@ -58,10 +58,12 @@ class CompassShareCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _Header(date: data.date, username: data.username),
+          _Header(
+            date: data.date,
+            username: data.username,
+            accent: data.archetypeColor,
+          ),
           const Spacer(flex: 1),
-          _Eyebrow(color: data.archetypeColor),
-          const SizedBox(height: 24),
           _ArchetypeName(name: data.archetypeName),
           const SizedBox(height: 22),
           _Tagline(tagline: data.archetypeTagline),
@@ -77,11 +79,7 @@ class CompassShareCard extends StatelessWidget {
           const Spacer(flex: 1),
           _SampleSize(total: data.totalWines),
           const SizedBox(height: 36),
-          const ShareCardFooter(
-            textColor: _onBg,
-            dividerColor: _divider,
-            tagline: 'find your taste at $shareCardUrl',
-          ),
+          const _BrandedFooter(),
         ],
       ),
     );
@@ -91,7 +89,12 @@ class CompassShareCard extends StatelessWidget {
 class _Header extends StatelessWidget {
   final DateTime date;
   final String? username;
-  const _Header({required this.date, required this.username});
+  final Color accent;
+  const _Header({
+    required this.date,
+    required this.username,
+    required this.accent,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -99,6 +102,10 @@ class _Header extends StatelessWidget {
     final byLine = (username ?? '').trim().isEmpty
         ? stamp
         : '@$username · $stamp';
+    // Top-of-card category line. The wine glyph carries the "this is a
+    // wine app" tell — brand lockup (logo + SIPPD) lives in the footer
+    // so the top bar reads as a contextual eyebrow rather than a
+    // logo header.
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -107,19 +114,21 @@ class _Header extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Brand glyph alongside the wordmark — same baseline-height
-            // as the SIPPD letters so the lockup reads as one unit.
-            // logo_icon.png is RGBA (transparent canvas with the gold
-            // glyph) — logo.png had a baked-in dark background that
-            // disappeared against the share card's #14101A bg.
-            Image.asset(
-              'assets/branding/logo_icon.png',
-              height: 88,
-              fit: BoxFit.contain,
-              filterQuality: FilterQuality.high,
+            Icon(
+              PhosphorIconsRegular.wine,
+              color: accent,
+              size: 38,
             ),
-            const SizedBox(width: 14),
-            const ShareCardWordmark(color: _onBg, size: 44),
+            const SizedBox(width: 16),
+            Text(
+              'WINE PERSONALITY',
+              style: TextStyle(
+                fontSize: 28,
+                color: _onBgMuted,
+                letterSpacing: 4,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
           ],
         ),
         Flexible(
@@ -142,32 +151,58 @@ class _Header extends StatelessWidget {
   }
 }
 
-class _Eyebrow extends StatelessWidget {
-  final Color color;
-  const _Eyebrow({required this.color});
+/// Footer lockup — divider rule, then the brand glyph beside the
+/// SIPPD wordmark on the left, tagline on the right. Custom (rather
+/// than reusing ShareCardFooter) because this card moves the brand
+/// mark out of the top bar; other share cards still reach for the
+/// stock footer.
+class _BrandedFooter extends StatelessWidget {
+  const _BrandedFooter();
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Subtle "this is a wine app" tell — replaces the previous
-        // colour bar so the eyebrow does double duty as accent +
-        // category-glyph without adding a separate decorative element.
-        Icon(
-          PhosphorIconsRegular.wine,
-          color: color,
-          size: 40,
-        ),
-        const SizedBox(width: 18),
-        Text(
-          'WINE PERSONALITY',
-          style: TextStyle(
-            fontSize: 30,
-            color: _onBgMuted,
-            letterSpacing: 5,
-            fontWeight: FontWeight.w800,
-          ),
+        Container(height: 1, color: _divider),
+        const SizedBox(height: 28),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Image.asset(
+                  'assets/branding/logo_icon.png',
+                  height: 70,
+                  fit: BoxFit.contain,
+                  filterQuality: FilterQuality.high,
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'SIPPD',
+                  style: GoogleFonts.playfairDisplay(
+                    fontSize: 36,
+                    fontWeight: FontWeight.w800,
+                    color: _onBg,
+                    letterSpacing: -0.5,
+                    height: 1,
+                  ),
+                ),
+              ],
+            ),
+            Text(
+              'find your taste at $shareCardUrl',
+              style: TextStyle(
+                fontSize: 28,
+                color: _onBg,
+                fontWeight: FontWeight.w500,
+                letterSpacing: 0.4,
+              ),
+            ),
+          ],
         ),
       ],
     );
