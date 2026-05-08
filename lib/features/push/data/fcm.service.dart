@@ -48,10 +48,7 @@ class FcmService {
           'possible until a token is registered.',
         );
       } else {
-        debugPrint(
-          'FCM: got token on $_platform (len=${token.length}, '
-          'preview=${token.substring(0, token.length < 16 ? token.length : 16)})',
-        );
+        debugPrint('FCM: got token on $_platform (len=${token.length})');
       }
       return token;
     } catch (e) {
