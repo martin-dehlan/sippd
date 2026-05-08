@@ -223,7 +223,9 @@ void main() {
       final repo = buildRepo();
 
       await repo.updateWine(buildEntity().copyWith(rating: 9.5));
-      await Future<void>.delayed(Duration.zero);
+      // updateWine debounces the remote sync (3s timer). Drain it
+      // explicitly so the test doesn't have to wait the full duration.
+      await repo.flushPendingSync('wine-1');
 
       final local = await db.winesDao.getWineById('wine-1');
       expect(local?.rating, 9.5);
