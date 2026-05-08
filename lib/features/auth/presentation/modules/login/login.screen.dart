@@ -166,8 +166,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   if (_isSignUp) ...[
                     TextFormField(
                       controller: _displayNameController,
-                      maxLength: 40,
-                      inputFormatters: [LengthLimitingTextInputFormatter(40)],
+                      maxLength: 30,
+                      inputFormatters: [LengthLimitingTextInputFormatter(30)],
                       decoration: const InputDecoration(
                         labelText: 'Display Name',
                         prefixIcon: Icon(PhosphorIconsRegular.user),
@@ -176,7 +176,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       validator: (v) {
                         final t = v?.trim() ?? '';
                         if (t.length < 2) return 'Min 2 characters';
-                        if (t.length > 40) return 'Max 40 characters';
+                        if (t.length > 30) return 'Max 30 characters';
                         return null;
                       },
                     ),

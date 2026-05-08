@@ -269,7 +269,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             SizedBox(height: context.s),
             TextField(
               controller: _displayNameController,
-              maxLength: 40,
+              maxLength: 30,
               style: TextStyle(fontSize: context.bodyFont),
               decoration: InputDecoration(
                 hintText: profile?.username != null
