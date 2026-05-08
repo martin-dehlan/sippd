@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -111,8 +112,11 @@ class _LocationSearchWidgetState extends ConsumerState<LocationSearchWidget> {
         TextField(
           controller: _controller,
           focusNode: _focusNode,
+          maxLength: 120,
+          inputFormatters: [LengthLimitingTextInputFormatter(120)],
           style: TextStyle(fontSize: context.bodyFont),
           decoration: InputDecoration(
+            counterText: '',
             hintText: 'Search location...',
             prefixIcon: Icon(
               PhosphorIconsRegular.mapPin,

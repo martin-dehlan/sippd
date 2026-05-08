@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -97,8 +98,11 @@ class _PasswordRecoveryScreenState
                 TextFormField(
                   controller: _passwordController,
                   obscureText: _obscure,
+                  maxLength: 72,
+                  inputFormatters: [LengthLimitingTextInputFormatter(72)],
                   decoration: InputDecoration(
                     labelText: 'New password',
+                    counterText: '',
                     prefixIcon: const Icon(PhosphorIconsRegular.lockSimple),
                     suffixIcon: IconButton(
                       icon: Icon(
@@ -118,8 +122,11 @@ class _PasswordRecoveryScreenState
                 TextFormField(
                   controller: _confirmController,
                   obscureText: _obscure,
+                  maxLength: 72,
+                  inputFormatters: [LengthLimitingTextInputFormatter(72)],
                   decoration: const InputDecoration(
                     labelText: 'Confirm password',
+                    counterText: '',
                     prefixIcon: Icon(PhosphorIconsRegular.lockSimple),
                   ),
                   validator: (v) {

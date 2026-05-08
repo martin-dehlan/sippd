@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../common/data/wine_regions.dart';
@@ -114,9 +115,12 @@ void showWineRegionPicker({
                   child: TextField(
                     controller: searchController,
                     autofocus: false,
+                    maxLength: 100,
+                    inputFormatters: [LengthLimitingTextInputFormatter(100)],
                     style: TextStyle(fontSize: context.bodyFont),
                     decoration: InputDecoration(
                       hintText: 'Search region...',
+                      counterText: '',
                       prefixIcon: Icon(
                         PhosphorIconsRegular.magnifyingGlass,
                         color: cs.primary,
@@ -166,6 +170,7 @@ void showWineRegionPicker({
                           title: 'Region',
                           initial: selected,
                           hint: 'e.g. Côtes Catalanes',
+                          maxLength: 80,
                         );
                         if (result == null) return;
                         final trimmed = result.trim();
