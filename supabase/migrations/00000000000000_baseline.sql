@@ -31,8 +31,16 @@ set check_function_bodies = off;
 
 create extension if not exists pg_trgm;
 create extension if not exists unaccent;
--- pg_net + pg_cron + pgcrypto + supabase_vault are managed by Supabase
--- platform. Listed here for documentation only.
+-- pg_cron + pg_net + pgcrypto + supabase_vault are platform-managed but
+-- 'supabase db reset' drops them with the schemas; re-enable explicitly
+-- so the baseline can replay against an empty cluster.
+create extension if not exists pgcrypto;
+create extension if not exists pg_net;
+create extension if not exists pg_cron;
+-- supabase_vault provides vault.decrypted_secrets — created by the
+-- Supabase platform on project boot. We don't recreate here; if it's
+-- absent the cron job's vault lookup falls back to '' and edge function
+-- rejects the request, which is the right failure mode.
 
 
 -- ── 2. Helper functions (no table deps) ─────────────────────────────────────
