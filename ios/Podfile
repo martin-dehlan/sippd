@@ -47,7 +47,16 @@ post_install do |installer|
       # the archive build emit device-only frameworks. Affects newer
       # Flutter dependencies like `objective_c.framework` that ship
       # as fat .frameworks rather than .xcframeworks.
-      config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64'
+      #
+      # Scoped to Release + Profile only: Debug builds need the arm64
+      # simulator slice so the app runs on Apple-Silicon Macs against
+      # iOS 17+ simulators (iPhone 15 / 16 / 17 — those simulators
+      # are arm64-native, not Rosetta). Without the scope, the broad
+      # exclusion broke `flutter run` on every Apple-Silicon dev
+      # machine.
+      if config.name == 'Release' || config.name == 'Profile'
+        config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64'
+      end
     end
   end
 end
