@@ -169,7 +169,11 @@ void main() {
     );
     await tester.enterText(
       find.widgetWithText(TextFormField, 'Password'),
-      'hunter2',
+      'hunter22',
+    );
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Confirm Password'),
+      'hunter22',
     );
 
     // Default fake returns SignUpOutcome.signedIn → no context.go,
