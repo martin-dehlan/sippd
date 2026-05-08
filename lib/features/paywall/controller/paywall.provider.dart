@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -18,9 +19,10 @@ Stream<CustomerInfo> customerInfoStream(CustomerInfoStreamRef ref) {
 
 @riverpod
 bool isPro(IsProRef ref) {
-  // Local test override. Run with --dart-define=FORCE_PRO=true|false to
-  // bypass RevenueCat and exercise pro/free UI without a sandbox purchase.
-  if (const bool.hasEnvironment('FORCE_PRO')) {
+  // Debug-only override. --dart-define=FORCE_PRO=true|false bypasses
+  // RevenueCat for pro/free UI smoke-testing. NEVER honored in release —
+  // a re-signed build with --dart-define would otherwise unlock Pro for free.
+  if (kDebugMode && const bool.hasEnvironment('FORCE_PRO')) {
     return const bool.fromEnvironment('FORCE_PRO');
   }
   final info = ref.watch(customerInfoStreamProvider).valueOrNull;

@@ -26,12 +26,16 @@ class WineImageService {
     return uploadImage(userId: userId, filePath: photo.path);
   }
 
+  static const _allowedExt = {'jpg', 'jpeg', 'png', 'webp'};
+
   Future<String> uploadImage({
     required String userId,
     required String filePath,
   }) async {
     final file = File(filePath);
-    final ext = filePath.split('.').last;
+    final rawExt = filePath.split('.').last.toLowerCase();
+    // Server-side bucket allows only image/jpeg|png|webp; force a safe ext.
+    final ext = _allowedExt.contains(rawExt) ? rawExt : 'jpg';
     final fileName = '${const Uuid().v4()}.$ext';
     final storagePath = '$userId/$fileName';
 

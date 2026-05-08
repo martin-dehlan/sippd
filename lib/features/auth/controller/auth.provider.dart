@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/painting.dart' show imageCache;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -118,6 +119,11 @@ class AuthController extends _$AuthController {
     if (uid != null) {
       await ref.read(appDatabaseProvider).profilesDao.deleteById(uid);
     }
+    // Wipe Flutter's in-memory image cache so the next account on this
+    // device cannot scroll back through the previous user's wine photos
+    // and avatars before the new session pulls fresh URLs.
+    imageCache.clear();
+    imageCache.clearLiveImages();
     state = const AsyncValue.data(null);
   }
 

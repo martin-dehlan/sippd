@@ -104,7 +104,15 @@ class ProfileApi {
   }
 
   Future<void> deleteMyAccount() async {
-    await _wipeUserStorage();
+    // Storage wipe must complete before the auth row goes — once auth.users
+    // is gone the user no longer has an RLS path to delete their own files.
+    try {
+      await _wipeUserStorage();
+    } catch (e) {
+      // One retry, then surface so the user can try again. Better to leave
+      // a non-deleted account than orphan files on the public bucket.
+      await _wipeUserStorage();
+    }
     await _client.rpc('delete_my_account');
   }
 
