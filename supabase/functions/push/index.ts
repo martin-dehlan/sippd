@@ -1,7 +1,15 @@
 // deno-lint-ignore-file no-explicit-any
 //
 // Deployed to: https://ungvhpffjhnojessifri.supabase.co/functions/v1/push
-// Called by Postgres triggers on friend_requests, group_tastings, group_members, group_invitations.
+// Called by Postgres triggers on friend_requests, group_tastings, group_members,
+// group_invitations, group_wines.
+//
+// Audit fix H4 (2026-05-08):
+//   * Trigger now sends only {type, table, pk} (primary key envelope).
+//     This function re-fetches the row via service-role client with an
+//     explicit allow-list of fields. Reduces blast radius of payload leak
+//     through pg_net + edge-function logs.
+//
 // Required env (Supabase Edge Function secrets):
 //   FIREBASE_SERVICE_ACCOUNT — full service-account JSON as string
 //   PUSH_WEBHOOK_SECRET      — shared secret; must match vault secret
@@ -11,11 +19,10 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { JWT } from 'npm:google-auth-library@9';
 
-interface WebhookPayload {
+interface ThinPayload {
   type: 'INSERT' | 'UPDATE' | 'DELETE';
   table: string;
-  record: Record<string, any>;
-  old_record?: Record<string, any>;
+  pk: Record<string, string>;
 }
 
 interface PushMessage {
@@ -23,16 +30,10 @@ interface PushMessage {
   title: string;
   body: string;
   data?: Record<string, string>;
-  /** Android notification tag. Same tag replaces an older notification
-   *  instead of stacking — prevents spam on re-sent events. */
   tag?: string;
-  /** iOS grouping key; all notifications with the same thread_id collapse
-   *  into one stack on the lock screen. */
   threadId?: string;
 }
 
-// Brand color for the small-icon tint in the status bar. Matches the
-// notification_color defined in android/app/src/main/res/values/colors.xml.
 const BRAND_COLOR = '#8B1E3F';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
@@ -60,9 +61,6 @@ function getJwtClient(): JWT {
   return cachedJwtClient;
 }
 
-// Maps the `data.type` of a push to the column on user_notification_prefs
-// that controls whether to deliver. `null` means the push is unconditional
-// (e.g. local-only types not sent through this function — defensive default).
 function prefColumnForPushType(type: string | undefined): string | null {
   switch (type) {
     case 'friend_request':
@@ -81,105 +79,123 @@ function prefColumnForPushType(type: string | undefined): string | null {
 
 async function resolvePush(
   admin: ReturnType<typeof createClient>,
-  payload: WebhookPayload,
+  payload: ThinPayload,
 ): Promise<PushMessage | null> {
-  const { table, type, record } = payload;
+  const { table, type, pk } = payload;
 
-  if (
-    table === 'friend_requests' &&
-    type === 'UPDATE' &&
-    record.status === 'accepted' &&
-    payload.old_record?.status !== 'accepted'
-  ) {
+  // friend_requests UPDATE → status = 'accepted'
+  if (table === 'friend_requests' && type === 'UPDATE') {
+    const { data: req } = await admin
+      .from('friend_requests')
+      .select('id, sender_id, receiver_id, status')
+      .eq('id', pk.id)
+      .maybeSingle();
+    if (!req || req.status !== 'accepted') return null;
     const { data: accepter } = await admin
       .from('profiles')
       .select('display_name, username')
-      .eq('id', record.receiver_id)
+      .eq('id', req.receiver_id)
       .maybeSingle();
     const name = accepter?.display_name || accepter?.username || 'Someone';
     return {
-      recipients: [record.sender_id],
+      recipients: [req.sender_id],
       title: 'Friend request accepted',
       body: `${name} accepted your friend request`,
       data: {
         type: 'friend_request_accepted',
-        user_id: record.receiver_id,
-        request_id: record.id,
+        user_id: req.receiver_id,
+        request_id: req.id,
       },
-      tag: `friend_accept:${record.receiver_id}`,
+      tag: `friend_accept:${req.receiver_id}`,
       threadId: 'friends',
     };
   }
 
   if (type !== 'INSERT') return null;
 
-  if (table === 'friend_requests' && record.status === 'pending') {
+  if (table === 'friend_requests') {
+    const { data: req } = await admin
+      .from('friend_requests')
+      .select('id, sender_id, receiver_id, status')
+      .eq('id', pk.id)
+      .maybeSingle();
+    if (!req || req.status !== 'pending') return null;
     const { data: sender } = await admin
       .from('profiles')
       .select('display_name, username')
-      .eq('id', record.sender_id)
+      .eq('id', req.sender_id)
       .maybeSingle();
     const name = sender?.display_name || sender?.username || 'Someone';
     return {
-      recipients: [record.receiver_id],
+      recipients: [req.receiver_id],
       title: 'New friend request',
       body: `${name} wants to be your friend`,
-      data: { type: 'friend_request', request_id: record.id },
-      tag: `friend_request:${record.sender_id}`,
+      data: { type: 'friend_request', request_id: req.id },
+      tag: `friend_request:${req.sender_id}`,
       threadId: 'friends',
     };
   }
 
   if (table === 'group_tastings') {
+    const { data: t } = await admin
+      .from('group_tastings')
+      .select('id, group_id, title, created_by')
+      .eq('id', pk.id)
+      .maybeSingle();
+    if (!t) return null;
     const { data: members } = await admin
       .from('group_members')
       .select('user_id')
-      .eq('group_id', record.group_id);
+      .eq('group_id', t.group_id);
     const recipients = (members ?? [])
       .map((m: any) => m.user_id as string)
-      .filter((id: string) => id !== record.created_by);
+      .filter((id: string) => id !== t.created_by);
     if (recipients.length === 0) return null;
     const { data: group } = await admin
       .from('groups')
       .select('name')
-      .eq('id', record.group_id)
+      .eq('id', t.group_id)
       .maybeSingle();
     return {
       recipients,
       title: 'New tasting planned',
-      body: `${record.title} — ${group?.name ?? 'your group'}`,
-      data: { type: 'tasting_created', tasting_id: record.id },
-      tag: `tasting:${record.id}`,
-      threadId: `group:${record.group_id}`,
+      body: `${t.title} — ${group?.name ?? 'your group'}`,
+      data: { type: 'tasting_created', tasting_id: t.id },
+      tag: `tasting:${t.id}`,
+      threadId: `group:${t.group_id}`,
     };
   }
 
   if (table === 'group_wines') {
-    // Notify the rest of the group when someone shares a wine. Sharer is
-    // excluded so they don't ping their own device.
+    const { data: gw } = await admin
+      .from('group_wines')
+      .select('id, group_id, canonical_wine_id, shared_by')
+      .eq('id', pk.id)
+      .maybeSingle();
+    if (!gw) return null;
     const { data: members } = await admin
       .from('group_members')
       .select('user_id')
-      .eq('group_id', record.group_id);
+      .eq('group_id', gw.group_id);
     const recipients = (members ?? [])
       .map((m: any) => m.user_id as string)
-      .filter((id: string) => id !== record.shared_by);
+      .filter((id: string) => id !== gw.shared_by);
     if (recipients.length === 0) return null;
     const [{ data: wine }, { data: group }, { data: sharer }] = await Promise.all([
       admin
         .from('canonical_wine')
         .select('name, winery')
-        .eq('id', record.canonical_wine_id)
+        .eq('id', gw.canonical_wine_id)
         .maybeSingle(),
       admin
         .from('groups')
         .select('name')
-        .eq('id', record.group_id)
+        .eq('id', gw.group_id)
         .maybeSingle(),
       admin
         .from('profiles')
         .select('display_name, username')
-        .eq('id', record.shared_by)
+        .eq('id', gw.shared_by)
         .maybeSingle(),
     ]);
     const sharerName =
@@ -195,57 +211,68 @@ async function resolvePush(
         : `${wineName} — ${groupName}`,
       data: {
         type: 'group_wine_shared',
-        group_id: record.group_id as string,
-        canonical_wine_id: record.canonical_wine_id as string,
+        group_id: gw.group_id as string,
+        canonical_wine_id: gw.canonical_wine_id as string,
       },
-      tag: `group_wine:${record.group_id}:${record.canonical_wine_id}`,
-      threadId: `group:${record.group_id}`,
+      tag: `group_wine:${gw.group_id}:${gw.canonical_wine_id}`,
+      threadId: `group:${gw.group_id}`,
     };
   }
 
   if (table === 'group_members') {
-    // Creator is auto-inserted as 'owner' on group create. Only notify real joins.
-    if (record.role === 'owner') return null;
+    const { data: gm } = await admin
+      .from('group_members')
+      .select('group_id, user_id, role')
+      .eq('group_id', pk.group_id)
+      .eq('user_id', pk.user_id)
+      .maybeSingle();
+    if (!gm || gm.role === 'owner') return null;
     const { data: group } = await admin
       .from('groups')
       .select('name')
-      .eq('id', record.group_id)
+      .eq('id', gm.group_id)
       .maybeSingle();
     return {
-      recipients: [record.user_id],
+      recipients: [gm.user_id],
       title: 'Joined group',
       body: `Welcome to ${group?.name ?? 'the group'}`,
-      data: { type: 'group_joined', group_id: record.group_id },
-      tag: `group_joined:${record.group_id}`,
-      threadId: `group:${record.group_id}`,
+      data: { type: 'group_joined', group_id: gm.group_id },
+      tag: `group_joined:${gm.group_id}`,
+      threadId: `group:${gm.group_id}`,
     };
   }
 
-  if (table === 'group_invitations' && record.status === 'pending') {
+  if (table === 'group_invitations') {
+    const { data: gi } = await admin
+      .from('group_invitations')
+      .select('id, group_id, inviter_id, invitee_id, status')
+      .eq('id', pk.id)
+      .maybeSingle();
+    if (!gi || gi.status !== 'pending') return null;
     const [{ data: inviter }, { data: group }] = await Promise.all([
       admin
         .from('profiles')
         .select('display_name, username')
-        .eq('id', record.inviter_id)
+        .eq('id', gi.inviter_id)
         .maybeSingle(),
       admin
         .from('groups')
         .select('name')
-        .eq('id', record.group_id)
+        .eq('id', gi.group_id)
         .maybeSingle(),
     ]);
     const name = inviter?.display_name || inviter?.username || 'Someone';
     return {
-      recipients: [record.invitee_id],
+      recipients: [gi.invitee_id],
       title: 'Group invitation',
       body: `${name} invited you to ${group?.name ?? 'a group'}`,
       data: {
         type: 'group_invitation',
-        invitation_id: record.id,
-        group_id: record.group_id,
+        invitation_id: gi.id,
+        group_id: gi.group_id,
       },
-      tag: `group_invite:${record.id}`,
-      threadId: `group:${record.group_id}`,
+      tag: `group_invite:${gi.id}`,
+      threadId: `group:${gi.group_id}`,
     };
   }
 
@@ -260,13 +287,10 @@ async function sendToTokens(
   sent: number;
   failed: number;
   invalidTokens: string[];
-  fcmResponses: Array<{ token: string; status: number; body: string }>;
 }> {
   let sent = 0;
   let failed = 0;
   const invalidTokens: string[] = [];
-  const fcmResponses: Array<{ token: string; status: number; body: string }> =
-    [];
   const url = `https://fcm.googleapis.com/v1/projects/${FCM_PROJECT_ID}/messages:send`;
 
   await Promise.all(
@@ -307,25 +331,20 @@ async function sendToTokens(
         },
         body: JSON.stringify(body),
       });
-      const txt = await res.text();
-      const tokenPreview = token.slice(0, 20);
-      fcmResponses.push({
-        token: tokenPreview,
-        status: res.status,
-        body: txt.slice(0, 400),
-      });
       if (res.ok) {
         sent++;
       } else {
         failed++;
-        console.error(`FCM error ${res.status} for ${tokenPreview}: ${txt}`);
+        // Audit M1/L5: do not log token contents in error path.
+        const txt = await res.text();
+        console.error(`FCM error ${res.status}: ${txt.slice(0, 200)}`);
         if (res.status === 404 || res.status === 400) {
           invalidTokens.push(token);
         }
       }
     }),
   );
-  return { sent, failed, invalidTokens, fcmResponses };
+  return { sent, failed, invalidTokens };
 }
 
 Deno.serve(async (req) => {
@@ -338,11 +357,14 @@ Deno.serve(async (req) => {
     return new Response('unauthorized', { status: 401 });
   }
 
-  let payload: WebhookPayload;
+  let payload: ThinPayload;
   try {
-    payload = (await req.json()) as WebhookPayload;
+    payload = (await req.json()) as ThinPayload;
   } catch {
     return new Response('bad json', { status: 400 });
+  }
+  if (!payload?.type || !payload?.table || !payload?.pk) {
+    return new Response('bad payload', { status: 400 });
   }
 
   const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
@@ -351,10 +373,6 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({ skipped: true }), { status: 200 });
   }
 
-  // Per-user notification preferences gate. Maps the push type to the column
-  // controlling delivery and drops recipients who have it disabled. Migration
-  // 20260428 backfills + auto-seeds rows so every profile id has one entry —
-  // a missing row therefore means "never opted in" and we suppress.
   const prefColumn = prefColumnForPushType(push.data?.type);
   if (prefColumn) {
     const { data: prefRows } = await admin
@@ -381,7 +399,9 @@ Deno.serve(async (req) => {
     .in('user_id', push.recipients);
   const tokens = (deviceRows ?? []).map((r: any) => r.token as string);
   if (tokens.length === 0) {
-    return new Response(JSON.stringify({ skipped: 'no tokens' }), { status: 200 });
+    return new Response(JSON.stringify({ skipped: 'no tokens' }), {
+      status: 200,
+    });
   }
 
   let accessTokenResponse: { token: string | null | undefined };
@@ -413,7 +433,6 @@ Deno.serve(async (req) => {
       sent: result.sent,
       failed: result.failed,
       removed_invalid: result.invalidTokens.length,
-      fcm: result.fcmResponses,
     }),
     { status: 200, headers: { 'content-type': 'application/json' } },
   );
