@@ -24,6 +24,10 @@ migrate_working_dir/
 # ASO / marketing assets (not app source)
 screenshots/
 
+# Local StoreKit testing config (do not commit)
+ios/Runner/Sippd.storekit
+*.storekit
+
 # The .vscode folder contains launch configuration and tasks you configure in
 # VS Code which you may wish to be included in version control, so this line
 # is commented out by default.
