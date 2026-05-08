@@ -80,6 +80,7 @@ class _EditFormState extends ConsumerState<_EditForm> {
       title: 'Tasting title',
       initial: _title,
       hint: 'e.g. Barolo night',
+      maxLength: 80,
     );
     if (r == null) return;
     setState(() => _title = r);
@@ -92,6 +93,7 @@ class _EditFormState extends ConsumerState<_EditForm> {
       initial: _description,
       hint: 'What is this about?',
       maxLines: 4,
+      maxLength: 1000,
     );
     if (r == null) return;
     setState(() => _description = r.isEmpty ? null : r);

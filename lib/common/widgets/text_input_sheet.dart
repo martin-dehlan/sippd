@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../utils/responsive.dart';
 
 Future<String?> showTextInputSheet({
@@ -9,6 +10,7 @@ Future<String?> showTextInputSheet({
   String? prefix,
   TextInputType keyboardType = TextInputType.text,
   int maxLines = 1,
+  int? maxLength,
 }) async {
   final controller = TextEditingController(text: initial);
   return showModalBottomSheet<String>(
@@ -60,6 +62,10 @@ Future<String?> showTextInputSheet({
                   autofocus: true,
                   keyboardType: keyboardType,
                   maxLines: maxLines,
+                  maxLength: maxLength,
+                  inputFormatters: maxLength != null
+                      ? [LengthLimitingTextInputFormatter(maxLength)]
+                      : null,
                   cursorColor: cs.primary,
                   cursorWidth: 1.5,
                   style: TextStyle(
@@ -83,6 +89,7 @@ Future<String?> showTextInputSheet({
                           : FontWeight.bold,
                       letterSpacing: maxLines > 1 ? 0 : -0.5,
                     ),
+                    counterText: maxLines > 1 ? null : '',
                     prefixText: prefix,
                     prefixStyle: TextStyle(
                       fontSize: ctx.titleFont * 1.1,

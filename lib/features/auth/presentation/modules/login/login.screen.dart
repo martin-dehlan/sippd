@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -156,9 +157,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   if (_isSignUp) ...[
                     TextFormField(
                       controller: _displayNameController,
+                      maxLength: 40,
+                      inputFormatters: [LengthLimitingTextInputFormatter(40)],
                       decoration: const InputDecoration(
                         labelText: 'Display Name',
                         prefixIcon: Icon(PhosphorIconsRegular.user),
+                        counterText: '',
                       ),
                     ),
                     SizedBox(height: context.m),
@@ -169,9 +173,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
                     autocorrect: false,
+                    maxLength: 254,
+                    inputFormatters: [LengthLimitingTextInputFormatter(254)],
                     decoration: const InputDecoration(
                       labelText: 'Email',
                       prefixIcon: Icon(PhosphorIconsRegular.envelope),
+                      counterText: '',
                     ),
                     validator: (v) {
                       if (v == null || !v.contains('@')) {
@@ -186,9 +193,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   TextFormField(
                     controller: _passwordController,
                     obscureText: true,
+                    maxLength: 72,
+                    inputFormatters: [LengthLimitingTextInputFormatter(72)],
                     decoration: const InputDecoration(
                       labelText: 'Password',
                       prefixIcon: Icon(PhosphorIconsRegular.lockSimple),
+                      counterText: '',
                     ),
                     validator: (v) {
                       if (v == null || v.length < 6) return 'Min 6 characters';

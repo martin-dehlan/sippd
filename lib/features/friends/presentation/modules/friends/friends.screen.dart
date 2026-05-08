@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -173,7 +174,10 @@ class _SearchField extends StatelessWidget {
       controller: controller,
       focusNode: focusNode,
       onChanged: onChanged,
+      maxLength: 60,
+      inputFormatters: [LengthLimitingTextInputFormatter(60)],
       decoration: InputDecoration(
+        counterText: '',
         hintText: 'Search by username or name',
         prefixIcon: Icon(
           PhosphorIconsRegular.magnifyingGlass,

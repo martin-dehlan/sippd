@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../../../common/utils/responsive.dart';
 
@@ -118,9 +119,12 @@ void showWineCountryPicker({
                 child: TextField(
                   controller: searchController,
                   autofocus: false,
+                  maxLength: 100,
+                  inputFormatters: [LengthLimitingTextInputFormatter(100)],
                   style: TextStyle(fontSize: context.bodyFont),
                   decoration: InputDecoration(
                     hintText: 'Search country...',
+                    counterText: '',
                     prefixIcon: Icon(
                       PhosphorIconsRegular.magnifyingGlass,
                       color: cs.primary,

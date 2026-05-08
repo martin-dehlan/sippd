@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../common/utils/responsive.dart';
@@ -136,9 +137,12 @@ class _GrapePickerSheetState extends ConsumerState<_GrapePickerSheet> {
                   controller: _controller,
                   autofocus: true,
                   textInputAction: TextInputAction.done,
+                  maxLength: 60,
+                  inputFormatters: [LengthLimitingTextInputFormatter(60)],
                   onChanged: (v) => setState(() => _query = v),
                   onSubmitted: (_) => _selectFreetext(),
                   decoration: InputDecoration(
+                    counterText: '',
                     hintText: 'e.g. Pinot Noir',
                     prefixIcon: Icon(Icons.search, color: cs.outline),
                     suffixIcon: _query.isEmpty

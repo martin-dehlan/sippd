@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -350,10 +351,13 @@ class _ConfirmDeleteDialogState extends State<_ConfirmDeleteDialog> {
             controller: _controller,
             autofocus: true,
             textCapitalization: TextCapitalization.characters,
+            maxLength: 10,
+            inputFormatters: [LengthLimitingTextInputFormatter(10)],
             onChanged: (_) => setState(() {}),
             decoration: const InputDecoration(
               border: OutlineInputBorder(),
               hintText: 'DELETE',
+              counterText: '',
             ),
           ),
         ],

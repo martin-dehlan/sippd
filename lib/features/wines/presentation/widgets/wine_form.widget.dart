@@ -276,6 +276,7 @@ class WineFormState extends ConsumerState<WineForm>
       initial: _price?.toStringAsFixed(2),
       prefix: '€ ',
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
+      maxLength: 12,
     );
     if (!mounted) return;
     FocusManager.instance.primaryFocus?.unfocus();
@@ -344,6 +345,7 @@ class WineFormState extends ConsumerState<WineForm>
       title: 'Winery',
       initial: _winery,
       hint: 'e.g. Château Margaux',
+      maxLength: 100,
     );
     if (!mounted) return;
     FocusManager.instance.primaryFocus?.unfocus();
@@ -360,6 +362,7 @@ class WineFormState extends ConsumerState<WineForm>
       initial: _notes,
       hint: 'Aromas, body, finish…',
       maxLines: 5,
+      maxLength: 2000,
     );
     if (!mounted) return;
     FocusManager.instance.primaryFocus?.unfocus();
