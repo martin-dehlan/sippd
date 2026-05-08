@@ -811,8 +811,9 @@ on conflict (id) do update set
   allowed_mime_types = excluded.allowed_mime_types;
 
 -- avatars: path = <user_id>/<file>
-create policy avatars_read on storage.objects
-  for select using (bucket_id = 'avatars');
+-- NB: no SELECT policy on purpose — public buckets serve files via CDN URLs
+-- without RLS. A SELECT policy would only enable storage.list() which the
+-- app never calls and which lets anon enumerate filenames.
 create policy avatars_upload on storage.objects
   for insert
   with check (bucket_id = 'avatars' and auth.uid()::text = (storage.foldername(name))[1]);
@@ -823,9 +824,7 @@ create policy avatars_delete on storage.objects
   for delete
   using (bucket_id = 'avatars' and auth.uid()::text = (storage.foldername(name))[1]);
 
--- wine-images: path = <user_id>/<file>
-create policy wine_images_read on storage.objects
-  for select using (bucket_id = 'wine-images');
+-- wine-images: path = <user_id>/<file> (no SELECT policy — see avatars note)
 create policy wine_images_upload on storage.objects
   for insert
   with check (bucket_id = 'wine-images' and auth.uid()::text = (storage.foldername(name))[1]);
@@ -837,8 +836,7 @@ create policy wine_images_delete on storage.objects
   using (bucket_id = 'wine-images' and auth.uid()::text = (storage.foldername(name))[1]);
 
 -- group-images: path = <group_id>/<file>; member-only writes
-create policy group_images_read on storage.objects
-  for select using (bucket_id = 'group-images');
+-- (no SELECT policy — see avatars note)
 create policy group_images_upload on storage.objects
   for insert
   with check (
