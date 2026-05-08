@@ -2162,27 +2162,72 @@ select cron.schedule(
 
 
 -- ── 13. Grants ─────────────────────────────────────────────────────────────
+--
+-- Default Postgres grants EXECUTE to PUBLIC on every new function. Strip
+-- PUBLIC explicitly first, then grant to the intended caller role.
+-- Trigger functions get NO grant — they are invoked by the trigger machinery,
+-- not via PostgREST RPC.
 
-revoke all on function public.delete_my_account()                  from public;
-revoke all on function public.join_group_by_invite_code(text)      from public;
-revoke all on function public.merge_canonical_wines(uuid, uuid)    from public;
-revoke all on function public.register_user_device(text, text)     from public;
-revoke all on function public.unregister_user_device(text)         from public;
+-- Trigger functions: revoke EXECUTE from everyone exposed to PostgREST
+revoke execute on function public.handle_new_user()                              from public;
+revoke execute on function public.handle_new_group()                             from public;
+revoke execute on function public.handle_friend_request_accepted()               from public;
+revoke execute on function public.handle_tasting_created()                       from public;
+revoke execute on function public.friendships_mirror_delete()                    from public;
+revoke execute on function public.notify_push()                                  from public;
+revoke execute on function public.wines_set_name_norm()                          from public;
+revoke execute on function public.wines_resolve_canonical_trigger()              from public;
+revoke execute on function public.wine_ratings_extended_aggregate_trigger()      from public;
+revoke execute on function public.tg_seed_user_notification_prefs()              from public;
+revoke execute on function public.tg_user_notification_prefs_set_updated_at()    from public;
+revoke execute on function public.tg_reset_attendee_reminders_on_reschedule()    from public;
 
-grant execute on function public.delete_my_account()                  to authenticated;
-grant execute on function public.join_group_by_invite_code(text)      to authenticated;
-grant execute on function public.register_user_device(text, text)     to authenticated;
-grant execute on function public.unregister_user_device(text)         to authenticated;
-grant execute on function public.merge_canonical_wines(uuid, uuid)    to authenticated;
-grant execute on function public.find_canonical_merge_candidates(numeric, int) to authenticated;
-grant execute on function public.find_unenriched_canonicals(boolean, int) to authenticated;
-grant execute on function public.suggest_canonical_match(text, text, int) to authenticated;
+-- RPC + helper functions: revoke from PUBLIC, regrant to authenticated
+revoke execute on function public.aggregate_wine_attributes(uuid)                from public;
+revoke execute on function public.resolve_canonical_wine(text, text, int, text, text, text, uuid, uuid) from public;
+revoke execute on function public.is_group_member(uuid, uuid)                    from public;
+revoke execute on function public.group_role(uuid, uuid)                         from public;
+revoke execute on function public.normalize_wine_text(text)                      from public;
+revoke execute on function public.wine_name_norm(text)                           from public;
+revoke execute on function public.find_canonical_merge_candidates(numeric, int)  from public;
+revoke execute on function public.find_unenriched_canonicals(boolean, int)       from public;
+revoke execute on function public.suggest_canonical_match(text, text, int)       from public;
+revoke execute on function public.record_canonical_match_decision(text, text, int, uuid, text) from public;
+revoke execute on function public.get_shared_bottles(uuid, int)                  from public;
+revoke execute on function public.get_taste_compass(uuid, int)                   from public;
+revoke execute on function public.get_taste_match(uuid)                          from public;
+revoke execute on function public.get_top_drinking_partners(int)                 from public;
+revoke execute on function public.get_user_style_dna(uuid)                       from public;
+revoke execute on function public.get_user_top_grapes(uuid, int)                 from public;
+revoke execute on function public.get_friend_ratings_for_canonical_wine(uuid, int) from public;
+revoke execute on function public.claim_due_tasting_reminders()                  from public;
+revoke execute on function public.delete_my_account()                            from public;
+revoke execute on function public.join_group_by_invite_code(text)                from public;
+revoke execute on function public.merge_canonical_wines(uuid, uuid)              from public;
+revoke execute on function public.register_user_device(text, text)               from public;
+revoke execute on function public.unregister_user_device(text)                   from public;
+
+grant execute on function public.aggregate_wine_attributes(uuid)                 to authenticated;
+grant execute on function public.resolve_canonical_wine(text, text, int, text, text, text, uuid, uuid) to authenticated;
+grant execute on function public.is_group_member(uuid, uuid)                     to authenticated;
+grant execute on function public.group_role(uuid, uuid)                          to authenticated;
+grant execute on function public.normalize_wine_text(text)                       to authenticated;
+grant execute on function public.wine_name_norm(text)                            to authenticated;
+grant execute on function public.find_canonical_merge_candidates(numeric, int)   to authenticated;
+grant execute on function public.find_unenriched_canonicals(boolean, int)        to authenticated;
+grant execute on function public.suggest_canonical_match(text, text, int)        to authenticated;
 grant execute on function public.record_canonical_match_decision(text, text, int, uuid, text) to authenticated;
-grant execute on function public.get_taste_match(uuid)              to authenticated;
-grant execute on function public.get_taste_compass(uuid, int)       to authenticated;
-grant execute on function public.get_top_drinking_partners(int)     to authenticated;
-grant execute on function public.get_shared_bottles(uuid, int)      to authenticated;
-grant execute on function public.get_user_top_grapes(uuid, int)     to authenticated;
-grant execute on function public.get_user_style_dna(uuid)           to authenticated;
+grant execute on function public.get_shared_bottles(uuid, int)                   to authenticated;
+grant execute on function public.get_taste_compass(uuid, int)                    to authenticated;
+grant execute on function public.get_taste_match(uuid)                           to authenticated;
+grant execute on function public.get_top_drinking_partners(int)                  to authenticated;
+grant execute on function public.get_user_style_dna(uuid)                        to authenticated;
+grant execute on function public.get_user_top_grapes(uuid, int)                  to authenticated;
 grant execute on function public.get_friend_ratings_for_canonical_wine(uuid, int) to authenticated;
-grant execute on function public.claim_due_tasting_reminders()      to service_role;
+grant execute on function public.delete_my_account()                             to authenticated;
+grant execute on function public.join_group_by_invite_code(text)                 to authenticated;
+grant execute on function public.merge_canonical_wines(uuid, uuid)               to authenticated;
+grant execute on function public.register_user_device(text, text)                to authenticated;
+grant execute on function public.unregister_user_device(text)                    to authenticated;
+grant execute on function public.claim_due_tasting_reminders()                   to service_role;
+grant select on public.ratings to authenticated;
