@@ -30,15 +30,24 @@ class LoginScreen extends ConsumerStatefulWidget {
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _passwordConfirmController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   late bool _isSignUp = widget.initialSignUp;
   final _displayNameController = TextEditingController();
   Object? _submitError;
 
+  // Conservative RFC-ish: local@domain.tld, no whitespace, requires a TLD.
+  // Stricter than GoTrue's permissive `^[^\s@]+@[^\s@]+$`, which accepts
+  // strings like "a@b" that fail real delivery.
+  static final _emailRe = RegExp(
+    r"^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$",
+  );
+
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _passwordConfirmController.dispose();
     _displayNameController.dispose();
     super.dispose();
   }
@@ -86,10 +95,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Future<void> _forgotPassword() async {
     final email = _emailController.text.trim();
-    if (email.isEmpty || !email.contains('@')) {
+    if (!_emailRe.hasMatch(email)) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Enter your email above first.'),
+          content: const Text('Enter a valid email above first.'),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
@@ -157,13 +166,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   if (_isSignUp) ...[
                     TextFormField(
                       controller: _displayNameController,
-                      maxLength: 40,
-                      inputFormatters: [LengthLimitingTextInputFormatter(40)],
+                      maxLength: 30,
+                      inputFormatters: [LengthLimitingTextInputFormatter(30)],
                       decoration: const InputDecoration(
                         labelText: 'Display Name',
                         prefixIcon: Icon(PhosphorIconsRegular.user),
                         counterText: '',
                       ),
+                      validator: (v) {
+                        final t = v?.trim() ?? '';
+                        if (t.length < 2) return 'Min 2 characters';
+                        if (t.length > 30) return 'Max 30 characters';
+                        return null;
+                      },
                     ),
                     SizedBox(height: context.m),
                   ],
@@ -181,7 +196,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       counterText: '',
                     ),
                     validator: (v) {
-                      if (v == null || !v.contains('@')) {
+                      if (!_emailRe.hasMatch(v?.trim() ?? '')) {
                         return 'Valid email required';
                       }
                       return null;
@@ -189,7 +204,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                   SizedBox(height: context.m),
 
-                  // Password
+                  // Password — sign-in stays permissive so users with
+                  // pre-policy passwords can still authenticate; signup
+                  // enforces the new ≥8 floor.
                   TextFormField(
                     controller: _passwordController,
                     obscureText: true,
@@ -201,10 +218,40 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       counterText: '',
                     ),
                     validator: (v) {
-                      if (v == null || v.length < 6) return 'Min 6 characters';
+                      if (_isSignUp) {
+                        if (v == null || v.length < 8) {
+                          return 'Min 8 characters';
+                        }
+                      } else {
+                        if (v == null || v.isEmpty) {
+                          return 'Enter password';
+                        }
+                      }
                       return null;
                     },
                   ),
+
+                  // Confirm password (signup only)
+                  if (_isSignUp) ...[
+                    SizedBox(height: context.m),
+                    TextFormField(
+                      controller: _passwordConfirmController,
+                      obscureText: true,
+                      maxLength: 72,
+                      inputFormatters: [LengthLimitingTextInputFormatter(72)],
+                      decoration: const InputDecoration(
+                        labelText: 'Confirm Password',
+                        prefixIcon: Icon(PhosphorIconsRegular.lockSimple),
+                        counterText: '',
+                      ),
+                      validator: (v) {
+                        if (v != _passwordController.text) {
+                          return "Passwords don't match";
+                        }
+                        return null;
+                      },
+                    ),
+                  ],
 
                   // Forgot password (sign-in only)
                   if (!_isSignUp)
@@ -247,7 +294,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                   // Toggle
                   TextButton(
-                    onPressed: () => setState(() => _isSignUp = !_isSignUp),
+                    onPressed: () => setState(() {
+                      _isSignUp = !_isSignUp;
+                      _passwordConfirmController.clear();
+                      _submitError = null;
+                    }),
                     child: Text(
                       _isSignUp
                           ? 'Already have an account? Sign In'
