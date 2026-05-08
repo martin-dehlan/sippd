@@ -36,6 +36,12 @@ jobs:
       - name: stub firebase_options.dart
         run: cp lib/firebase_options.template.dart lib/firebase_options.dart
 
+      # Empty .env so pubspec's asset-bundle declaration doesn't trip
+      # `asset_does_not_exist` warnings during analyze. Real values live
+      # per-developer; CI doesn't run anything that needs them.
+      - name: stub .env
+        run: cp .env.example .env
+
       # Generated files (Freezed, Riverpod, Drift, json_serializable) are
       # checked in, so codegen runs only when an annotated source has
       # drifted out of sync with its generated output.
