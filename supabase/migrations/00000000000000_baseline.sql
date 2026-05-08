@@ -20,6 +20,13 @@
 -- ============================================================================
 
 
+-- Function bodies reference views/tables defined later in this same file
+-- (e.g. public.ratings view at L2111 vs functions at L1615+). Skip body
+-- validation during CREATE so order of statements stops mattering — the
+-- functions still get planned & re-validated on first call.
+set check_function_bodies = off;
+
+
 -- ── 1. Extensions ───────────────────────────────────────────────────────────
 
 create extension if not exists pg_trgm;
