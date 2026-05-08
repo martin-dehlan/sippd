@@ -41,7 +41,7 @@ final customerInfoStreamProvider = StreamProvider<CustomerInfo>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef CustomerInfoStreamRef = StreamProviderRef<CustomerInfo>;
-String _$isProHash() => r'9b828754e81afe11cbf292dc7739431ec950a12f';
+String _$isProHash() => r'a058ce98d1c8bda1d6713b2c8e3ef683785d2088';
 
 /// See also [isPro].
 @ProviderFor(isPro)

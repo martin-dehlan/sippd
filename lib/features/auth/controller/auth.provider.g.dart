@@ -57,7 +57,7 @@ final currentUserIdProvider = AutoDisposeProvider<String?>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef CurrentUserIdRef = AutoDisposeProviderRef<String?>;
-String _$authControllerHash() => r'dc66833352e85edd5dc89c22a7c1b37bb42054b8';
+String _$authControllerHash() => r'998ad2da3ea9eaed34e142914dbfc7950c524945';
 
 /// See also [AuthController].
 @ProviderFor(AuthController)
