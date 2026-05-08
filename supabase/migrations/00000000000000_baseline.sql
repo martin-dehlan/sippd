@@ -700,9 +700,15 @@ create policy wines_select_friends on public.wines
       where f.user_id = auth.uid() and f.friend_id = wines.user_id
     )
   );
+-- wines_select_shared: members of a group see each other's wine entries that
+-- point at canonical wines shared into that group. Excludes PRIVATE wines —
+-- visibility=private means the wine is not for sharing even if the canonical
+-- happens to also live in a group context.
 create policy wines_select_shared on public.wines
   for select to authenticated using (
-    canonical_wine_id is not null and canonical_wine_id in (
+    canonical_wine_id is not null
+    and (auth.uid() = user_id or visibility <> 'private')
+    and canonical_wine_id in (
       select gw.canonical_wine_id from public.group_wines gw
       join public.group_members gm on gm.group_id = gw.group_id
       where gm.user_id = auth.uid()
@@ -710,8 +716,12 @@ create policy wines_select_shared on public.wines
   );
 create policy wines_insert on public.wines
   for insert to authenticated with check (auth.uid() = user_id);
+-- WITH CHECK is mandatory on UPDATE: without it the row owner could mutate
+-- user_id and reassign the row to another user.
 create policy wines_update on public.wines
-  for update to authenticated using (auth.uid() = user_id);
+  for update to authenticated
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
 create policy wines_delete on public.wines
   for delete to authenticated using (auth.uid() = user_id);
 
@@ -721,7 +731,9 @@ create policy wine_memories_select_own on public.wine_memories
 create policy wine_memories_insert_own on public.wine_memories
   for insert to authenticated with check (auth.uid() = user_id);
 create policy wine_memories_update_own on public.wine_memories
-  for update to authenticated using (auth.uid() = user_id);
+  for update to authenticated
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
 create policy wine_memories_delete_own on public.wine_memories
   for delete to authenticated using (auth.uid() = user_id);
 
@@ -2205,7 +2217,9 @@ revoke execute on function public.merge_canonical_wines(uuid, uuid)             
 revoke execute on function public.register_user_device(text, text)               from public;
 revoke execute on function public.unregister_user_device(text)                   from public;
 
-grant execute on function public.aggregate_wine_attributes(uuid)                 to authenticated;
+-- aggregate_wine_attributes is invoked only by the wine_ratings_extended
+-- trigger (DEFINER context bypasses grants). No reason to expose via RPC.
+grant execute on function public.aggregate_wine_attributes(uuid)                 to service_role;
 grant execute on function public.resolve_canonical_wine(text, text, int, text, text, text, uuid, uuid) to authenticated;
 grant execute on function public.is_group_member(uuid, uuid)                     to authenticated;
 grant execute on function public.group_role(uuid, uuid)                          to authenticated;
