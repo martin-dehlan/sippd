@@ -4,6 +4,11 @@
 // Called by Postgres triggers on friend_requests, group_tastings, group_members,
 // group_invitations, group_wines.
 //
+// IMPORTANT: deploy with `--no-verify-jwt` (or `verify_jwt = false` in
+// supabase/config.toml). The Postgres trigger authenticates via the
+// `x-webhook-secret` header check below — the gateway-level Bearer
+// requirement would otherwise 401 every trigger call.
+//
 // Audit fix H4 (2026-05-08):
 //   * Trigger now sends only {type, table, pk} (primary key envelope).
 //     This function re-fetches the row via service-role client with an
