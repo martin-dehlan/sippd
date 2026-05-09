@@ -30,8 +30,9 @@ void main() {
     bucket = _MockBucket();
     when(() => client.storage).thenReturn(storage);
     when(() => storage.from(any())).thenReturn(bucket);
-    when(() => bucket.upload(any(), any(), fileOptions: any(named: 'fileOptions')))
-        .thenAnswer((_) async => 'ok');
+    when(
+      () => bucket.upload(any(), any(), fileOptions: any(named: 'fileOptions')),
+    ).thenAnswer((_) async => 'ok');
     when(() => bucket.getPublicUrl(any())).thenReturn('https://x/y.jpg');
 
     tmpFile = await File(
@@ -46,23 +47,33 @@ void main() {
 
   FileOptions captureOpts() {
     final captured = verify(
-      () => bucket.upload(any(), any(), fileOptions: captureAny(named: 'fileOptions')),
+      () => bucket.upload(
+        any(),
+        any(),
+        fileOptions: captureAny(named: 'fileOptions'),
+      ),
     ).captured;
     return captured.single as FileOptions;
   }
 
   test('WineImageService forces image/jpeg contentType', () async {
-    await WineImageService(client).uploadImage(userId: 'u', filePath: tmpFile.path);
+    await WineImageService(
+      client,
+    ).uploadImage(userId: 'u', filePath: tmpFile.path);
     expect(captureOpts().contentType, 'image/jpeg');
   });
 
   test('ProfileImageService forces image/jpeg contentType', () async {
-    await ProfileImageService(client).uploadImage(userId: 'u', filePath: tmpFile.path);
+    await ProfileImageService(
+      client,
+    ).uploadImage(userId: 'u', filePath: tmpFile.path);
     expect(captureOpts().contentType, 'image/jpeg');
   });
 
   test('GroupImageService forces image/jpeg contentType', () async {
-    await GroupImageService(client).uploadImage(groupId: 'g', filePath: tmpFile.path);
+    await GroupImageService(
+      client,
+    ).uploadImage(groupId: 'g', filePath: tmpFile.path);
     expect(captureOpts().contentType, 'image/jpeg');
   });
 }

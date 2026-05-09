@@ -234,20 +234,23 @@ void main() {
   });
 
   group('offline-first contract', () {
-    test('addWine writes to Drift when api is null (no api configured)', () async {
-      final repo = WineRepositoryImpl(
-        dao: db.winesDao,
-        analytics: analytics,
-        outbox: db.pendingImageUploadsDao,
-      );
+    test(
+      'addWine writes to Drift when api is null (no api configured)',
+      () async {
+        final repo = WineRepositoryImpl(
+          dao: db.winesDao,
+          analytics: analytics,
+          outbox: db.pendingImageUploadsDao,
+        );
 
-      await repo.addWine(buildEntity());
-      await Future<void>.delayed(Duration.zero);
+        await repo.addWine(buildEntity());
+        await Future<void>.delayed(Duration.zero);
 
-      final local = await db.winesDao.getWineById('wine-1');
-      expect(local, isNotNull, reason: 'local insert must not depend on api');
-      expect(local!.nameNorm, 'pinot');
-    });
+        final local = await db.winesDao.getWineById('wine-1');
+        expect(local, isNotNull, reason: 'local insert must not depend on api');
+        expect(local!.nameNorm, 'pinot');
+      },
+    );
 
     test(
       'updateWine writes Drift immediately and defers remote sync',
