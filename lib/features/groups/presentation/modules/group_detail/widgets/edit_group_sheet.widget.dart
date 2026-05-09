@@ -69,9 +69,7 @@ class _EditGroupSheetState extends ConsumerState<EditGroupSheet> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(describeAppError(e, fallback: 'Upload failed.')),
           ),
@@ -92,9 +90,7 @@ class _EditGroupSheetState extends ConsumerState<EditGroupSheet> {
       if (mounted) setState(() => _imageUrl = null);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(describeAppError(e, fallback: 'Delete failed.')),
           ),

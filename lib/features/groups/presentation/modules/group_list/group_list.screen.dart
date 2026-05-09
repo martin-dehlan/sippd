@@ -516,12 +516,8 @@ class _CreateSheetState extends ConsumerState<_CreateSheet> {
       setState(() => _pickedImagePath = photo.path);
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
-        SnackBar(
-          content: Text(describeAppError(e, fallback: 'Pick failed.')),
-        ),
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(describeAppError(e, fallback: 'Pick failed.'))),
       );
     }
   }
@@ -562,9 +558,7 @@ class _CreateSheetState extends ConsumerState<_CreateSheet> {
               .updateGroup(groupId: created.id, imageUrl: url);
         } catch (e) {
           if (mounted) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(
+            ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
                   describeAppError(e, fallback: 'Photo upload failed.'),

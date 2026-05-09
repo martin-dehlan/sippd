@@ -195,9 +195,7 @@ class _WineRatingSheetState extends ConsumerState<_WineRatingSheet> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(describeAppError(e, fallback: 'Could not save.')),
           ),

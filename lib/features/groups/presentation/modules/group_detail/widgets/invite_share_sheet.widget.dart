@@ -312,9 +312,7 @@ class _FriendList extends ConsumerWidget {
       ).showSnackBar(SnackBar(content: Text('Invite sent to $name')));
     } catch (e) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
             describeAppError(e, fallback: 'Could not send invite.'),

@@ -307,10 +307,10 @@ Future<void> _confirmDelete(BuildContext context, WidgetRef ref) async {
     // Router auto-redirects to /login on auth state change; no manual go().
   } catch (e) {
     if (context.mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
-        SnackBar(content: Text(describeAppError(e, fallback: 'Delete failed.'))),
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(describeAppError(e, fallback: 'Delete failed.')),
+        ),
       );
     }
   }

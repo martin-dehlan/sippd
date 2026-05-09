@@ -253,9 +253,7 @@ class _GroupPickerSheet extends ConsumerWidget {
       );
     } catch (e) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
             describeAppError(e, fallback: 'Could not send invite.'),
