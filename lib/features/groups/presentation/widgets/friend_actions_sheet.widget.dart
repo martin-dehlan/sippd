@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../common/utils/responsive.dart';
 import '../../../../common/widgets/error_view.widget.dart';
+import '../../../../common/widgets/inline_error.widget.dart';
 import '../../controller/group_invitation.provider.dart';
 
 Future<void> showFriendActionsSheet({
@@ -252,9 +253,13 @@ class _GroupPickerSheet extends ConsumerWidget {
       );
     } catch (e) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Could not send invite: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            describeAppError(e, fallback: 'Could not send invite.'),
+          ),
+        ),
+      );
     }
   }
 }

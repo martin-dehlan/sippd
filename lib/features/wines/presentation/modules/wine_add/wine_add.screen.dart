@@ -13,6 +13,7 @@ import '../../../../share_cards/presentation/widgets/wine_share_prompt_sheet.dar
 import '../../../controller/expert_tasting.provider.dart';
 import '../../../controller/wine.provider.dart';
 import '../../../data/data_sources/expert_tasting.api.dart';
+import '../../../domain/entities/canonical_wine_candidate.entity.dart';
 import '../../../domain/entities/wine.entity.dart';
 import '../../../domain/entities/wine_memory.entity.dart';
 import '../../widgets/canonical_wine_prompt_sheet.dart';
@@ -117,11 +118,20 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
     final canonicalApi = ref.read(canonicalWineApiProvider);
     String? linkedCanonicalId;
     if (canonicalApi != null) {
-      final suggestions = await canonicalApi.suggestMatch(
-        name: data.name,
-        winery: data.winery,
-        vintage: data.vintage,
-      );
+      // Offline-first: a failure here (Supabase down, no network, RPC error)
+      // must not block the save. Skip the fuzzy-prompt and let the local
+      // insert proceed; the post-insert trigger will still resolve canonical
+      // on the server when sync catches up.
+      var suggestions = const <CanonicalWineCandidate>[];
+      try {
+        suggestions = await canonicalApi.suggestMatch(
+          name: data.name,
+          winery: data.winery,
+          vintage: data.vintage,
+        );
+      } catch (_) {
+        // Swallow — offline path. No fuzzy prompt this round.
+      }
       final fuzzy = suggestions.where((c) => !c.isExact).toList();
       if (fuzzy.isNotEmpty && mounted) {
         final result = await showCanonicalWinePromptSheet(

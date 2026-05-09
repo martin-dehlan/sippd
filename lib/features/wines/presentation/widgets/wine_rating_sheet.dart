@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../common/utils/responsive.dart';
+import '../../../../common/widgets/inline_error.widget.dart';
 import '../../../../core/routes/app.routes.dart';
 import '../../../auth/controller/auth.provider.dart';
 import '../../../paywall/controller/paywall.provider.dart';
@@ -194,9 +195,11 @@ class _WineRatingSheetState extends ConsumerState<_WineRatingSheet> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Could not save: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(describeAppError(e, fallback: 'Could not save.')),
+          ),
+        );
       }
     }
     if (mounted) {

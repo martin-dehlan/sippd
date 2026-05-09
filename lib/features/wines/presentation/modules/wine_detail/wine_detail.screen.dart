@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 import '../../../../../common/utils/responsive.dart';
+import '../../../../../common/widgets/error_view.widget.dart';
 import '../../../../../common/widgets/overflow_menu.widget.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../../auth/controller/auth.provider.dart';
@@ -74,7 +75,9 @@ class WineDetailScreen extends ConsumerWidget {
               onDelete: null,
             );
           }
-          return Center(child: Text('Error: $e'));
+          return Center(
+            child: ErrorView(title: "Couldn't load wine", error: e),
+          );
         },
       ),
       floatingActionButton: const _FloatingBackButton(),

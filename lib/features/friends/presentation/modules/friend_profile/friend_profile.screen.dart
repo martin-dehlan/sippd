@@ -40,7 +40,9 @@ class FriendProfileScreen extends ConsumerWidget {
             );
           },
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => Center(child: Text('Error: $e')),
+          error: (e, _) => Center(
+            child: ErrorView(title: "Couldn't load profile", error: e),
+          ),
         ),
       ),
       floatingActionButton: const _BackFab(),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../common/utils/responsive.dart';
+import '../../../../common/widgets/inline_error.widget.dart';
 import '../../../auth/controller/auth.provider.dart';
 import '../../../friends/domain/entities/friend_profile.entity.dart';
 import '../../../friends/presentation/widgets/friend_avatar.widget.dart';
@@ -173,7 +174,7 @@ class _ShareWineSheetState extends ConsumerState<_ShareWineSheet> {
               },
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (e, _) => Text(
-                'Error: $e',
+                describeAppError(e, fallback: "Couldn't load groups."),
                 style: TextStyle(
                   fontSize: context.captionFont,
                   color: cs.error,

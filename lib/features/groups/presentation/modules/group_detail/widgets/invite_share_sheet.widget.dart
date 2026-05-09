@@ -8,6 +8,7 @@ import '../../../../../../common/services/deep_link/deep_link.service.dart';
 import '../../../../../../common/utils/responsive.dart';
 import '../../../../../../common/utils/share_origin.dart';
 import '../../../../../../common/widgets/error_view.widget.dart';
+import '../../../../../../common/widgets/inline_error.widget.dart';
 import '../../../../../friends/domain/entities/friend_profile.entity.dart';
 import '../../../../../friends/presentation/widgets/friend_avatar.widget.dart';
 import '../../../../controller/group_invitation.provider.dart';
@@ -311,9 +312,13 @@ class _FriendList extends ConsumerWidget {
       ).showSnackBar(SnackBar(content: Text('Invite sent to $name')));
     } catch (e) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Could not send invite: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            describeAppError(e, fallback: 'Could not send invite.'),
+          ),
+        ),
+      );
     }
   }
 }

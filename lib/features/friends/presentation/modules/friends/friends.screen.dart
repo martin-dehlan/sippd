@@ -10,6 +10,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../../../common/services/analytics/analytics.provider.dart';
 import '../../../../../common/services/deep_link/deep_link.service.dart';
 import '../../../../../common/utils/responsive.dart';
+import '../../../../../common/widgets/inline_error.widget.dart';
 import '../../../../profile/controller/profile.provider.dart';
 import '../../../../share_cards/controller/share_card.provider.dart';
 import '../../../../share_cards/presentation/cards/friend_invite_card.widget.dart';
@@ -275,7 +276,7 @@ class _SearchResultsSection extends ConsumerWidget {
       error: (e, _) => Padding(
         padding: EdgeInsets.all(context.l),
         child: Text(
-          'Error: $e',
+          describeAppError(e, fallback: "Couldn't load search."),
           style: TextStyle(color: cs.error, fontSize: context.bodyFont),
         ),
       ),
@@ -504,7 +505,7 @@ class _FriendsSection extends ConsumerWidget {
           error: (e, _) => Padding(
             padding: EdgeInsets.all(context.l),
             child: Text(
-              'Error: $e',
+              describeAppError(e, fallback: "Couldn't load friends."),
               style: TextStyle(color: cs.error, fontSize: context.bodyFont),
             ),
           ),
@@ -764,7 +765,9 @@ class _SearchResultRowState extends ConsumerState<_SearchResultRow> {
       setState(() => _sending = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Could not send request: $e'),
+          content: Text(
+            describeAppError(e, fallback: 'Could not send request.'),
+          ),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );

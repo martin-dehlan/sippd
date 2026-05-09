@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../../../common/utils/responsive.dart';
+import '../../../../../../common/widgets/inline_error.widget.dart';
 import '../../../../controller/group.provider.dart';
 import '../../../../domain/entities/group.entity.dart';
 
@@ -68,9 +69,11 @@ class _EditGroupSheetState extends ConsumerState<EditGroupSheet> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Upload failed: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(describeAppError(e, fallback: 'Upload failed.')),
+          ),
+        );
       }
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -87,9 +90,11 @@ class _EditGroupSheetState extends ConsumerState<EditGroupSheet> {
       if (mounted) setState(() => _imageUrl = null);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Delete failed: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(describeAppError(e, fallback: 'Delete failed.')),
+          ),
+        );
       }
     } finally {
       if (mounted) setState(() => _busy = false);

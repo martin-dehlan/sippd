@@ -9,8 +9,10 @@ import '../utils/responsive.dart';
 
 /// Maps any thrown object to a single short user-facing line. Offline /
 /// network failures get a connectivity-specific copy; everything else
-/// falls back to [fallback]. Centralized so every error UI tells the
-/// user the same thing.
+/// (including raw Supabase / Postgrest / Auth / Storage exceptions, and
+/// non-network AppError variants) falls back to [fallback] so users
+/// never see backend internals like "permission denied for table …".
+/// Centralized so every error UI tells the user the same thing.
 String describeAppError(
   Object error, {
   String fallback = "Something went wrong.",

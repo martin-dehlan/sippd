@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../common/utils/responsive.dart';
+import '../../../../common/widgets/inline_error.widget.dart';
 import '../../../wines/controller/wine.provider.dart';
 import '../../../wines/domain/entities/wine.entity.dart';
 import '../../../wines/presentation/widgets/wine_card.widget.dart';
@@ -130,7 +131,7 @@ class _SheetState extends ConsumerState<_Sheet> {
                       const Center(child: CircularProgressIndicator()),
                   error: (e, _) => Center(
                     child: Text(
-                      'Error: $e',
+                      describeAppError(e, fallback: "Couldn't load wines."),
                       style: TextStyle(
                         fontSize: context.captionFont,
                         color: cs.error,
