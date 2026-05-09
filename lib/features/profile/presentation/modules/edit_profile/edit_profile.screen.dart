@@ -128,7 +128,11 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Upload failed: $e')));
+        ).showSnackBar(
+          SnackBar(
+            content: Text(describeAppError(e, fallback: 'Upload failed.')),
+          ),
+        );
       }
     } finally {
       if (mounted) setState(() => _uploadingAvatar = false);

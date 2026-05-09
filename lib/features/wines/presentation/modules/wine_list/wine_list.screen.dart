@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../../common/utils/responsive.dart';
+import '../../../../../common/widgets/error_view.widget.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../controller/wine.provider.dart';
 import '../../../domain/entities/wine.entity.dart';
@@ -173,7 +174,13 @@ class WineListScreen extends ConsumerWidget {
                 child: Center(child: CircularProgressIndicator()),
               ),
               error: (error, _) => SliverFillRemaining(
-                child: Center(child: Text('Error: $error')),
+                child: Center(
+                  child: ErrorView(
+                    title: "Couldn't load wines",
+                    onRetry: () => ref.invalidate(wineControllerProvider),
+                    error: error,
+                  ),
+                ),
               ),
             ),
 

@@ -5,6 +5,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/error_view.widget.dart';
+import '../../../../../common/widgets/inline_error.widget.dart';
 import '../../../controller/wine.provider.dart';
 import '../../../domain/entities/canonical_merge_pair.entity.dart';
 
@@ -255,7 +256,7 @@ class _PairCard extends ConsumerWidget {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Merge failed: $e'),
+          content: Text(describeAppError(e, fallback: 'Merge failed.')),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );

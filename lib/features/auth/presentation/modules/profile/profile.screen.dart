@@ -309,7 +309,9 @@ Future<void> _confirmDelete(BuildContext context, WidgetRef ref) async {
     if (context.mounted) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Delete failed: $e')));
+      ).showSnackBar(
+        SnackBar(content: Text(describeAppError(e, fallback: 'Delete failed.'))),
+      );
     }
   }
 }

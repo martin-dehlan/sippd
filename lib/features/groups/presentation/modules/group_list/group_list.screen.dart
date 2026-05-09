@@ -9,6 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../../../../common/services/analytics/analytics.provider.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/error_view.widget.dart';
+import '../../../../../common/widgets/inline_error.widget.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../../paywall/controller/paywall.provider.dart';
 import '../../../controller/group.provider.dart';
@@ -517,7 +518,11 @@ class _CreateSheetState extends ConsumerState<_CreateSheet> {
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Pick failed: $e')));
+      ).showSnackBar(
+        SnackBar(
+          content: Text(describeAppError(e, fallback: 'Pick failed.')),
+        ),
+      );
     }
   }
 
@@ -559,7 +564,13 @@ class _CreateSheetState extends ConsumerState<_CreateSheet> {
           if (mounted) {
             ScaffoldMessenger.of(
               context,
-            ).showSnackBar(SnackBar(content: Text('Photo upload failed: $e')));
+            ).showSnackBar(
+              SnackBar(
+                content: Text(
+                  describeAppError(e, fallback: 'Photo upload failed.'),
+                ),
+              ),
+            );
           }
         }
       }

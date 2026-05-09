@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../../common/utils/responsive.dart';
+import '../../../../../common/widgets/error_view.widget.dart';
 import '../../../../locations/domain/entities/location.entity.dart';
 import '../../../controller/wine.provider.dart';
 import '../../../domain/entities/wine.entity.dart';
@@ -77,11 +78,15 @@ class _WineEditScreenState extends ConsumerState<WineEditScreen> {
                 },
               ),
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (e, _) => Center(child: Text('Error: $e')),
+              error: (e, _) => Center(
+                child: ErrorView(title: "Couldn't load memories", error: e),
+              ),
             );
           },
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => Center(child: Text('Error: $e')),
+          error: (e, _) => Center(
+            child: ErrorView(title: "Couldn't load wine", error: e),
+          ),
         ),
       ),
       floatingActionButton: const _FloatingBackButton(),

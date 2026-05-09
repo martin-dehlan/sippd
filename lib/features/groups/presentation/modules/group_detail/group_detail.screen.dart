@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../../common/utils/responsive.dart';
+import '../../../../../common/widgets/error_view.widget.dart';
 import '../../../../../common/widgets/overflow_menu.widget.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../../auth/controller/auth.provider.dart';
@@ -35,7 +36,9 @@ class GroupDetailScreen extends ConsumerWidget {
             return _Body(group: group);
           },
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => Center(child: Text('Error: $e')),
+          error: (e, _) => Center(
+            child: ErrorView(title: "Couldn't load group", error: e),
+          ),
         ),
       ),
       floatingActionButton: const _FloatingBackButton(),

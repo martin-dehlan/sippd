@@ -3,6 +3,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../../common/utils/responsive.dart';
+import '../../../../../../common/widgets/inline_error.widget.dart';
 import '../../../../../auth/controller/auth.provider.dart';
 import '../../../../../wines/controller/wine.provider.dart';
 import '../../../../../wines/domain/entities/wine.entity.dart';
@@ -80,7 +81,7 @@ class WinePickerSheet extends ConsumerWidget {
                 ),
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (e, _) => Text(
-                  'Error: $e',
+                  describeAppError(e, fallback: "Couldn't load wines."),
                   style: TextStyle(
                     fontSize: context.captionFont,
                     color: cs.error,

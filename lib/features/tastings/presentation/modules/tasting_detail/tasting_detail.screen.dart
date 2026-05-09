@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import '../../../../../common/utils/responsive.dart';
+import '../../../../../common/widgets/error_view.widget.dart';
 import '../../../../../common/widgets/overflow_menu.widget.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../../auth/controller/auth.provider.dart';
@@ -44,7 +45,9 @@ class TastingDetailScreen extends ConsumerWidget {
             return _Body(tasting: t);
           },
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => Center(child: Text('Error: $e')),
+          error: (e, _) => Center(
+            child: ErrorView(title: "Couldn't load tasting", error: e),
+          ),
         ),
       ),
       floatingActionButton: const _BackFab(),
