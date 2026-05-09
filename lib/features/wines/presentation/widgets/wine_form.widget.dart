@@ -249,6 +249,10 @@ class WineFormState extends ConsumerState<WineForm>
       initial: _rating,
       ratingContext: 'personal',
       wine: widget.wine,
+      // Pre-save the wine entity doesn't exist yet, so the rating sheet
+      // can't read wine.type for the expert panel. Pass the form's
+      // current type explicitly so the panel can render before save.
+      wineType: _type,
       // Re-seed any expert dimensions the user typed in a previous open
       // of the sheet during this same add-wine flow, so re-opening
       // shows what was typed instead of starting empty.
@@ -277,6 +281,14 @@ class WineFormState extends ConsumerState<WineForm>
       prefix: '€ ',
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
       maxLength: 12,
+      inputFormatters: [
+        FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
+        TextInputFormatter.withFunction((old, next) {
+          // Allow only one decimal separator (. or ,)
+          final seps = next.text.split(RegExp(r'[.,]'));
+          return seps.length <= 2 ? next : old;
+        }),
+      ],
     );
     if (!mounted) return;
     FocusManager.instance.primaryFocus?.unfocus();

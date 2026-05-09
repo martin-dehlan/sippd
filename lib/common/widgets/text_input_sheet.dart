@@ -11,6 +11,7 @@ Future<String?> showTextInputSheet({
   TextInputType keyboardType = TextInputType.text,
   int maxLines = 1,
   int? maxLength,
+  List<TextInputFormatter>? inputFormatters,
 }) async {
   final controller = TextEditingController(text: initial);
   return showModalBottomSheet<String>(
@@ -63,9 +64,11 @@ Future<String?> showTextInputSheet({
                   keyboardType: keyboardType,
                   maxLines: maxLines,
                   maxLength: maxLength,
-                  inputFormatters: maxLength != null
-                      ? [LengthLimitingTextInputFormatter(maxLength)]
-                      : null,
+                  inputFormatters: [
+                    if (maxLength != null)
+                      LengthLimitingTextInputFormatter(maxLength),
+                    if (inputFormatters != null) ...inputFormatters,
+                  ],
                   cursorColor: cs.primary,
                   cursorWidth: 1.5,
                   style: TextStyle(

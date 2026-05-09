@@ -47,6 +47,7 @@ Future<WineRatingResult?> showWineRatingSheet({
   required double initial,
   required String ratingContext,
   WineEntity? wine,
+  WineType? wineType,
   ExpertTastingEntity? initialExpert,
   Future<void> Function(double rating)? onSave,
   String? groupId,
@@ -64,6 +65,7 @@ Future<WineRatingResult?> showWineRatingSheet({
     ),
     builder: (ctx) => _WineRatingSheet(
       wine: wine,
+      wineType: wineType ?? wine?.type ?? WineType.red,
       initial: initial,
       initialExpert: initialExpert,
       ratingContext: ratingContext,
@@ -77,6 +79,7 @@ Future<WineRatingResult?> showWineRatingSheet({
 class _WineRatingSheet extends ConsumerStatefulWidget {
   const _WineRatingSheet({
     required this.wine,
+    required this.wineType,
     required this.initial,
     required this.initialExpert,
     required this.ratingContext,
@@ -86,6 +89,7 @@ class _WineRatingSheet extends ConsumerStatefulWidget {
   });
 
   final WineEntity? wine;
+  final WineType wineType;
   final double initial;
   final ExpertTastingEntity? initialExpert;
   final String ratingContext;
@@ -276,10 +280,10 @@ class _WineRatingSheetState extends ConsumerState<_WineRatingSheet> {
               duration: const Duration(milliseconds: 220),
               curve: Curves.easeOutCubic,
               alignment: Alignment.topCenter,
-              child: _expertExpanded && wine != null
+              child: _expertExpanded
                   ? ExpertRatingPanel(
                       loading: _expertLoading,
-                      wineType: wine.type,
+                      wineType: widget.wineType,
                       tasting: _tasting,
                       aromasExpanded: _aromasExpanded,
                       onTastingChange: (t) => setState(() => _tasting = t),

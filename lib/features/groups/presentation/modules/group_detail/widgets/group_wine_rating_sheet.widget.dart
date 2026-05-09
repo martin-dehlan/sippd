@@ -29,6 +29,7 @@ Future<void> showGroupWineRatingSheet({
   return showModalBottomSheet(
     context: context,
     isScrollControlled: true,
+    useSafeArea: true,
     backgroundColor: Theme.of(context).colorScheme.surface,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(
@@ -62,6 +63,7 @@ class _SheetState extends ConsumerState<_Sheet> {
   bool _expertLoading = false;
   bool _aromasExpanded = false;
   ExpertTastingEntity _tasting = const ExpertTastingEntity();
+  ExpertTastingEntity _savedTasting = const ExpertTastingEntity();
   // First-fetch latch — see wine_rating_sheet for rationale. Without it
   // every collapse/re-expand re-pulls from the server and overwrites the
   // user's locally-typed dimensions before they hit Save.
@@ -131,6 +133,7 @@ class _SheetState extends ConsumerState<_Sheet> {
     if (!mounted) return;
     setState(() {
       _tasting = existing ?? const ExpertTastingEntity();
+      _savedTasting = _tasting;
       _aromasExpanded = (existing?.aromaTags ?? const []).isNotEmpty;
       _expertLoading = false;
       _expertLoaded = true;
@@ -196,6 +199,7 @@ class _SheetState extends ConsumerState<_Sheet> {
         setState(() {
           _savedRating = _myRating;
           _savedNotes = notes;
+          _savedTasting = _tasting;
           _justSaved = true;
         });
         _savedTimer?.cancel();
@@ -316,7 +320,8 @@ class _SheetState extends ConsumerState<_Sheet> {
     final isDirty =
         _myRating != null &&
         (_myRating != _savedRating ||
-            _notesController.text.trim() != _savedNotes.trim());
+            _notesController.text.trim() != _savedNotes.trim() ||
+            (_expertExpanded && _tasting != _savedTasting));
 
     return Padding(
       padding: EdgeInsets.only(
