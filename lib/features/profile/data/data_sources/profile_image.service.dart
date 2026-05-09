@@ -24,26 +24,35 @@ class ProfileImageService {
     return uploadImage(userId: userId, filePath: photo.path);
   }
 
+  static const _extToMime = {
+    'jpg': 'image/jpeg',
+    'jpeg': 'image/jpeg',
+    'png': 'image/png',
+    'webp': 'image/webp',
+  };
+
   Future<String> uploadImage({
     required String userId,
     required String filePath,
   }) async {
     final file = File(filePath);
-    final ext = filePath.split('.').last;
+    final rawExt = filePath.split('.').last.toLowerCase();
+    // Bucket allowlist is image/jpeg|png|webp; coerce unknown/heic to jpg
+    // so the contentType always matches one the bucket accepts.
+    final ext = _extToMime.containsKey(rawExt) ? rawExt : 'jpg';
+    final mime = _extToMime[ext]!;
     final fileName = '${const Uuid().v4()}.$ext';
     final storagePath = '$userId/$fileName';
 
-    // Force JPEG MIME: picker may return HEIC bytes whose mime lookup falls
-    // back to octet-stream; bucket allowlist is image/jpeg|png|webp only.
     await _client.storage
         .from('avatars')
         .upload(
           storagePath,
           file,
-          fileOptions: const FileOptions(
+          fileOptions: FileOptions(
             cacheControl: '3600',
             upsert: true,
-            contentType: 'image/jpeg',
+            contentType: mime,
           ),
         );
 
