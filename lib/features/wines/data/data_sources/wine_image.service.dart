@@ -46,27 +46,17 @@ class WineImageService {
     final fileName = '${const Uuid().v4()}.$ext';
     final storagePath = '$userId/$fileName';
 
-    final size = await file.length();
-    // ignore: avoid_print
-    print('[wine_image] upload path=$storagePath mime=$mime size=$size '
-        'rawExt=$rawExt');
-    try {
-      await _client.storage
-          .from('wine-images')
-          .upload(
-            storagePath,
-            file,
-            fileOptions: FileOptions(
-              cacheControl: '3600',
-              upsert: true,
-              contentType: mime,
-            ),
-          );
-    } catch (e, st) {
-      // ignore: avoid_print
-      print('[wine_image] UPLOAD FAILED: $e\n$st');
-      rethrow;
-    }
+    await _client.storage
+        .from('wine-images')
+        .upload(
+          storagePath,
+          file,
+          fileOptions: FileOptions(
+            cacheControl: '3600',
+            upsert: true,
+            contentType: mime,
+          ),
+        );
 
     final publicUrl = _client.storage
         .from('wine-images')
