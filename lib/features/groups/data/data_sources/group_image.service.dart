@@ -35,12 +35,18 @@ class GroupImageService {
     final fileName = '${const Uuid().v4()}.$ext';
     final storagePath = '$groupId/$fileName';
 
+    // Force JPEG MIME: picker may return HEIC bytes whose mime lookup falls
+    // back to octet-stream; bucket allowlist is image/jpeg|png|webp only.
     await _client.storage
         .from(bucket)
         .upload(
           storagePath,
           file,
-          fileOptions: const FileOptions(cacheControl: '3600', upsert: true),
+          fileOptions: const FileOptions(
+            cacheControl: '3600',
+            upsert: true,
+            contentType: 'image/jpeg',
+          ),
         );
 
     return _client.storage.from(bucket).getPublicUrl(storagePath);

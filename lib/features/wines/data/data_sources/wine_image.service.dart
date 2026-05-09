@@ -39,12 +39,18 @@ class WineImageService {
     final fileName = '${const Uuid().v4()}.$ext';
     final storagePath = '$userId/$fileName';
 
+    // Force JPEG MIME: picker may return HEIC bytes whose mime lookup falls
+    // back to octet-stream; bucket allowlist is image/jpeg|png|webp only.
     await _client.storage
         .from('wine-images')
         .upload(
           storagePath,
           file,
-          fileOptions: const FileOptions(cacheControl: '3600', upsert: true),
+          fileOptions: const FileOptions(
+            cacheControl: '3600',
+            upsert: true,
+            contentType: 'image/jpeg',
+          ),
         );
 
     final publicUrl = _client.storage
