@@ -1,24 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../../../../../common/utils/responsive.dart';
-
-enum CompareWinner { left, right, none }
-
-const _winnerGold = Color(0xFFD4A84B);
 
 class WineCompareAttributeRow extends StatelessWidget {
   final String label;
   final String? leftValue;
   final String? rightValue;
-  final CompareWinner winner;
 
   const WineCompareAttributeRow({
     super.key,
     required this.label,
     required this.leftValue,
     required this.rightValue,
-    this.winner = CompareWinner.none,
   });
 
   @override
@@ -35,11 +28,7 @@ class WineCompareAttributeRow extends StatelessWidget {
         children: [
           Expanded(
             flex: 5,
-            child: _Value(
-              text: leftValue,
-              align: TextAlign.right,
-              isWinner: winner == CompareWinner.left,
-            ),
+            child: _Value(text: leftValue, align: TextAlign.right),
           ),
           SizedBox(width: context.w * 0.025),
           Expanded(
@@ -58,11 +47,7 @@ class WineCompareAttributeRow extends StatelessWidget {
           SizedBox(width: context.w * 0.025),
           Expanded(
             flex: 5,
-            child: _Value(
-              text: rightValue,
-              align: TextAlign.left,
-              isWinner: winner == CompareWinner.right,
-            ),
+            child: _Value(text: rightValue, align: TextAlign.left),
           ),
         ],
       ),
@@ -73,23 +58,19 @@ class WineCompareAttributeRow extends StatelessWidget {
 class _Value extends StatelessWidget {
   final String? text;
   final TextAlign align;
-  final bool isWinner;
 
-  const _Value({
-    required this.text,
-    required this.align,
-    required this.isWinner,
-  });
+  const _Value({required this.text, required this.align});
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final empty = (text ?? '').isEmpty;
+    final alignment = align == TextAlign.right
+        ? Alignment.centerRight
+        : Alignment.centerLeft;
     if (empty) {
       return Align(
-        alignment: align == TextAlign.right
-            ? Alignment.centerRight
-            : Alignment.centerLeft,
+        alignment: alignment,
         child: Text(
           '—',
           style: TextStyle(
@@ -100,48 +81,20 @@ class _Value extends StatelessWidget {
         ),
       );
     }
-    final valueText = Text(
-      text!,
-      textAlign: align,
-      maxLines: 2,
-      overflow: TextOverflow.ellipsis,
-      style: GoogleFonts.playfairDisplay(
-        fontSize: context.bodyFont * 1.05,
-        fontWeight: isWinner ? FontWeight.w800 : FontWeight.w600,
-        fontStyle: FontStyle.italic,
-        color: cs.onSurface,
-        height: 1.2,
-      ),
-    );
-    if (!isWinner) {
-      return Align(
-        alignment: align == TextAlign.right
-            ? Alignment.centerRight
-            : Alignment.centerLeft,
-        child: valueText,
-      );
-    }
-    final marker = Icon(
-      PhosphorIconsFill.checkCircle,
-      size: context.w * 0.035,
-      color: _winnerGold,
-    );
-    final isRight = align == TextAlign.right;
     return Align(
-      alignment: isRight ? Alignment.centerRight : Alignment.centerLeft,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: isRight
-            ? [
-                Flexible(child: valueText),
-                SizedBox(width: context.w * 0.014),
-                marker,
-              ]
-            : [
-                marker,
-                SizedBox(width: context.w * 0.014),
-                Flexible(child: valueText),
-              ],
+      alignment: alignment,
+      child: Text(
+        text!,
+        textAlign: align,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+        style: GoogleFonts.playfairDisplay(
+          fontSize: context.bodyFont * 1.05,
+          fontWeight: FontWeight.w600,
+          fontStyle: FontStyle.italic,
+          color: cs.onSurface,
+          height: 1.2,
+        ),
       ),
     );
   }

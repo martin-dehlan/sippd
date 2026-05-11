@@ -341,7 +341,6 @@ class _AttributesCard extends StatelessWidget {
             label: 'PRICE',
             leftValue: _price(left),
             rightValue: _price(right),
-            winner: _priceWinner(left, right),
           ),
         ],
       ),
@@ -367,13 +366,6 @@ class _AttributesCard extends StatelessWidget {
 
   static String? _price(WineEntity w) =>
       w.price == null ? null : '${w.currency} ${formatPrice(w.price!)}';
-
-  static CompareWinner _priceWinner(WineEntity a, WineEntity b) {
-    if (a.price == null || b.price == null) return CompareWinner.none;
-    if (a.price! < b.price!) return CompareWinner.left;
-    if (b.price! < a.price!) return CompareWinner.right;
-    return CompareWinner.none;
-  }
 }
 
 class _Divider extends StatelessWidget {
