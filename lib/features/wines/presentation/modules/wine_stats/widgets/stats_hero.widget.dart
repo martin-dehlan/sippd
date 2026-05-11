@@ -7,17 +7,20 @@ import '../../../../../../common/utils/responsive.dart';
 import '../../../../../../common/widgets/skeleton.widget.dart';
 import '../../../../controller/wine_stats.provider.dart';
 
-/// Wine-rating-first hero. Headline is the user's average rating with
+/// Wine-rating-first hero. Headline is the user's unified average rating
+/// (personal + group + tasting, deduped latest-wins per canonical) with
 /// a visual meter — that's the metric that defines them as a rater on
-/// a 0–10 scale. Volume (wines + regions) is a thin caption underneath.
+/// a 0–10 scale. Volume splits across three context chips underneath so
+/// the user sees where their ratings actually come from.
 class StatsHero extends ConsumerWidget {
   const StatsHero({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final hero = ref.watch(statsHeroProvider);
+    final localHero = ref.watch(statsHeroProvider);
+    final summaryAsync = ref.watch(userRatingSummaryProvider);
     final cs = Theme.of(context).colorScheme;
-    final hasWines = hero.totalWines > 0;
+    final hasLocalWines = localHero.totalWines > 0;
 
     return Animate(
       effects: [
@@ -41,12 +44,34 @@ class StatsHero extends ConsumerWidget {
           borderRadius: BorderRadius.circular(context.w * 0.05),
           border: Border.all(color: cs.outlineVariant, width: 0.5),
         ),
-        child: hasWines
-            ? _RatedContent(
-                avgRating: hero.avgRating,
-                totalWines: hero.totalWines,
-                regions: hero.distinctRegions,
-                cs: cs,
+        child: hasLocalWines
+            ? summaryAsync.when(
+                data: (summary) => _RatedContent(
+                  avgRating: summary.avgRating ?? localHero.avgRating,
+                  personalCount: summary.personalCount,
+                  groupCount: summary.groupCount,
+                  tastingCount: summary.tastingCount,
+                  cs: cs,
+                ),
+                // Loading: pre-fill with personal sync data so the avg
+                // doesn't flash to "—" between RPC fires. Group/tasting
+                // counts stay hidden until the RPC lands.
+                loading: () => _RatedContent(
+                  avgRating: localHero.avgRating,
+                  personalCount: localHero.totalWines,
+                  groupCount: 0,
+                  tastingCount: 0,
+                  cs: cs,
+                ),
+                // Error: still show personal-only so the screen never
+                // feels broken. RPC retries on next invalidation.
+                error: (_, _) => _RatedContent(
+                  avgRating: localHero.avgRating,
+                  personalCount: localHero.totalWines,
+                  groupCount: 0,
+                  tastingCount: 0,
+                  cs: cs,
+                ),
               )
             : const _EmptyContent(),
       ),
@@ -56,14 +81,16 @@ class StatsHero extends ConsumerWidget {
 
 class _RatedContent extends StatelessWidget {
   final double avgRating;
-  final int totalWines;
-  final int regions;
+  final int personalCount;
+  final int groupCount;
+  final int tastingCount;
   final ColorScheme cs;
 
   const _RatedContent({
     required this.avgRating,
-    required this.totalWines,
-    required this.regions,
+    required this.personalCount,
+    required this.groupCount,
+    required this.tastingCount,
     required this.cs,
   });
 
@@ -126,7 +153,6 @@ class _RatedContent extends StatelessWidget {
           ],
         ),
         SizedBox(height: context.s),
-        // Visual meter: avg rating filling a horizontal bar.
         ClipRRect(
           borderRadius: BorderRadius.circular(context.w * 0.012),
           child: Stack(
@@ -151,35 +177,76 @@ class _RatedContent extends StatelessWidget {
           ),
         ),
         SizedBox(height: context.m),
-        Row(
-          children: [
-            _CaptionStat(
-              icon: PhosphorIconsFill.wine,
-              count: totalWines,
-              label: totalWines == 1 ? 'wine' : 'wines',
-              cs: cs,
-            ),
-            SizedBox(width: context.l),
-            _CaptionStat(
-              icon: PhosphorIconsFill.mapPin,
-              count: regions,
-              label: regions == 1 ? 'region' : 'regions',
-              cs: cs,
-            ),
-          ],
+        // Context chips: only render the ones with > 0 ratings so a
+        // brand-new user (just personal logs) doesn't see lonely zeroes.
+        _ContextChipsRow(
+          personalCount: personalCount,
+          groupCount: groupCount,
+          tastingCount: tastingCount,
+          cs: cs,
         ),
       ],
     );
   }
 }
 
-class _CaptionStat extends StatelessWidget {
+class _ContextChipsRow extends StatelessWidget {
+  final int personalCount;
+  final int groupCount;
+  final int tastingCount;
+  final ColorScheme cs;
+
+  const _ContextChipsRow({
+    required this.personalCount,
+    required this.groupCount,
+    required this.tastingCount,
+    required this.cs,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final chips = <Widget>[
+      if (personalCount > 0)
+        _ContextChip(
+          icon: PhosphorIconsFill.wine,
+          count: personalCount,
+          label: 'personal',
+          cs: cs,
+        ),
+      if (groupCount > 0)
+        _ContextChip(
+          icon: PhosphorIconsFill.usersThree,
+          count: groupCount,
+          label: 'group',
+          cs: cs,
+        ),
+      if (tastingCount > 0)
+        _ContextChip(
+          icon: PhosphorIconsFill.sparkle,
+          count: tastingCount,
+          label: 'tasting',
+          cs: cs,
+        ),
+    ];
+    if (chips.isEmpty) return const SizedBox.shrink();
+    return Row(
+      children: [
+        for (var i = 0; i < chips.length; i++) ...[
+          if (i > 0) SizedBox(width: context.l),
+          chips[i],
+        ],
+      ],
+    );
+  }
+}
+
+class _ContextChip extends StatelessWidget {
   final IconData icon;
   final int count;
   final String label;
   final ColorScheme cs;
 
-  const _CaptionStat({
+  const _ContextChip({
     required this.icon,
     required this.count,
     required this.label,
@@ -188,26 +255,32 @@ class _CaptionStat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, color: cs.primary, size: context.captionFont * 1.05),
-        SizedBox(width: context.xs),
-        Text(
-          count.toString(),
-          style: TextStyle(
-            fontSize: context.bodyFont,
-            fontWeight: FontWeight.w800,
-            color: cs.onSurface,
-            letterSpacing: -0.2,
-          ),
+        Row(
+          children: [
+            Icon(icon, color: cs.primary, size: context.captionFont * 1.05),
+            SizedBox(width: context.xs),
+            Text(
+              count.toString(),
+              style: TextStyle(
+                fontSize: context.bodyFont,
+                fontWeight: FontWeight.w800,
+                color: cs.onSurface,
+                letterSpacing: -0.2,
+              ),
+            ),
+          ],
         ),
-        SizedBox(width: context.xs * 0.7),
+        SizedBox(height: context.xs * 0.3),
         Text(
           label,
           style: TextStyle(
-            fontSize: context.captionFont,
+            fontSize: context.captionFont * 0.9,
             color: cs.onSurfaceVariant,
             fontWeight: FontWeight.w500,
+            letterSpacing: 0.1,
           ),
         ),
       ],
@@ -258,9 +331,11 @@ class _EmptyContent extends StatelessWidget {
           SizedBox(height: context.m),
           Row(
             children: [
-              const _CaptionSkeleton(),
+              const _ChipSkeleton(),
               SizedBox(width: context.l),
-              const _CaptionSkeleton(),
+              const _ChipSkeleton(),
+              SizedBox(width: context.l),
+              const _ChipSkeleton(),
             ],
           ),
         ],
@@ -269,18 +344,23 @@ class _EmptyContent extends StatelessWidget {
   }
 }
 
-class _CaptionSkeleton extends StatelessWidget {
-  const _CaptionSkeleton();
+class _ChipSkeleton extends StatelessWidget {
+  const _ChipSkeleton();
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SkeletonBox.circle(size: context.captionFont * 1.05),
-        SizedBox(width: context.xs),
-        SkeletonBox(width: context.w * 0.06, height: context.bodyFont),
-        SizedBox(width: context.xs * 0.7),
-        SkeletonBox(width: context.w * 0.12, height: context.captionFont),
+        Row(
+          children: [
+            SkeletonBox.circle(size: context.captionFont * 1.05),
+            SizedBox(width: context.xs),
+            SkeletonBox(width: context.w * 0.06, height: context.bodyFont),
+          ],
+        ),
+        SizedBox(height: context.xs * 0.3),
+        SkeletonBox(width: context.w * 0.12, height: context.captionFont * 0.9),
       ],
     );
   }

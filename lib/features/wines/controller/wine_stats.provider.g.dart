@@ -188,5 +188,35 @@ final statsTypeBreakdownProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef StatsTypeBreakdownRef = AutoDisposeProviderRef<List<TypeBreakdown>>;
+String _$userRatingSummaryHash() => r'247be51584fa481d9ed2779d3c3a36807e0eb949';
+
+/// Server-aggregated rating summary unified across personal + group +
+/// tasting contexts, deduped latest-wins per canonical_wine_id. Powers the
+/// stats-hero avg + the 3 context chips and any breakdown that wants
+/// "your whole drinking life" semantics.
+///
+/// Offline contract: on RPC failure, last successful payload is served
+/// from the Drift `rating_summary_cache` table. With no cached payload,
+/// the error propagates so UI can show a retry state — we don't silently
+/// fall back to a personal-only local recompute (would lie about the
+/// number).
+///
+/// Copied from [UserRatingSummary].
+@ProviderFor(UserRatingSummary)
+final userRatingSummaryProvider =
+    AutoDisposeAsyncNotifierProvider<
+      UserRatingSummary,
+      RatingSummaryModel
+    >.internal(
+      UserRatingSummary.new,
+      name: r'userRatingSummaryProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$userRatingSummaryHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+typedef _$UserRatingSummary = AutoDisposeAsyncNotifier<RatingSummaryModel>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

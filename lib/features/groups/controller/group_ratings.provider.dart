@@ -4,7 +4,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../common/services/analytics/analytics.provider.dart';
 import '../../../common/services/connectivity/connectivity.provider.dart';
 import '../../auth/controller/auth.provider.dart';
+import '../../taste_match/controller/taste_match.provider.dart';
 import '../../wines/controller/wine.provider.dart';
+import '../../wines/controller/wine_stats.provider.dart';
 import '../../wines/domain/entities/wine.entity.dart';
 import '../data/models/group_wine_rating.model.dart';
 import '../domain/entities/group_wine_rating.entity.dart';
@@ -199,6 +201,7 @@ class GroupWineRatingController extends _$GroupWineRatingController {
         );
     ref.invalidate(groupWineRatingsProvider(groupId, canonicalWineId));
     ref.invalidate(groupWineRanksProvider(groupId));
+    _invalidateUnifiedAggregates(userId);
   }
 
   Future<void> deleteRating({
@@ -216,6 +219,15 @@ class GroupWineRatingController extends _$GroupWineRatingController {
         .eq('user_id', userId);
     ref.invalidate(groupWineRatingsProvider(groupId, canonicalWineId));
     ref.invalidate(groupWineRanksProvider(groupId));
+    _invalidateUnifiedAggregates(userId);
+  }
+
+  /// Group ratings now feed the user's unified stats hero + taste compass
+  /// (latest-wins per canonical). Without invalidation, stats stay stale
+  /// until the next cold read.
+  void _invalidateUnifiedAggregates(String userId) {
+    ref.invalidate(userRatingSummaryProvider);
+    ref.invalidate(tasteCompassProvider(userId));
   }
 }
 

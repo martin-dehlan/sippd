@@ -1,8 +1,11 @@
+import 'dart:convert';
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../auth/controller/auth.provider.dart';
 import '../../groups/data/models/drinking_partner.model.dart';
 import '../../groups/domain/entities/drinking_partner.entity.dart';
+import '../data/models/rating_summary.model.dart';
 import '../domain/entities/wine.entity.dart';
 import 'wine.provider.dart';
 
@@ -44,6 +47,51 @@ class TypeBreakdown {
 @riverpod
 List<WineEntity> _wineList(_WineListRef ref) {
   return ref.watch(wineControllerProvider).valueOrNull ?? const [];
+}
+
+/// Server-aggregated rating summary unified across personal + group +
+/// tasting contexts, deduped latest-wins per canonical_wine_id. Powers the
+/// stats-hero avg + the 3 context chips and any breakdown that wants
+/// "your whole drinking life" semantics.
+///
+/// Offline contract: on RPC failure, last successful payload is served
+/// from the Drift `rating_summary_cache` table. With no cached payload,
+/// the error propagates so UI can show a retry state — we don't silently
+/// fall back to a personal-only local recompute (would lie about the
+/// number).
+@riverpod
+class UserRatingSummary extends _$UserRatingSummary {
+  @override
+  Future<RatingSummaryModel> build() async {
+    final userId = ref.watch(currentUserIdProvider);
+    if (userId == null) return RatingSummaryModel.empty();
+    final db = ref.read(appDatabaseProvider);
+    final dao = db.ratingSummaryCacheDao;
+    final client = ref.read(supabaseClientProvider);
+
+    try {
+      final raw = await client.rpc(
+        'get_user_rating_summary',
+        params: {'p_user_id': userId},
+      );
+      if (raw is Map) {
+        final m = Map<String, dynamic>.from(raw);
+        await dao.upsert(userId, jsonEncode(m), DateTime.now());
+        return RatingSummaryModel.fromJson(m);
+      }
+      // Unexpected null/empty response — try cache before giving up.
+    } catch (_) {
+      // Fall through to cache.
+    }
+
+    final cached = await dao.getByUser(userId);
+    if (cached != null) {
+      return RatingSummaryModel.fromJson(
+        Map<String, dynamic>.from(jsonDecode(cached.payload) as Map),
+      );
+    }
+    return RatingSummaryModel.empty();
+  }
 }
 
 @riverpod

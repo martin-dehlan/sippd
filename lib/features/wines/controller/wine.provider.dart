@@ -6,6 +6,7 @@ import '../data/services/outbox_flusher.service.dart';
 import '../../auth/controller/auth.provider.dart';
 import '../../onboarding/controller/onboarding.provider.dart';
 import '../../taste_match/controller/taste_match.provider.dart';
+import 'wine_stats.provider.dart';
 import '../domain/entities/canonical_grape.entity.dart';
 import '../domain/entities/canonical_merge_pair.entity.dart';
 import '../domain/entities/canonical_wine_candidate.entity.dart';
@@ -287,6 +288,9 @@ class WineController extends _$WineController {
     ref.invalidate(tasteCompassProvider(userId));
     ref.invalidate(userStyleDnaProvider(userId));
     ref.invalidate(userTopGrapesProvider(userId));
+    // Stats hero + breakdowns read unified rating summary; rating events
+    // here change its avg and counts.
+    ref.invalidate(userRatingSummaryProvider);
   }
 
   Future<void> deleteWine(String id) async {
