@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/inline_error.widget.dart';
 import '../../../../../core/routes/app.routes.dart';
@@ -76,7 +77,7 @@ class _EmailConfirmationScreenState
       _startCooldown();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Email sent.'),
+          content: Text(AppLocalizations.of(context).authConfEmailSent),
           backgroundColor: Theme.of(context).colorScheme.primary,
         ),
       );
@@ -100,18 +101,19 @@ class _EmailConfirmationScreenState
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final canResend = _secondsLeft == 0 && !_isSending;
     final resendLabel = _secondsLeft > 0
-        ? 'Resend in ${_secondsLeft}s'
-        : (_isSending ? 'Sending…' : 'Resend email');
+        ? l10n.authConfResendIn(_secondsLeft)
+        : (_isSending ? l10n.authConfResendSending : l10n.authConfResendEmail);
 
-    final title = _isReset ? 'Reset link sent' : 'Check your inbox';
+    final title = _isReset ? l10n.authConfTitleReset : l10n.authConfTitleSignup;
     final intro = _isReset
-        ? 'We sent a password reset link to'
-        : 'We sent a confirmation link to';
+        ? l10n.authConfIntroReset
+        : l10n.authConfIntroSignup;
     final outro = _isReset
-        ? '.\nTap it to set a new password.'
-        : '.\nTap it to activate your account.';
+        ? l10n.authConfOutroReset
+        : l10n.authConfOutroSignup;
 
     return Scaffold(
       body: SafeArea(
@@ -153,7 +155,7 @@ class _EmailConfirmationScreenState
                         onPressed: _openMailApp,
                         icon: const Icon(PhosphorIconsRegular.envelope),
                         label: Text(
-                          'Open mail app',
+                          l10n.authConfOpenMailApp,
                           style: TextStyle(
                             fontSize: context.bodyFont,
                             fontWeight: FontWeight.w600,
@@ -178,7 +180,7 @@ class _EmailConfirmationScreenState
                     if (_resendError != null)
                       InlineFieldError(
                         error: _resendError,
-                        fallback: "Couldn't send. Try again in a moment.",
+                        fallback: l10n.authConfResendFailedFallback,
                       ),
                   ],
                 ),
@@ -188,7 +190,7 @@ class _EmailConfirmationScreenState
                 child: TextButton(
                   onPressed: _backToLogin,
                   child: Text(
-                    'Back to sign in',
+                    l10n.authConfBackToSignIn,
                     style: TextStyle(
                       fontSize: context.captionFont,
                       color: cs.outline,

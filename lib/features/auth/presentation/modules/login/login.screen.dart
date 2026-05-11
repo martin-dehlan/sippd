@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/app_logo.widget.dart';
 import '../../../../../common/widgets/inline_error.widget.dart';
@@ -94,11 +95,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Future<void> _forgotPassword() async {
+    final l10n = AppLocalizations.of(context);
     final email = _emailController.text.trim();
     if (!_emailRe.hasMatch(email)) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Enter a valid email above first.'),
+          content: Text(l10n.authLoginEnterValidEmailFirst),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
@@ -128,6 +130,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final authState = ref.watch(authControllerProvider);
     final isLoading = authState.isLoading;
 
@@ -154,7 +157,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                   SizedBox(height: context.xs),
                   Text(
-                    _isSignUp ? 'Create your account' : 'Welcome back',
+                    _isSignUp
+                        ? l10n.authLoginCreateAccount
+                        : l10n.authLoginWelcomeBack,
                     style: TextStyle(
                       fontSize: context.captionFont,
                       color: cs.onSurfaceVariant,
@@ -168,15 +173,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       controller: _displayNameController,
                       maxLength: 30,
                       inputFormatters: [LengthLimitingTextInputFormatter(30)],
-                      decoration: const InputDecoration(
-                        labelText: 'Display Name',
-                        prefixIcon: Icon(PhosphorIconsRegular.user),
+                      decoration: InputDecoration(
+                        labelText: l10n.authLoginDisplayNameLabel,
+                        prefixIcon: const Icon(PhosphorIconsRegular.user),
                         counterText: '',
                       ),
                       validator: (v) {
                         final t = v?.trim() ?? '';
-                        if (t.length < 2) return 'Min 2 characters';
-                        if (t.length > 30) return 'Max 30 characters';
+                        if (t.length < 2) return l10n.authLoginDisplayNameMin;
+                        if (t.length > 30) return l10n.authLoginDisplayNameMax;
                         return null;
                       },
                     ),
@@ -190,14 +195,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     autocorrect: false,
                     maxLength: 254,
                     inputFormatters: [LengthLimitingTextInputFormatter(254)],
-                    decoration: const InputDecoration(
-                      labelText: 'Email',
-                      prefixIcon: Icon(PhosphorIconsRegular.envelope),
+                    decoration: InputDecoration(
+                      labelText: l10n.authLoginEmailLabel,
+                      prefixIcon: const Icon(PhosphorIconsRegular.envelope),
                       counterText: '',
                     ),
                     validator: (v) {
                       if (!_emailRe.hasMatch(v?.trim() ?? '')) {
-                        return 'Valid email required';
+                        return l10n.authLoginEmailInvalid;
                       }
                       return null;
                     },
@@ -212,19 +217,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     obscureText: true,
                     maxLength: 72,
                     inputFormatters: [LengthLimitingTextInputFormatter(72)],
-                    decoration: const InputDecoration(
-                      labelText: 'Password',
-                      prefixIcon: Icon(PhosphorIconsRegular.lockSimple),
+                    decoration: InputDecoration(
+                      labelText: l10n.authLoginPasswordLabel,
+                      prefixIcon: const Icon(PhosphorIconsRegular.lockSimple),
                       counterText: '',
                     ),
                     validator: (v) {
                       if (_isSignUp) {
                         if (v == null || v.length < 8) {
-                          return 'Min 8 characters';
+                          return l10n.authLoginPasswordMin;
                         }
                       } else {
                         if (v == null || v.isEmpty) {
-                          return 'Enter password';
+                          return l10n.authLoginPasswordRequired;
                         }
                       }
                       return null;
@@ -239,14 +244,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       obscureText: true,
                       maxLength: 72,
                       inputFormatters: [LengthLimitingTextInputFormatter(72)],
-                      decoration: const InputDecoration(
-                        labelText: 'Confirm Password',
-                        prefixIcon: Icon(PhosphorIconsRegular.lockSimple),
+                      decoration: InputDecoration(
+                        labelText: l10n.authLoginConfirmPasswordLabel,
+                        prefixIcon: const Icon(PhosphorIconsRegular.lockSimple),
                         counterText: '',
                       ),
                       validator: (v) {
                         if (v != _passwordController.text) {
-                          return "Passwords don't match";
+                          return l10n.authLoginPasswordsDontMatch;
                         }
                         return null;
                       },
@@ -260,7 +265,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       child: TextButton(
                         onPressed: _forgotPassword,
                         child: Text(
-                          'Forgot password?',
+                          l10n.authLoginForgotPassword,
                           style: TextStyle(
                             fontSize: context.captionFont,
                             color: cs.outline,
@@ -274,13 +279,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     InlineFieldError(
                       error: _submitError,
                       fallback: _isSignUp
-                          ? "Couldn't create account. Try again."
-                          : "Sign-in failed. Check your details.",
+                          ? l10n.authLoginSignUpFailedFallback
+                          : l10n.authLoginSignInFailedFallback,
                     ),
                     SizedBox(height: context.s),
                   ],
                   RetryActionButton(
-                    idleLabel: _isSignUp ? 'Create Account' : 'Sign In',
+                    idleLabel: _isSignUp
+                        ? l10n.authLoginCreateAccountButton
+                        : l10n.authLoginSignInButton,
                     loading: isLoading,
                     error: _submitError,
                     onPressed: _submit,
@@ -301,8 +308,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     }),
                     child: Text(
                       _isSignUp
-                          ? 'Already have an account? Sign In'
-                          : 'Don\'t have an account? Sign Up',
+                          ? l10n.authLoginToggleHaveAccount
+                          : l10n.authLoginToggleNoAccount,
                       style: TextStyle(fontSize: context.captionFont),
                     ),
                   ),

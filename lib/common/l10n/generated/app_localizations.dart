@@ -901,6 +901,468 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Value'**
   String get tasteEditorGoalValue;
+
+  /// No description provided for @authLoginWelcomeBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome back'**
+  String get authLoginWelcomeBack;
+
+  /// No description provided for @authLoginCreateAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Create your account'**
+  String get authLoginCreateAccount;
+
+  /// No description provided for @authLoginDisplayNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Display Name'**
+  String get authLoginDisplayNameLabel;
+
+  /// No description provided for @authLoginEmailLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get authLoginEmailLabel;
+
+  /// No description provided for @authLoginPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get authLoginPasswordLabel;
+
+  /// No description provided for @authLoginConfirmPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Password'**
+  String get authLoginConfirmPasswordLabel;
+
+  /// No description provided for @authLoginDisplayNameMin.
+  ///
+  /// In en, this message translates to:
+  /// **'Min 2 characters'**
+  String get authLoginDisplayNameMin;
+
+  /// No description provided for @authLoginDisplayNameMax.
+  ///
+  /// In en, this message translates to:
+  /// **'Max 30 characters'**
+  String get authLoginDisplayNameMax;
+
+  /// No description provided for @authLoginEmailInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Valid email required'**
+  String get authLoginEmailInvalid;
+
+  /// No description provided for @authLoginPasswordMin.
+  ///
+  /// In en, this message translates to:
+  /// **'Min 8 characters'**
+  String get authLoginPasswordMin;
+
+  /// No description provided for @authLoginPasswordRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter password'**
+  String get authLoginPasswordRequired;
+
+  /// No description provided for @authLoginPasswordsDontMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords don\'t match'**
+  String get authLoginPasswordsDontMatch;
+
+  /// No description provided for @authLoginForgotPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot password?'**
+  String get authLoginForgotPassword;
+
+  /// No description provided for @authLoginEnterValidEmailFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid email above first.'**
+  String get authLoginEnterValidEmailFirst;
+
+  /// No description provided for @authLoginSignUpFailedFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t create account. Try again.'**
+  String get authLoginSignUpFailedFallback;
+
+  /// No description provided for @authLoginSignInFailedFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign-in failed. Check your details.'**
+  String get authLoginSignInFailedFallback;
+
+  /// No description provided for @authLoginCreateAccountButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Account'**
+  String get authLoginCreateAccountButton;
+
+  /// No description provided for @authLoginSignInButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign In'**
+  String get authLoginSignInButton;
+
+  /// No description provided for @authLoginToggleHaveAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Already have an account? Sign In'**
+  String get authLoginToggleHaveAccount;
+
+  /// No description provided for @authLoginToggleNoAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t have an account? Sign Up'**
+  String get authLoginToggleNoAccount;
+
+  /// No description provided for @authOrDivider.
+  ///
+  /// In en, this message translates to:
+  /// **'or'**
+  String get authOrDivider;
+
+  /// No description provided for @authGoogleContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue with Google'**
+  String get authGoogleContinue;
+
+  /// No description provided for @authGoogleFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Google sign-in failed. Please try again.'**
+  String get authGoogleFailed;
+
+  /// No description provided for @authConfTitleReset.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset link sent'**
+  String get authConfTitleReset;
+
+  /// No description provided for @authConfTitleSignup.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your inbox'**
+  String get authConfTitleSignup;
+
+  /// No description provided for @authConfIntroReset.
+  ///
+  /// In en, this message translates to:
+  /// **'We sent a password reset link to'**
+  String get authConfIntroReset;
+
+  /// No description provided for @authConfIntroSignup.
+  ///
+  /// In en, this message translates to:
+  /// **'We sent a confirmation link to'**
+  String get authConfIntroSignup;
+
+  /// No description provided for @authConfOutroReset.
+  ///
+  /// In en, this message translates to:
+  /// **'.\nTap it to set a new password.'**
+  String get authConfOutroReset;
+
+  /// No description provided for @authConfOutroSignup.
+  ///
+  /// In en, this message translates to:
+  /// **'.\nTap it to activate your account.'**
+  String get authConfOutroSignup;
+
+  /// No description provided for @authConfOpenMailApp.
+  ///
+  /// In en, this message translates to:
+  /// **'Open mail app'**
+  String get authConfOpenMailApp;
+
+  /// No description provided for @authConfResendEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend email'**
+  String get authConfResendEmail;
+
+  /// No description provided for @authConfResendSending.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending…'**
+  String get authConfResendSending;
+
+  /// Cooldown label on the resend button
+  ///
+  /// In en, this message translates to:
+  /// **'Resend in {seconds}s'**
+  String authConfResendIn(int seconds);
+
+  /// No description provided for @authConfEmailSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Email sent.'**
+  String get authConfEmailSent;
+
+  /// No description provided for @authConfResendFailedFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t send. Try again in a moment.'**
+  String get authConfResendFailedFallback;
+
+  /// No description provided for @authConfBackToSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to sign in'**
+  String get authConfBackToSignIn;
+
+  /// No description provided for @authResetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Set a new password'**
+  String get authResetTitle;
+
+  /// No description provided for @authResetSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a password you haven\'t used before.'**
+  String get authResetSubtitle;
+
+  /// No description provided for @authResetNewPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'New password'**
+  String get authResetNewPasswordLabel;
+
+  /// No description provided for @authResetConfirmPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm password'**
+  String get authResetConfirmPasswordLabel;
+
+  /// No description provided for @authResetPasswordMin.
+  ///
+  /// In en, this message translates to:
+  /// **'Min 6 characters'**
+  String get authResetPasswordMin;
+
+  /// No description provided for @authResetPasswordsDontMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match'**
+  String get authResetPasswordsDontMatch;
+
+  /// No description provided for @authResetFailedFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t update password. Try again.'**
+  String get authResetFailedFallback;
+
+  /// No description provided for @authResetUpdateButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Update password'**
+  String get authResetUpdateButton;
+
+  /// No description provided for @authResetUpdatedSnack.
+  ///
+  /// In en, this message translates to:
+  /// **'Password updated.'**
+  String get authResetUpdatedSnack;
+
+  /// No description provided for @authProfileGuest.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest'**
+  String get authProfileGuest;
+
+  /// No description provided for @authProfileSectionAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get authProfileSectionAccount;
+
+  /// No description provided for @authProfileSectionSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Support'**
+  String get authProfileSectionSupport;
+
+  /// No description provided for @authProfileSectionLegal.
+  ///
+  /// In en, this message translates to:
+  /// **'Legal'**
+  String get authProfileSectionLegal;
+
+  /// No description provided for @authProfileEditProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit profile'**
+  String get authProfileEditProfile;
+
+  /// No description provided for @authProfileFriends.
+  ///
+  /// In en, this message translates to:
+  /// **'Friends'**
+  String get authProfileFriends;
+
+  /// No description provided for @authProfileNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get authProfileNotifications;
+
+  /// No description provided for @authProfileCleanupDuplicates.
+  ///
+  /// In en, this message translates to:
+  /// **'Clean up duplicates'**
+  String get authProfileCleanupDuplicates;
+
+  /// No description provided for @authProfileSubscription.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription'**
+  String get authProfileSubscription;
+
+  /// No description provided for @authProfileChangePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Change password'**
+  String get authProfileChangePassword;
+
+  /// No description provided for @authProfileContactUs.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact us'**
+  String get authProfileContactUs;
+
+  /// No description provided for @authProfileRateSippd.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate Sippd'**
+  String get authProfileRateSippd;
+
+  /// No description provided for @authProfilePrivacyPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get authProfilePrivacyPolicy;
+
+  /// No description provided for @authProfileTermsOfService.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of Service'**
+  String get authProfileTermsOfService;
+
+  /// No description provided for @authProfileSignOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign Out'**
+  String get authProfileSignOut;
+
+  /// No description provided for @authProfileSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign In'**
+  String get authProfileSignIn;
+
+  /// No description provided for @authProfileDeleteAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account'**
+  String get authProfileDeleteAccount;
+
+  /// No description provided for @authProfileViewFullStats.
+  ///
+  /// In en, this message translates to:
+  /// **'View full stats'**
+  String get authProfileViewFullStats;
+
+  /// No description provided for @authProfileChangePasswordDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Change password?'**
+  String get authProfileChangePasswordDialogTitle;
+
+  /// No description provided for @authProfileChangePasswordDialogBody.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'ll send a password reset link to {email}. Tap it from your inbox to set a new password.'**
+  String authProfileChangePasswordDialogBody(String email);
+
+  /// No description provided for @authProfileCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get authProfileCancel;
+
+  /// No description provided for @authProfileSendLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Send link'**
+  String get authProfileSendLink;
+
+  /// No description provided for @authProfileSendLinkFailedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t send link'**
+  String get authProfileSendLinkFailedTitle;
+
+  /// No description provided for @authProfileSendLinkFailedFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again in a moment.'**
+  String get authProfileSendLinkFailedFallback;
+
+  /// No description provided for @authProfileOk.
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get authProfileOk;
+
+  /// No description provided for @authProfileCouldNotOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open {url}'**
+  String authProfileCouldNotOpen(String url);
+
+  /// No description provided for @authProfileDeleteDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account?'**
+  String get authProfileDeleteDialogTitle;
+
+  /// No description provided for @authProfileDeleteDialogBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This permanently deletes your profile, wines, ratings, tastings, group memberships and friends. Cannot be undone.'**
+  String get authProfileDeleteDialogBody;
+
+  /// No description provided for @authProfileDeleteTypeConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Type DELETE to confirm:'**
+  String get authProfileDeleteTypeConfirm;
+
+  /// No description provided for @authProfileDeleteHint.
+  ///
+  /// In en, this message translates to:
+  /// **'DELETE'**
+  String get authProfileDeleteHint;
+
+  /// No description provided for @authProfileDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get authProfileDelete;
+
+  /// No description provided for @authProfileDeleteFailedFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete failed.'**
+  String get authProfileDeleteFailedFallback;
 }
 
 class _AppLocalizationsDelegate

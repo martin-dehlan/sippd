@@ -4,6 +4,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/inline_error.widget.dart';
 import '../../../../../core/routes/app.routes.dart';
@@ -47,7 +48,7 @@ class _PasswordRecoveryScreenState
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Password updated.'),
+          content: Text(AppLocalizations.of(context).authResetUpdatedSnack),
           backgroundColor: Theme.of(context).colorScheme.primary,
         ),
       );
@@ -63,6 +64,7 @@ class _PasswordRecoveryScreenState
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       body: SafeArea(
@@ -77,7 +79,7 @@ class _PasswordRecoveryScreenState
                 _LockIcon(),
                 SizedBox(height: context.xl),
                 Text(
-                  'Set a new password',
+                  l10n.authResetTitle,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: context.titleFont,
@@ -87,7 +89,7 @@ class _PasswordRecoveryScreenState
                 ),
                 SizedBox(height: context.m),
                 Text(
-                  'Choose a password you haven\'t used before.',
+                  l10n.authResetSubtitle,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: context.bodyFont,
@@ -101,7 +103,7 @@ class _PasswordRecoveryScreenState
                   maxLength: 72,
                   inputFormatters: [LengthLimitingTextInputFormatter(72)],
                   decoration: InputDecoration(
-                    labelText: 'New password',
+                    labelText: l10n.authResetNewPasswordLabel,
                     counterText: '',
                     prefixIcon: const Icon(PhosphorIconsRegular.lockSimple),
                     suffixIcon: IconButton(
@@ -114,7 +116,9 @@ class _PasswordRecoveryScreenState
                     ),
                   ),
                   validator: (v) {
-                    if (v == null || v.length < 6) return 'Min 6 characters';
+                    if (v == null || v.length < 6) {
+                      return l10n.authResetPasswordMin;
+                    }
                     return null;
                   },
                 ),
@@ -124,14 +128,14 @@ class _PasswordRecoveryScreenState
                   obscureText: _obscure,
                   maxLength: 72,
                   inputFormatters: [LengthLimitingTextInputFormatter(72)],
-                  decoration: const InputDecoration(
-                    labelText: 'Confirm password',
+                  decoration: InputDecoration(
+                    labelText: l10n.authResetConfirmPasswordLabel,
                     counterText: '',
-                    prefixIcon: Icon(PhosphorIconsRegular.lockSimple),
+                    prefixIcon: const Icon(PhosphorIconsRegular.lockSimple),
                   ),
                   validator: (v) {
                     if (v != _passwordController.text) {
-                      return 'Passwords do not match';
+                      return l10n.authResetPasswordsDontMatch;
                     }
                     return null;
                   },
@@ -140,12 +144,12 @@ class _PasswordRecoveryScreenState
                 if (_submitError != null) ...[
                   InlineFieldError(
                     error: _submitError,
-                    fallback: "Couldn't update password. Try again.",
+                    fallback: l10n.authResetFailedFallback,
                   ),
                   SizedBox(height: context.s),
                 ],
                 RetryActionButton(
-                  idleLabel: 'Update password',
+                  idleLabel: l10n.authResetUpdateButton,
                   loading: _isSubmitting,
                   error: _submitError,
                   onPressed: _submit,

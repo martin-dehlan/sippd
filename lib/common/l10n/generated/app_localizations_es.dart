@@ -435,4 +435,249 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get tasteEditorGoalValue => 'Valor';
+
+  @override
+  String get authLoginWelcomeBack => 'Bienvenido de nuevo';
+
+  @override
+  String get authLoginCreateAccount => 'Crea tu cuenta';
+
+  @override
+  String get authLoginDisplayNameLabel => 'Nombre visible';
+
+  @override
+  String get authLoginEmailLabel => 'Correo';
+
+  @override
+  String get authLoginPasswordLabel => 'Contraseña';
+
+  @override
+  String get authLoginConfirmPasswordLabel => 'Confirmar contraseña';
+
+  @override
+  String get authLoginDisplayNameMin => 'Mín. 2 caracteres';
+
+  @override
+  String get authLoginDisplayNameMax => 'Máx. 30 caracteres';
+
+  @override
+  String get authLoginEmailInvalid => 'Correo válido obligatorio';
+
+  @override
+  String get authLoginPasswordMin => 'Mín. 8 caracteres';
+
+  @override
+  String get authLoginPasswordRequired => 'Introduce la contraseña';
+
+  @override
+  String get authLoginPasswordsDontMatch => 'Las contraseñas no coinciden';
+
+  @override
+  String get authLoginForgotPassword => '¿Olvidaste la contraseña?';
+
+  @override
+  String get authLoginEnterValidEmailFirst =>
+      'Primero pon un correo válido arriba.';
+
+  @override
+  String get authLoginSignUpFailedFallback =>
+      'No se pudo crear la cuenta. Inténtalo de nuevo.';
+
+  @override
+  String get authLoginSignInFailedFallback =>
+      'Error al iniciar sesión. Revisa tus datos.';
+
+  @override
+  String get authLoginCreateAccountButton => 'Crear cuenta';
+
+  @override
+  String get authLoginSignInButton => 'Iniciar sesión';
+
+  @override
+  String get authLoginToggleHaveAccount => '¿Ya tienes cuenta? Inicia sesión';
+
+  @override
+  String get authLoginToggleNoAccount => '¿No tienes cuenta? Regístrate';
+
+  @override
+  String get authOrDivider => 'o';
+
+  @override
+  String get authGoogleContinue => 'Continuar con Google';
+
+  @override
+  String get authGoogleFailed =>
+      'Error al iniciar con Google. Inténtalo de nuevo.';
+
+  @override
+  String get authConfTitleReset => 'Enlace enviado';
+
+  @override
+  String get authConfTitleSignup => 'Revisa tu bandeja';
+
+  @override
+  String get authConfIntroReset => 'Enviamos un enlace de restablecimiento a';
+
+  @override
+  String get authConfIntroSignup => 'Enviamos un enlace de confirmación a';
+
+  @override
+  String get authConfOutroReset => '.\nTócalo para poner una contraseña nueva.';
+
+  @override
+  String get authConfOutroSignup => '.\nTócalo para activar tu cuenta.';
+
+  @override
+  String get authConfOpenMailApp => 'Abrir app de correo';
+
+  @override
+  String get authConfResendEmail => 'Reenviar correo';
+
+  @override
+  String get authConfResendSending => 'Enviando…';
+
+  @override
+  String authConfResendIn(int seconds) {
+    return 'Reenviar en ${seconds}s';
+  }
+
+  @override
+  String get authConfEmailSent => 'Correo enviado.';
+
+  @override
+  String get authConfResendFailedFallback =>
+      'No se pudo enviar. Inténtalo en un momento.';
+
+  @override
+  String get authConfBackToSignIn => 'Volver al inicio de sesión';
+
+  @override
+  String get authResetTitle => 'Pon una contraseña nueva';
+
+  @override
+  String get authResetSubtitle =>
+      'Elige una contraseña que no hayas usado antes.';
+
+  @override
+  String get authResetNewPasswordLabel => 'Nueva contraseña';
+
+  @override
+  String get authResetConfirmPasswordLabel => 'Confirmar contraseña';
+
+  @override
+  String get authResetPasswordMin => 'Mín. 6 caracteres';
+
+  @override
+  String get authResetPasswordsDontMatch => 'Las contraseñas no coinciden';
+
+  @override
+  String get authResetFailedFallback =>
+      'No se pudo actualizar la contraseña. Inténtalo de nuevo.';
+
+  @override
+  String get authResetUpdateButton => 'Actualizar contraseña';
+
+  @override
+  String get authResetUpdatedSnack => 'Contraseña actualizada.';
+
+  @override
+  String get authProfileGuest => 'Invitado';
+
+  @override
+  String get authProfileSectionAccount => 'Cuenta';
+
+  @override
+  String get authProfileSectionSupport => 'Soporte';
+
+  @override
+  String get authProfileSectionLegal => 'Legal';
+
+  @override
+  String get authProfileEditProfile => 'Editar perfil';
+
+  @override
+  String get authProfileFriends => 'Amigos';
+
+  @override
+  String get authProfileNotifications => 'Notificaciones';
+
+  @override
+  String get authProfileCleanupDuplicates => 'Limpiar duplicados';
+
+  @override
+  String get authProfileSubscription => 'Suscripción';
+
+  @override
+  String get authProfileChangePassword => 'Cambiar contraseña';
+
+  @override
+  String get authProfileContactUs => 'Contáctanos';
+
+  @override
+  String get authProfileRateSippd => 'Valorar Sippd';
+
+  @override
+  String get authProfilePrivacyPolicy => 'Política de privacidad';
+
+  @override
+  String get authProfileTermsOfService => 'Términos del servicio';
+
+  @override
+  String get authProfileSignOut => 'Cerrar sesión';
+
+  @override
+  String get authProfileSignIn => 'Iniciar sesión';
+
+  @override
+  String get authProfileDeleteAccount => 'Eliminar cuenta';
+
+  @override
+  String get authProfileViewFullStats => 'Ver todas las stats';
+
+  @override
+  String get authProfileChangePasswordDialogTitle => '¿Cambiar contraseña?';
+
+  @override
+  String authProfileChangePasswordDialogBody(String email) {
+    return 'Enviaremos un enlace de restablecimiento a $email. Tócalo desde tu bandeja para poner una contraseña nueva.';
+  }
+
+  @override
+  String get authProfileCancel => 'Cancelar';
+
+  @override
+  String get authProfileSendLink => 'Enviar enlace';
+
+  @override
+  String get authProfileSendLinkFailedTitle => 'No se pudo enviar el enlace';
+
+  @override
+  String get authProfileSendLinkFailedFallback => 'Inténtalo en un momento.';
+
+  @override
+  String get authProfileOk => 'OK';
+
+  @override
+  String authProfileCouldNotOpen(String url) {
+    return 'No se pudo abrir $url';
+  }
+
+  @override
+  String get authProfileDeleteDialogTitle => '¿Eliminar cuenta?';
+
+  @override
+  String get authProfileDeleteDialogBody =>
+      'Esto elimina permanentemente tu perfil, vinos, valoraciones, catas, grupos y amigos. No se puede deshacer.';
+
+  @override
+  String get authProfileDeleteTypeConfirm => 'Escribe DELETE para confirmar:';
+
+  @override
+  String get authProfileDeleteHint => 'DELETE';
+
+  @override
+  String get authProfileDelete => 'Eliminar';
+
+  @override
+  String get authProfileDeleteFailedFallback => 'Error al eliminar.';
 }

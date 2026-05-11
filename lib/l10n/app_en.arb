@@ -192,5 +192,102 @@
   "tasteEditorGoalRemember": "Remember",
   "tasteEditorGoalDiscover": "Discover",
   "tasteEditorGoalSocial": "Social",
-  "tasteEditorGoalValue": "Value"
+  "tasteEditorGoalValue": "Value",
+
+  "authLoginWelcomeBack": "Welcome back",
+  "authLoginCreateAccount": "Create your account",
+  "authLoginDisplayNameLabel": "Display Name",
+  "authLoginEmailLabel": "Email",
+  "authLoginPasswordLabel": "Password",
+  "authLoginConfirmPasswordLabel": "Confirm Password",
+  "authLoginDisplayNameMin": "Min 2 characters",
+  "authLoginDisplayNameMax": "Max 30 characters",
+  "authLoginEmailInvalid": "Valid email required",
+  "authLoginPasswordMin": "Min 8 characters",
+  "authLoginPasswordRequired": "Enter password",
+  "authLoginPasswordsDontMatch": "Passwords don't match",
+  "authLoginForgotPassword": "Forgot password?",
+  "authLoginEnterValidEmailFirst": "Enter a valid email above first.",
+  "authLoginSignUpFailedFallback": "Couldn't create account. Try again.",
+  "authLoginSignInFailedFallback": "Sign-in failed. Check your details.",
+  "authLoginCreateAccountButton": "Create Account",
+  "authLoginSignInButton": "Sign In",
+  "authLoginToggleHaveAccount": "Already have an account? Sign In",
+  "authLoginToggleNoAccount": "Don't have an account? Sign Up",
+  "authOrDivider": "or",
+  "authGoogleContinue": "Continue with Google",
+  "authGoogleFailed": "Google sign-in failed. Please try again.",
+
+  "authConfTitleReset": "Reset link sent",
+  "authConfTitleSignup": "Check your inbox",
+  "authConfIntroReset": "We sent a password reset link to",
+  "authConfIntroSignup": "We sent a confirmation link to",
+  "authConfOutroReset": ".\nTap it to set a new password.",
+  "authConfOutroSignup": ".\nTap it to activate your account.",
+  "authConfOpenMailApp": "Open mail app",
+  "authConfResendEmail": "Resend email",
+  "authConfResendSending": "Sending…",
+  "authConfResendIn": "Resend in {seconds}s",
+  "@authConfResendIn": {
+    "description": "Cooldown label on the resend button",
+    "placeholders": {
+      "seconds": {"type": "int", "example": "42"}
+    }
+  },
+  "authConfEmailSent": "Email sent.",
+  "authConfResendFailedFallback": "Couldn't send. Try again in a moment.",
+  "authConfBackToSignIn": "Back to sign in",
+
+  "authResetTitle": "Set a new password",
+  "authResetSubtitle": "Choose a password you haven't used before.",
+  "authResetNewPasswordLabel": "New password",
+  "authResetConfirmPasswordLabel": "Confirm password",
+  "authResetPasswordMin": "Min 6 characters",
+  "authResetPasswordsDontMatch": "Passwords do not match",
+  "authResetFailedFallback": "Couldn't update password. Try again.",
+  "authResetUpdateButton": "Update password",
+  "authResetUpdatedSnack": "Password updated.",
+
+  "authProfileGuest": "Guest",
+  "authProfileSectionAccount": "Account",
+  "authProfileSectionSupport": "Support",
+  "authProfileSectionLegal": "Legal",
+  "authProfileEditProfile": "Edit profile",
+  "authProfileFriends": "Friends",
+  "authProfileNotifications": "Notifications",
+  "authProfileCleanupDuplicates": "Clean up duplicates",
+  "authProfileSubscription": "Subscription",
+  "authProfileChangePassword": "Change password",
+  "authProfileContactUs": "Contact us",
+  "authProfileRateSippd": "Rate Sippd",
+  "authProfilePrivacyPolicy": "Privacy Policy",
+  "authProfileTermsOfService": "Terms of Service",
+  "authProfileSignOut": "Sign Out",
+  "authProfileSignIn": "Sign In",
+  "authProfileDeleteAccount": "Delete account",
+  "authProfileViewFullStats": "View full stats",
+  "authProfileChangePasswordDialogTitle": "Change password?",
+  "authProfileChangePasswordDialogBody": "We'll send a password reset link to {email}. Tap it from your inbox to set a new password.",
+  "@authProfileChangePasswordDialogBody": {
+    "placeholders": {
+      "email": {"type": "String", "example": "you@example.com"}
+    }
+  },
+  "authProfileCancel": "Cancel",
+  "authProfileSendLink": "Send link",
+  "authProfileSendLinkFailedTitle": "Couldn't send link",
+  "authProfileSendLinkFailedFallback": "Try again in a moment.",
+  "authProfileOk": "OK",
+  "authProfileCouldNotOpen": "Could not open {url}",
+  "@authProfileCouldNotOpen": {
+    "placeholders": {
+      "url": {"type": "String"}
+    }
+  },
+  "authProfileDeleteDialogTitle": "Delete account?",
+  "authProfileDeleteDialogBody": "This permanently deletes your profile, wines, ratings, tastings, group memberships and friends. Cannot be undone.",
+  "authProfileDeleteTypeConfirm": "Type DELETE to confirm:",
+  "authProfileDeleteHint": "DELETE",
+  "authProfileDelete": "Delete",
+  "authProfileDeleteFailedFallback": "Delete failed."
 }

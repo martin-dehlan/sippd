@@ -27,6 +27,7 @@ class ProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final authState = ref.watch(authControllerProvider);
     final cs = Theme.of(context).colorScheme;
     final user = authState.valueOrNull;
@@ -37,7 +38,7 @@ class ProfileScreen extends ConsumerWidget {
         profile?.displayName ??
         user?.userMetadata?['display_name'] as String? ??
         user?.email?.split('@').first ??
-        'Guest';
+        l10n.authProfileGuest;
 
     return Scaffold(
       body: SafeArea(
@@ -101,51 +102,51 @@ class ProfileScreen extends ConsumerWidget {
 
             // ACCOUNT
             if (user != null) ...[
-              const _SectionLabel('Account'),
+              _SectionLabel(l10n.authProfileSectionAccount),
               _MenuItem(
                 icon: PhosphorIconsRegular.pencilSimple,
-                label: 'Edit profile',
+                label: l10n.authProfileEditProfile,
                 onTap: () => context.push(AppRoutes.profileEdit),
               ),
               _MenuItem(
                 icon: PhosphorIconsRegular.users,
-                label: 'Friends',
+                label: l10n.authProfileFriends,
                 onTap: () => context.push(AppRoutes.friends),
               ),
               _MenuItem(
                 icon: PhosphorIconsRegular.bell,
-                label: 'Notifications',
+                label: l10n.authProfileNotifications,
                 onTap: () => context.push(AppRoutes.profileNotifications),
               ),
               _MenuItem(
                 icon: PhosphorIconsRegular.translate,
-                label: AppLocalizations.of(context).profileTileLanguageLabel,
+                label: l10n.profileTileLanguageLabel,
                 onTap: () => showLanguagePickerSheet(context),
               ),
               _MenuItem(
                 icon: PhosphorIconsRegular.stack,
-                label: 'Clean up duplicates',
+                label: l10n.authProfileCleanupDuplicates,
                 onTap: () => context.push(AppRoutes.wineCleanup),
               ),
               _MenuItem(
                 icon: PhosphorIconsRegular.sparkle,
-                label: 'Subscription',
+                label: l10n.authProfileSubscription,
                 onTap: () => context.push(AppRoutes.subscription),
               ),
               if (_isEmailUser(user))
                 _MenuItem(
                   icon: PhosphorIconsRegular.lockKey,
-                  label: 'Change password',
+                  label: l10n.authProfileChangePassword,
                   onTap: () => _changePassword(context, ref, user.email!),
                 ),
               SizedBox(height: context.l),
             ],
 
             // SUPPORT
-            const _SectionLabel('Support'),
+            _SectionLabel(l10n.authProfileSectionSupport),
             _MenuItem(
               icon: PhosphorIconsRegular.envelope,
-              label: 'Contact us',
+              label: l10n.authProfileContactUs,
               onTap: () => _launch(
                 context,
                 'mailto:$_supportEmail?subject=Sippd%20Support',
@@ -153,21 +154,21 @@ class ProfileScreen extends ConsumerWidget {
             ),
             _MenuItem(
               icon: PhosphorIconsRegular.star,
-              label: 'Rate Sippd',
+              label: l10n.authProfileRateSippd,
               onTap: () => _launch(context, 'https://apps.apple.com/app/sippd'),
             ),
             SizedBox(height: context.l),
 
             // LEGAL
-            const _SectionLabel('Legal'),
+            _SectionLabel(l10n.authProfileSectionLegal),
             _MenuItem(
               icon: PhosphorIconsRegular.shieldCheck,
-              label: 'Privacy Policy',
+              label: l10n.authProfilePrivacyPolicy,
               onTap: () => _launch(context, _privacyUrl),
             ),
             _MenuItem(
               icon: PhosphorIconsRegular.fileText,
-              label: 'Terms of Service',
+              label: l10n.authProfileTermsOfService,
               onTap: () => _launch(context, _termsUrl),
             ),
             SizedBox(height: context.xl),
@@ -176,7 +177,7 @@ class ProfileScreen extends ConsumerWidget {
             if (user != null) ...[
               _DangerButton(
                 icon: PhosphorIconsRegular.signOut,
-                label: 'Sign Out',
+                label: l10n.authProfileSignOut,
                 onTap: () async {
                   // Drop this device's FCM registration before the session
                   // dies — otherwise pushes for this account continue to land
@@ -204,7 +205,7 @@ class ProfileScreen extends ConsumerWidget {
                 child: TextButton(
                   onPressed: () => _confirmDelete(context, ref),
                   child: Text(
-                    'Delete account',
+                    l10n.authProfileDeleteAccount,
                     style: TextStyle(
                       fontSize: context.captionFont,
                       fontWeight: FontWeight.w500,
@@ -218,7 +219,7 @@ class ProfileScreen extends ConsumerWidget {
             ] else
               _MenuItem(
                 icon: PhosphorIconsRegular.signIn,
-                label: 'Sign In',
+                label: l10n.authProfileSignIn,
                 onTap: () => context.go(AppRoutes.login),
               ),
 
@@ -242,22 +243,20 @@ Future<void> _changePassword(
   WidgetRef ref,
   String email,
 ) async {
+  final l10n = AppLocalizations.of(context);
   final confirmed = await showDialog<bool>(
     context: context,
     builder: (ctx) => AlertDialog(
-      title: const Text('Change password?'),
-      content: Text(
-        'We\'ll send a password reset link to $email. '
-        'Tap it from your inbox to set a new password.',
-      ),
+      title: Text(l10n.authProfileChangePasswordDialogTitle),
+      content: Text(l10n.authProfileChangePasswordDialogBody(email)),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(ctx, false),
-          child: const Text('Cancel'),
+          child: Text(l10n.authProfileCancel),
         ),
         TextButton(
           onPressed: () => Navigator.pop(ctx, true),
-          child: const Text('Send link'),
+          child: Text(l10n.authProfileSendLink),
         ),
       ],
     ),
@@ -279,12 +278,14 @@ Future<void> _changePassword(
     await showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text("Couldn't send link"),
-        content: Text(describeAppError(e, fallback: 'Try again in a moment.')),
+        title: Text(l10n.authProfileSendLinkFailedTitle),
+        content: Text(
+          describeAppError(e, fallback: l10n.authProfileSendLinkFailedFallback),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('OK'),
+            child: Text(l10n.authProfileOk),
           ),
         ],
       ),
@@ -296,9 +297,13 @@ Future<void> _launch(BuildContext context, String url) async {
   final uri = Uri.parse(url);
   final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
   if (!ok && context.mounted) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('Could not open $url')));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          AppLocalizations.of(context).authProfileCouldNotOpen(url),
+        ),
+      ),
+    );
   }
 }
 
@@ -314,9 +319,12 @@ Future<void> _confirmDelete(BuildContext context, WidgetRef ref) async {
     // Router auto-redirects to /login on auth state change; no manual go().
   } catch (e) {
     if (context.mounted) {
+      final l10n = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(describeAppError(e, fallback: 'Delete failed.')),
+          content: Text(
+            describeAppError(e, fallback: l10n.authProfileDeleteFailedFallback),
+          ),
         ),
       );
     }
@@ -342,19 +350,17 @@ class _ConfirmDeleteDialogState extends State<_ConfirmDeleteDialog> {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final canDelete = _controller.text.trim() == 'DELETE';
     return AlertDialog(
-      title: const Text('Delete account?'),
+      title: Text(l10n.authProfileDeleteDialogTitle),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'This permanently deletes your profile, wines, ratings, '
-            'tastings, group memberships and friends. Cannot be undone.',
-          ),
+          Text(l10n.authProfileDeleteDialogBody),
           SizedBox(height: context.m),
-          const Text('Type DELETE to confirm:'),
+          Text(l10n.authProfileDeleteTypeConfirm),
           SizedBox(height: context.s),
           TextField(
             controller: _controller,
@@ -363,9 +369,9 @@ class _ConfirmDeleteDialogState extends State<_ConfirmDeleteDialog> {
             maxLength: 10,
             inputFormatters: [LengthLimitingTextInputFormatter(10)],
             onChanged: (_) => setState(() {}),
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              hintText: 'DELETE',
+            decoration: InputDecoration(
+              border: const OutlineInputBorder(),
+              hintText: l10n.authProfileDeleteHint,
               counterText: '',
             ),
           ),
@@ -374,12 +380,12 @@ class _ConfirmDeleteDialogState extends State<_ConfirmDeleteDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context, false),
-          child: const Text('Cancel'),
+          child: Text(l10n.authProfileCancel),
         ),
         TextButton(
           onPressed: canDelete ? () => Navigator.pop(context, true) : null,
           style: TextButton.styleFrom(foregroundColor: cs.error),
-          child: const Text('Delete'),
+          child: Text(l10n.authProfileDelete),
         ),
       ],
     );
@@ -390,6 +396,7 @@ class _ViewStatsLink extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () => context.push(AppRoutes.wineStats),
@@ -398,7 +405,7 @@ class _ViewStatsLink extends StatelessWidget {
         child: Row(
           children: [
             Text(
-              'View full stats',
+              l10n.authProfileViewFullStats,
               style: TextStyle(
                 fontSize: context.bodyFont,
                 fontWeight: FontWeight.w600,
