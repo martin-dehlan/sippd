@@ -22,6 +22,7 @@ import '../../widgets/expert_tasting_sheet.dart';
 import '../../widgets/expert_tasting_summary.widget.dart';
 import '../../widgets/friend_ratings_strip.widget.dart';
 import '../../widgets/wine_detail_blocks.widget.dart';
+import '../wine_compare/wine_compare_flow.dart';
 
 class WineDetailScreen extends ConsumerWidget {
   final String wineId;
@@ -155,6 +156,10 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
                         children: [
                           Consumer(
                             builder: (context, ref, _) => _WineOverflowMenu(
+                              onCompare: () => startCompareFlow(
+                                context,
+                                sourceWineId: widget.wine.id,
+                              ),
                               onShareToGroup: () => showShareWineSheet(
                                 context: context,
                                 wineId: widget.wine.id,
@@ -324,6 +329,7 @@ class _FloatingBackButton extends StatelessWidget {
 }
 
 class _WineOverflowMenu extends StatelessWidget {
+  final VoidCallback onCompare;
   final VoidCallback onShareToGroup;
   final VoidCallback onShareImage;
   final VoidCallback onEdit;
@@ -331,6 +337,7 @@ class _WineOverflowMenu extends StatelessWidget {
   final VoidCallback? onTastingNotes;
 
   const _WineOverflowMenu({
+    required this.onCompare,
     required this.onShareToGroup,
     required this.onShareImage,
     required this.onEdit,
@@ -344,6 +351,11 @@ class _WineOverflowMenu extends StatelessWidget {
       circleBackground: true,
       groups: [
         [
+          OverflowMenuItem(
+            icon: PhosphorIconsRegular.swap,
+            label: 'Compare with…',
+            onTap: onCompare,
+          ),
           OverflowMenuItem(
             icon: PhosphorIconsRegular.megaphoneSimple,
             label: 'Share rating',

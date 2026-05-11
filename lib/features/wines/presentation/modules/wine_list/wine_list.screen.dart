@@ -10,6 +10,7 @@ import '../../../controller/wine.provider.dart';
 import '../../../domain/entities/wine.entity.dart';
 import '../../widgets/wine_card.widget.dart';
 import '../../widgets/wine_type_filter.widget.dart';
+import '../wine_compare/wine_compare_flow.dart';
 
 class WineListScreen extends ConsumerWidget {
   const WineListScreen({super.key});
@@ -164,6 +165,10 @@ class WineListScreen extends ConsumerWidget {
                         compact: true,
                         onTap: () => context.push(
                           AppRoutes.wineDetailPath(sorted[index].id),
+                        ),
+                        onLongPress: () => startCompareFlow(
+                          context,
+                          sourceWineId: sorted[index].id,
                         ),
                       ),
                     ),
