@@ -1,0 +1,127 @@
+#!/usr/bin/env bash
+# Pre-push hook: block push when any committed .dart file imports a
+# .dart file that is NOT present in the commits being pushed. Catches
+# the classic "created file locally but forgot to git add" footgun
+# that turns CI red even though `flutter analyze` is green locally.
+#
+# Resolves both relative imports (`../foo.dart`) and package imports
+# of this project (`package:sippd/foo.dart`). Skips third-party
+# packages, dart: SDK imports, and generated parts (.g.dart / .freezed.dart).
+
+set -euo pipefail
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+ZERO="0000000000000000000000000000000000000000"
+
+# package name from pubspec — used to resolve `package:<name>/x.dart`
+PKG_NAME="$(awk '/^name:/ {print $2; exit}' "$REPO_ROOT/pubspec.yaml")"
+
+# Normalize a path: collapse `./` and `../`. Pure bash, no realpath.
+normalize_path() {
+  local input="$1"
+  local IFS=/
+  read -r -a parts <<< "$input"
+  local out=()
+  local part
+  for part in "${parts[@]}"; do
+    case "$part" in
+      ""|.) ;;
+      ..)
+        if [ "${#out[@]}" -gt 0 ]; then
+          unset 'out[${#out[@]}-1]'
+          out=("${out[@]}")
+        fi
+        ;;
+      *) out+=("$part") ;;
+    esac
+  done
+  (IFS=/; echo "${out[*]}")
+}
+
+# Resolve an `import '...'` literal to a repo-relative path, or empty
+# string if it's not a project-local import we should validate.
+resolve_import() {
+  local source_file="$1"   # repo-relative path of the importing file
+  local literal="$2"       # the string inside the quotes
+  case "$literal" in
+    dart:*) echo "" ;;                              # SDK, skip
+    package:"$PKG_NAME"/*)
+      echo "lib/${literal#package:"$PKG_NAME"/}" ;;
+    package:*) echo "" ;;                           # third-party, skip
+    ../*|./*)
+      local dir
+      dir="$(dirname "$source_file")"
+      normalize_path "$dir/$literal" ;;
+    *) echo "" ;;                                   # bare or unsupported
+  esac
+}
+
+# Read refs being pushed from stdin (one line per ref).
+fail=0
+fail_log=""
+
+while read -r local_ref local_sha remote_ref remote_sha; do
+  [ "$local_sha" = "$ZERO" ] && continue          # deletion, skip
+
+  if [ "$remote_sha" = "$ZERO" ]; then
+    # New branch: diff against the merge-base with origin/main if it
+    # exists, otherwise scan every .dart file in the pushed commit.
+    if base="$(git merge-base "$local_sha" origin/main 2>/dev/null)"; then
+      range="$base..$local_sha"
+      files="$(git diff --name-only --diff-filter=AM "$range" -- '*.dart')"
+    else
+      files="$(git ls-tree -r --name-only "$local_sha" -- '*.dart')"
+    fi
+  else
+    range="$remote_sha..$local_sha"
+    files="$(git diff --name-only --diff-filter=AM "$range" -- '*.dart')"
+  fi
+
+  [ -z "$files" ] && continue
+
+  while IFS= read -r f; do
+    [ -z "$f" ] && continue
+    # Skip generated files — they are gitignored on purpose.
+    case "$f" in
+      *.g.dart|*.freezed.dart|*.config.dart) continue ;;
+    esac
+    # File must exist in the pushed commit (it might have been deleted
+    # later in the same range).
+    git cat-file -e "$local_sha:$f" 2>/dev/null || continue
+
+    # Pull every `import '...';` or `import "...";` literal.
+    while IFS= read -r literal; do
+      [ -z "$literal" ] && continue
+      target="$(resolve_import "$f" "$literal")"
+      [ -z "$target" ] && continue
+      case "$target" in
+        *.g.dart|*.freezed.dart|*.config.dart) continue ;;
+      esac
+      # Target must exist in the same commit being pushed.
+      if ! git cat-file -e "$local_sha:$target" 2>/dev/null; then
+        fail=1
+        fail_log+="  ${f}"$'\n'"      imports → ${literal}"$'\n'"      resolves to → ${target}  (NOT in pushed commit)"$'\n'$'\n'
+      fi
+    done < <(git show "$local_sha:$f" \
+              | grep -E "^import +['\"][^'\"]+['\"];" \
+              | sed -E "s/^import +['\"]([^'\"]+)['\"];.*/\1/")
+  done <<< "$files"
+
+done
+
+if [ "$fail" -eq 1 ]; then
+  {
+    echo ""
+    echo "❌ pre-push blocked: imports point to .dart files that are NOT"
+    echo "   in the commits you are pushing. CI will fail with"
+    echo "   'Target of URI doesn't exist' errors."
+    echo ""
+    echo "$fail_log"
+    echo "   Fix: 'git add' the missing file(s), amend or add a commit,"
+    echo "   then push again. Override (rarely a good idea):"
+    echo "     git push --no-verify"
+  } >&2
+  exit 1
+fi
+
+exit 0
