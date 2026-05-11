@@ -82,11 +82,19 @@ class FcmService {
     final user = _client.auth.currentUser;
     if (user == null) return;
 
+    // Both platforms can return null on first call: iOS during the APNS
+    // handshake right after permission grant, Android during Google Play
+    // Services FCM bootstrap on a fresh Play-Store install. Without the
+    // retry the user has to background+foreground the app before the next
+    // onTokenRefresh wakes the registration, so a fresh install never
+    // appears in user_devices and the server skips it as "no tokens".
     var token = await _currentToken();
-    if (token == null && !kIsWeb && Platform.isIOS) {
-      debugPrint('FCM: iOS first attempt returned null, retrying in 2s…');
-      await Future.delayed(const Duration(seconds: 2));
-      token = await _currentToken();
+    if (token == null && !kIsWeb) {
+      for (var i = 0; token == null && i < 3; i++) {
+        debugPrint('FCM: $_platform getToken null, retrying in 2s…');
+        await Future.delayed(const Duration(seconds: 2));
+        token = await _currentToken();
+      }
     }
     if (token == null) return;
 
