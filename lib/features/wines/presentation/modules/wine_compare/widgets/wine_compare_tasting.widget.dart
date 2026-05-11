@@ -25,12 +25,14 @@ class WineCompareTastingWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isPro = ref.watch(isProProvider);
     if (!isPro) {
-      return _LockedSection(onUnlock: () {
-        context.push(
-          AppRoutes.paywall,
-          extra: const {'source': 'wine_compare_tasting'},
-        );
-      });
+      return _LockedSection(
+        onUnlock: () {
+          context.push(
+            AppRoutes.paywall,
+            extra: const {'source': 'wine_compare_tasting'},
+          );
+        },
+      );
     }
 
     final leftAsync = left.canonicalWineId == null
@@ -245,13 +247,7 @@ class _ProSection extends StatelessWidget {
         _sweetnessDescriptors,
       ),
       _AxisPair('OAK', left?.oak, right?.oak, 5, _oakDescriptors),
-      _AxisPair(
-        'FINISH',
-        left?.finish,
-        right?.finish,
-        3,
-        _finishDescriptors,
-      ),
+      _AxisPair('FINISH', left?.finish, right?.finish, 3, _finishDescriptors),
     ];
     return Container(
       padding: EdgeInsets.all(context.w * 0.045),
@@ -389,9 +385,7 @@ class _DotTrack extends StatelessWidget {
       children: List.generate(max, (i) {
         final filled = i < value;
         return Padding(
-          padding: EdgeInsets.only(
-            right: i == max - 1 ? 0 : context.w * 0.01,
-          ),
+          padding: EdgeInsets.only(right: i == max - 1 ? 0 : context.w * 0.01),
           child: Container(
             width: size,
             height: size,

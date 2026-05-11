@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../../../common/utils/price_format.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/inline_error.widget.dart';
 import '../../../../../core/routes/app.routes.dart';
@@ -25,10 +26,7 @@ class WineCompareScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
 
-    final missing =
-        leftId == null ||
-        rightId == null ||
-        leftId == rightId;
+    final missing = leftId == null || rightId == null || leftId == rightId;
 
     return Scaffold(
       backgroundColor: cs.surface,
@@ -249,7 +247,10 @@ class _Section extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: context.paddingH),
         child: Animate(
           effects: [
-            FadeEffect(duration: 420.ms, delay: Duration(milliseconds: delay)),
+            FadeEffect(
+              duration: 420.ms,
+              delay: Duration(milliseconds: delay),
+            ),
             SlideEffect(
               begin: const Offset(0, 0.05),
               end: Offset.zero,
@@ -382,7 +383,7 @@ class _AttributesCard extends StatelessWidget {
   }
 
   static String? _price(WineEntity w) =>
-      w.price == null ? null : '${w.currency} ${w.price!.toStringAsFixed(0)}';
+      w.price == null ? null : '${w.currency} ${formatPrice(w.price!)}';
 
   static CompareWinner _priceWinner(WineEntity a, WineEntity b) {
     if (a.price == null || b.price == null) return CompareWinner.none;

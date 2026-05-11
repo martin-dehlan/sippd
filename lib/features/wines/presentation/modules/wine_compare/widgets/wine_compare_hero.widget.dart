@@ -32,9 +32,13 @@ class WineCompareHeroWidget extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Expanded(child: _Side(wine: left, slot: 'A')),
+            Expanded(
+              child: _Side(wine: left, slot: 'A'),
+            ),
             _VsRule(),
-            Expanded(child: _Side(wine: right, slot: 'B')),
+            Expanded(
+              child: _Side(wine: right, slot: 'B'),
+            ),
           ],
         ),
       ),
@@ -152,9 +156,7 @@ class _VsRule extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Expanded(
-            child: Container(width: 0.5, color: cs.outlineVariant),
-          ),
+          Expanded(child: Container(width: 0.5, color: cs.outlineVariant)),
           Padding(
             padding: EdgeInsets.symmetric(vertical: context.xs),
             child: Container(
@@ -179,9 +181,7 @@ class _VsRule extends StatelessWidget {
               ),
             ),
           ),
-          Expanded(
-            child: Container(width: 0.5, color: cs.outlineVariant),
-          ),
+          Expanded(child: Container(width: 0.5, color: cs.outlineVariant)),
         ],
       ),
     );

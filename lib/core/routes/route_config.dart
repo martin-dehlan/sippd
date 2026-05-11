@@ -300,10 +300,7 @@ GoRouter goRouter(GoRouterRef ref) {
         path: AppRoutes.wineCompare,
         builder: (context, state) {
           final q = state.uri.queryParameters;
-          return WineCompareScreen(
-            leftId: q['left'],
-            rightId: q['right'],
-          );
+          return WineCompareScreen(leftId: q['left'], rightId: q['right']);
         },
       ),
       GoRoute(

@@ -39,10 +39,9 @@ class WineComparePickerScreen extends ConsumerWidget {
                 SliverToBoxAdapter(child: SizedBox(height: context.l)),
                 winesAsync.when(
                   data: (wines) {
-                    final filtered = wines
-                        .where((w) => w.id != excludeId)
-                        .toList()
-                      ..sort((a, b) => b.rating.compareTo(a.rating));
+                    final filtered =
+                        wines.where((w) => w.id != excludeId).toList()
+                          ..sort((a, b) => b.rating.compareTo(a.rating));
                     if (filtered.isEmpty) {
                       return const SliverFillRemaining(
                         hasScrollBody: false,
@@ -55,8 +54,7 @@ class WineComparePickerScreen extends ConsumerWidget {
                       ),
                       sliver: SliverList.separated(
                         itemCount: filtered.length,
-                        separatorBuilder: (_, _) =>
-                            SizedBox(height: context.s),
+                        separatorBuilder: (_, _) => SizedBox(height: context.s),
                         itemBuilder: (_, i) {
                           final wine = filtered[i];
                           return Animate(
@@ -88,10 +86,7 @@ class WineComparePickerScreen extends ConsumerWidget {
                       child: Padding(
                         padding: EdgeInsets.all(context.paddingH),
                         child: Text(
-                          describeAppError(
-                            e,
-                            fallback: "Couldn't load wines.",
-                          ),
+                          describeAppError(e, fallback: "Couldn't load wines."),
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: context.captionFont,
