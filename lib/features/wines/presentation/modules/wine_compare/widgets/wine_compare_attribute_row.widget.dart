@@ -5,6 +5,8 @@ import '../../../../../../common/utils/responsive.dart';
 
 enum CompareWinner { left, right, none }
 
+const _winnerGold = Color(0xFFD4A84B);
+
 class WineCompareAttributeRow extends StatelessWidget {
   final String label;
   final String? leftValue;
@@ -21,11 +23,11 @@ class WineCompareAttributeRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
     final hasLeft = (leftValue ?? '').isNotEmpty;
     final hasRight = (rightValue ?? '').isNotEmpty;
     if (!hasLeft && !hasRight) return const SizedBox.shrink();
 
+    final cs = Theme.of(context).colorScheme;
     return Padding(
       padding: EdgeInsets.symmetric(vertical: context.s),
       child: Row(
@@ -37,9 +39,6 @@ class WineCompareAttributeRow extends StatelessWidget {
               text: leftValue,
               align: TextAlign.right,
               isWinner: winner == CompareWinner.left,
-              onSurface: cs.onSurface,
-              winnerColor: cs.primary,
-              dimColor: cs.onSurfaceVariant,
             ),
           ),
           SizedBox(width: context.w * 0.025),
@@ -63,9 +62,6 @@ class WineCompareAttributeRow extends StatelessWidget {
               text: rightValue,
               align: TextAlign.left,
               isWinner: winner == CompareWinner.right,
-              onSurface: cs.onSurface,
-              winnerColor: cs.primary,
-              dimColor: cs.onSurfaceVariant,
             ),
           ),
         ],
@@ -78,83 +74,75 @@ class _Value extends StatelessWidget {
   final String? text;
   final TextAlign align;
   final bool isWinner;
-  final Color onSurface;
-  final Color winnerColor;
-  final Color dimColor;
 
   const _Value({
     required this.text,
     required this.align,
     required this.isWinner,
-    required this.onSurface,
-    required this.winnerColor,
-    required this.dimColor,
   });
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     final empty = (text ?? '').isEmpty;
     if (empty) {
-      return Text(
-        '—',
-        textAlign: align,
-        style: TextStyle(
-          fontSize: context.bodyFont,
-          color: dimColor.withValues(alpha: 0.5),
-          fontWeight: FontWeight.w500,
+      return Align(
+        alignment: align == TextAlign.right
+            ? Alignment.centerRight
+            : Alignment.centerLeft,
+        child: Text(
+          '—',
+          style: TextStyle(
+            fontSize: context.bodyFont,
+            color: cs.onSurfaceVariant.withValues(alpha: 0.45),
+            fontWeight: FontWeight.w500,
+          ),
         ),
       );
     }
-    final row = Row(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: align == TextAlign.right
-          ? MainAxisAlignment.end
-          : MainAxisAlignment.start,
-      children: [
-        if (isWinner && align == TextAlign.left) ...[
-          _WinnerDot(color: winnerColor),
-          SizedBox(width: context.w * 0.012),
-        ],
-        Flexible(
-          child: Text(
-            text!,
-            textAlign: align,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: GoogleFonts.playfairDisplay(
-              fontSize: context.bodyFont * 1.05,
-              fontWeight: isWinner ? FontWeight.w800 : FontWeight.w600,
-              fontStyle: FontStyle.italic,
-              color: isWinner ? winnerColor : onSurface,
-              height: 1.2,
-            ),
-          ),
-        ),
-        if (isWinner && align == TextAlign.right) ...[
-          SizedBox(width: context.w * 0.012),
-          _WinnerDot(color: winnerColor),
-        ],
-      ],
+    final valueText = Text(
+      text!,
+      textAlign: align,
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
+      style: GoogleFonts.playfairDisplay(
+        fontSize: context.bodyFont * 1.05,
+        fontWeight: isWinner ? FontWeight.w800 : FontWeight.w600,
+        fontStyle: FontStyle.italic,
+        color: cs.onSurface,
+        height: 1.2,
+      ),
     );
-    return Align(
-      alignment: align == TextAlign.right
-          ? Alignment.centerRight
-          : Alignment.centerLeft,
-      child: row,
-    );
-  }
-}
-
-class _WinnerDot extends StatelessWidget {
-  final Color color;
-  const _WinnerDot({required this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    return Icon(
+    if (!isWinner) {
+      return Align(
+        alignment: align == TextAlign.right
+            ? Alignment.centerRight
+            : Alignment.centerLeft,
+        child: valueText,
+      );
+    }
+    final marker = Icon(
       PhosphorIconsFill.checkCircle,
-      size: context.w * 0.04,
-      color: color,
+      size: context.w * 0.035,
+      color: _winnerGold,
+    );
+    final isRight = align == TextAlign.right;
+    return Align(
+      alignment: isRight ? Alignment.centerRight : Alignment.centerLeft,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: isRight
+            ? [
+                Flexible(child: valueText),
+                SizedBox(width: context.w * 0.014),
+                marker,
+              ]
+            : [
+                marker,
+                SizedBox(width: context.w * 0.014),
+                Flexible(child: valueText),
+              ],
+      ),
     );
   }
 }

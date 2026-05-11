@@ -44,14 +44,39 @@ class WineCompareTastingWidget extends ConsumerWidget {
 
     final leftT = leftAsync.valueOrNull;
     final rightT = rightAsync.valueOrNull;
-    final hasAny =
-        (leftT != null && !leftT.isEmpty) ||
-        (rightT != null && !rightT.isEmpty);
-    if (!hasAny) {
-      return _EmptyProSection();
-    }
 
-    return _ProSection(left: leftT, right: rightT);
+    final axes = _buildAxes(leftT, rightT);
+    if (axes.isEmpty) return const _EmptyProSection();
+    return _ProSection(axes: axes);
+  }
+
+  List<_AxisPair> _buildAxes(
+    ExpertTastingEntity? left,
+    ExpertTastingEntity? right,
+  ) {
+    final all = <_AxisPair>[
+      _AxisPair('BODY', left?.body, right?.body, 5, _bodyDescriptors),
+      _AxisPair('TANNIN', left?.tannin, right?.tannin, 5, _tanninDescriptors),
+      _AxisPair(
+        'ACIDITY',
+        left?.acidity,
+        right?.acidity,
+        5,
+        _acidityDescriptors,
+      ),
+      _AxisPair(
+        'SWEETNESS',
+        left?.sweetness,
+        right?.sweetness,
+        5,
+        _sweetnessDescriptors,
+      ),
+      _AxisPair('OAK', left?.oak, right?.oak, 5, _oakDescriptors),
+      _AxisPair('FINISH', left?.finish, right?.finish, 3, _finishDescriptors),
+    ];
+    return all
+        .where((a) => a.leftValue != null || a.rightValue != null)
+        .toList();
   }
 }
 
@@ -77,18 +102,18 @@ class _LockedSection extends StatelessWidget {
           children: [
             Row(
               children: [
-                _Eyebrow(label: 'TASTING PROFILE'),
-                const Spacer(),
-                _ProBadge(),
+                Expanded(
+                  child: Text(
+                    'See body, tannin, acidity and more side by side.',
+                    style: TextStyle(
+                      fontSize: context.captionFont,
+                      color: cs.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+                SizedBox(width: context.s),
+                const _ProBadge(),
               ],
-            ),
-            SizedBox(height: context.s),
-            Text(
-              'Body, tannin, acidity, sweetness, oak, finish.',
-              style: TextStyle(
-                fontSize: context.captionFont,
-                color: cs.onSurfaceVariant,
-              ),
             ),
             SizedBox(height: context.m),
             for (final axis in _previewAxes) ...[
@@ -193,6 +218,8 @@ class _BlurredBar extends StatelessWidget {
 }
 
 class _EmptyProSection extends StatelessWidget {
+  const _EmptyProSection();
+
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
@@ -203,54 +230,29 @@ class _EmptyProSection extends StatelessWidget {
         borderRadius: BorderRadius.circular(context.w * 0.04),
         border: Border.all(color: cs.outlineVariant, width: 0.5),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _Eyebrow(label: 'TASTING PROFILE'),
-          SizedBox(height: context.s),
-          Text(
-            'Add tasting notes from either wine to see them compared here.',
-            style: TextStyle(
-              fontSize: context.captionFont,
-              color: cs.onSurfaceVariant,
-            ),
-          ),
-        ],
+      child: Text(
+        'Add tasting notes from either wine to see them compared here.',
+        style: TextStyle(
+          fontSize: context.captionFont,
+          color: cs.onSurfaceVariant,
+        ),
       ),
     );
   }
 }
 
 class _ProSection extends StatelessWidget {
-  final ExpertTastingEntity? left;
-  final ExpertTastingEntity? right;
-  const _ProSection({required this.left, required this.right});
+  final List<_AxisPair> axes;
+  const _ProSection({required this.axes});
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final axes = <_AxisPair>[
-      _AxisPair('BODY', left?.body, right?.body, 5, _bodyDescriptors),
-      _AxisPair('TANNIN', left?.tannin, right?.tannin, 5, _tanninDescriptors),
-      _AxisPair(
-        'ACIDITY',
-        left?.acidity,
-        right?.acidity,
-        5,
-        _acidityDescriptors,
-      ),
-      _AxisPair(
-        'SWEETNESS',
-        left?.sweetness,
-        right?.sweetness,
-        5,
-        _sweetnessDescriptors,
-      ),
-      _AxisPair('OAK', left?.oak, right?.oak, 5, _oakDescriptors),
-      _AxisPair('FINISH', left?.finish, right?.finish, 3, _finishDescriptors),
-    ];
     return Container(
-      padding: EdgeInsets.all(context.w * 0.045),
+      padding: EdgeInsets.symmetric(
+        horizontal: context.w * 0.04,
+        vertical: context.s,
+      ),
       decoration: BoxDecoration(
         color: cs.surfaceContainer,
         borderRadius: BorderRadius.circular(context.w * 0.04),
@@ -259,11 +261,13 @@ class _ProSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _Eyebrow(label: 'TASTING PROFILE'),
-          SizedBox(height: context.m),
-          for (final axis in axes) ...[
-            _AxisRow(pair: axis),
-            SizedBox(height: context.s),
+          for (var i = 0; i < axes.length; i++) ...[
+            _AxisRow(pair: axes[i]),
+            if (i != axes.length - 1)
+              Container(
+                height: 0.5,
+                color: cs.outlineVariant.withValues(alpha: 0.55),
+              ),
           ],
         ],
       ),
@@ -278,43 +282,46 @@ class _AxisRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Expanded(
-          flex: 5,
-          child: _AxisSide(
-            value: pair.leftValue,
-            max: pair.max,
-            descriptors: pair.descriptors,
-            align: Alignment.centerRight,
-          ),
-        ),
-        SizedBox(width: context.w * 0.025),
-        Expanded(
-          flex: 4,
-          child: Text(
-            pair.label,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: context.captionFont * 0.78,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 1.6,
-              color: cs.outline,
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: context.m * 0.7),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(
+            flex: 5,
+            child: _AxisSide(
+              value: pair.leftValue,
+              max: pair.max,
+              descriptors: pair.descriptors,
+              align: Alignment.centerRight,
             ),
           ),
-        ),
-        SizedBox(width: context.w * 0.025),
-        Expanded(
-          flex: 5,
-          child: _AxisSide(
-            value: pair.rightValue,
-            max: pair.max,
-            descriptors: pair.descriptors,
-            align: Alignment.centerLeft,
+          SizedBox(width: context.w * 0.025),
+          Expanded(
+            flex: 4,
+            child: Text(
+              pair.label,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: context.captionFont * 0.78,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 1.6,
+                color: cs.outline,
+              ),
+            ),
           ),
-        ),
-      ],
+          SizedBox(width: context.w * 0.025),
+          Expanded(
+            flex: 5,
+            child: _AxisSide(
+              value: pair.rightValue,
+              max: pair.max,
+              descriptors: pair.descriptors,
+              align: Alignment.centerLeft,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -342,7 +349,7 @@ class _AxisSide extends StatelessWidget {
           '—',
           style: TextStyle(
             fontSize: context.bodyFont,
-            color: cs.onSurfaceVariant.withValues(alpha: 0.5),
+            color: cs.onSurfaceVariant.withValues(alpha: 0.45),
           ),
         ),
       );
@@ -402,26 +409,9 @@ class _DotTrack extends StatelessWidget {
   }
 }
 
-class _Eyebrow extends StatelessWidget {
-  final String label;
-  const _Eyebrow({required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return Text(
-      label,
-      style: TextStyle(
-        fontSize: context.captionFont * 0.85,
-        fontWeight: FontWeight.w700,
-        letterSpacing: 1.4,
-        color: cs.onSurface.withValues(alpha: 0.72),
-      ),
-    );
-  }
-}
-
 class _ProBadge extends StatelessWidget {
+  const _ProBadge();
+
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;

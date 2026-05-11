@@ -314,13 +314,6 @@ class _AttributesCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           WineCompareAttributeRow(
-            label: 'RATING',
-            leftValue: _rating(left),
-            rightValue: _rating(right),
-            winner: _ratingWinner(left, right),
-          ),
-          _Divider(),
-          WineCompareAttributeRow(
             label: 'TYPE',
             leftValue: _type(left),
             rightValue: _type(right),
@@ -355,21 +348,11 @@ class _AttributesCard extends StatelessWidget {
     );
   }
 
-  static String? _rating(WineEntity w) =>
-      w.rating > 0 ? w.rating.toStringAsFixed(1) : null;
-
-  static CompareWinner _ratingWinner(WineEntity a, WineEntity b) {
-    if (a.rating <= 0 || b.rating <= 0) return CompareWinner.none;
-    if (a.rating > b.rating) return CompareWinner.left;
-    if (b.rating > a.rating) return CompareWinner.right;
-    return CompareWinner.none;
-  }
-
   static String _type(WineEntity w) => switch (w.type) {
-    WineType.red => 'red',
-    WineType.white => 'white',
-    WineType.rose => 'rosé',
-    WineType.sparkling => 'sparkling',
+    WineType.red => 'Red',
+    WineType.white => 'White',
+    WineType.rose => 'Rosé',
+    WineType.sparkling => 'Sparkling',
   };
 
   static String? _grape(WineEntity w) {
