@@ -10,9 +10,9 @@ class RatingSummaryCacheDao extends DatabaseAccessor<AppDatabase>
   RatingSummaryCacheDao(super.db);
 
   Future<RatingSummaryCacheData?> getByUser(String userId) {
-    return (select(ratingSummaryCacheTable)
-          ..where((t) => t.userId.equals(userId)))
-        .getSingleOrNull();
+    return (select(
+      ratingSummaryCacheTable,
+    )..where((t) => t.userId.equals(userId))).getSingleOrNull();
   }
 
   Future<void> upsert(String userId, String payload, DateTime fetchedAt) {

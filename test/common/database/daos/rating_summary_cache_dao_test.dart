@@ -29,20 +29,23 @@ void main() {
       expect(row.fetchedAt, now);
     });
 
-    test('upsert overwrites previous row for same user (latest wins)', () async {
-      await db.ratingSummaryCacheDao.upsert(
-        'user-1',
-        '{"avg":7.0}',
-        DateTime(2026, 5, 10),
-      );
-      await db.ratingSummaryCacheDao.upsert(
-        'user-1',
-        '{"avg":8.4}',
-        DateTime(2026, 5, 11),
-      );
-      final row = await db.ratingSummaryCacheDao.getByUser('user-1');
-      expect(row!.payload, '{"avg":8.4}');
-    });
+    test(
+      'upsert overwrites previous row for same user (latest wins)',
+      () async {
+        await db.ratingSummaryCacheDao.upsert(
+          'user-1',
+          '{"avg":7.0}',
+          DateTime(2026, 5, 10),
+        );
+        await db.ratingSummaryCacheDao.upsert(
+          'user-1',
+          '{"avg":8.4}',
+          DateTime(2026, 5, 11),
+        );
+        final row = await db.ratingSummaryCacheDao.getByUser('user-1');
+        expect(row!.payload, '{"avg":8.4}');
+      },
+    );
 
     test('isolates by user_id', () async {
       await db.ratingSummaryCacheDao.upsert(
