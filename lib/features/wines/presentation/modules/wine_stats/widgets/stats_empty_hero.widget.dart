@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../../common/utils/responsive.dart';
 import '../../../../../../core/routes/app.routes.dart';
 
@@ -16,6 +17,7 @@ class StatsEmptyHero extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
 
     return Animate(
       effects: [
@@ -52,7 +54,7 @@ class StatsEmptyHero extends StatelessWidget {
                 borderRadius: BorderRadius.circular(context.w * 0.02),
               ),
               child: Text(
-                'GET STARTED',
+                l10n.winesStatsEmptyEyebrow,
                 style: TextStyle(
                   fontSize: context.captionFont * 0.78,
                   fontWeight: FontWeight.w800,
@@ -85,7 +87,7 @@ class StatsEmptyHero extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Your stats start with a rating',
+                        l10n.winesStatsEmptyTitle,
                         style: TextStyle(
                           fontSize: context.headingFont * 0.95,
                           fontWeight: FontWeight.w800,
@@ -96,8 +98,7 @@ class StatsEmptyHero extends StatelessWidget {
                       ),
                       SizedBox(height: context.xs),
                       Text(
-                        'Rate your first wine to bring your taste, '
-                        'regions and value to life here.',
+                        l10n.winesStatsEmptyBody,
                         style: TextStyle(
                           fontSize: context.captionFont,
                           color: cs.onSurfaceVariant,
@@ -124,7 +125,7 @@ class StatsEmptyHero extends StatelessWidget {
                 ),
                 icon: const Icon(PhosphorIconsRegular.plus),
                 label: Text(
-                  'Rate a wine',
+                  l10n.winesStatsEmptyCta,
                   style: TextStyle(
                     fontSize: context.bodyFont,
                     fontWeight: FontWeight.w700,

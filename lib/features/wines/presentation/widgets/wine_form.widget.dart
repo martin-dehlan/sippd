@@ -10,6 +10,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../../../../common/data/wine_regions.dart';
+import '../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../common/utils/price_format.dart';
 import '../../../../common/utils/responsive.dart';
 import '../../../../common/widgets/price_input_sheet.dart';
@@ -81,7 +82,9 @@ class WineFormData {
 
 class WineForm extends ConsumerStatefulWidget {
   final WineFormData? initial;
-  final String submitLabel;
+
+  /// When null, defaults to the localized `winesFormSubmitDefault` at build.
+  final String? submitLabel;
   final Future<void> Function(WineFormData data) onSubmit;
   final ValueChanged<WineFormData>? onChanged;
   final bool autoSave;
@@ -94,7 +97,7 @@ class WineForm extends ConsumerStatefulWidget {
   const WineForm({
     super.key,
     this.initial,
-    this.submitLabel = 'Save wine',
+    this.submitLabel,
     required this.onSubmit,
     this.onChanged,
     this.autoSave = false,
@@ -339,11 +342,12 @@ class WineFormState extends ConsumerState<WineForm>
 
   Future<void> _editWinery() async {
     FocusScope.of(context).unfocus();
+    final l10n = AppLocalizations.of(context);
     final result = await showTextInputSheet(
       context: context,
-      title: 'Winery',
+      title: l10n.winesFormWineryTitle,
       initial: _winery,
-      hint: 'e.g. Château Margaux',
+      hint: l10n.winesFormWineryHint,
       maxLength: 100,
     );
     if (!mounted) return;
@@ -355,11 +359,12 @@ class WineFormState extends ConsumerState<WineForm>
 
   Future<void> _editNotes() async {
     FocusScope.of(context).unfocus();
+    final l10n = AppLocalizations.of(context);
     final result = await showTextInputSheet(
       context: context,
-      title: 'Tasting notes',
+      title: l10n.winesFormNotesTitle,
       initial: _notes,
-      hint: 'Aromas, body, finish…',
+      hint: l10n.winesFormNotesHint,
       maxLines: 5,
       maxLength: 2000,
     );
@@ -416,6 +421,7 @@ class WineFormState extends ConsumerState<WineForm>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return ListView(
       padding: EdgeInsets.zero,
       children: [
@@ -446,7 +452,7 @@ class WineFormState extends ConsumerState<WineForm>
                 child: SizedBox(
                   height: context.h * 0.28,
                   child: WinePhotoPicker(
-                    label: 'Photo',
+                    label: l10n.winesFormPhotoLabel,
                     placeholderIcon: PhosphorIconsRegular.wine,
                     imageUrl: _imageUrl,
                     localPath: _localImagePath,
@@ -519,7 +525,7 @@ class WineFormState extends ConsumerState<WineForm>
                 onPressed: _submit,
                 icon: const Icon(PhosphorIconsRegular.check),
                 label: Text(
-                  widget.submitLabel,
+                  widget.submitLabel ?? l10n.winesFormSubmitDefault,
                   style: TextStyle(
                     fontSize: context.bodyFont * 1.05,
                     fontWeight: FontWeight.w700,
@@ -590,7 +596,7 @@ class WineFormNameField extends StatelessWidget {
           minLines: 1,
           inputFormatters: [LengthLimitingTextInputFormatter(60)],
           decoration: InputDecoration(
-            hintText: 'Wine name',
+            hintText: AppLocalizations.of(context).winesFormHintName,
             hintStyle: titleStyle.copyWith(color: hintColor),
             filled: false,
             fillColor: Colors.transparent,
@@ -640,13 +646,14 @@ class WineFormRatingStat extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: onTap,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          const WineFormStatLabel(text: 'Rating'),
+          WineFormStatLabel(text: l10n.winesFormStatRating),
           SizedBox(height: context.xs * 0.3),
           Row(
             mainAxisSize: MainAxisSize.min,
@@ -662,7 +669,7 @@ class WineFormRatingStat extends StatelessWidget {
               ),
               SizedBox(width: context.w * 0.01),
               Text(
-                '/ 10',
+                l10n.winesFormStatRatingUnit,
                 style: TextStyle(
                   fontSize: context.captionFont,
                   color: cs.onSurfaceVariant,
@@ -688,13 +695,14 @@ class WineFormPriceStat extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: onTap,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          const WineFormStatLabel(text: 'Price'),
+          WineFormStatLabel(text: l10n.winesFormStatPrice),
           SizedBox(height: context.xs * 0.3),
           Row(
             mainAxisSize: MainAxisSize.min,
@@ -712,7 +720,7 @@ class WineFormPriceStat extends StatelessWidget {
               if (price != null) ...[
                 SizedBox(width: context.w * 0.01),
                 Text(
-                  'EUR',
+                  l10n.winesFormStatPriceUnit,
                   style: TextStyle(
                     fontSize: context.captionFont,
                     color: cs.onSurfaceVariant,
@@ -738,6 +746,7 @@ class WineFormTypeChipRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Padding(
       padding: EdgeInsets.only(left: context.paddingH * 1.3),
       child: Wrap(
@@ -746,25 +755,25 @@ class WineFormTypeChipRow extends StatelessWidget {
         children: [
           WineFormTypeChoice(
             type: WineType.red,
-            label: 'Red',
+            label: l10n.winesFormTypeRed,
             isSelected: selected == WineType.red,
             onTap: () => onChanged(WineType.red),
           ),
           WineFormTypeChoice(
             type: WineType.white,
-            label: 'White',
+            label: l10n.winesFormTypeWhite,
             isSelected: selected == WineType.white,
             onTap: () => onChanged(WineType.white),
           ),
           WineFormTypeChoice(
             type: WineType.rose,
-            label: 'Rosé',
+            label: l10n.winesFormTypeRose,
             isSelected: selected == WineType.rose,
             onTap: () => onChanged(WineType.rose),
           ),
           WineFormTypeChoice(
             type: WineType.sparkling,
-            label: 'Sparkling',
+            label: l10n.winesFormTypeSparkling,
             isSelected: selected == WineType.sparkling,
             onTap: () => onChanged(WineType.sparkling),
           ),
@@ -843,6 +852,7 @@ class WineFormCountryStat extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     // Region replaces country when set — single field, no extra row.
     final headline = region ?? country;
     final hasValue = headline != null;
@@ -852,7 +862,11 @@ class WineFormCountryStat extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          WineFormStatLabel(text: region != null ? 'Region' : 'Country'),
+          WineFormStatLabel(
+            text: region != null
+                ? l10n.winesFormStatRegion
+                : l10n.winesFormStatCountry,
+          ),
           SizedBox(height: context.xs * 0.3),
           Text(
             headline ?? '—',
@@ -895,6 +909,7 @@ class WineFormChipsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: context.paddingH),
       child: Wrap(
@@ -903,25 +918,27 @@ class WineFormChipsRow extends StatelessWidget {
         children: [
           WineFormFieldChip(
             icon: PhosphorIconsRegular.factory,
-            label: winery ?? 'Winery',
+            label: winery ?? l10n.winesFormChipWinery,
             isEmpty: winery == null,
             onTap: onWineryTap,
           ),
           WineFormFieldChip(
             icon: PhosphorIconsRegular.plant,
-            label: grape ?? 'Grape',
+            label: grape ?? l10n.winesFormChipGrape,
             isEmpty: grape == null,
             onTap: onGrapeTap,
           ),
           WineFormFieldChip(
             icon: PhosphorIconsRegular.calendarBlank,
-            label: vintage?.toString() ?? 'Year',
+            label: vintage?.toString() ?? l10n.winesFormChipYear,
             isEmpty: vintage == null,
             onTap: onVintageTap,
           ),
           WineFormFieldChip(
             icon: PhosphorIconsRegular.notePencil,
-            label: notes != null && notes!.isNotEmpty ? 'Notes ✓' : 'Notes',
+            label: notes != null && notes!.isNotEmpty
+                ? l10n.winesFormChipNotesFilled
+                : l10n.winesFormChipNotes,
             isEmpty: notes == null || notes!.isEmpty,
             onTap: onNotesTap,
           ),
@@ -1025,7 +1042,7 @@ class WineFormPlaceMap extends StatelessWidget {
                       ),
                       SizedBox(height: context.s),
                       Text(
-                        'Tap to add place',
+                        AppLocalizations.of(context).winesFormPlaceTapToAdd,
                         style: TextStyle(
                           fontSize: context.bodyFont,
                           color: cs.onSurfaceVariant,

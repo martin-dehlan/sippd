@@ -1363,6 +1363,1674 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Delete failed.'**
   String get authProfileDeleteFailedFallback;
+
+  /// No description provided for @winesListSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your wine rankings'**
+  String get winesListSubtitle;
+
+  /// No description provided for @winesListSortRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort: rating'**
+  String get winesListSortRating;
+
+  /// No description provided for @winesListSortRecent.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort: recent'**
+  String get winesListSortRecent;
+
+  /// No description provided for @winesListSortName.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort: name'**
+  String get winesListSortName;
+
+  /// No description provided for @winesListTooltipStats.
+  ///
+  /// In en, this message translates to:
+  /// **'Your stats'**
+  String get winesListTooltipStats;
+
+  /// No description provided for @winesListTooltipAddWine.
+  ///
+  /// In en, this message translates to:
+  /// **'Add wine'**
+  String get winesListTooltipAddWine;
+
+  /// No description provided for @winesListErrorLoad.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load wines'**
+  String get winesListErrorLoad;
+
+  /// No description provided for @winesEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No wines yet'**
+  String get winesEmptyTitle;
+
+  /// No description provided for @winesEmptyFilteredTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No wines match filter'**
+  String get winesEmptyFilteredTitle;
+
+  /// No description provided for @winesEmptyFilteredBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Try a different filter'**
+  String get winesEmptyFilteredBody;
+
+  /// No description provided for @winesEmptyAddWineCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Add wine'**
+  String get winesEmptyAddWineCta;
+
+  /// No description provided for @winesAddSaveLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Save wine'**
+  String get winesAddSaveLabel;
+
+  /// No description provided for @winesAddDiscardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard new wine?'**
+  String get winesAddDiscardTitle;
+
+  /// No description provided for @winesAddDiscardBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You haven\'t saved this wine yet. Leaving now will discard your changes.'**
+  String get winesAddDiscardBody;
+
+  /// No description provided for @winesAddDiscardKeepEditing.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep editing'**
+  String get winesAddDiscardKeepEditing;
+
+  /// No description provided for @winesAddDiscardConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get winesAddDiscardConfirm;
+
+  /// No description provided for @winesAddDuplicateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Looks like a duplicate'**
+  String get winesAddDuplicateTitle;
+
+  /// No description provided for @winesAddDuplicateBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You already logged \"{name}\" with the same vintage, winery and grape. Open the existing entry or add a new one anyway?'**
+  String winesAddDuplicateBody(String name);
+
+  /// No description provided for @winesAddDuplicateCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get winesAddDuplicateCancel;
+
+  /// No description provided for @winesAddDuplicateAddAnyway.
+  ///
+  /// In en, this message translates to:
+  /// **'Add anyway'**
+  String get winesAddDuplicateAddAnyway;
+
+  /// No description provided for @winesAddDuplicateOpenExisting.
+  ///
+  /// In en, this message translates to:
+  /// **'Open existing'**
+  String get winesAddDuplicateOpenExisting;
+
+  /// No description provided for @winesDetailNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Wine not found'**
+  String get winesDetailNotFound;
+
+  /// No description provided for @winesDetailErrorLoad.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load wine'**
+  String get winesDetailErrorLoad;
+
+  /// No description provided for @winesDetailMenuCompare.
+  ///
+  /// In en, this message translates to:
+  /// **'Compare with…'**
+  String get winesDetailMenuCompare;
+
+  /// No description provided for @winesDetailMenuShareRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Share rating'**
+  String get winesDetailMenuShareRating;
+
+  /// No description provided for @winesDetailMenuShareToGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Share to group'**
+  String get winesDetailMenuShareToGroup;
+
+  /// No description provided for @winesDetailMenuEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit wine'**
+  String get winesDetailMenuEdit;
+
+  /// No description provided for @winesDetailMenuTastingNotesPro.
+  ///
+  /// In en, this message translates to:
+  /// **'Tasting notes (Pro)'**
+  String get winesDetailMenuTastingNotesPro;
+
+  /// No description provided for @winesDetailMenuDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete wine'**
+  String get winesDetailMenuDelete;
+
+  /// No description provided for @winesDetailStatRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Rating'**
+  String get winesDetailStatRating;
+
+  /// No description provided for @winesDetailStatRatingUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'/ 10'**
+  String get winesDetailStatRatingUnit;
+
+  /// No description provided for @winesDetailStatPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Price'**
+  String get winesDetailStatPrice;
+
+  /// No description provided for @winesDetailStatRegion.
+  ///
+  /// In en, this message translates to:
+  /// **'Region'**
+  String get winesDetailStatRegion;
+
+  /// No description provided for @winesDetailStatCountry.
+  ///
+  /// In en, this message translates to:
+  /// **'Country'**
+  String get winesDetailStatCountry;
+
+  /// No description provided for @winesDetailSectionNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'NOTES'**
+  String get winesDetailSectionNotes;
+
+  /// No description provided for @winesDetailSectionPlace.
+  ///
+  /// In en, this message translates to:
+  /// **'PLACE'**
+  String get winesDetailSectionPlace;
+
+  /// No description provided for @winesDetailPlaceEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No place set'**
+  String get winesDetailPlaceEmpty;
+
+  /// No description provided for @winesDetailDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete wine?'**
+  String get winesDetailDeleteTitle;
+
+  /// No description provided for @winesDetailDeleteBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This cannot be undone.'**
+  String get winesDetailDeleteBody;
+
+  /// No description provided for @winesDetailDeleteCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get winesDetailDeleteCancel;
+
+  /// No description provided for @winesDetailDeleteConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get winesDetailDeleteConfirm;
+
+  /// No description provided for @winesEditErrorLoad.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load wine'**
+  String get winesEditErrorLoad;
+
+  /// No description provided for @winesEditErrorMemories.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load memories'**
+  String get winesEditErrorMemories;
+
+  /// No description provided for @winesEditNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Wine not found'**
+  String get winesEditNotFound;
+
+  /// No description provided for @winesCleanupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Clean up duplicates'**
+  String get winesCleanupTitle;
+
+  /// No description provided for @winesCleanupErrorLoad.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load duplicates'**
+  String get winesCleanupErrorLoad;
+
+  /// No description provided for @winesCleanupEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No duplicates to clean up'**
+  String get winesCleanupEmptyTitle;
+
+  /// No description provided for @winesCleanupEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your wines are tidy. We check for near-duplicate names and winery matches automatically.'**
+  String get winesCleanupEmptyBody;
+
+  /// No description provided for @winesCleanupMatchPct.
+  ///
+  /// In en, this message translates to:
+  /// **'{pct}% match'**
+  String winesCleanupMatchPct(int pct);
+
+  /// No description provided for @winesCleanupKeepA.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep A'**
+  String get winesCleanupKeepA;
+
+  /// No description provided for @winesCleanupKeepB.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep B'**
+  String get winesCleanupKeepB;
+
+  /// No description provided for @winesCleanupSkippedSnack.
+  ///
+  /// In en, this message translates to:
+  /// **'Skipped for now — will reappear next visit.'**
+  String get winesCleanupSkippedSnack;
+
+  /// No description provided for @winesCleanupDifferentWines.
+  ///
+  /// In en, this message translates to:
+  /// **'They\'re different wines'**
+  String get winesCleanupDifferentWines;
+
+  /// No description provided for @winesCleanupMergeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge into \"{name}\"?'**
+  String winesCleanupMergeTitle(String name);
+
+  /// No description provided for @winesCleanupMergeBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Every rating, group share, and stat that pointed at \"{loser}\" will be moved over to \"{keeper}\". This cannot be undone.'**
+  String winesCleanupMergeBody(String loser, String keeper);
+
+  /// No description provided for @winesCleanupMergeCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get winesCleanupMergeCancel;
+
+  /// No description provided for @winesCleanupMergeConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge'**
+  String get winesCleanupMergeConfirm;
+
+  /// No description provided for @winesCleanupMergeSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Merged into \"{name}\".'**
+  String winesCleanupMergeSuccess(String name);
+
+  /// No description provided for @winesCleanupMergeFailedFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge failed.'**
+  String get winesCleanupMergeFailedFallback;
+
+  /// No description provided for @winesCompareHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'COMPARE'**
+  String get winesCompareHeader;
+
+  /// No description provided for @winesComparePickerSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick the second wine.'**
+  String get winesComparePickerSubtitle;
+
+  /// No description provided for @winesComparePickerEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No other wines yet'**
+  String get winesComparePickerEmptyTitle;
+
+  /// No description provided for @winesComparePickerEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Add at least one more wine to compare.'**
+  String get winesComparePickerEmptyBody;
+
+  /// No description provided for @winesComparePickerErrorFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load wines.'**
+  String get winesComparePickerErrorFallback;
+
+  /// No description provided for @winesCompareMissingSameWine.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a different wine to compare.'**
+  String get winesCompareMissingSameWine;
+
+  /// No description provided for @winesCompareMissingDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load both wines.'**
+  String get winesCompareMissingDefault;
+
+  /// No description provided for @winesCompareErrorFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load wines.'**
+  String get winesCompareErrorFallback;
+
+  /// No description provided for @winesCompareSectionAtAGlance.
+  ///
+  /// In en, this message translates to:
+  /// **'At a glance'**
+  String get winesCompareSectionAtAGlance;
+
+  /// No description provided for @winesCompareSectionTasting.
+  ///
+  /// In en, this message translates to:
+  /// **'Tasting profile'**
+  String get winesCompareSectionTasting;
+
+  /// No description provided for @winesCompareSectionTastingSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Body, tannin, acidity, sweetness, oak, finish.'**
+  String get winesCompareSectionTastingSubtitle;
+
+  /// No description provided for @winesCompareSectionNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get winesCompareSectionNotes;
+
+  /// No description provided for @winesCompareAttrType.
+  ///
+  /// In en, this message translates to:
+  /// **'TYPE'**
+  String get winesCompareAttrType;
+
+  /// No description provided for @winesCompareAttrVintage.
+  ///
+  /// In en, this message translates to:
+  /// **'VINTAGE'**
+  String get winesCompareAttrVintage;
+
+  /// No description provided for @winesCompareAttrGrape.
+  ///
+  /// In en, this message translates to:
+  /// **'GRAPE'**
+  String get winesCompareAttrGrape;
+
+  /// No description provided for @winesCompareAttrOrigin.
+  ///
+  /// In en, this message translates to:
+  /// **'ORIGIN'**
+  String get winesCompareAttrOrigin;
+
+  /// No description provided for @winesCompareAttrPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'PRICE'**
+  String get winesCompareAttrPrice;
+
+  /// No description provided for @winesCompareNotesEyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'NOTES'**
+  String get winesCompareNotesEyebrow;
+
+  /// No description provided for @winesCompareSlotWineLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'WINE {slot}'**
+  String winesCompareSlotWineLabel(String slot);
+
+  /// No description provided for @winesCompareVs.
+  ///
+  /// In en, this message translates to:
+  /// **'VS'**
+  String get winesCompareVs;
+
+  /// No description provided for @winesCompareTastingLockedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'See body, tannin, acidity and more side by side.'**
+  String get winesCompareTastingLockedBody;
+
+  /// No description provided for @winesCompareTastingPro.
+  ///
+  /// In en, this message translates to:
+  /// **'PRO'**
+  String get winesCompareTastingPro;
+
+  /// No description provided for @winesCompareTastingUnlockCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock with Pro'**
+  String get winesCompareTastingUnlockCta;
+
+  /// No description provided for @winesCompareTastingEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Add tasting notes from either wine to see them compared here.'**
+  String get winesCompareTastingEmpty;
+
+  /// No description provided for @winesFormHintName.
+  ///
+  /// In en, this message translates to:
+  /// **'Wine name'**
+  String get winesFormHintName;
+
+  /// No description provided for @winesFormSubmitDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Save wine'**
+  String get winesFormSubmitDefault;
+
+  /// No description provided for @winesFormPhotoLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo'**
+  String get winesFormPhotoLabel;
+
+  /// No description provided for @winesFormStatRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Rating'**
+  String get winesFormStatRating;
+
+  /// No description provided for @winesFormStatRatingUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'/ 10'**
+  String get winesFormStatRatingUnit;
+
+  /// No description provided for @winesFormStatPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Price'**
+  String get winesFormStatPrice;
+
+  /// No description provided for @winesFormStatPriceUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'EUR'**
+  String get winesFormStatPriceUnit;
+
+  /// No description provided for @winesFormStatRegion.
+  ///
+  /// In en, this message translates to:
+  /// **'Region'**
+  String get winesFormStatRegion;
+
+  /// No description provided for @winesFormStatCountry.
+  ///
+  /// In en, this message translates to:
+  /// **'Country'**
+  String get winesFormStatCountry;
+
+  /// No description provided for @winesFormChipWinery.
+  ///
+  /// In en, this message translates to:
+  /// **'Winery'**
+  String get winesFormChipWinery;
+
+  /// No description provided for @winesFormChipGrape.
+  ///
+  /// In en, this message translates to:
+  /// **'Grape'**
+  String get winesFormChipGrape;
+
+  /// No description provided for @winesFormChipYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Year'**
+  String get winesFormChipYear;
+
+  /// No description provided for @winesFormChipNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get winesFormChipNotes;
+
+  /// No description provided for @winesFormChipNotesFilled.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes ✓'**
+  String get winesFormChipNotesFilled;
+
+  /// No description provided for @winesFormPlaceTapToAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to add place'**
+  String get winesFormPlaceTapToAdd;
+
+  /// No description provided for @winesFormWineryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Winery'**
+  String get winesFormWineryTitle;
+
+  /// No description provided for @winesFormWineryHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Château Margaux'**
+  String get winesFormWineryHint;
+
+  /// No description provided for @winesFormNotesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tasting notes'**
+  String get winesFormNotesTitle;
+
+  /// No description provided for @winesFormNotesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Aromas, body, finish…'**
+  String get winesFormNotesHint;
+
+  /// No description provided for @winesFormTypeRed.
+  ///
+  /// In en, this message translates to:
+  /// **'Red'**
+  String get winesFormTypeRed;
+
+  /// No description provided for @winesFormTypeWhite.
+  ///
+  /// In en, this message translates to:
+  /// **'White'**
+  String get winesFormTypeWhite;
+
+  /// No description provided for @winesFormTypeRose.
+  ///
+  /// In en, this message translates to:
+  /// **'Rosé'**
+  String get winesFormTypeRose;
+
+  /// No description provided for @winesFormTypeSparkling.
+  ///
+  /// In en, this message translates to:
+  /// **'Sparkling'**
+  String get winesFormTypeSparkling;
+
+  /// No description provided for @winesMemoriesHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Memories'**
+  String get winesMemoriesHeader;
+
+  /// No description provided for @winesMemoriesHeaderWithCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Memories ({count})'**
+  String winesMemoriesHeaderWithCount(int count);
+
+  /// No description provided for @winesMemoriesAddTile.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get winesMemoriesAddTile;
+
+  /// No description provided for @winesMemoriesRemoveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove memory?'**
+  String get winesMemoriesRemoveTitle;
+
+  /// No description provided for @winesMemoriesRemoveBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This will remove this photo from the wine.'**
+  String get winesMemoriesRemoveBody;
+
+  /// No description provided for @winesMemoriesRemoveCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get winesMemoriesRemoveCancel;
+
+  /// No description provided for @winesMemoriesRemoveConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get winesMemoriesRemoveConfirm;
+
+  /// No description provided for @winesPhotoSourceTake.
+  ///
+  /// In en, this message translates to:
+  /// **'Take photo'**
+  String get winesPhotoSourceTake;
+
+  /// No description provided for @winesPhotoSourceGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose from gallery'**
+  String get winesPhotoSourceGallery;
+
+  /// No description provided for @winesGrapeSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Grape variety'**
+  String get winesGrapeSheetTitle;
+
+  /// No description provided for @winesGrapeSheetHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Pinot Noir'**
+  String get winesGrapeSheetHint;
+
+  /// No description provided for @winesGrapeSheetUseFreetextPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'Use \"'**
+  String get winesGrapeSheetUseFreetextPrefix;
+
+  /// No description provided for @winesGrapeSheetUseFreetextSuffix.
+  ///
+  /// In en, this message translates to:
+  /// **'\" as custom'**
+  String get winesGrapeSheetUseFreetextSuffix;
+
+  /// No description provided for @winesGrapeSheetEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No grapes available yet.'**
+  String get winesGrapeSheetEmpty;
+
+  /// No description provided for @winesGrapeSheetErrorLoad.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load grape catalog.'**
+  String get winesGrapeSheetErrorLoad;
+
+  /// No description provided for @winesGrapeSheetUseTyped.
+  ///
+  /// In en, this message translates to:
+  /// **'Use what I typed'**
+  String get winesGrapeSheetUseTyped;
+
+  /// No description provided for @winesRegionSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Wine region'**
+  String get winesRegionSheetTitle;
+
+  /// No description provided for @winesRegionSheetSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick where in {country} the wine comes from — or skip if you’re not sure.'**
+  String winesRegionSheetSubtitle(String country);
+
+  /// No description provided for @winesRegionSheetSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get winesRegionSheetSkip;
+
+  /// No description provided for @winesRegionSheetSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search region...'**
+  String get winesRegionSheetSearchHint;
+
+  /// No description provided for @winesRegionSheetClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear region'**
+  String get winesRegionSheetClear;
+
+  /// No description provided for @winesRegionSheetOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other region…'**
+  String get winesRegionSheetOther;
+
+  /// No description provided for @winesRegionSheetOtherTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Region'**
+  String get winesRegionSheetOtherTitle;
+
+  /// No description provided for @winesRegionSheetOtherHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Côtes Catalanes'**
+  String get winesRegionSheetOtherHint;
+
+  /// No description provided for @winesCountrySheetSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search country...'**
+  String get winesCountrySheetSearchHint;
+
+  /// No description provided for @winesCountrySheetTopHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Top Wine Countries'**
+  String get winesCountrySheetTopHeader;
+
+  /// No description provided for @winesCountrySheetOtherHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Other Countries'**
+  String get winesCountrySheetOtherHeader;
+
+  /// No description provided for @winesRatingSheetSaveCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Save rating'**
+  String get winesRatingSheetSaveCta;
+
+  /// No description provided for @winesRatingSheetCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get winesRatingSheetCancel;
+
+  /// No description provided for @winesRatingSheetSaveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save.'**
+  String get winesRatingSheetSaveError;
+
+  /// No description provided for @winesRatingHeaderLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'YOUR RATING'**
+  String get winesRatingHeaderLabel;
+
+  /// No description provided for @winesRatingChipTasting.
+  ///
+  /// In en, this message translates to:
+  /// **'Tasting notes'**
+  String get winesRatingChipTasting;
+
+  /// No description provided for @winesRatingInputLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Rating'**
+  String get winesRatingInputLabel;
+
+  /// No description provided for @winesRatingInputMin.
+  ///
+  /// In en, this message translates to:
+  /// **'0'**
+  String get winesRatingInputMin;
+
+  /// No description provided for @winesRatingInputMax.
+  ///
+  /// In en, this message translates to:
+  /// **'10'**
+  String get winesRatingInputMax;
+
+  /// No description provided for @winesExpertSheetSaveFirstSnack.
+  ///
+  /// In en, this message translates to:
+  /// **'Save the wine first — tasting notes attach to the canonical id.'**
+  String get winesExpertSheetSaveFirstSnack;
+
+  /// No description provided for @winesExpertSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tasting notes'**
+  String get winesExpertSheetTitle;
+
+  /// No description provided for @winesExpertSheetSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'WSET-style perceptions'**
+  String get winesExpertSheetSubtitle;
+
+  /// No description provided for @winesExpertSheetSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get winesExpertSheetSave;
+
+  /// No description provided for @winesExpertAxisBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Body'**
+  String get winesExpertAxisBody;
+
+  /// No description provided for @winesExpertAxisTannin.
+  ///
+  /// In en, this message translates to:
+  /// **'Tannin'**
+  String get winesExpertAxisTannin;
+
+  /// No description provided for @winesExpertAxisAcidity.
+  ///
+  /// In en, this message translates to:
+  /// **'Acidity'**
+  String get winesExpertAxisAcidity;
+
+  /// No description provided for @winesExpertAxisSweetness.
+  ///
+  /// In en, this message translates to:
+  /// **'Sweetness'**
+  String get winesExpertAxisSweetness;
+
+  /// No description provided for @winesExpertAxisOak.
+  ///
+  /// In en, this message translates to:
+  /// **'Oak'**
+  String get winesExpertAxisOak;
+
+  /// No description provided for @winesExpertAxisFinish.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish'**
+  String get winesExpertAxisFinish;
+
+  /// No description provided for @winesExpertAxisAromas.
+  ///
+  /// In en, this message translates to:
+  /// **'Aromas'**
+  String get winesExpertAxisAromas;
+
+  /// No description provided for @winesExpertBodyLow.
+  ///
+  /// In en, this message translates to:
+  /// **'light'**
+  String get winesExpertBodyLow;
+
+  /// No description provided for @winesExpertBodyHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'full'**
+  String get winesExpertBodyHigh;
+
+  /// No description provided for @winesExpertTanninLow.
+  ///
+  /// In en, this message translates to:
+  /// **'soft'**
+  String get winesExpertTanninLow;
+
+  /// No description provided for @winesExpertTanninHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'gripping'**
+  String get winesExpertTanninHigh;
+
+  /// No description provided for @winesExpertAcidityLow.
+  ///
+  /// In en, this message translates to:
+  /// **'soft'**
+  String get winesExpertAcidityLow;
+
+  /// No description provided for @winesExpertAcidityHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'crisp'**
+  String get winesExpertAcidityHigh;
+
+  /// No description provided for @winesExpertSweetnessLow.
+  ///
+  /// In en, this message translates to:
+  /// **'dry'**
+  String get winesExpertSweetnessLow;
+
+  /// No description provided for @winesExpertSweetnessHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'sweet'**
+  String get winesExpertSweetnessHigh;
+
+  /// No description provided for @winesExpertOakLow.
+  ///
+  /// In en, this message translates to:
+  /// **'unoaked'**
+  String get winesExpertOakLow;
+
+  /// No description provided for @winesExpertOakHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'heavy'**
+  String get winesExpertOakHigh;
+
+  /// No description provided for @winesExpertFinishShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Short'**
+  String get winesExpertFinishShort;
+
+  /// No description provided for @winesExpertFinishMedium.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get winesExpertFinishMedium;
+
+  /// No description provided for @winesExpertFinishLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Long'**
+  String get winesExpertFinishLong;
+
+  /// No description provided for @winesExpertSummaryHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'TASTING NOTES'**
+  String get winesExpertSummaryHeader;
+
+  /// No description provided for @winesExpertSummaryAromasHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'AROMAS'**
+  String get winesExpertSummaryAromasHeader;
+
+  /// No description provided for @winesExpertSummaryAxisBody.
+  ///
+  /// In en, this message translates to:
+  /// **'BODY'**
+  String get winesExpertSummaryAxisBody;
+
+  /// No description provided for @winesExpertSummaryAxisTannin.
+  ///
+  /// In en, this message translates to:
+  /// **'TANNIN'**
+  String get winesExpertSummaryAxisTannin;
+
+  /// No description provided for @winesExpertSummaryAxisAcidity.
+  ///
+  /// In en, this message translates to:
+  /// **'ACIDITY'**
+  String get winesExpertSummaryAxisAcidity;
+
+  /// No description provided for @winesExpertSummaryAxisSweetness.
+  ///
+  /// In en, this message translates to:
+  /// **'SWEETNESS'**
+  String get winesExpertSummaryAxisSweetness;
+
+  /// No description provided for @winesExpertSummaryAxisOak.
+  ///
+  /// In en, this message translates to:
+  /// **'OAK'**
+  String get winesExpertSummaryAxisOak;
+
+  /// No description provided for @winesExpertSummaryAxisFinish.
+  ///
+  /// In en, this message translates to:
+  /// **'FINISH'**
+  String get winesExpertSummaryAxisFinish;
+
+  /// No description provided for @winesExpertDescriptorBody1.
+  ///
+  /// In en, this message translates to:
+  /// **'very light'**
+  String get winesExpertDescriptorBody1;
+
+  /// No description provided for @winesExpertDescriptorBody2.
+  ///
+  /// In en, this message translates to:
+  /// **'light'**
+  String get winesExpertDescriptorBody2;
+
+  /// No description provided for @winesExpertDescriptorBody3.
+  ///
+  /// In en, this message translates to:
+  /// **'medium'**
+  String get winesExpertDescriptorBody3;
+
+  /// No description provided for @winesExpertDescriptorBody4.
+  ///
+  /// In en, this message translates to:
+  /// **'full'**
+  String get winesExpertDescriptorBody4;
+
+  /// No description provided for @winesExpertDescriptorBody5.
+  ///
+  /// In en, this message translates to:
+  /// **'heavy'**
+  String get winesExpertDescriptorBody5;
+
+  /// No description provided for @winesExpertDescriptorTannin1.
+  ///
+  /// In en, this message translates to:
+  /// **'silky'**
+  String get winesExpertDescriptorTannin1;
+
+  /// No description provided for @winesExpertDescriptorTannin2.
+  ///
+  /// In en, this message translates to:
+  /// **'soft'**
+  String get winesExpertDescriptorTannin2;
+
+  /// No description provided for @winesExpertDescriptorTannin3.
+  ///
+  /// In en, this message translates to:
+  /// **'medium'**
+  String get winesExpertDescriptorTannin3;
+
+  /// No description provided for @winesExpertDescriptorTannin4.
+  ///
+  /// In en, this message translates to:
+  /// **'firm'**
+  String get winesExpertDescriptorTannin4;
+
+  /// No description provided for @winesExpertDescriptorTannin5.
+  ///
+  /// In en, this message translates to:
+  /// **'gripping'**
+  String get winesExpertDescriptorTannin5;
+
+  /// No description provided for @winesExpertDescriptorAcidity1.
+  ///
+  /// In en, this message translates to:
+  /// **'flat'**
+  String get winesExpertDescriptorAcidity1;
+
+  /// No description provided for @winesExpertDescriptorAcidity2.
+  ///
+  /// In en, this message translates to:
+  /// **'soft'**
+  String get winesExpertDescriptorAcidity2;
+
+  /// No description provided for @winesExpertDescriptorAcidity3.
+  ///
+  /// In en, this message translates to:
+  /// **'balanced'**
+  String get winesExpertDescriptorAcidity3;
+
+  /// No description provided for @winesExpertDescriptorAcidity4.
+  ///
+  /// In en, this message translates to:
+  /// **'crisp'**
+  String get winesExpertDescriptorAcidity4;
+
+  /// No description provided for @winesExpertDescriptorAcidity5.
+  ///
+  /// In en, this message translates to:
+  /// **'sharp'**
+  String get winesExpertDescriptorAcidity5;
+
+  /// No description provided for @winesExpertDescriptorSweetness1.
+  ///
+  /// In en, this message translates to:
+  /// **'bone dry'**
+  String get winesExpertDescriptorSweetness1;
+
+  /// No description provided for @winesExpertDescriptorSweetness2.
+  ///
+  /// In en, this message translates to:
+  /// **'dry'**
+  String get winesExpertDescriptorSweetness2;
+
+  /// No description provided for @winesExpertDescriptorSweetness3.
+  ///
+  /// In en, this message translates to:
+  /// **'off-dry'**
+  String get winesExpertDescriptorSweetness3;
+
+  /// No description provided for @winesExpertDescriptorSweetness4.
+  ///
+  /// In en, this message translates to:
+  /// **'sweet'**
+  String get winesExpertDescriptorSweetness4;
+
+  /// No description provided for @winesExpertDescriptorSweetness5.
+  ///
+  /// In en, this message translates to:
+  /// **'lush'**
+  String get winesExpertDescriptorSweetness5;
+
+  /// No description provided for @winesExpertDescriptorOak1.
+  ///
+  /// In en, this message translates to:
+  /// **'unoaked'**
+  String get winesExpertDescriptorOak1;
+
+  /// No description provided for @winesExpertDescriptorOak2.
+  ///
+  /// In en, this message translates to:
+  /// **'subtle'**
+  String get winesExpertDescriptorOak2;
+
+  /// No description provided for @winesExpertDescriptorOak3.
+  ///
+  /// In en, this message translates to:
+  /// **'present'**
+  String get winesExpertDescriptorOak3;
+
+  /// No description provided for @winesExpertDescriptorOak4.
+  ///
+  /// In en, this message translates to:
+  /// **'oak-forward'**
+  String get winesExpertDescriptorOak4;
+
+  /// No description provided for @winesExpertDescriptorOak5.
+  ///
+  /// In en, this message translates to:
+  /// **'heavy'**
+  String get winesExpertDescriptorOak5;
+
+  /// No description provided for @winesExpertDescriptorFinish1.
+  ///
+  /// In en, this message translates to:
+  /// **'short'**
+  String get winesExpertDescriptorFinish1;
+
+  /// No description provided for @winesExpertDescriptorFinish2.
+  ///
+  /// In en, this message translates to:
+  /// **'medium'**
+  String get winesExpertDescriptorFinish2;
+
+  /// No description provided for @winesExpertDescriptorFinish3.
+  ///
+  /// In en, this message translates to:
+  /// **'long'**
+  String get winesExpertDescriptorFinish3;
+
+  /// No description provided for @winesCanonicalPromptTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Same wine?'**
+  String get winesCanonicalPromptTitle;
+
+  /// No description provided for @winesCanonicalPromptBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Looks similar to a wine that\'s already in the catalog. Linking them keeps your stats and matches accurate.'**
+  String get winesCanonicalPromptBody;
+
+  /// No description provided for @winesCanonicalPromptInputLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'What you\'re adding'**
+  String get winesCanonicalPromptInputLabel;
+
+  /// No description provided for @winesCanonicalPromptExistingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'EXISTING IN CATALOG'**
+  String get winesCanonicalPromptExistingLabel;
+
+  /// No description provided for @winesCanonicalPromptDifferent.
+  ///
+  /// In en, this message translates to:
+  /// **'No, this is a different wine'**
+  String get winesCanonicalPromptDifferent;
+
+  /// No description provided for @winesFriendRatingsHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'FRIENDS WHO RATED'**
+  String get winesFriendRatingsHeader;
+
+  /// No description provided for @winesFriendRatingsFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Friend'**
+  String get winesFriendRatingsFallback;
+
+  /// No description provided for @winesFriendRatingsMore.
+  ///
+  /// In en, this message translates to:
+  /// **'+ {count} more'**
+  String winesFriendRatingsMore(int count);
+
+  /// No description provided for @winesFriendRatingsUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'/ 10'**
+  String get winesFriendRatingsUnit;
+
+  /// No description provided for @winesTypeFilterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get winesTypeFilterAll;
+
+  /// No description provided for @winesTypeFilterRed.
+  ///
+  /// In en, this message translates to:
+  /// **'Red'**
+  String get winesTypeFilterRed;
+
+  /// No description provided for @winesTypeFilterWhite.
+  ///
+  /// In en, this message translates to:
+  /// **'White'**
+  String get winesTypeFilterWhite;
+
+  /// No description provided for @winesTypeFilterRose.
+  ///
+  /// In en, this message translates to:
+  /// **'Rosé'**
+  String get winesTypeFilterRose;
+
+  /// No description provided for @winesTypeFilterSparkling.
+  ///
+  /// In en, this message translates to:
+  /// **'Sparkling'**
+  String get winesTypeFilterSparkling;
+
+  /// No description provided for @winesStatsHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'STATS'**
+  String get winesStatsHeader;
+
+  /// No description provided for @winesStatsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your wine journey, visualised'**
+  String get winesStatsSubtitle;
+
+  /// No description provided for @winesStatsPreviewBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'PREVIEW'**
+  String get winesStatsPreviewBadge;
+
+  /// No description provided for @winesStatsPreviewHint.
+  ///
+  /// In en, this message translates to:
+  /// **'What you’ll see after a few ratings.'**
+  String get winesStatsPreviewHint;
+
+  /// No description provided for @winesStatsEmptyEyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'GET STARTED'**
+  String get winesStatsEmptyEyebrow;
+
+  /// No description provided for @winesStatsEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your stats start with a rating'**
+  String get winesStatsEmptyTitle;
+
+  /// No description provided for @winesStatsEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate your first wine to bring your taste, regions and value to life here.'**
+  String get winesStatsEmptyBody;
+
+  /// No description provided for @winesStatsEmptyCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate a wine'**
+  String get winesStatsEmptyCta;
+
+  /// No description provided for @winesStatsHeroLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'YOUR AVG'**
+  String get winesStatsHeroLabel;
+
+  /// No description provided for @winesStatsHeroUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'/ 10'**
+  String get winesStatsHeroUnit;
+
+  /// No description provided for @winesStatsHeroChipPersonal.
+  ///
+  /// In en, this message translates to:
+  /// **'personal'**
+  String get winesStatsHeroChipPersonal;
+
+  /// No description provided for @winesStatsHeroChipGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'group'**
+  String get winesStatsHeroChipGroup;
+
+  /// No description provided for @winesStatsHeroChipTasting.
+  ///
+  /// In en, this message translates to:
+  /// **'tasting'**
+  String get winesStatsHeroChipTasting;
+
+  /// No description provided for @winesStatsSectionTypeBreakdown.
+  ///
+  /// In en, this message translates to:
+  /// **'Wine type breakdown'**
+  String get winesStatsSectionTypeBreakdown;
+
+  /// No description provided for @winesStatsSectionTypeBreakdownSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How your taste splits across the four styles.'**
+  String get winesStatsSectionTypeBreakdownSubtitle;
+
+  /// No description provided for @winesStatsSectionTopRated.
+  ///
+  /// In en, this message translates to:
+  /// **'Highest rated'**
+  String get winesStatsSectionTopRated;
+
+  /// No description provided for @winesStatsSectionTopRatedSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your personal podium.'**
+  String get winesStatsSectionTopRatedSubtitle;
+
+  /// No description provided for @winesStatsSectionTimeline.
+  ///
+  /// In en, this message translates to:
+  /// **'Timeline'**
+  String get winesStatsSectionTimeline;
+
+  /// No description provided for @winesStatsSectionTimelineSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Month by month, the wines that wrote your year.'**
+  String get winesStatsSectionTimelineSubtitle;
+
+  /// No description provided for @winesStatsSectionPartners.
+  ///
+  /// In en, this message translates to:
+  /// **'Drinking partners'**
+  String get winesStatsSectionPartners;
+
+  /// No description provided for @winesStatsSectionPartnersSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Who you taste with most.'**
+  String get winesStatsSectionPartnersSubtitle;
+
+  /// No description provided for @winesStatsSectionPrices.
+  ///
+  /// In en, this message translates to:
+  /// **'Prices & value'**
+  String get winesStatsSectionPrices;
+
+  /// No description provided for @winesStatsSectionPricesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sum of bottle prices logged on your rated wines — not actual consumption spend.'**
+  String get winesStatsSectionPricesSubtitle;
+
+  /// No description provided for @winesStatsSectionPlaces.
+  ///
+  /// In en, this message translates to:
+  /// **'Where you’ve drunk wine'**
+  String get winesStatsSectionPlaces;
+
+  /// No description provided for @winesStatsSectionPlacesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Every wine you logged with a place.'**
+  String get winesStatsSectionPlacesSubtitle;
+
+  /// No description provided for @winesStatsSectionRegions.
+  ///
+  /// In en, this message translates to:
+  /// **'Top regions'**
+  String get winesStatsSectionRegions;
+
+  /// No description provided for @winesStatsSectionRegionsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Where most of your bottles come from.'**
+  String get winesStatsSectionRegionsSubtitle;
+
+  /// No description provided for @winesStatsPartnersErrorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load partners'**
+  String get winesStatsPartnersErrorTitle;
+
+  /// No description provided for @winesStatsPartnersErrorBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Pull down or come back in a moment.'**
+  String get winesStatsPartnersErrorBody;
+
+  /// No description provided for @winesStatsPartnersEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate together'**
+  String get winesStatsPartnersEmptyTitle;
+
+  /// No description provided for @winesStatsPartnersEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Once you and a friend rate the same wine in a group, they\'ll show up here.'**
+  String get winesStatsPartnersEmptyBody;
+
+  /// No description provided for @winesStatsPartnersCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Open groups'**
+  String get winesStatsPartnersCta;
+
+  /// No description provided for @winesStatsPriceEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a price'**
+  String get winesStatsPriceEmptyTitle;
+
+  /// No description provided for @winesStatsPriceEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Log what you paid on a wine to unlock spend, average cost and best-value picks.'**
+  String get winesStatsPriceEmptyBody;
+
+  /// No description provided for @winesStatsPriceEmptyCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit a wine'**
+  String get winesStatsPriceEmptyCta;
+
+  /// No description provided for @winesStatsPlacesEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a location'**
+  String get winesStatsPlacesEmptyTitle;
+
+  /// No description provided for @winesStatsPlacesEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Drop a pin on a wine to start mapping where you drink — bars, dinners, trips.'**
+  String get winesStatsPlacesEmptyBody;
+
+  /// No description provided for @winesStatsPlacesEmptyCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit a wine'**
+  String get winesStatsPlacesEmptyCta;
+
+  /// No description provided for @winesStatsRegionsEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a region'**
+  String get winesStatsRegionsEmptyTitle;
+
+  /// No description provided for @winesStatsRegionsEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Tag wines with a region or country to see where your taste leans.'**
+  String get winesStatsRegionsEmptyBody;
+
+  /// No description provided for @winesStatsRegionsEmptyCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit a wine'**
+  String get winesStatsRegionsEmptyCta;
+
+  /// No description provided for @winesStatsPartnersHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Counts wines rated together inside shared groups.'**
+  String get winesStatsPartnersHint;
+
+  /// No description provided for @winesStatsPartnersFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Wine friend'**
+  String get winesStatsPartnersFallback;
+
+  /// No description provided for @winesStatsSpendingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'RATED PORTFOLIO'**
+  String get winesStatsSpendingLabel;
+
+  /// No description provided for @winesStatsSpendingSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'across {count, plural, =1{1 priced wine} other{{count} priced wines}} · avg {avg}'**
+  String winesStatsSpendingSummary(int count, String avg);
+
+  /// No description provided for @winesStatsSpendingMostExpensive.
+  ///
+  /// In en, this message translates to:
+  /// **'Most expensive'**
+  String get winesStatsSpendingMostExpensive;
+
+  /// No description provided for @winesStatsSpendingBestValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Best value'**
+  String get winesStatsSpendingBestValue;
+
+  /// No description provided for @winesStatsRegionsMore.
+  ///
+  /// In en, this message translates to:
+  /// **'+ {count} more'**
+  String winesStatsRegionsMore(int count);
+
+  /// No description provided for @winesStatsProLockTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock 3 more insights'**
+  String get winesStatsProLockTitle;
+
+  /// No description provided for @winesStatsProLockBody.
+  ///
+  /// In en, this message translates to:
+  /// **'See where your bottles came from, what you spend, and which regions you back the most.'**
+  String get winesStatsProLockBody;
+
+  /// No description provided for @winesStatsProLockPillPrices.
+  ///
+  /// In en, this message translates to:
+  /// **'Prices'**
+  String get winesStatsProLockPillPrices;
+
+  /// No description provided for @winesStatsProLockPillWhere.
+  ///
+  /// In en, this message translates to:
+  /// **'Where'**
+  String get winesStatsProLockPillWhere;
+
+  /// No description provided for @winesStatsProLockPillRegions.
+  ///
+  /// In en, this message translates to:
+  /// **'Top regions'**
+  String get winesStatsProLockPillRegions;
+
+  /// No description provided for @winesStatsProLockCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock with Pro'**
+  String get winesStatsProLockCta;
+
+  /// No description provided for @winesStatsTimelineEarlierOne.
+  ///
+  /// In en, this message translates to:
+  /// **'+ 1 earlier month'**
+  String get winesStatsTimelineEarlierOne;
+
+  /// No description provided for @winesStatsTimelineEarlierMany.
+  ///
+  /// In en, this message translates to:
+  /// **'+ {count} earlier months'**
+  String winesStatsTimelineEarlierMany(int count);
+
+  /// No description provided for @winesStatsTimelineWines.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 wine} other{{count} wines}}'**
+  String winesStatsTimelineWines(int count);
+
+  /// No description provided for @winesStatsMapPlacesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 place} other{{count} places}}'**
+  String winesStatsMapPlacesLabel(int count);
+
+  /// No description provided for @winesStatsMapClose.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get winesStatsMapClose;
+
+  /// No description provided for @winesStatsTypeBreakdownTotalOne.
+  ///
+  /// In en, this message translates to:
+  /// **'wine'**
+  String get winesStatsTypeBreakdownTotalOne;
+
+  /// No description provided for @winesStatsTypeBreakdownTotalMany.
+  ///
+  /// In en, this message translates to:
+  /// **'wines'**
+  String get winesStatsTypeBreakdownTotalMany;
+
+  /// No description provided for @winesStatsTypeBreakdownMostDrunk.
+  ///
+  /// In en, this message translates to:
+  /// **'Most drunk'**
+  String get winesStatsTypeBreakdownMostDrunk;
+
+  /// No description provided for @winesStatsTypeBreakdownTopRated.
+  ///
+  /// In en, this message translates to:
+  /// **'Top rated'**
+  String get winesStatsTypeBreakdownTopRated;
 }
 
 class _AppLocalizationsDelegate

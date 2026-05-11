@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../common/utils/responsive.dart';
 import '../../controller/wine.provider.dart';
 import '../../domain/entities/wine.entity.dart';
@@ -10,6 +11,7 @@ class WineTypeFilterBar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selected = ref.watch(wineTypeFilterProvider);
+    final l10n = AppLocalizations.of(context);
 
     return SizedBox(
       height: context.h * 0.045,
@@ -17,14 +19,14 @@ class WineTypeFilterBar extends ConsumerWidget {
         scrollDirection: Axis.horizontal,
         children: [
           _FilterChip(
-            label: 'All',
+            label: l10n.winesTypeFilterAll,
             isSelected: selected == null,
             onTap: () =>
                 ref.read(wineTypeFilterProvider.notifier).setFilter(null),
           ),
           SizedBox(width: context.w * 0.02),
           _FilterChip(
-            label: 'Red',
+            label: l10n.winesTypeFilterRed,
             isSelected: selected == WineType.red,
             dotColor: const Color(0xFFA84343),
             onTap: () => ref
@@ -33,7 +35,7 @@ class WineTypeFilterBar extends ConsumerWidget {
           ),
           SizedBox(width: context.w * 0.02),
           _FilterChip(
-            label: 'White',
+            label: l10n.winesTypeFilterWhite,
             isSelected: selected == WineType.white,
             dotColor: const Color(0xFFD4C49A),
             onTap: () => ref
@@ -42,7 +44,7 @@ class WineTypeFilterBar extends ConsumerWidget {
           ),
           SizedBox(width: context.w * 0.02),
           _FilterChip(
-            label: 'Rosé',
+            label: l10n.winesTypeFilterRose,
             isSelected: selected == WineType.rose,
             dotColor: const Color(0xFFD6889A),
             onTap: () => ref
@@ -51,7 +53,7 @@ class WineTypeFilterBar extends ConsumerWidget {
           ),
           SizedBox(width: context.w * 0.02),
           _FilterChip(
-            label: 'Sparkling',
+            label: l10n.winesTypeFilterSparkling,
             isSelected: selected == WineType.sparkling,
             dotColor: const Color(0xFFD4A84B),
             onTap: () => ref

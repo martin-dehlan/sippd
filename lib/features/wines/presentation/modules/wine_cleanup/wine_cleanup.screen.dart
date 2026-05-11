@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/error_view.widget.dart';
 import '../../../../../common/widgets/inline_error.widget.dart';
@@ -19,6 +20,7 @@ class WineCleanupScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
     final candidatesAsync = ref.watch(canonicalMergeCandidatesProvider);
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -27,7 +29,7 @@ class WineCleanupScreen extends ConsumerWidget {
           onPressed: () => context.pop(),
         ),
         title: Text(
-          'Clean up duplicates',
+          l10n.winesCleanupTitle,
           style: TextStyle(
             fontSize: context.bodyFont * 1.05,
             fontWeight: FontWeight.w700,
@@ -40,7 +42,7 @@ class WineCleanupScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(
           child: ErrorView(
-            title: "Couldn't load duplicates",
+            title: l10n.winesCleanupErrorLoad,
             onRetry: () => ref.invalidate(canonicalMergeCandidatesProvider),
             error: e,
           ),
@@ -68,6 +70,7 @@ class _EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     return Center(
       child: Padding(
         padding: EdgeInsets.all(context.l),
@@ -81,7 +84,7 @@ class _EmptyState extends StatelessWidget {
             ),
             SizedBox(height: context.m),
             Text(
-              'No duplicates to clean up',
+              l10n.winesCleanupEmptyTitle,
               style: TextStyle(
                 fontSize: context.bodyFont * 1.1,
                 fontWeight: FontWeight.w700,
@@ -90,8 +93,7 @@ class _EmptyState extends StatelessWidget {
             ),
             SizedBox(height: context.xs),
             Text(
-              'Your wines are tidy. We check for near-duplicate names '
-              'and winery matches automatically.',
+              l10n.winesCleanupEmptyBody,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: context.captionFont,
@@ -114,6 +116,7 @@ class _PairCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final pct = (pair.similarity * 100).round();
     return Container(
       padding: EdgeInsets.all(context.s * 1.5),
@@ -137,7 +140,7 @@ class _PairCard extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(context.xs),
                 ),
                 child: Text(
-                  '$pct% match',
+                  l10n.winesCleanupMatchPct(pct),
                   style: TextStyle(
                     fontSize: context.captionFont * 0.85,
                     fontWeight: FontWeight.w700,
@@ -171,7 +174,7 @@ class _PairCard extends ConsumerWidget {
                     side: BorderSide(color: cs.outlineVariant),
                     foregroundColor: cs.onSurface,
                   ),
-                  child: const Text('Keep A'),
+                  child: Text(l10n.winesCleanupKeepA),
                 ),
               ),
               SizedBox(width: context.s),
@@ -182,7 +185,7 @@ class _PairCard extends ConsumerWidget {
                     side: BorderSide(color: cs.outlineVariant),
                     foregroundColor: cs.onSurface,
                   ),
-                  child: const Text('Keep B'),
+                  child: Text(l10n.winesCleanupKeepB),
                 ),
               ),
             ],
@@ -194,13 +197,13 @@ class _PairCard extends ConsumerWidget {
               // wire a "different" decision per pair. Keep the affordance
               // visible but inert until decisions cover canonical pairs.
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Skipped for now — will reappear next visit.'),
+                SnackBar(
+                  content: Text(l10n.winesCleanupSkippedSnack),
                 ),
               );
             },
             child: Text(
-              "They're different wines",
+              l10n.winesCleanupDifferentWines,
               style: TextStyle(
                 color: cs.onSurfaceVariant,
                 fontSize: context.captionFont,
@@ -217,25 +220,22 @@ class _PairCard extends ConsumerWidget {
     WidgetRef ref, {
     required String keep,
   }) async {
+    final l10n = AppLocalizations.of(context);
     final keepName = keep == 'A' ? pair.loserName : pair.winnerName;
     final dropName = keep == 'A' ? pair.winnerName : pair.loserName;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('Merge into "$keepName"?'),
-        content: Text(
-          'Every rating, group share, and stat that pointed at '
-          '"$dropName" will be moved over to "$keepName". '
-          'This cannot be undone.',
-        ),
+        title: Text(l10n.winesCleanupMergeTitle(keepName)),
+        content: Text(l10n.winesCleanupMergeBody(dropName, keepName)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
+            child: Text(l10n.winesCleanupMergeCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Merge'),
+            child: Text(l10n.winesCleanupMergeConfirm),
           ),
         ],
       ),
@@ -249,14 +249,19 @@ class _PairCard extends ConsumerWidget {
           .read(canonicalMergeCandidatesProvider.notifier)
           .merge(loserId: loserId, winnerId: winnerId);
       if (!context.mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Merged into "$keepName".')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.winesCleanupMergeSuccess(keepName))),
+      );
     } catch (e) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(describeAppError(e, fallback: 'Merge failed.')),
+          content: Text(
+            describeAppError(
+              e,
+              fallback: l10n.winesCleanupMergeFailedFallback,
+            ),
+          ),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );

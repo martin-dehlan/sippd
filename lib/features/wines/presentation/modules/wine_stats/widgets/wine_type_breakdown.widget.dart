@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
+import '../../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../../common/utils/responsive.dart';
 import '../../../../../../common/widgets/skeleton.widget.dart';
 import '../../../../controller/wine_stats.provider.dart';
@@ -14,6 +15,7 @@ class WineTypeBreakdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final total = data.fold<int>(0, (acc, t) => acc + t.count);
 
     final card = Container(
@@ -23,13 +25,20 @@ class WineTypeBreakdown extends StatelessWidget {
         borderRadius: BorderRadius.circular(context.w * 0.05),
         border: Border.all(color: cs.outlineVariant, width: 0.5),
       ),
-      child: total == 0 ? const _EmptyState() : _content(context, cs, total),
+      child: total == 0
+          ? const _EmptyState()
+          : _content(context, cs, total, l10n),
     );
 
     return card;
   }
 
-  Widget _content(BuildContext context, ColorScheme cs, int total) {
+  Widget _content(
+    BuildContext context,
+    ColorScheme cs,
+    int total,
+    AppLocalizations l10n,
+  ) {
     final mostDrunk = data.reduce((a, b) => a.count >= b.count ? a : b);
     final ratedTypes = data.where((t) => t.count > 0).toList()
       ..sort((a, b) => b.avgRating.compareTo(a.avgRating));
@@ -58,15 +67,15 @@ class WineTypeBreakdown extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _Highlight(
-                        title: 'Most drunk',
-                        value: _label(mostDrunk.type),
+                        title: l10n.winesStatsTypeBreakdownMostDrunk,
+                        value: _label(mostDrunk.type, l10n),
                         chip: '${(mostDrunk.count / total * 100).round()}%',
                         color: _colorFor(mostDrunk.type, cs),
                       ),
                       SizedBox(height: context.m),
                       _Highlight(
-                        title: 'Top rated',
-                        value: _label(topRated.type),
+                        title: l10n.winesStatsTypeBreakdownTopRated,
+                        value: _label(topRated.type, l10n),
                         chip: '★ ${topRated.avgRating.toStringAsFixed(1)}',
                         color: _colorFor(topRated.type, cs),
                       ),
@@ -83,7 +92,7 @@ class WineTypeBreakdown extends StatelessWidget {
           _TypeRow(
             data: data[i],
             color: _colorFor(data[i].type, cs),
-            label: _label(data[i].type),
+            label: _label(data[i].type, l10n),
             total: total,
             delay: 80 * i,
           ),
@@ -105,16 +114,16 @@ class WineTypeBreakdown extends StatelessWidget {
     }
   }
 
-  String _label(WineType type) {
+  String _label(WineType type, AppLocalizations l) {
     switch (type) {
       case WineType.red:
-        return 'Red';
+        return l.wineTypeRed;
       case WineType.white:
-        return 'White';
+        return l.wineTypeWhite;
       case WineType.rose:
-        return 'Rosé';
+        return l.wineTypeRose;
       case WineType.sparkling:
-        return 'Sparkling';
+        return l.wineTypeSparkling;
     }
   }
 }
@@ -176,7 +185,11 @@ class _Donut extends StatelessWidget {
             ),
             SizedBox(height: context.xs * 0.5),
             Text(
-              total == 1 ? 'wine' : 'wines',
+              total == 1
+                  ? AppLocalizations.of(context).winesStatsTypeBreakdownTotalOne
+                  : AppLocalizations.of(
+                      context,
+                    ).winesStatsTypeBreakdownTotalMany,
               style: TextStyle(
                 fontSize: context.captionFont,
                 color: cs.onSurfaceVariant,

@@ -673,4 +673,907 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get authProfileDeleteFailedFallback => 'Delete failed.';
+
+  @override
+  String get winesListSubtitle => 'Your wine rankings';
+
+  @override
+  String get winesListSortRating => 'Sort: rating';
+
+  @override
+  String get winesListSortRecent => 'Sort: recent';
+
+  @override
+  String get winesListSortName => 'Sort: name';
+
+  @override
+  String get winesListTooltipStats => 'Your stats';
+
+  @override
+  String get winesListTooltipAddWine => 'Add wine';
+
+  @override
+  String get winesListErrorLoad => 'Couldn\'t load wines';
+
+  @override
+  String get winesEmptyTitle => 'No wines yet';
+
+  @override
+  String get winesEmptyFilteredTitle => 'No wines match filter';
+
+  @override
+  String get winesEmptyFilteredBody => 'Try a different filter';
+
+  @override
+  String get winesEmptyAddWineCta => 'Add wine';
+
+  @override
+  String get winesAddSaveLabel => 'Save wine';
+
+  @override
+  String get winesAddDiscardTitle => 'Discard new wine?';
+
+  @override
+  String get winesAddDiscardBody =>
+      'You haven\'t saved this wine yet. Leaving now will discard your changes.';
+
+  @override
+  String get winesAddDiscardKeepEditing => 'Keep editing';
+
+  @override
+  String get winesAddDiscardConfirm => 'Discard';
+
+  @override
+  String get winesAddDuplicateTitle => 'Looks like a duplicate';
+
+  @override
+  String winesAddDuplicateBody(String name) {
+    return 'You already logged \"$name\" with the same vintage, winery and grape. Open the existing entry or add a new one anyway?';
+  }
+
+  @override
+  String get winesAddDuplicateCancel => 'Cancel';
+
+  @override
+  String get winesAddDuplicateAddAnyway => 'Add anyway';
+
+  @override
+  String get winesAddDuplicateOpenExisting => 'Open existing';
+
+  @override
+  String get winesDetailNotFound => 'Wine not found';
+
+  @override
+  String get winesDetailErrorLoad => 'Couldn\'t load wine';
+
+  @override
+  String get winesDetailMenuCompare => 'Compare with…';
+
+  @override
+  String get winesDetailMenuShareRating => 'Share rating';
+
+  @override
+  String get winesDetailMenuShareToGroup => 'Share to group';
+
+  @override
+  String get winesDetailMenuEdit => 'Edit wine';
+
+  @override
+  String get winesDetailMenuTastingNotesPro => 'Tasting notes (Pro)';
+
+  @override
+  String get winesDetailMenuDelete => 'Delete wine';
+
+  @override
+  String get winesDetailStatRating => 'Rating';
+
+  @override
+  String get winesDetailStatRatingUnit => '/ 10';
+
+  @override
+  String get winesDetailStatPrice => 'Price';
+
+  @override
+  String get winesDetailStatRegion => 'Region';
+
+  @override
+  String get winesDetailStatCountry => 'Country';
+
+  @override
+  String get winesDetailSectionNotes => 'NOTES';
+
+  @override
+  String get winesDetailSectionPlace => 'PLACE';
+
+  @override
+  String get winesDetailPlaceEmpty => 'No place set';
+
+  @override
+  String get winesDetailDeleteTitle => 'Delete wine?';
+
+  @override
+  String get winesDetailDeleteBody => 'This cannot be undone.';
+
+  @override
+  String get winesDetailDeleteCancel => 'Cancel';
+
+  @override
+  String get winesDetailDeleteConfirm => 'Delete';
+
+  @override
+  String get winesEditErrorLoad => 'Couldn\'t load wine';
+
+  @override
+  String get winesEditErrorMemories => 'Couldn\'t load memories';
+
+  @override
+  String get winesEditNotFound => 'Wine not found';
+
+  @override
+  String get winesCleanupTitle => 'Clean up duplicates';
+
+  @override
+  String get winesCleanupErrorLoad => 'Couldn\'t load duplicates';
+
+  @override
+  String get winesCleanupEmptyTitle => 'No duplicates to clean up';
+
+  @override
+  String get winesCleanupEmptyBody =>
+      'Your wines are tidy. We check for near-duplicate names and winery matches automatically.';
+
+  @override
+  String winesCleanupMatchPct(int pct) {
+    return '$pct% match';
+  }
+
+  @override
+  String get winesCleanupKeepA => 'Keep A';
+
+  @override
+  String get winesCleanupKeepB => 'Keep B';
+
+  @override
+  String get winesCleanupSkippedSnack =>
+      'Skipped for now — will reappear next visit.';
+
+  @override
+  String get winesCleanupDifferentWines => 'They\'re different wines';
+
+  @override
+  String winesCleanupMergeTitle(String name) {
+    return 'Merge into \"$name\"?';
+  }
+
+  @override
+  String winesCleanupMergeBody(String loser, String keeper) {
+    return 'Every rating, group share, and stat that pointed at \"$loser\" will be moved over to \"$keeper\". This cannot be undone.';
+  }
+
+  @override
+  String get winesCleanupMergeCancel => 'Cancel';
+
+  @override
+  String get winesCleanupMergeConfirm => 'Merge';
+
+  @override
+  String winesCleanupMergeSuccess(String name) {
+    return 'Merged into \"$name\".';
+  }
+
+  @override
+  String get winesCleanupMergeFailedFallback => 'Merge failed.';
+
+  @override
+  String get winesCompareHeader => 'COMPARE';
+
+  @override
+  String get winesComparePickerSubtitle => 'Pick the second wine.';
+
+  @override
+  String get winesComparePickerEmptyTitle => 'No other wines yet';
+
+  @override
+  String get winesComparePickerEmptyBody =>
+      'Add at least one more wine to compare.';
+
+  @override
+  String get winesComparePickerErrorFallback => 'Couldn\'t load wines.';
+
+  @override
+  String get winesCompareMissingSameWine => 'Pick a different wine to compare.';
+
+  @override
+  String get winesCompareMissingDefault => 'Couldn\'t load both wines.';
+
+  @override
+  String get winesCompareErrorFallback => 'Couldn\'t load wines.';
+
+  @override
+  String get winesCompareSectionAtAGlance => 'At a glance';
+
+  @override
+  String get winesCompareSectionTasting => 'Tasting profile';
+
+  @override
+  String get winesCompareSectionTastingSubtitle =>
+      'Body, tannin, acidity, sweetness, oak, finish.';
+
+  @override
+  String get winesCompareSectionNotes => 'Notes';
+
+  @override
+  String get winesCompareAttrType => 'TYPE';
+
+  @override
+  String get winesCompareAttrVintage => 'VINTAGE';
+
+  @override
+  String get winesCompareAttrGrape => 'GRAPE';
+
+  @override
+  String get winesCompareAttrOrigin => 'ORIGIN';
+
+  @override
+  String get winesCompareAttrPrice => 'PRICE';
+
+  @override
+  String get winesCompareNotesEyebrow => 'NOTES';
+
+  @override
+  String winesCompareSlotWineLabel(String slot) {
+    return 'WINE $slot';
+  }
+
+  @override
+  String get winesCompareVs => 'VS';
+
+  @override
+  String get winesCompareTastingLockedBody =>
+      'See body, tannin, acidity and more side by side.';
+
+  @override
+  String get winesCompareTastingPro => 'PRO';
+
+  @override
+  String get winesCompareTastingUnlockCta => 'Unlock with Pro';
+
+  @override
+  String get winesCompareTastingEmpty =>
+      'Add tasting notes from either wine to see them compared here.';
+
+  @override
+  String get winesFormHintName => 'Wine name';
+
+  @override
+  String get winesFormSubmitDefault => 'Save wine';
+
+  @override
+  String get winesFormPhotoLabel => 'Photo';
+
+  @override
+  String get winesFormStatRating => 'Rating';
+
+  @override
+  String get winesFormStatRatingUnit => '/ 10';
+
+  @override
+  String get winesFormStatPrice => 'Price';
+
+  @override
+  String get winesFormStatPriceUnit => 'EUR';
+
+  @override
+  String get winesFormStatRegion => 'Region';
+
+  @override
+  String get winesFormStatCountry => 'Country';
+
+  @override
+  String get winesFormChipWinery => 'Winery';
+
+  @override
+  String get winesFormChipGrape => 'Grape';
+
+  @override
+  String get winesFormChipYear => 'Year';
+
+  @override
+  String get winesFormChipNotes => 'Notes';
+
+  @override
+  String get winesFormChipNotesFilled => 'Notes ✓';
+
+  @override
+  String get winesFormPlaceTapToAdd => 'Tap to add place';
+
+  @override
+  String get winesFormWineryTitle => 'Winery';
+
+  @override
+  String get winesFormWineryHint => 'e.g. Château Margaux';
+
+  @override
+  String get winesFormNotesTitle => 'Tasting notes';
+
+  @override
+  String get winesFormNotesHint => 'Aromas, body, finish…';
+
+  @override
+  String get winesFormTypeRed => 'Red';
+
+  @override
+  String get winesFormTypeWhite => 'White';
+
+  @override
+  String get winesFormTypeRose => 'Rosé';
+
+  @override
+  String get winesFormTypeSparkling => 'Sparkling';
+
+  @override
+  String get winesMemoriesHeader => 'Memories';
+
+  @override
+  String winesMemoriesHeaderWithCount(int count) {
+    return 'Memories ($count)';
+  }
+
+  @override
+  String get winesMemoriesAddTile => 'Add';
+
+  @override
+  String get winesMemoriesRemoveTitle => 'Remove memory?';
+
+  @override
+  String get winesMemoriesRemoveBody =>
+      'This will remove this photo from the wine.';
+
+  @override
+  String get winesMemoriesRemoveCancel => 'Cancel';
+
+  @override
+  String get winesMemoriesRemoveConfirm => 'Remove';
+
+  @override
+  String get winesPhotoSourceTake => 'Take photo';
+
+  @override
+  String get winesPhotoSourceGallery => 'Choose from gallery';
+
+  @override
+  String get winesGrapeSheetTitle => 'Grape variety';
+
+  @override
+  String get winesGrapeSheetHint => 'e.g. Pinot Noir';
+
+  @override
+  String get winesGrapeSheetUseFreetextPrefix => 'Use \"';
+
+  @override
+  String get winesGrapeSheetUseFreetextSuffix => '\" as custom';
+
+  @override
+  String get winesGrapeSheetEmpty => 'No grapes available yet.';
+
+  @override
+  String get winesGrapeSheetErrorLoad => 'Couldn\'t load grape catalog.';
+
+  @override
+  String get winesGrapeSheetUseTyped => 'Use what I typed';
+
+  @override
+  String get winesRegionSheetTitle => 'Wine region';
+
+  @override
+  String winesRegionSheetSubtitle(String country) {
+    return 'Pick where in $country the wine comes from — or skip if you’re not sure.';
+  }
+
+  @override
+  String get winesRegionSheetSkip => 'Skip';
+
+  @override
+  String get winesRegionSheetSearchHint => 'Search region...';
+
+  @override
+  String get winesRegionSheetClear => 'Clear region';
+
+  @override
+  String get winesRegionSheetOther => 'Other region…';
+
+  @override
+  String get winesRegionSheetOtherTitle => 'Region';
+
+  @override
+  String get winesRegionSheetOtherHint => 'e.g. Côtes Catalanes';
+
+  @override
+  String get winesCountrySheetSearchHint => 'Search country...';
+
+  @override
+  String get winesCountrySheetTopHeader => 'Top Wine Countries';
+
+  @override
+  String get winesCountrySheetOtherHeader => 'Other Countries';
+
+  @override
+  String get winesRatingSheetSaveCta => 'Save rating';
+
+  @override
+  String get winesRatingSheetCancel => 'Cancel';
+
+  @override
+  String get winesRatingSheetSaveError => 'Could not save.';
+
+  @override
+  String get winesRatingHeaderLabel => 'YOUR RATING';
+
+  @override
+  String get winesRatingChipTasting => 'Tasting notes';
+
+  @override
+  String get winesRatingInputLabel => 'Rating';
+
+  @override
+  String get winesRatingInputMin => '0';
+
+  @override
+  String get winesRatingInputMax => '10';
+
+  @override
+  String get winesExpertSheetSaveFirstSnack =>
+      'Save the wine first — tasting notes attach to the canonical id.';
+
+  @override
+  String get winesExpertSheetTitle => 'Tasting notes';
+
+  @override
+  String get winesExpertSheetSubtitle => 'WSET-style perceptions';
+
+  @override
+  String get winesExpertSheetSave => 'Save';
+
+  @override
+  String get winesExpertAxisBody => 'Body';
+
+  @override
+  String get winesExpertAxisTannin => 'Tannin';
+
+  @override
+  String get winesExpertAxisAcidity => 'Acidity';
+
+  @override
+  String get winesExpertAxisSweetness => 'Sweetness';
+
+  @override
+  String get winesExpertAxisOak => 'Oak';
+
+  @override
+  String get winesExpertAxisFinish => 'Finish';
+
+  @override
+  String get winesExpertAxisAromas => 'Aromas';
+
+  @override
+  String get winesExpertBodyLow => 'light';
+
+  @override
+  String get winesExpertBodyHigh => 'full';
+
+  @override
+  String get winesExpertTanninLow => 'soft';
+
+  @override
+  String get winesExpertTanninHigh => 'gripping';
+
+  @override
+  String get winesExpertAcidityLow => 'soft';
+
+  @override
+  String get winesExpertAcidityHigh => 'crisp';
+
+  @override
+  String get winesExpertSweetnessLow => 'dry';
+
+  @override
+  String get winesExpertSweetnessHigh => 'sweet';
+
+  @override
+  String get winesExpertOakLow => 'unoaked';
+
+  @override
+  String get winesExpertOakHigh => 'heavy';
+
+  @override
+  String get winesExpertFinishShort => 'Short';
+
+  @override
+  String get winesExpertFinishMedium => 'Medium';
+
+  @override
+  String get winesExpertFinishLong => 'Long';
+
+  @override
+  String get winesExpertSummaryHeader => 'TASTING NOTES';
+
+  @override
+  String get winesExpertSummaryAromasHeader => 'AROMAS';
+
+  @override
+  String get winesExpertSummaryAxisBody => 'BODY';
+
+  @override
+  String get winesExpertSummaryAxisTannin => 'TANNIN';
+
+  @override
+  String get winesExpertSummaryAxisAcidity => 'ACIDITY';
+
+  @override
+  String get winesExpertSummaryAxisSweetness => 'SWEETNESS';
+
+  @override
+  String get winesExpertSummaryAxisOak => 'OAK';
+
+  @override
+  String get winesExpertSummaryAxisFinish => 'FINISH';
+
+  @override
+  String get winesExpertDescriptorBody1 => 'very light';
+
+  @override
+  String get winesExpertDescriptorBody2 => 'light';
+
+  @override
+  String get winesExpertDescriptorBody3 => 'medium';
+
+  @override
+  String get winesExpertDescriptorBody4 => 'full';
+
+  @override
+  String get winesExpertDescriptorBody5 => 'heavy';
+
+  @override
+  String get winesExpertDescriptorTannin1 => 'silky';
+
+  @override
+  String get winesExpertDescriptorTannin2 => 'soft';
+
+  @override
+  String get winesExpertDescriptorTannin3 => 'medium';
+
+  @override
+  String get winesExpertDescriptorTannin4 => 'firm';
+
+  @override
+  String get winesExpertDescriptorTannin5 => 'gripping';
+
+  @override
+  String get winesExpertDescriptorAcidity1 => 'flat';
+
+  @override
+  String get winesExpertDescriptorAcidity2 => 'soft';
+
+  @override
+  String get winesExpertDescriptorAcidity3 => 'balanced';
+
+  @override
+  String get winesExpertDescriptorAcidity4 => 'crisp';
+
+  @override
+  String get winesExpertDescriptorAcidity5 => 'sharp';
+
+  @override
+  String get winesExpertDescriptorSweetness1 => 'bone dry';
+
+  @override
+  String get winesExpertDescriptorSweetness2 => 'dry';
+
+  @override
+  String get winesExpertDescriptorSweetness3 => 'off-dry';
+
+  @override
+  String get winesExpertDescriptorSweetness4 => 'sweet';
+
+  @override
+  String get winesExpertDescriptorSweetness5 => 'lush';
+
+  @override
+  String get winesExpertDescriptorOak1 => 'unoaked';
+
+  @override
+  String get winesExpertDescriptorOak2 => 'subtle';
+
+  @override
+  String get winesExpertDescriptorOak3 => 'present';
+
+  @override
+  String get winesExpertDescriptorOak4 => 'oak-forward';
+
+  @override
+  String get winesExpertDescriptorOak5 => 'heavy';
+
+  @override
+  String get winesExpertDescriptorFinish1 => 'short';
+
+  @override
+  String get winesExpertDescriptorFinish2 => 'medium';
+
+  @override
+  String get winesExpertDescriptorFinish3 => 'long';
+
+  @override
+  String get winesCanonicalPromptTitle => 'Same wine?';
+
+  @override
+  String get winesCanonicalPromptBody =>
+      'Looks similar to a wine that\'s already in the catalog. Linking them keeps your stats and matches accurate.';
+
+  @override
+  String get winesCanonicalPromptInputLabel => 'What you\'re adding';
+
+  @override
+  String get winesCanonicalPromptExistingLabel => 'EXISTING IN CATALOG';
+
+  @override
+  String get winesCanonicalPromptDifferent => 'No, this is a different wine';
+
+  @override
+  String get winesFriendRatingsHeader => 'FRIENDS WHO RATED';
+
+  @override
+  String get winesFriendRatingsFallback => 'Friend';
+
+  @override
+  String winesFriendRatingsMore(int count) {
+    return '+ $count more';
+  }
+
+  @override
+  String get winesFriendRatingsUnit => '/ 10';
+
+  @override
+  String get winesTypeFilterAll => 'All';
+
+  @override
+  String get winesTypeFilterRed => 'Red';
+
+  @override
+  String get winesTypeFilterWhite => 'White';
+
+  @override
+  String get winesTypeFilterRose => 'Rosé';
+
+  @override
+  String get winesTypeFilterSparkling => 'Sparkling';
+
+  @override
+  String get winesStatsHeader => 'STATS';
+
+  @override
+  String get winesStatsSubtitle => 'Your wine journey, visualised';
+
+  @override
+  String get winesStatsPreviewBadge => 'PREVIEW';
+
+  @override
+  String get winesStatsPreviewHint => 'What you’ll see after a few ratings.';
+
+  @override
+  String get winesStatsEmptyEyebrow => 'GET STARTED';
+
+  @override
+  String get winesStatsEmptyTitle => 'Your stats start with a rating';
+
+  @override
+  String get winesStatsEmptyBody =>
+      'Rate your first wine to bring your taste, regions and value to life here.';
+
+  @override
+  String get winesStatsEmptyCta => 'Rate a wine';
+
+  @override
+  String get winesStatsHeroLabel => 'YOUR AVG';
+
+  @override
+  String get winesStatsHeroUnit => '/ 10';
+
+  @override
+  String get winesStatsHeroChipPersonal => 'personal';
+
+  @override
+  String get winesStatsHeroChipGroup => 'group';
+
+  @override
+  String get winesStatsHeroChipTasting => 'tasting';
+
+  @override
+  String get winesStatsSectionTypeBreakdown => 'Wine type breakdown';
+
+  @override
+  String get winesStatsSectionTypeBreakdownSubtitle =>
+      'How your taste splits across the four styles.';
+
+  @override
+  String get winesStatsSectionTopRated => 'Highest rated';
+
+  @override
+  String get winesStatsSectionTopRatedSubtitle => 'Your personal podium.';
+
+  @override
+  String get winesStatsSectionTimeline => 'Timeline';
+
+  @override
+  String get winesStatsSectionTimelineSubtitle =>
+      'Month by month, the wines that wrote your year.';
+
+  @override
+  String get winesStatsSectionPartners => 'Drinking partners';
+
+  @override
+  String get winesStatsSectionPartnersSubtitle => 'Who you taste with most.';
+
+  @override
+  String get winesStatsSectionPrices => 'Prices & value';
+
+  @override
+  String get winesStatsSectionPricesSubtitle =>
+      'Sum of bottle prices logged on your rated wines — not actual consumption spend.';
+
+  @override
+  String get winesStatsSectionPlaces => 'Where you’ve drunk wine';
+
+  @override
+  String get winesStatsSectionPlacesSubtitle =>
+      'Every wine you logged with a place.';
+
+  @override
+  String get winesStatsSectionRegions => 'Top regions';
+
+  @override
+  String get winesStatsSectionRegionsSubtitle =>
+      'Where most of your bottles come from.';
+
+  @override
+  String get winesStatsPartnersErrorTitle => 'Couldn\'t load partners';
+
+  @override
+  String get winesStatsPartnersErrorBody =>
+      'Pull down or come back in a moment.';
+
+  @override
+  String get winesStatsPartnersEmptyTitle => 'Rate together';
+
+  @override
+  String get winesStatsPartnersEmptyBody =>
+      'Once you and a friend rate the same wine in a group, they\'ll show up here.';
+
+  @override
+  String get winesStatsPartnersCta => 'Open groups';
+
+  @override
+  String get winesStatsPriceEmptyTitle => 'Add a price';
+
+  @override
+  String get winesStatsPriceEmptyBody =>
+      'Log what you paid on a wine to unlock spend, average cost and best-value picks.';
+
+  @override
+  String get winesStatsPriceEmptyCta => 'Edit a wine';
+
+  @override
+  String get winesStatsPlacesEmptyTitle => 'Add a location';
+
+  @override
+  String get winesStatsPlacesEmptyBody =>
+      'Drop a pin on a wine to start mapping where you drink — bars, dinners, trips.';
+
+  @override
+  String get winesStatsPlacesEmptyCta => 'Edit a wine';
+
+  @override
+  String get winesStatsRegionsEmptyTitle => 'Add a region';
+
+  @override
+  String get winesStatsRegionsEmptyBody =>
+      'Tag wines with a region or country to see where your taste leans.';
+
+  @override
+  String get winesStatsRegionsEmptyCta => 'Edit a wine';
+
+  @override
+  String get winesStatsPartnersHint =>
+      'Counts wines rated together inside shared groups.';
+
+  @override
+  String get winesStatsPartnersFallback => 'Wine friend';
+
+  @override
+  String get winesStatsSpendingLabel => 'RATED PORTFOLIO';
+
+  @override
+  String winesStatsSpendingSummary(int count, String avg) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count priced wines',
+      one: '1 priced wine',
+    );
+    return 'across $_temp0 · avg $avg';
+  }
+
+  @override
+  String get winesStatsSpendingMostExpensive => 'Most expensive';
+
+  @override
+  String get winesStatsSpendingBestValue => 'Best value';
+
+  @override
+  String winesStatsRegionsMore(int count) {
+    return '+ $count more';
+  }
+
+  @override
+  String get winesStatsProLockTitle => 'Unlock 3 more insights';
+
+  @override
+  String get winesStatsProLockBody =>
+      'See where your bottles came from, what you spend, and which regions you back the most.';
+
+  @override
+  String get winesStatsProLockPillPrices => 'Prices';
+
+  @override
+  String get winesStatsProLockPillWhere => 'Where';
+
+  @override
+  String get winesStatsProLockPillRegions => 'Top regions';
+
+  @override
+  String get winesStatsProLockCta => 'Unlock with Pro';
+
+  @override
+  String get winesStatsTimelineEarlierOne => '+ 1 earlier month';
+
+  @override
+  String winesStatsTimelineEarlierMany(int count) {
+    return '+ $count earlier months';
+  }
+
+  @override
+  String winesStatsTimelineWines(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count wines',
+      one: '1 wine',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String winesStatsMapPlacesLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count places',
+      one: '1 place',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get winesStatsMapClose => 'Close';
+
+  @override
+  String get winesStatsTypeBreakdownTotalOne => 'wine';
+
+  @override
+  String get winesStatsTypeBreakdownTotalMany => 'wines';
+
+  @override
+  String get winesStatsTypeBreakdownMostDrunk => 'Most drunk';
+
+  @override
+  String get winesStatsTypeBreakdownTopRated => 'Top rated';
 }

@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../common/utils/price_format.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/inline_error.widget.dart';
@@ -88,6 +89,7 @@ class _ScrollBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return CustomScrollView(
       slivers: [
         SliverToBoxAdapter(child: SizedBox(height: context.l)),
@@ -118,14 +120,14 @@ class _ScrollBody extends StatelessWidget {
         ),
         SliverToBoxAdapter(child: SizedBox(height: context.l)),
         _Section(
-          title: 'At a glance',
+          title: l10n.winesCompareSectionAtAGlance,
           delay: 160,
           child: _AttributesCard(left: left, right: right),
         ),
         SliverToBoxAdapter(child: SizedBox(height: context.m)),
         _Section(
-          title: 'Tasting profile',
-          subtitle: 'Body, tannin, acidity, sweetness, oak, finish.',
+          title: l10n.winesCompareSectionTasting,
+          subtitle: l10n.winesCompareSectionTastingSubtitle,
           delay: 220,
           child: WineCompareTastingWidget(left: left, right: right),
         ),
@@ -133,7 +135,7 @@ class _ScrollBody extends StatelessWidget {
         if ((left.notes ?? '').isNotEmpty ||
             (right.notes ?? '').isNotEmpty) ...[
           _Section(
-            title: 'Notes',
+            title: l10n.winesCompareSectionNotes,
             delay: 280,
             child: WineCompareNotesWidget(left: left, right: right),
           ),
@@ -154,6 +156,7 @@ class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     return Animate(
       effects: [FadeEffect(duration: 360.ms)],
       child: Row(
@@ -164,7 +167,7 @@ class _Header extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'COMPARE',
+                  l10n.winesCompareHeader,
                   style: GoogleFonts.playfairDisplay(
                     fontSize: context.titleFont * 1.3,
                     fontWeight: FontWeight.w800,
@@ -300,6 +303,7 @@ class _AttributesCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: context.w * 0.04,
@@ -314,31 +318,31 @@ class _AttributesCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           WineCompareAttributeRow(
-            label: 'TYPE',
-            leftValue: _type(left),
-            rightValue: _type(right),
+            label: l10n.winesCompareAttrType,
+            leftValue: _type(left, l10n),
+            rightValue: _type(right, l10n),
           ),
           _Divider(),
           WineCompareAttributeRow(
-            label: 'VINTAGE',
+            label: l10n.winesCompareAttrVintage,
             leftValue: left.vintage?.toString(),
             rightValue: right.vintage?.toString(),
           ),
           _Divider(),
           WineCompareAttributeRow(
-            label: 'GRAPE',
+            label: l10n.winesCompareAttrGrape,
             leftValue: _grape(left),
             rightValue: _grape(right),
           ),
           _Divider(),
           WineCompareAttributeRow(
-            label: 'ORIGIN',
+            label: l10n.winesCompareAttrOrigin,
             leftValue: _origin(left),
             rightValue: _origin(right),
           ),
           _Divider(),
           WineCompareAttributeRow(
-            label: 'PRICE',
+            label: l10n.winesCompareAttrPrice,
             leftValue: _price(left),
             rightValue: _price(right),
           ),
@@ -347,11 +351,11 @@ class _AttributesCard extends StatelessWidget {
     );
   }
 
-  static String _type(WineEntity w) => switch (w.type) {
-    WineType.red => 'Red',
-    WineType.white => 'White',
-    WineType.rose => 'Rosé',
-    WineType.sparkling => 'Sparkling',
+  static String _type(WineEntity w, AppLocalizations l) => switch (w.type) {
+    WineType.red => l.wineTypeRed,
+    WineType.white => l.wineTypeWhite,
+    WineType.rose => l.wineTypeRose,
+    WineType.sparkling => l.wineTypeSparkling,
   };
 
   static String? _grape(WineEntity w) {
@@ -386,9 +390,10 @@ class _MissingState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final msg = sameWine
-        ? 'Pick a different wine to compare.'
-        : "Couldn't load both wines.";
+        ? l10n.winesCompareMissingSameWine
+        : l10n.winesCompareMissingDefault;
     return Center(
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: context.paddingH),
@@ -423,11 +428,12 @@ class _ErrorView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     return Center(
       child: Padding(
         padding: EdgeInsets.all(context.paddingH),
         child: Text(
-          describeAppError(error, fallback: "Couldn't load wines."),
+          describeAppError(error, fallback: l10n.winesCompareErrorFallback),
           textAlign: TextAlign.center,
           style: TextStyle(fontSize: context.captionFont, color: cs.error),
         ),

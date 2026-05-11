@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../../common/utils/responsive.dart';
 import '../../../../../../core/routes/app.routes.dart';
 import '../../../../../paywall/controller/paywall.provider.dart';
@@ -24,6 +25,7 @@ class WineCompareTastingWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isPro = ref.watch(isProProvider);
+    final l10n = AppLocalizations.of(context);
     if (!isPro) {
       return _LockedSection(
         onUnlock: () {
@@ -45,7 +47,7 @@ class WineCompareTastingWidget extends ConsumerWidget {
     final leftT = leftAsync.valueOrNull;
     final rightT = rightAsync.valueOrNull;
 
-    final axes = _buildAxes(leftT, rightT);
+    final axes = _buildAxes(leftT, rightT, l10n);
     if (axes.isEmpty) return const _EmptyProSection();
     return _ProSection(axes: axes);
   }
@@ -53,26 +55,51 @@ class WineCompareTastingWidget extends ConsumerWidget {
   List<_AxisPair> _buildAxes(
     ExpertTastingEntity? left,
     ExpertTastingEntity? right,
+    AppLocalizations l,
   ) {
     final all = <_AxisPair>[
-      _AxisPair('BODY', left?.body, right?.body, 5, _bodyDescriptors),
-      _AxisPair('TANNIN', left?.tannin, right?.tannin, 5, _tanninDescriptors),
       _AxisPair(
-        'ACIDITY',
+        l.winesExpertSummaryAxisBody,
+        left?.body,
+        right?.body,
+        5,
+        _bodyDescriptors(l),
+      ),
+      _AxisPair(
+        l.winesExpertSummaryAxisTannin,
+        left?.tannin,
+        right?.tannin,
+        5,
+        _tanninDescriptors(l),
+      ),
+      _AxisPair(
+        l.winesExpertSummaryAxisAcidity,
         left?.acidity,
         right?.acidity,
         5,
-        _acidityDescriptors,
+        _acidityDescriptors(l),
       ),
       _AxisPair(
-        'SWEETNESS',
+        l.winesExpertSummaryAxisSweetness,
         left?.sweetness,
         right?.sweetness,
         5,
-        _sweetnessDescriptors,
+        _sweetnessDescriptors(l),
       ),
-      _AxisPair('OAK', left?.oak, right?.oak, 5, _oakDescriptors),
-      _AxisPair('FINISH', left?.finish, right?.finish, 3, _finishDescriptors),
+      _AxisPair(
+        l.winesExpertSummaryAxisOak,
+        left?.oak,
+        right?.oak,
+        5,
+        _oakDescriptors(l),
+      ),
+      _AxisPair(
+        l.winesExpertSummaryAxisFinish,
+        left?.finish,
+        right?.finish,
+        3,
+        _finishDescriptors(l),
+      ),
     ];
     return all
         .where((a) => a.leftValue != null || a.rightValue != null)
@@ -87,6 +114,7 @@ class _LockedSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     return InkWell(
       onTap: onUnlock,
       borderRadius: BorderRadius.circular(context.w * 0.04),
@@ -104,7 +132,7 @@ class _LockedSection extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    'See body, tannin, acidity and more side by side.',
+                    l10n.winesCompareTastingLockedBody,
                     style: TextStyle(
                       fontSize: context.captionFont,
                       color: cs.onSurfaceVariant,
@@ -116,7 +144,7 @@ class _LockedSection extends StatelessWidget {
               ],
             ),
             SizedBox(height: context.m),
-            for (final axis in _previewAxes) ...[
+            for (final axis in _previewAxes(l10n)) ...[
               _LockedAxisRow(label: axis),
               SizedBox(height: context.xs * 0.7),
             ],
@@ -130,7 +158,7 @@ class _LockedSection extends StatelessWidget {
                 ),
                 SizedBox(width: context.w * 0.015),
                 Text(
-                  'Unlock with Pro',
+                  l10n.winesCompareTastingUnlockCta,
                   style: TextStyle(
                     fontSize: context.captionFont,
                     fontWeight: FontWeight.w700,
@@ -231,7 +259,7 @@ class _EmptyProSection extends StatelessWidget {
         border: Border.all(color: cs.outlineVariant, width: 0.5),
       ),
       child: Text(
-        'Add tasting notes from either wine to see them compared here.',
+        AppLocalizations.of(context).winesCompareTastingEmpty,
         style: TextStyle(
           fontSize: context.captionFont,
           color: cs.onSurfaceVariant,
@@ -425,7 +453,7 @@ class _ProBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(context.w * 0.015),
       ),
       child: Text(
-        'PRO',
+        AppLocalizations.of(context).winesCompareTastingPro,
         style: TextStyle(
           fontSize: context.captionFont * 0.78,
           fontWeight: FontWeight.w800,
@@ -452,41 +480,50 @@ class _AxisPair {
   );
 }
 
-const _previewAxes = ['BODY', 'TANNIN', 'ACIDITY', 'OAK'];
+List<String> _previewAxes(AppLocalizations l) => [
+  l.winesExpertSummaryAxisBody,
+  l.winesExpertSummaryAxisTannin,
+  l.winesExpertSummaryAxisAcidity,
+  l.winesExpertSummaryAxisOak,
+];
 
-const _bodyDescriptors = {
-  1: 'very light',
-  2: 'light',
-  3: 'medium',
-  4: 'full',
-  5: 'heavy',
+Map<int, String> _bodyDescriptors(AppLocalizations l) => {
+  1: l.winesExpertDescriptorBody1,
+  2: l.winesExpertDescriptorBody2,
+  3: l.winesExpertDescriptorBody3,
+  4: l.winesExpertDescriptorBody4,
+  5: l.winesExpertDescriptorBody5,
 };
-const _tanninDescriptors = {
-  1: 'silky',
-  2: 'soft',
-  3: 'medium',
-  4: 'firm',
-  5: 'gripping',
+Map<int, String> _tanninDescriptors(AppLocalizations l) => {
+  1: l.winesExpertDescriptorTannin1,
+  2: l.winesExpertDescriptorTannin2,
+  3: l.winesExpertDescriptorTannin3,
+  4: l.winesExpertDescriptorTannin4,
+  5: l.winesExpertDescriptorTannin5,
 };
-const _acidityDescriptors = {
-  1: 'flat',
-  2: 'soft',
-  3: 'balanced',
-  4: 'crisp',
-  5: 'sharp',
+Map<int, String> _acidityDescriptors(AppLocalizations l) => {
+  1: l.winesExpertDescriptorAcidity1,
+  2: l.winesExpertDescriptorAcidity2,
+  3: l.winesExpertDescriptorAcidity3,
+  4: l.winesExpertDescriptorAcidity4,
+  5: l.winesExpertDescriptorAcidity5,
 };
-const _sweetnessDescriptors = {
-  1: 'bone dry',
-  2: 'dry',
-  3: 'off-dry',
-  4: 'sweet',
-  5: 'lush',
+Map<int, String> _sweetnessDescriptors(AppLocalizations l) => {
+  1: l.winesExpertDescriptorSweetness1,
+  2: l.winesExpertDescriptorSweetness2,
+  3: l.winesExpertDescriptorSweetness3,
+  4: l.winesExpertDescriptorSweetness4,
+  5: l.winesExpertDescriptorSweetness5,
 };
-const _oakDescriptors = {
-  1: 'unoaked',
-  2: 'subtle',
-  3: 'present',
-  4: 'oak-forward',
-  5: 'heavy',
+Map<int, String> _oakDescriptors(AppLocalizations l) => {
+  1: l.winesExpertDescriptorOak1,
+  2: l.winesExpertDescriptorOak2,
+  3: l.winesExpertDescriptorOak3,
+  4: l.winesExpertDescriptorOak4,
+  5: l.winesExpertDescriptorOak5,
 };
-const _finishDescriptors = {1: 'short', 2: 'medium', 3: 'long'};
+Map<int, String> _finishDescriptors(AppLocalizations l) => {
+  1: l.winesExpertDescriptorFinish1,
+  2: l.winesExpertDescriptorFinish2,
+  3: l.winesExpertDescriptorFinish3,
+};

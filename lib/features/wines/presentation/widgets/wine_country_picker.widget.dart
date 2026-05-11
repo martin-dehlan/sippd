@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import '../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../common/utils/responsive.dart';
 
 const _topWineCountries = [
@@ -77,6 +78,7 @@ void showWineCountryPicker({
   required ValueChanged<String?> onChanged,
 }) {
   final cs = Theme.of(context).colorScheme;
+  final l10n = AppLocalizations.of(context);
   final searchController = TextEditingController();
   var filter = '';
 
@@ -123,7 +125,7 @@ void showWineCountryPicker({
                   inputFormatters: [LengthLimitingTextInputFormatter(100)],
                   style: TextStyle(fontSize: context.bodyFont),
                   decoration: InputDecoration(
-                    hintText: 'Search country...',
+                    hintText: l10n.winesCountrySheetSearchHint,
                     counterText: '',
                     prefixIcon: Icon(
                       PhosphorIconsRegular.magnifyingGlass,
@@ -145,7 +147,7 @@ void showWineCountryPicker({
                           vertical: context.xs,
                         ),
                         child: Text(
-                          'Top Wine Countries',
+                          l10n.winesCountrySheetTopHeader,
                           style: TextStyle(
                             fontSize: context.captionFont,
                             fontWeight: FontWeight.w700,
@@ -171,7 +173,7 @@ void showWineCountryPicker({
                           vertical: context.xs,
                         ),
                         child: Text(
-                          'Other Countries',
+                          l10n.winesCountrySheetOtherHeader,
                           style: TextStyle(
                             fontSize: context.captionFont,
                             fontWeight: FontWeight.w700,

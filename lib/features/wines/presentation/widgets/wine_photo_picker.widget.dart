@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../common/utils/responsive.dart';
 import '../../../../common/widgets/photo_error.dart';
 import '../../../auth/controller/auth.provider.dart';
@@ -116,6 +117,7 @@ Future<ImageSource?> _showSourceSheet(BuildContext context) {
     context: context,
     builder: (ctx) {
       final cs = Theme.of(ctx).colorScheme;
+      final l10n = AppLocalizations.of(ctx);
       return SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(vertical: ctx.m),
@@ -125,7 +127,7 @@ Future<ImageSource?> _showSourceSheet(BuildContext context) {
               ListTile(
                 leading: Icon(PhosphorIconsRegular.camera, color: cs.primary),
                 title: Text(
-                  'Take photo',
+                  l10n.winesPhotoSourceTake,
                   style: TextStyle(fontSize: ctx.bodyFont),
                 ),
                 onTap: () => Navigator.pop(ctx, ImageSource.camera),
@@ -133,7 +135,7 @@ Future<ImageSource?> _showSourceSheet(BuildContext context) {
               ListTile(
                 leading: Icon(PhosphorIconsRegular.images, color: cs.primary),
                 title: Text(
-                  'Choose from gallery',
+                  l10n.winesPhotoSourceGallery,
                   style: TextStyle(fontSize: ctx.bodyFont),
                 ),
                 onTap: () => Navigator.pop(ctx, ImageSource.gallery),

@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../../common/utils/responsive.dart';
 import '../../../../../../common/widgets/skeleton.widget.dart';
 import '../../../../controller/wine_stats.provider.dart';
@@ -96,6 +97,7 @@ class _RatedContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final ratio = (avgRating / 10).clamp(0.0, 1.0);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -103,7 +105,7 @@ class _RatedContent extends StatelessWidget {
         Row(
           children: [
             Text(
-              'YOUR AVG',
+              l10n.winesStatsHeroLabel,
               style: TextStyle(
                 fontSize: context.captionFont * 0.85,
                 color: cs.onSurfaceVariant,
@@ -142,7 +144,7 @@ class _RatedContent extends StatelessWidget {
             Padding(
               padding: EdgeInsets.only(bottom: context.xs * 0.6),
               child: Text(
-                '/ 10',
+                l10n.winesStatsHeroUnit,
                 style: TextStyle(
                   fontSize: context.bodyFont * 1.05,
                   color: cs.onSurfaceVariant,
@@ -205,26 +207,27 @@ class _ContextChipsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final chips = <Widget>[
       if (personalCount > 0)
         _ContextChip(
           icon: PhosphorIconsFill.wine,
           count: personalCount,
-          label: 'personal',
+          label: l10n.winesStatsHeroChipPersonal,
           cs: cs,
         ),
       if (groupCount > 0)
         _ContextChip(
           icon: PhosphorIconsFill.usersThree,
           count: groupCount,
-          label: 'group',
+          label: l10n.winesStatsHeroChipGroup,
           cs: cs,
         ),
       if (tastingCount > 0)
         _ContextChip(
           icon: PhosphorIconsFill.sparkle,
           count: tastingCount,
-          label: 'tasting',
+          label: l10n.winesStatsHeroChipTasting,
           cs: cs,
         ),
     ];

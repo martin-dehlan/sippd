@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../../common/utils/responsive.dart';
 import '../../../../../../common/widgets/skeleton.widget.dart';
 import '../../../../controller/wine_stats.provider.dart';
@@ -40,11 +41,12 @@ class _Content extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final fmt = NumberFormat.simpleCurrency(name: spend.currency);
+    final l10n = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'RATED PORTFOLIO',
+          l10n.winesStatsSpendingLabel,
           style: TextStyle(
             fontSize: context.captionFont * 0.85,
             color: cs.onSurfaceVariant,
@@ -75,9 +77,7 @@ class _Content extends StatelessWidget {
         ),
         SizedBox(height: context.xs),
         Text(
-          'across ${spend.pricedCount} priced '
-          '${spend.pricedCount == 1 ? 'wine' : 'wines'}'
-          ' · avg ${fmt.format(spend.avg)}',
+          l10n.winesStatsSpendingSummary(spend.pricedCount, fmt.format(spend.avg)),
           style: TextStyle(
             fontSize: context.captionFont,
             color: cs.onSurfaceVariant,
@@ -88,7 +88,7 @@ class _Content extends StatelessWidget {
         if (spend.mostExpensive != null)
           _Highlight(
             icon: PhosphorIconsFill.crown,
-            label: 'Most expensive',
+            label: l10n.winesStatsSpendingMostExpensive,
             wine: spend.mostExpensive!,
             valueFormatter: (w) => fmt.format(w.price ?? 0),
             valueDetail: null,
@@ -100,7 +100,7 @@ class _Content extends StatelessWidget {
         if (spend.bestValue != null && spend.bestValue != spend.mostExpensive)
           _Highlight(
             icon: PhosphorIconsFill.gift,
-            label: 'Best value',
+            label: l10n.winesStatsSpendingBestValue,
             wine: spend.bestValue!,
             valueFormatter: (w) => fmt.format(w.price ?? 0),
             valueDetail: '★ ${spend.bestValue!.rating.toStringAsFixed(1)}',

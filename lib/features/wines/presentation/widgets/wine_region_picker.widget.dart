@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../common/data/wine_regions.dart';
+import '../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../common/utils/responsive.dart';
 import '../../../../common/widgets/text_input_sheet.dart';
 
@@ -14,6 +15,7 @@ void showWineRegionPicker({
 }) {
   final regions = regionsFor(country);
   final cs = Theme.of(context).colorScheme;
+  final l10n = AppLocalizations.of(context);
   final searchController = TextEditingController();
   var filter = '';
 
@@ -63,7 +65,7 @@ void showWineRegionPicker({
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Wine region',
+                            l10n.winesRegionSheetTitle,
                             style: TextStyle(
                               fontSize: context.headingFont,
                               fontWeight: FontWeight.w800,
@@ -73,7 +75,7 @@ void showWineRegionPicker({
                           ),
                           SizedBox(height: context.xs),
                           Text(
-                            'Pick where in $country the wine comes from — or skip if you’re not sure.',
+                            l10n.winesRegionSheetSubtitle(country),
                             style: TextStyle(
                               fontSize: context.captionFont,
                               color: cs.onSurfaceVariant,
@@ -94,7 +96,7 @@ void showWineRegionPicker({
                         ),
                       ),
                       child: Text(
-                        'Skip',
+                        l10n.winesRegionSheetSkip,
                         style: TextStyle(
                           fontSize: context.bodyFont,
                           fontWeight: FontWeight.w600,
@@ -119,7 +121,7 @@ void showWineRegionPicker({
                     inputFormatters: [LengthLimitingTextInputFormatter(100)],
                     style: TextStyle(fontSize: context.bodyFont),
                     decoration: InputDecoration(
-                      hintText: 'Search region...',
+                      hintText: l10n.winesRegionSheetSearchHint,
                       counterText: '',
                       prefixIcon: Icon(
                         PhosphorIconsRegular.magnifyingGlass,
@@ -136,7 +138,7 @@ void showWineRegionPicker({
                   children: [
                     if (selected != null)
                       _RegionTile(
-                        region: 'Clear region',
+                        region: l10n.winesRegionSheetClear,
                         leading: PhosphorIconsRegular.x,
                         muted: true,
                         isSelected: false,
@@ -160,16 +162,16 @@ void showWineRegionPicker({
                       const Divider(height: 1),
                     ],
                     _RegionTile(
-                      region: 'Other region…',
+                      region: l10n.winesRegionSheetOther,
                       leading: PhosphorIconsRegular.pencilSimple,
                       muted: true,
                       isSelected: false,
                       onTap: () async {
                         final result = await showTextInputSheet(
                           context: ctx,
-                          title: 'Region',
+                          title: l10n.winesRegionSheetOtherTitle,
                           initial: selected,
-                          hint: 'e.g. Côtes Catalanes',
+                          hint: l10n.winesRegionSheetOtherHint,
                           maxLength: 80,
                         );
                         if (result == null) return;

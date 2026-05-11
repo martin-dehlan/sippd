@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../../paywall/controller/paywall.provider.dart';
@@ -40,6 +41,7 @@ class WineStatsScreen extends ConsumerWidget {
     final hasPriced = ref.watch(
       statsSpendingProvider.select((s) => s.pricedCount > 0),
     );
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       backgroundColor: cs.surface,
@@ -89,16 +91,16 @@ class WineStatsScreen extends ConsumerWidget {
                   SliverToBoxAdapter(child: SizedBox(height: context.m)),
 
                 _SliverSection(
-                  title: 'Wine type breakdown',
-                  subtitle: 'How your taste splits across the four styles.',
+                  title: l10n.winesStatsSectionTypeBreakdown,
+                  subtitle: l10n.winesStatsSectionTypeBreakdownSubtitle,
                   delay: 100,
                   child: WineTypeBreakdown(data: breakdown),
                 ),
                 SliverToBoxAdapter(child: SizedBox(height: context.m)),
 
                 _SliverSection(
-                  title: 'Highest rated',
-                  subtitle: 'Your personal podium.',
+                  title: l10n.winesStatsSectionTopRated,
+                  subtitle: l10n.winesStatsSectionTopRatedSubtitle,
                   delay: 150,
                   child: TopWinesList(wines: topWines, maxItems: 5),
                 ),
@@ -106,8 +108,8 @@ class WineStatsScreen extends ConsumerWidget {
 
                 if (isPro) ...[
                   _SliverSection(
-                    title: 'Timeline',
-                    subtitle: 'Month by month, the wines that wrote your year.',
+                    title: l10n.winesStatsSectionTimeline,
+                    subtitle: l10n.winesStatsSectionTimelineSubtitle,
                     delay: 175,
                     child: hasWines
                         ? WineTimeline(months: timeline)
@@ -116,24 +118,22 @@ class WineStatsScreen extends ConsumerWidget {
                   SliverToBoxAdapter(child: SizedBox(height: context.m)),
 
                   _SliverSection(
-                    title: 'Drinking partners',
-                    subtitle: 'Who you taste with most.',
+                    title: l10n.winesStatsSectionPartners,
+                    subtitle: l10n.winesStatsSectionPartnersSubtitle,
                     delay: 220,
                     child: partnersAsync.when(
                       loading: () => const DrinkingPartnersSkeleton(),
                       error: (_, _) => StatsSectionEmpty(
                         icon: PhosphorIconsFill.usersThree,
-                        title: 'Couldn\'t load partners',
-                        body: 'Pull down or come back in a moment.',
+                        title: l10n.winesStatsPartnersErrorTitle,
+                        body: l10n.winesStatsPartnersErrorBody,
                       ),
                       data: (partners) => partners.isEmpty
                           ? StatsSectionEmpty(
                               icon: PhosphorIconsFill.usersThree,
-                              title: 'Rate together',
-                              body:
-                                  'Once you and a friend rate the same wine '
-                                  'in a group, they\'ll show up here.',
-                              ctaLabel: 'Open groups',
+                              title: l10n.winesStatsPartnersEmptyTitle,
+                              body: l10n.winesStatsPartnersEmptyBody,
+                              ctaLabel: l10n.winesStatsPartnersCta,
                               onTap: () => context.go(AppRoutes.groups),
                             )
                           : DrinkingPartners(partners: partners),
@@ -142,19 +142,15 @@ class WineStatsScreen extends ConsumerWidget {
                   SliverToBoxAdapter(child: SizedBox(height: context.m)),
 
                   _SliverSection(
-                    title: 'Prices & value',
-                    subtitle:
-                        'Sum of bottle prices logged on your rated wines '
-                        '— not actual consumption spend.',
+                    title: l10n.winesStatsSectionPrices,
+                    subtitle: l10n.winesStatsSectionPricesSubtitle,
                     delay: 200,
                     child: hasWines && !hasPriced
                         ? StatsSectionEmpty(
                             icon: PhosphorIconsFill.tag,
-                            title: 'Add a price',
-                            body:
-                                'Log what you paid on a wine to unlock '
-                                'spend, average cost and best-value picks.',
-                            ctaLabel: 'Edit a wine',
+                            title: l10n.winesStatsPriceEmptyTitle,
+                            body: l10n.winesStatsPriceEmptyBody,
+                            ctaLabel: l10n.winesStatsPriceEmptyCta,
                             onTap: () => context.pop(),
                           )
                         : const SpendingSection(),
@@ -162,17 +158,15 @@ class WineStatsScreen extends ConsumerWidget {
                   SliverToBoxAdapter(child: SizedBox(height: context.m)),
 
                   _SliverSection(
-                    title: 'Where you’ve drunk wine',
-                    subtitle: 'Every wine you logged with a place.',
+                    title: l10n.winesStatsSectionPlaces,
+                    subtitle: l10n.winesStatsSectionPlacesSubtitle,
                     delay: 300,
                     child: hasWines && !hasLocations
                         ? StatsSectionEmpty(
                             icon: PhosphorIconsFill.mapPin,
-                            title: 'Add a location',
-                            body:
-                                'Drop a pin on a wine to start mapping '
-                                'where you drink — bars, dinners, trips.',
-                            ctaLabel: 'Edit a wine',
+                            title: l10n.winesStatsPlacesEmptyTitle,
+                            body: l10n.winesStatsPlacesEmptyBody,
+                            ctaLabel: l10n.winesStatsPlacesEmptyCta,
                             onTap: () => context.pop(),
                           )
                         : const WineLocationsMap(),
@@ -180,17 +174,15 @@ class WineStatsScreen extends ConsumerWidget {
                   SliverToBoxAdapter(child: SizedBox(height: context.m)),
 
                   _SliverSection(
-                    title: 'Top regions',
-                    subtitle: 'Where most of your bottles come from.',
+                    title: l10n.winesStatsSectionRegions,
+                    subtitle: l10n.winesStatsSectionRegionsSubtitle,
                     delay: 400,
                     child: hasWines && regions.isEmpty
                         ? StatsSectionEmpty(
                             icon: PhosphorIconsFill.globe,
-                            title: 'Add a region',
-                            body:
-                                'Tag wines with a region or country to '
-                                'see where your taste leans.',
-                            ctaLabel: 'Edit a wine',
+                            title: l10n.winesStatsRegionsEmptyTitle,
+                            body: l10n.winesStatsRegionsEmptyBody,
+                            ctaLabel: l10n.winesStatsRegionsEmptyCta,
                             onTap: () => context.pop(),
                           )
                         : RegionSkyline(items: regions),
@@ -233,6 +225,7 @@ class _PreviewLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     return Row(
       children: [
         Container(
@@ -246,7 +239,7 @@ class _PreviewLabel extends StatelessWidget {
             border: Border.all(color: cs.outlineVariant, width: 0.5),
           ),
           child: Text(
-            'PREVIEW',
+            l10n.winesStatsPreviewBadge,
             style: TextStyle(
               fontSize: context.captionFont * 0.75,
               fontWeight: FontWeight.w800,
@@ -258,7 +251,7 @@ class _PreviewLabel extends StatelessWidget {
         SizedBox(width: context.s),
         Expanded(
           child: Text(
-            'What you’ll see after a few ratings.',
+            l10n.winesStatsPreviewHint,
             style: TextStyle(
               fontSize: context.captionFont,
               color: cs.onSurfaceVariant,
@@ -276,13 +269,14 @@ class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     return Animate(
       effects: [FadeEffect(duration: 360.ms)],
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'STATS',
+            l10n.winesStatsHeader,
             style: GoogleFonts.playfairDisplay(
               fontSize: context.titleFont * 1.3,
               fontWeight: FontWeight.w800,
@@ -293,7 +287,7 @@ class _Header extends StatelessWidget {
           ),
           SizedBox(height: context.xs),
           Text(
-            'Your wine journey, visualised',
+            l10n.winesStatsSubtitle,
             style: TextStyle(
               fontSize: context.captionFont,
               color: cs.onSurfaceVariant,

@@ -227,5 +227,372 @@
   "authProfileDeleteTypeConfirm": "Tape DELETE pour confirmer :",
   "authProfileDeleteHint": "DELETE",
   "authProfileDelete": "Supprimer",
-  "authProfileDeleteFailedFallback": "Suppression échouée."
+  "authProfileDeleteFailedFallback": "Suppression échouée.",
+
+  "winesListSubtitle": "Ton classement de vins",
+  "winesListSortRating": "Tri : note",
+  "winesListSortRecent": "Tri : récents",
+  "winesListSortName": "Tri : nom",
+  "winesListTooltipStats": "Tes stats",
+  "winesListTooltipAddWine": "Ajouter un vin",
+  "winesListErrorLoad": "Impossible de charger les vins",
+  "winesEmptyTitle": "Pas encore de vin",
+  "winesEmptyFilteredTitle": "Aucun vin ne correspond au filtre",
+  "winesEmptyFilteredBody": "Essaie un autre filtre",
+  "winesEmptyAddWineCta": "Ajouter un vin",
+
+  "winesAddSaveLabel": "Enregistrer le vin",
+  "winesAddDiscardTitle": "Abandonner le vin ?",
+  "winesAddDiscardBody": "Tu n’as pas encore enregistré ce vin. Si tu quittes maintenant, tes changements seront perdus.",
+  "winesAddDiscardKeepEditing": "Continuer à modifier",
+  "winesAddDiscardConfirm": "Abandonner",
+  "winesAddDuplicateTitle": "On dirait un doublon",
+  "winesAddDuplicateBody": "Tu as déjà enregistré « {name} » avec le même millésime, domaine et cépage. Tu ouvres l’existant ou tu ajoutes quand même ?",
+  "@winesAddDuplicateBody": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "winesAddDuplicateCancel": "Annuler",
+  "winesAddDuplicateAddAnyway": "Ajouter quand même",
+  "winesAddDuplicateOpenExisting": "Ouvrir l’existant",
+
+  "winesDetailNotFound": "Vin introuvable",
+  "winesDetailErrorLoad": "Impossible de charger le vin",
+  "winesDetailMenuCompare": "Comparer avec…",
+  "winesDetailMenuShareRating": "Partager la note",
+  "winesDetailMenuShareToGroup": "Partager au groupe",
+  "winesDetailMenuEdit": "Modifier le vin",
+  "winesDetailMenuTastingNotesPro": "Notes de dégustation (Pro)",
+  "winesDetailMenuDelete": "Supprimer le vin",
+  "winesDetailStatRating": "Note",
+  "winesDetailStatRatingUnit": "/ 10",
+  "winesDetailStatPrice": "Prix",
+  "winesDetailStatRegion": "Région",
+  "winesDetailStatCountry": "Pays",
+  "winesDetailSectionNotes": "NOTES",
+  "winesDetailSectionPlace": "LIEU",
+  "winesDetailPlaceEmpty": "Aucun lieu",
+  "winesDetailDeleteTitle": "Supprimer le vin ?",
+  "winesDetailDeleteBody": "Ça ne peut pas être annulé.",
+  "winesDetailDeleteCancel": "Annuler",
+  "winesDetailDeleteConfirm": "Supprimer",
+
+  "winesEditErrorLoad": "Impossible de charger le vin",
+  "winesEditErrorMemories": "Impossible de charger les souvenirs",
+  "winesEditNotFound": "Vin introuvable",
+
+  "winesCleanupTitle": "Nettoyer les doublons",
+  "winesCleanupErrorLoad": "Impossible de charger les doublons",
+  "winesCleanupEmptyTitle": "Aucun doublon à nettoyer",
+  "winesCleanupEmptyBody": "Tes vins sont propres. On repère automatiquement les noms et domaines presque identiques.",
+  "winesCleanupMatchPct": "{pct}% correspondance",
+  "@winesCleanupMatchPct": {
+    "placeholders": {
+      "pct": {"type": "int"}
+    }
+  },
+  "winesCleanupKeepA": "Garder A",
+  "winesCleanupKeepB": "Garder B",
+  "winesCleanupSkippedSnack": "Ignoré pour l’instant — réapparaîtra la prochaine fois.",
+  "winesCleanupDifferentWines": "Ce sont des vins différents",
+  "winesCleanupMergeTitle": "Fusionner dans « {name} » ?",
+  "@winesCleanupMergeTitle": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "winesCleanupMergeBody": "Chaque note, partage de groupe et statistique qui pointait sur « {loser} » passera à « {keeper} ». Action irréversible.",
+  "@winesCleanupMergeBody": {
+    "placeholders": {
+      "loser": {"type": "String"},
+      "keeper": {"type": "String"}
+    }
+  },
+  "winesCleanupMergeCancel": "Annuler",
+  "winesCleanupMergeConfirm": "Fusionner",
+  "winesCleanupMergeSuccess": "Fusionné dans « {name} ».",
+  "@winesCleanupMergeSuccess": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "winesCleanupMergeFailedFallback": "Échec de la fusion.",
+
+  "winesCompareHeader": "COMPARER",
+  "winesComparePickerSubtitle": "Choisis le deuxième vin.",
+  "winesComparePickerEmptyTitle": "Pas encore d’autre vin",
+  "winesComparePickerEmptyBody": "Ajoute au moins un autre vin pour comparer.",
+  "winesComparePickerErrorFallback": "Impossible de charger les vins.",
+  "winesCompareMissingSameWine": "Choisis un vin différent à comparer.",
+  "winesCompareMissingDefault": "Impossible de charger les deux vins.",
+  "winesCompareErrorFallback": "Impossible de charger les vins.",
+  "winesCompareSectionAtAGlance": "En un coup d’œil",
+  "winesCompareSectionTasting": "Profil de dégustation",
+  "winesCompareSectionTastingSubtitle": "Corps, tanin, acidité, sucrosité, bois, finale.",
+  "winesCompareSectionNotes": "Notes",
+  "winesCompareAttrType": "TYPE",
+  "winesCompareAttrVintage": "MILLÉSIME",
+  "winesCompareAttrGrape": "CÉPAGE",
+  "winesCompareAttrOrigin": "ORIGINE",
+  "winesCompareAttrPrice": "PRIX",
+  "winesCompareNotesEyebrow": "NOTES",
+  "winesCompareSlotWineLabel": "VIN {slot}",
+  "@winesCompareSlotWineLabel": {
+    "placeholders": {
+      "slot": {"type": "String"}
+    }
+  },
+  "winesCompareVs": "VS",
+  "winesCompareTastingLockedBody": "Vois corps, tanin, acidité et plus côte à côte.",
+  "winesCompareTastingPro": "PRO",
+  "winesCompareTastingUnlockCta": "Débloquer avec Pro",
+  "winesCompareTastingEmpty": "Ajoute des notes de dégustation à l’un des vins pour les voir comparées ici.",
+
+  "winesFormHintName": "Nom du vin",
+  "winesFormSubmitDefault": "Enregistrer le vin",
+  "winesFormPhotoLabel": "Photo",
+  "winesFormStatRating": "Note",
+  "winesFormStatRatingUnit": "/ 10",
+  "winesFormStatPrice": "Prix",
+  "winesFormStatPriceUnit": "EUR",
+  "winesFormStatRegion": "Région",
+  "winesFormStatCountry": "Pays",
+  "winesFormChipWinery": "Domaine",
+  "winesFormChipGrape": "Cépage",
+  "winesFormChipYear": "Année",
+  "winesFormChipNotes": "Notes",
+  "winesFormChipNotesFilled": "Notes ✓",
+  "winesFormPlaceTapToAdd": "Touche pour ajouter un lieu",
+  "winesFormWineryTitle": "Domaine",
+  "winesFormWineryHint": "p. ex. Château Margaux",
+  "winesFormNotesTitle": "Notes de dégustation",
+  "winesFormNotesHint": "Arômes, corps, finale…",
+  "winesFormTypeRed": "Rouge",
+  "winesFormTypeWhite": "Blanc",
+  "winesFormTypeRose": "Rosé",
+  "winesFormTypeSparkling": "Effervescent",
+
+  "winesMemoriesHeader": "Souvenirs",
+  "winesMemoriesHeaderWithCount": "Souvenirs ({count})",
+  "@winesMemoriesHeaderWithCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "winesMemoriesAddTile": "Ajouter",
+  "winesMemoriesRemoveTitle": "Supprimer le souvenir ?",
+  "winesMemoriesRemoveBody": "Cette photo sera retirée du vin.",
+  "winesMemoriesRemoveCancel": "Annuler",
+  "winesMemoriesRemoveConfirm": "Supprimer",
+  "winesPhotoSourceTake": "Prendre une photo",
+  "winesPhotoSourceGallery": "Choisir dans la galerie",
+
+  "winesGrapeSheetTitle": "Cépage",
+  "winesGrapeSheetHint": "p. ex. Pinot Noir",
+  "winesGrapeSheetUseFreetextPrefix": "Utiliser «",
+  "winesGrapeSheetUseFreetextSuffix": "» comme perso",
+  "winesGrapeSheetEmpty": "Pas encore de cépages disponibles.",
+  "winesGrapeSheetErrorLoad": "Impossible de charger le catalogue de cépages.",
+  "winesGrapeSheetUseTyped": "Utiliser ce que j’ai tapé",
+
+  "winesRegionSheetTitle": "Région viticole",
+  "winesRegionSheetSubtitle": "Choisis dans quelle partie de {country} le vin a été produit — ou passe si tu n’es pas sûr.",
+  "@winesRegionSheetSubtitle": {
+    "placeholders": {
+      "country": {"type": "String"}
+    }
+  },
+  "winesRegionSheetSkip": "Passer",
+  "winesRegionSheetSearchHint": "Chercher une région…",
+  "winesRegionSheetClear": "Effacer la région",
+  "winesRegionSheetOther": "Autre région…",
+  "winesRegionSheetOtherTitle": "Région",
+  "winesRegionSheetOtherHint": "p. ex. Côtes Catalanes",
+
+  "winesCountrySheetSearchHint": "Chercher un pays…",
+  "winesCountrySheetTopHeader": "Pays viticoles phares",
+  "winesCountrySheetOtherHeader": "Autres pays",
+
+  "winesRatingSheetSaveCta": "Enregistrer la note",
+  "winesRatingSheetCancel": "Annuler",
+  "winesRatingSheetSaveError": "Enregistrement impossible.",
+  "winesRatingHeaderLabel": "TA NOTE",
+  "winesRatingChipTasting": "Notes de dégustation",
+  "winesRatingInputLabel": "Note",
+  "winesRatingInputMin": "0",
+  "winesRatingInputMax": "10",
+
+  "winesExpertSheetSaveFirstSnack": "Enregistre d’abord le vin — les notes de dégustation se rattachent à l’ID canonique.",
+  "winesExpertSheetTitle": "Notes de dégustation",
+  "winesExpertSheetSubtitle": "Perceptions style WSET",
+  "winesExpertSheetSave": "Enregistrer",
+  "winesExpertAxisBody": "Corps",
+  "winesExpertAxisTannin": "Tanin",
+  "winesExpertAxisAcidity": "Acidité",
+  "winesExpertAxisSweetness": "Sucrosité",
+  "winesExpertAxisOak": "Bois",
+  "winesExpertAxisFinish": "Finale",
+  "winesExpertAxisAromas": "Arômes",
+  "winesExpertBodyLow": "léger",
+  "winesExpertBodyHigh": "puissant",
+  "winesExpertTanninLow": "souple",
+  "winesExpertTanninHigh": "ferme",
+  "winesExpertAcidityLow": "souple",
+  "winesExpertAcidityHigh": "vive",
+  "winesExpertSweetnessLow": "sec",
+  "winesExpertSweetnessHigh": "doux",
+  "winesExpertOakLow": "sans bois",
+  "winesExpertOakHigh": "intense",
+  "winesExpertFinishShort": "Courte",
+  "winesExpertFinishMedium": "Moyenne",
+  "winesExpertFinishLong": "Longue",
+  "winesExpertSummaryHeader": "NOTES DE DÉGUSTATION",
+  "winesExpertSummaryAromasHeader": "ARÔMES",
+  "winesExpertSummaryAxisBody": "CORPS",
+  "winesExpertSummaryAxisTannin": "TANIN",
+  "winesExpertSummaryAxisAcidity": "ACIDITÉ",
+  "winesExpertSummaryAxisSweetness": "SUCROSITÉ",
+  "winesExpertSummaryAxisOak": "BOIS",
+  "winesExpertSummaryAxisFinish": "FINALE",
+  "winesExpertDescriptorBody1": "très léger",
+  "winesExpertDescriptorBody2": "léger",
+  "winesExpertDescriptorBody3": "moyen",
+  "winesExpertDescriptorBody4": "puissant",
+  "winesExpertDescriptorBody5": "lourd",
+  "winesExpertDescriptorTannin1": "soyeux",
+  "winesExpertDescriptorTannin2": "souple",
+  "winesExpertDescriptorTannin3": "moyen",
+  "winesExpertDescriptorTannin4": "ferme",
+  "winesExpertDescriptorTannin5": "serré",
+  "winesExpertDescriptorAcidity1": "plate",
+  "winesExpertDescriptorAcidity2": "souple",
+  "winesExpertDescriptorAcidity3": "équilibrée",
+  "winesExpertDescriptorAcidity4": "vive",
+  "winesExpertDescriptorAcidity5": "tranchante",
+  "winesExpertDescriptorSweetness1": "très sec",
+  "winesExpertDescriptorSweetness2": "sec",
+  "winesExpertDescriptorSweetness3": "demi-sec",
+  "winesExpertDescriptorSweetness4": "doux",
+  "winesExpertDescriptorSweetness5": "liquoreux",
+  "winesExpertDescriptorOak1": "sans bois",
+  "winesExpertDescriptorOak2": "subtil",
+  "winesExpertDescriptorOak3": "présent",
+  "winesExpertDescriptorOak4": "marqué",
+  "winesExpertDescriptorOak5": "intense",
+  "winesExpertDescriptorFinish1": "courte",
+  "winesExpertDescriptorFinish2": "moyenne",
+  "winesExpertDescriptorFinish3": "longue",
+
+  "winesCanonicalPromptTitle": "Même vin ?",
+  "winesCanonicalPromptBody": "Ça ressemble à un vin déjà dans le catalogue. Les lier garde tes stats et tes matchs précis.",
+  "winesCanonicalPromptInputLabel": "Ce que tu ajoutes",
+  "winesCanonicalPromptExistingLabel": "DÉJÀ AU CATALOGUE",
+  "winesCanonicalPromptDifferent": "Non, c’est un vin différent",
+
+  "winesFriendRatingsHeader": "AMIS QUI L’ONT NOTÉ",
+  "winesFriendRatingsFallback": "Ami",
+  "winesFriendRatingsMore": "+ {count} de plus",
+  "@winesFriendRatingsMore": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "winesFriendRatingsUnit": "/ 10",
+
+  "winesTypeFilterAll": "Tous",
+  "winesTypeFilterRed": "Rouge",
+  "winesTypeFilterWhite": "Blanc",
+  "winesTypeFilterRose": "Rosé",
+  "winesTypeFilterSparkling": "Effervescent",
+
+  "winesStatsHeader": "STATS",
+  "winesStatsSubtitle": "Ton voyage dans le vin, visualisé",
+  "winesStatsPreviewBadge": "APERÇU",
+  "winesStatsPreviewHint": "Ce que tu verras après quelques notes.",
+  "winesStatsEmptyEyebrow": "C’EST PARTI",
+  "winesStatsEmptyTitle": "Tes stats commencent par une note",
+  "winesStatsEmptyBody": "Note ton premier vin pour faire vivre ici ton goût, tes régions et ta valeur.",
+  "winesStatsEmptyCta": "Noter un vin",
+  "winesStatsHeroLabel": "TA MOYENNE",
+  "winesStatsHeroUnit": "/ 10",
+  "winesStatsHeroChipPersonal": "perso",
+  "winesStatsHeroChipGroup": "groupe",
+  "winesStatsHeroChipTasting": "dégustation",
+  "winesStatsSectionTypeBreakdown": "Répartition par type",
+  "winesStatsSectionTypeBreakdownSubtitle": "Comment ton goût se répartit entre les quatre styles.",
+  "winesStatsSectionTopRated": "Mieux notés",
+  "winesStatsSectionTopRatedSubtitle": "Ton podium personnel.",
+  "winesStatsSectionTimeline": "Frise",
+  "winesStatsSectionTimelineSubtitle": "Mois après mois, les vins qui ont écrit ton année.",
+  "winesStatsSectionPartners": "Partenaires de dégustation",
+  "winesStatsSectionPartnersSubtitle": "Avec qui tu déguste le plus.",
+  "winesStatsSectionPrices": "Prix & valeur",
+  "winesStatsSectionPricesSubtitle": "Somme des prix de bouteille notés sur tes vins — pas la conso réelle.",
+  "winesStatsSectionPlaces": "Où tu as bu du vin",
+  "winesStatsSectionPlacesSubtitle": "Chaque vin enregistré avec un lieu.",
+  "winesStatsSectionRegions": "Top régions",
+  "winesStatsSectionRegionsSubtitle": "D’où viennent la plupart de tes bouteilles.",
+  "winesStatsPartnersErrorTitle": "Impossible de charger les partenaires",
+  "winesStatsPartnersErrorBody": "Tire vers le bas ou reviens dans un instant.",
+  "winesStatsPartnersEmptyTitle": "Goûter ensemble",
+  "winesStatsPartnersEmptyBody": "Quand toi et un ami notez le même vin dans un groupe, il apparaîtra ici.",
+  "winesStatsPartnersCta": "Ouvrir les groupes",
+  "winesStatsPriceEmptyTitle": "Ajoute un prix",
+  "winesStatsPriceEmptyBody": "Note ce que tu as payé pour débloquer dépense, prix moyen et meilleurs rapports qualité-prix.",
+  "winesStatsPriceEmptyCta": "Modifier un vin",
+  "winesStatsPlacesEmptyTitle": "Ajoute un lieu",
+  "winesStatsPlacesEmptyBody": "Pose un pin sur un vin pour cartographier où tu bois — bars, dîners, voyages.",
+  "winesStatsPlacesEmptyCta": "Modifier un vin",
+  "winesStatsRegionsEmptyTitle": "Ajoute une région",
+  "winesStatsRegionsEmptyBody": "Tague des vins avec une région ou un pays pour voir où ton goût penche.",
+  "winesStatsRegionsEmptyCta": "Modifier un vin",
+  "winesStatsPartnersHint": "Compte les vins notés ensemble dans les groupes partagés.",
+  "winesStatsPartnersFallback": "Pote de vin",
+  "winesStatsSpendingLabel": "PORTEFEUILLE NOTÉ",
+  "winesStatsSpendingSummary": "sur {count, plural, =1{1 vin avec prix} other{{count} vins avec prix}} · moy. {avg}",
+  "@winesStatsSpendingSummary": {
+    "placeholders": {
+      "count": {"type": "int"},
+      "avg": {"type": "String"}
+    }
+  },
+  "winesStatsSpendingMostExpensive": "Le plus cher",
+  "winesStatsSpendingBestValue": "Meilleur rapport",
+  "winesStatsRegionsMore": "+ {count} de plus",
+  "@winesStatsRegionsMore": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "winesStatsProLockTitle": "Débloque 3 insights de plus",
+  "winesStatsProLockBody": "Vois d’où viennent tes bouteilles, ce que tu dépenses et les régions que tu soutiens le plus.",
+  "winesStatsProLockPillPrices": "Prix",
+  "winesStatsProLockPillWhere": "Où",
+  "winesStatsProLockPillRegions": "Top régions",
+  "winesStatsProLockCta": "Débloquer avec Pro",
+  "winesStatsTimelineEarlierOne": "+ 1 mois antérieur",
+  "winesStatsTimelineEarlierMany": "+ {count} mois antérieurs",
+  "@winesStatsTimelineEarlierMany": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "winesStatsTimelineWines": "{count, plural, =1{1 vin} other{{count} vins}}",
+  "@winesStatsTimelineWines": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "winesStatsMapPlacesLabel": "{count, plural, =1{1 lieu} other{{count} lieux}}",
+  "@winesStatsMapPlacesLabel": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "winesStatsMapClose": "Fermer",
+  "winesStatsTypeBreakdownTotalOne": "vin",
+  "winesStatsTypeBreakdownTotalMany": "vins",
+  "winesStatsTypeBreakdownMostDrunk": "Le plus bu",
+  "winesStatsTypeBreakdownTopRated": "Mieux noté"
 }

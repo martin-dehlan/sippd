@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:intl/intl.dart';
+import '../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../common/utils/price_format.dart';
 import '../../../../common/utils/responsive.dart';
 import '../../domain/entities/wine.entity.dart';
@@ -283,11 +284,12 @@ class WineTypeBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final label = switch (type) {
-      WineType.red => 'Red',
-      WineType.white => 'White',
-      WineType.rose => 'Rosé',
-      WineType.sparkling => 'Sparkling',
+      WineType.red => l10n.wineTypeRed,
+      WineType.white => l10n.wineTypeWhite,
+      WineType.rose => l10n.wineTypeRose,
+      WineType.sparkling => l10n.wineTypeSparkling,
     };
     final color = switch (type) {
       WineType.red => const Color(0xFFA84343),
@@ -336,7 +338,7 @@ class WineRatingDisplay extends StatelessWidget {
           ),
         ),
         Text(
-          '/ 10',
+          AppLocalizations.of(context).winesFormStatRatingUnit,
           style: TextStyle(
             fontSize: context.captionFont * 0.8,
             color: cs.outline,

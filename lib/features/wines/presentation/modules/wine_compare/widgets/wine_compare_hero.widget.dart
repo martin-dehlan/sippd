@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import '../../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../../common/utils/responsive.dart';
 import '../../../../domain/entities/wine.entity.dart';
 import '../../../widgets/wine_card.widget.dart';
@@ -55,12 +56,13 @@ class _Side extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Text(
-          'WINE $slot',
+          l10n.winesCompareSlotWineLabel(slot),
           style: TextStyle(
             fontSize: context.captionFont * 0.78,
             fontWeight: FontWeight.w700,
@@ -171,7 +173,7 @@ class _VsRule extends StatelessWidget {
                 border: Border.all(color: cs.outlineVariant, width: 0.5),
               ),
               child: Text(
-                'VS',
+                AppLocalizations.of(context).winesCompareVs,
                 style: GoogleFonts.playfairDisplay(
                   fontSize: context.captionFont * 0.9,
                   fontWeight: FontWeight.w800,

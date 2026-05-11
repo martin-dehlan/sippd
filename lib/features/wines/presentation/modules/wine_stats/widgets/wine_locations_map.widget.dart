@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../../common/utils/responsive.dart';
 import '../../../../../../common/widgets/skeleton.widget.dart';
 import '../../../../controller/wine_stats.provider.dart';
@@ -77,7 +78,7 @@ class WineMapFullscreen extends StatelessWidget {
               left: context.paddingH,
               child: _PillButton(
                 icon: PhosphorIconsRegular.x,
-                label: 'Close',
+                label: AppLocalizations.of(context).winesStatsMapClose,
                 onTap: () => Navigator.of(context).pop(),
                 cs: cs,
               ),
@@ -240,7 +241,7 @@ class _CountBadge extends StatelessWidget {
         border: Border.all(color: cs.outlineVariant, width: 0.5),
       ),
       child: Text(
-        '$count ${count == 1 ? 'place' : 'places'}',
+        AppLocalizations.of(context).winesStatsMapPlacesLabel(count),
         style: TextStyle(
           fontSize: context.captionFont,
           fontWeight: FontWeight.w700,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../common/utils/responsive.dart';
 import '../../controller/wine.provider.dart';
 import '../../domain/entities/canonical_grape.entity.dart';
@@ -93,6 +94,7 @@ class _GrapePickerSheetState extends ConsumerState<_GrapePickerSheet> {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
     final results = ref.watch(canonicalGrapesSearchProvider(_query));
 
@@ -125,7 +127,7 @@ class _GrapePickerSheetState extends ConsumerState<_GrapePickerSheet> {
                 ),
                 SizedBox(height: context.m),
                 Text(
-                  'Grape variety',
+                  l10n.winesGrapeSheetTitle,
                   style: TextStyle(
                     fontSize: context.bodyFont,
                     fontWeight: FontWeight.w600,
@@ -143,7 +145,7 @@ class _GrapePickerSheetState extends ConsumerState<_GrapePickerSheet> {
                   onSubmitted: (_) => _selectFreetext(),
                   decoration: InputDecoration(
                     counterText: '',
-                    hintText: 'e.g. Pinot Noir',
+                    hintText: l10n.winesGrapeSheetHint,
                     prefixIcon: Icon(Icons.search, color: cs.outline),
                     suffixIcon: _query.isEmpty
                         ? null
@@ -227,7 +229,7 @@ class _ResultsList extends StatelessWidget {
         child: Padding(
           padding: EdgeInsets.all(context.l),
           child: Text(
-            'No grapes available yet.',
+            AppLocalizations.of(context).winesGrapeSheetEmpty,
             style: TextStyle(fontSize: context.captionFont, color: cs.outline),
           ),
         ),
@@ -271,6 +273,7 @@ class _FreetextChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(context.w * 0.03),
@@ -291,12 +294,12 @@ class _FreetextChip extends StatelessWidget {
                     color: cs.onSurface,
                   ),
                   children: [
-                    const TextSpan(text: 'Use "'),
+                    TextSpan(text: l10n.winesGrapeSheetUseFreetextPrefix),
                     TextSpan(
                       text: query,
                       style: const TextStyle(fontWeight: FontWeight.w600),
                     ),
-                    const TextSpan(text: '" as custom'),
+                    TextSpan(text: l10n.winesGrapeSheetUseFreetextSuffix),
                   ],
                 ),
               ),
@@ -380,20 +383,21 @@ class _ErrorState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     return Padding(
       padding: EdgeInsets.all(context.l),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            "Couldn't load grape catalog.",
+            l10n.winesGrapeSheetErrorLoad,
             style: TextStyle(fontSize: context.captionFont, color: cs.outline),
           ),
           if (onUseFreetext != null) ...[
             SizedBox(height: context.s),
             TextButton(
               onPressed: onUseFreetext,
-              child: const Text('Use what I typed'),
+              child: Text(l10n.winesGrapeSheetUseTyped),
             ),
           ],
         ],
