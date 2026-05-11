@@ -1,6 +1,18 @@
 # Sippd
 
+> A quiet wine journal — local-first, offline, no ads, no feed.
+
+**[Google Play](https://play.google.com/store/apps/details?id=xyz.sippd.app)** · TestFlight (iOS — pending Apple review) · **[sippd.xyz](https://sippd.xyz)**
+
+<p align="center">
+  <img src="https://sippd.xyz/screenshots/clean/rate.jpeg" width="220" alt="Rate a bottle in seconds" />
+  <img src="https://sippd.xyz/screenshots/clean/groups.jpeg" width="220" alt="Private groups with friends" />
+  <img src="https://sippd.xyz/screenshots/clean/stats.jpeg" width="220" alt="Your wine journey, visualised" />
+</p>
+
 Wine ranking & sharing app built with Flutter. Rate, organize, and share wines with friends in groups — local-first, offline-ready, syncs through Supabase.
+
+Built after a trip through South African wine country, after one too many ad-stuffed screens in the existing apps. Local-first by design — your bottles, your device.
 
 ![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?logo=flutter)
 ![Dart](https://img.shields.io/badge/Dart-3.x-0175C2?logo=dart)
