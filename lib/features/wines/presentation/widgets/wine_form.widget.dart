@@ -10,7 +10,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../../../../common/data/wine_regions.dart';
+import '../../../../common/utils/price_format.dart';
 import '../../../../common/utils/responsive.dart';
+import '../../../../common/widgets/price_input_sheet.dart';
 import '../../../../common/widgets/text_input_sheet.dart';
 import '../../../../common/widgets/year_picker_sheet.dart';
 import '../../../locations/domain/entities/location.entity.dart';
@@ -274,22 +276,7 @@ class WineFormState extends ConsumerState<WineForm>
 
   Future<void> _editPrice() async {
     FocusScope.of(context).unfocus();
-    final result = await showTextInputSheet(
-      context: context,
-      title: 'Price',
-      initial: _price?.toStringAsFixed(2),
-      prefix: '€ ',
-      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-      maxLength: 12,
-      inputFormatters: [
-        FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
-        TextInputFormatter.withFunction((old, next) {
-          // Allow only one decimal separator (. or ,)
-          final seps = next.text.split(RegExp(r'[.,]'));
-          return seps.length <= 2 ? next : old;
-        }),
-      ],
-    );
+    final result = await showPriceInputSheet(context: context, initial: _price);
     if (!mounted) return;
     FocusManager.instance.primaryFocus?.unfocus();
     if (result == null) return;
@@ -715,7 +702,7 @@ class WineFormPriceStat extends StatelessWidget {
             textBaseline: TextBaseline.alphabetic,
             children: [
               Text(
-                price != null ? price!.toStringAsFixed(2) : '—',
+                price != null ? formatPrice(price!) : '—',
                 style: TextStyle(
                   fontSize: context.headingFont * 1.4,
                   fontWeight: FontWeight.bold,

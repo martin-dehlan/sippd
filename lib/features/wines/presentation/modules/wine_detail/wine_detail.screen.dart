@@ -6,6 +6,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
+import '../../../../../common/utils/price_format.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/error_view.widget.dart';
 import '../../../../../common/widgets/overflow_menu.widget.dart';
@@ -412,7 +413,7 @@ class _StatsColumn extends StatelessWidget {
           if (wine.price != null) ...[
             _StatItem(
               label: 'Price',
-              value: wine.price!.toStringAsFixed(2),
+              value: formatPrice(wine.price!),
               unit: wine.currency,
             ),
             SizedBox(height: context.l),

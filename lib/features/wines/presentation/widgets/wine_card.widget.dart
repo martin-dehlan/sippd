@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:intl/intl.dart';
+import '../../../../common/utils/price_format.dart';
 import '../../../../common/utils/responsive.dart';
 import '../../domain/entities/wine.entity.dart';
 
@@ -140,7 +141,7 @@ class WineCardWidget extends StatelessWidget {
 
   List<String> _metaParts(WineEntity wine) {
     final parts = <String>[DateFormat('MMM yyyy').format(wine.createdAt)];
-    if (wine.price != null) parts.add('€${wine.price!.toStringAsFixed(0)}');
+    if (wine.price != null) parts.add('€${formatPrice(wine.price!)}');
     final origin = wine.region ?? wine.country;
     if (origin != null) parts.add(origin);
     return parts;
