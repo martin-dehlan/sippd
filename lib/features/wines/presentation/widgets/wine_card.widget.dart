@@ -8,6 +8,7 @@ class WineCardWidget extends StatelessWidget {
   final WineEntity wine;
   final int rank;
   final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
   final bool compact;
   final double? ratingOverride;
   final bool hideRatingIfEmpty;
@@ -17,6 +18,7 @@ class WineCardWidget extends StatelessWidget {
     required this.wine,
     required this.rank,
     this.onTap,
+    this.onLongPress,
     this.compact = false,
     this.ratingOverride,
     this.hideRatingIfEmpty = false,
@@ -33,6 +35,7 @@ class WineCardWidget extends StatelessWidget {
       borderRadius: BorderRadius.circular(context.w * 0.04),
       child: InkWell(
         onTap: onTap,
+        onLongPress: onLongPress,
         borderRadius: BorderRadius.circular(context.w * 0.04),
         child: Ink(
           decoration: BoxDecoration(

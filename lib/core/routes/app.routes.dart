@@ -23,8 +23,14 @@ class AppRoutes {
   static const String wineDetail = '/wines/:id';
   static const String wineAdd = '/wines/add';
   static const String wineEdit = '/wines/:id/edit';
+  static const String wineCompare = '/wines/compare';
+  static const String wineComparePicker = '/wines/compare/pick';
   static String wineDetailPath(String id) => '/wines/$id';
   static String wineEditPath(String id) => '/wines/$id/edit';
+  static String wineComparePath(String leftId, String rightId) =>
+      '/wines/compare?left=$leftId&right=$rightId';
+  static String wineComparePickerPath(String excludeId) =>
+      '/wines/compare/pick?excludeId=$excludeId';
 
   // Groups
   static const String groupDetail = '/groups/:id';

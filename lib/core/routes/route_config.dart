@@ -39,6 +39,8 @@ import '../../features/wines/presentation/modules/wine_add/wine_add.screen.dart'
 import '../../features/wines/presentation/modules/wine_stats/wine_stats.screen.dart';
 import '../../features/wines/presentation/modules/wine_detail/wine_detail.screen.dart';
 import '../../features/wines/presentation/modules/wine_edit/wine_edit.screen.dart';
+import '../../features/wines/presentation/modules/wine_compare/wine_compare.screen.dart';
+import '../../features/wines/presentation/modules/wine_compare/wine_compare_picker.screen.dart';
 import 'app.routes.dart';
 
 part 'route_config.g.dart';
@@ -293,6 +295,23 @@ GoRouter goRouter(GoRouterRef ref) {
       GoRoute(
         path: AppRoutes.wineAdd,
         builder: (context, state) => const WineAddScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.wineCompare,
+        builder: (context, state) {
+          final q = state.uri.queryParameters;
+          return WineCompareScreen(
+            leftId: q['left'],
+            rightId: q['right'],
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.wineComparePicker,
+        builder: (context, state) {
+          final q = state.uri.queryParameters;
+          return WineComparePickerScreen(excludeId: q['excludeId']);
+        },
       ),
       GoRoute(
         path: AppRoutes.wineDetail,
