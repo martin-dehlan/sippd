@@ -90,9 +90,9 @@ class FcmService {
     // appears in user_devices and the server skips it as "no tokens".
     var token = await _currentToken();
     if (token == null && !kIsWeb) {
-      for (var i = 0; token == null && i < 3; i++) {
-        debugPrint('FCM: $_platform getToken null, retrying in 2s…');
-        await Future.delayed(const Duration(seconds: 2));
+      for (var i = 0; token == null && i < 5; i++) {
+        debugPrint('FCM: $_platform getToken null, retrying in 3s…');
+        await Future.delayed(const Duration(seconds: 3));
         token = await _currentToken();
       }
     }

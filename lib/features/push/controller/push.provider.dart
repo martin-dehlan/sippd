@@ -26,10 +26,14 @@ Future<void> pushRegistration(PushRegistrationRef ref) async {
   if (!isAuth) return;
 
   final fcm = ref.watch(fcmServiceProvider);
-  await fcm.register();
-
+  // Attach the refresh listener BEFORE the first register() call. A fresh
+  // Play-Store install can mint the FCM token during register()'s retry
+  // window; if the listener subscribes after that, onTokenRefresh has
+  // already fired once and our register call sat with a null token — the
+  // device never lands in user_devices and the user never receives push.
   final sub = fcm.onTokenRefresh().listen((_) => fcm.register());
   ref.onDispose(sub.cancel);
+  await fcm.register();
 }
 
 @Riverpod(keepAlive: true)
