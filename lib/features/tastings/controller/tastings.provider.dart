@@ -6,7 +6,9 @@ import '../../../common/services/analytics/analytics.provider.dart';
 import '../../../common/services/connectivity/connectivity.provider.dart';
 import '../../auth/controller/auth.provider.dart';
 import '../../friends/data/models/friend_profile.model.dart';
+import '../../taste_match/controller/taste_match.provider.dart';
 import '../../wines/controller/wine.provider.dart';
+import '../../wines/controller/wine_stats.provider.dart';
 import '../../wines/domain/entities/wine.entity.dart';
 import '../data/data_sources/tastings.api.dart';
 import '../data/models/tasting.model.dart';
@@ -399,6 +401,13 @@ class TastingsController extends _$TastingsController {
     ref.invalidate(myTastingRatingProvider(tastingId, canonicalWineId));
     ref.invalidate(tastingWineRatingsProvider(tastingId));
     ref.invalidate(tastingRecapEntriesProvider(tastingId));
+    // Tasting ratings now feed the user's unified stats hero + taste
+    // compass — keep them fresh after each submit.
+    final userId = ref.read(currentUserIdProvider);
+    if (userId != null) {
+      ref.invalidate(userRatingSummaryProvider);
+      ref.invalidate(tasteCompassProvider(userId));
+    }
   }
 
   Future<TastingEntity?> updateTasting({

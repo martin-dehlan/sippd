@@ -339,7 +339,7 @@ class _GroupWineRanksProviderElement
 }
 
 String _$groupWineRatingControllerHash() =>
-    r'4c891b08e8cb1bb876f3cd57643070a85211d37d';
+    r'453adff7cad4676177eb9a84c05cccf2094508c5';
 
 /// See also [GroupWineRatingController].
 @ProviderFor(GroupWineRatingController)
