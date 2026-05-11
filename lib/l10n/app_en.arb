@@ -1,0 +1,196 @@
+{
+  "@@locale": "en",
+  "notificationsTitle": "Notifications",
+  "@notificationsTitle": {
+    "description": "AppBar title for the notification settings screen"
+  },
+  "notificationsLoadError": "Couldn't load notification settings",
+  "@notificationsLoadError": {
+    "description": "Error view title when prefs fail to load"
+  },
+  "sectionTastings": "Tastings",
+  "@sectionTastings": {},
+  "sectionFriends": "Friends",
+  "@sectionFriends": {},
+  "sectionGroups": "Groups",
+  "@sectionGroups": {},
+  "tileTastingRemindersLabel": "Tasting reminders",
+  "@tileTastingRemindersLabel": {},
+  "tileTastingRemindersSubtitle": "Push before a tasting starts",
+  "@tileTastingRemindersSubtitle": {},
+  "tileFriendActivityLabel": "Friend activity",
+  "@tileFriendActivityLabel": {},
+  "tileFriendActivitySubtitle": "Requests and acceptances",
+  "@tileFriendActivitySubtitle": {},
+  "tileGroupActivityLabel": "Group activity",
+  "@tileGroupActivityLabel": {},
+  "tileGroupActivitySubtitle": "Invites, joins and new tastings",
+  "@tileGroupActivitySubtitle": {},
+  "tileGroupWineSharedLabel": "New wine shared",
+  "@tileGroupWineSharedLabel": {},
+  "tileGroupWineSharedSubtitle": "When a friend adds a wine to your group",
+  "@tileGroupWineSharedSubtitle": {},
+  "hoursPickerLabel": "Notify me before",
+  "@hoursPickerLabel": {},
+  "hoursPickerHint": "Applies to all upcoming tastings — change anytime.",
+  "@hoursPickerHint": {},
+  "hoursPickerOption": "{hours}h",
+  "@hoursPickerOption": {
+    "description": "Chip label for an hours-before option, e.g. 1h, 2h, 24h",
+    "placeholders": {
+      "hours": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "hoursPickerDebugOption": "30s · debug",
+  "@hoursPickerDebugOption": {
+    "description": "Debug-only 30-seconds-before option"
+  },
+  "profileTileLanguageLabel": "Language",
+  "@profileTileLanguageLabel": {
+    "description": "Profile menu tile that opens the language picker"
+  },
+  "languageSheetTitle": "Choose language",
+  "@languageSheetTitle": {
+    "description": "Title of the language picker bottom sheet"
+  },
+  "languageOptionSystem": "System default",
+  "@languageOptionSystem": {
+    "description": "Option that follows the device language"
+  },
+
+  "onbWelcomeTitle": "Your wine\nmemory.",
+  "onbWelcomeBody": "Rate the wines you love. Remember them forever. Taste alongside friends.",
+  "onbWelcomeAlreadyHaveAccount": "Already have an account? ",
+  "onbWelcomeSignIn": "Sign in",
+
+  "onbWhyEyebrow": "Why Sippd",
+  "onbWhyTitle": "Built for people\nwho actually drink wine.",
+  "onbWhyPrinciple1Headline": "Snap. Rate. Remember.",
+  "onbWhyPrinciple1Line": "Three taps, find it next year.",
+  "onbWhyPrinciple2Headline": "Tastings with friends.",
+  "onbWhyPrinciple2Line": "Blind pours, pooled scores. No spreadsheets.",
+  "onbWhyPrinciple3Headline": "Works offline.",
+  "onbWhyPrinciple3Line": "Log anywhere. Syncs when you're home.",
+
+  "onbLevelEyebrow": "About you",
+  "onbLevelTitle": "How deep are you\ninto wine?",
+  "onbLevelSubtitle": "No wrong answer. We'll tune suggestions and keep things your pace.",
+  "onbLevelBeginnerLabel": "Beginner",
+  "onbLevelBeginnerSubtitle": "Just starting out",
+  "onbLevelCuriousLabel": "Curious",
+  "onbLevelCuriousSubtitle": "A few favorites",
+  "onbLevelEnthusiastLabel": "Enthusiast",
+  "onbLevelEnthusiastSubtitle": "I know what I like",
+  "onbLevelProLabel": "Pro",
+  "onbLevelProSubtitle": "Somm-level",
+
+  "onbFreqEyebrow": "Your rhythm",
+  "onbFreqTitle": "How often\ndo you open a bottle?",
+  "onbFreqWeekly": "Weekly",
+  "onbFreqMonthly": "A few times a month",
+  "onbFreqRare": "Now and then",
+
+  "onbGoalsEyebrow": "Your goals",
+  "onbGoalsTitle": "What do you\nwant from Sippd?",
+  "onbGoalsSubtitle": "Pick one or more. You can change this later.",
+  "onbGoalRemember": "Remember bottles I love",
+  "onbGoalDiscover": "Discover new styles",
+  "onbGoalSocial": "Taste with friends",
+  "onbGoalValue": "Track what I pay",
+
+  "onbStylesEyebrow": "Your styles",
+  "onbStylesTitle": "What do you\nreach for?",
+  "onbStylesSubtitle": "Pick any that feel like you. We'll keep an eye on your picks.",
+  "wineTypeRed": "Red",
+  "wineTypeWhite": "White",
+  "wineTypeRose": "Rosé",
+  "wineTypeSparkling": "Sparkling",
+
+  "onbRespEyebrow": "A note from us",
+  "onbRespTitle": "Drink less,\ntaste more.",
+  "onbRespSubtitle": "Sippd is for remembering and rating wines you've enjoyed — not pressure to drink more. We don't do streaks or daily quotas, on purpose.",
+  "onbRespHelpBody": "If alcohol is hurting you or someone close,\nfree confidential help is available.",
+  "onbRespHelpCta": "Find help",
+
+  "onbNameEyebrow": "Almost there",
+  "onbNameTitle": "What should we\ncall you?",
+  "onbNameSubtitle": "First name, nickname — whatever fits. Pick an icon too.",
+  "onbNameHint": "Your name",
+  "onbNameIconLabel": "Pick your icon",
+  "onbNameIconSubtitle": "Shows up as your avatar.",
+
+  "onbNotifEyebrow": "Stay in the loop",
+  "onbNotifTitle": "Never lose a great\nbottle again.",
+  "onbNotifSubtitle": "We'll nudge you when friends start tastings or invite you to groups. You can turn this off anytime.",
+  "onbNotifPreview": "Tasting invites\nGroup ratings\nFriend activity",
+  "onbNotifTurnOn": "Turn on notifications",
+  "onbNotifNotNow": "Not now",
+
+  "onbLoaderAlmostThere": "ALMOST THERE",
+  "onbLoaderCrafting": "Crafting your profile.",
+  "onbLoaderAllSet": "All set.",
+  "onbLoaderStepMatching": "Matching your taste",
+  "onbLoaderStepCurating": "Curating your styles",
+  "onbLoaderStepSetting": "Setting up your journal",
+  "onbLoaderSeeProfile": "See your profile",
+  "onbLoaderContinue": "Continue",
+
+  "onbResultsEyebrow": "YOUR TASTE PROFILE",
+  "onbResultsLevelCard": "Level",
+  "onbResultsFreqCard": "Frequency",
+  "onbResultsStylesCard": "Styles",
+  "onbResultsGoalsCard": "Goals",
+
+  "onbArchSommTitle": "Seasoned Somm",
+  "onbArchSommSubtitle": "You know your terroir. Sippd keeps the receipts.",
+  "onbArchPalateTitle": "Sharp Palate",
+  "onbArchPalateSubtitle": "Nuance-chaser. Sippd captures the detail.",
+  "onbArchRegularTitle": "Cellar Regular",
+  "onbArchRegularSubtitle": "A bottle a week, opinions sharper every month.",
+  "onbArchDevotedTitle": "Devoted Taster",
+  "onbArchDevotedSubtitle": "Serious about each pour. Sippd keeps your notes.",
+  "onbArchRedTitle": "Red Loyalist",
+  "onbArchRedSubtitle": "One grape per glass. We'll help you branch out.",
+  "onbArchBubbleTitle": "Bubble Chaser",
+  "onbArchBubbleSubtitle": "Bubbles over everything. Sippd tracks the good ones.",
+  "onbArchOpenTitle": "Open Palate",
+  "onbArchOpenSubtitle": "Red, white, pink, sparkling — all welcome. Log them all.",
+  "onbArchSteadyTitle": "Steady Sipper",
+  "onbArchSteadySubtitle": "Wine stays in the rotation. Sippd keeps the thread.",
+  "onbArchNowAndThenTitle": "Now-and-Then Taster",
+  "onbArchNowAndThenSubtitle": "Wine for the moments that matter.",
+  "onbArchOccasionalTitle": "Occasional Glass",
+  "onbArchOccasionalSubtitle": "Rare pour, worth remembering.",
+  "onbArchFreshTitle": "Fresh Palate",
+  "onbArchFreshSubtitle": "New journey. Every bottle counts from here.",
+  "onbArchCuriousTitle": "Wine Curious",
+  "onbArchCuriousSubtitle": "Tell us more and your profile sharpens.",
+
+  "onbCtaGetStarted": "Get started",
+  "onbCtaIUnderstand": "I understand",
+  "onbCtaContinue": "Continue",
+  "onbCtaSignInToSave": "Sign in to save it",
+  "onbCtaSaveAndContinue": "Save and continue",
+  "onbStepCounter": "{current}/{total}",
+  "@onbStepCounter": {
+    "placeholders": {
+      "current": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+
+  "tasteEditorLevel": "Level",
+  "tasteEditorFreq": "How often",
+  "tasteEditorStyles": "Favourite styles",
+  "tasteEditorGoals": "What you're after",
+  "tasteEditorFreqWeekly": "Weekly",
+  "tasteEditorFreqMonthly": "Monthly",
+  "tasteEditorFreqRare": "Rarely",
+  "tasteEditorGoalRemember": "Remember",
+  "tasteEditorGoalDiscover": "Discover",
+  "tasteEditorGoalSocial": "Social",
+  "tasteEditorGoalValue": "Value"
+}

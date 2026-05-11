@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../onboarding_page_shell.widget.dart';
 
@@ -10,29 +11,30 @@ class WhyPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return OnboardingPageShell(
-      eyebrow: 'Why Sippd',
-      title: 'Built for people\nwho actually drink wine.',
+      eyebrow: l10n.onbWhyEyebrow,
+      title: l10n.onbWhyTitle,
       child: ListView(
         padding: EdgeInsets.only(top: context.l),
         children: [
           _Principle(
             number: '01',
             icon: PhosphorIconsThin.camera,
-            headline: 'Snap. Rate. Remember.',
-            line: 'Three taps, find it next year.',
+            headline: l10n.onbWhyPrinciple1Headline,
+            line: l10n.onbWhyPrinciple1Line,
           ),
           _Principle(
             number: '02',
             icon: PhosphorIconsThin.usersThree,
-            headline: 'Tastings with friends.',
-            line: 'Blind pours, pooled scores. No spreadsheets.',
+            headline: l10n.onbWhyPrinciple2Headline,
+            line: l10n.onbWhyPrinciple2Line,
           ),
           _Principle(
             number: '03',
             icon: PhosphorIconsThin.wifiSlash,
-            headline: 'Works offline.',
-            line: 'Log anywhere. Syncs when you\'re home.',
+            headline: l10n.onbWhyPrinciple3Headline,
+            line: l10n.onbWhyPrinciple3Line,
           ),
         ],
       ),

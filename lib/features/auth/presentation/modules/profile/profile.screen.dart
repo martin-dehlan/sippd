@@ -5,10 +5,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/inline_error.widget.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../../profile/controller/profile.provider.dart';
+import '../../../../profile/presentation/widgets/language_picker.widget.dart';
 import '../../../../profile/presentation/widgets/profile_avatar.widget.dart';
 import '../../../../push/controller/push.provider.dart';
 import '../../../../taste_match/presentation/widgets/wine_personality_hero.widget.dart';
@@ -114,6 +116,11 @@ class ProfileScreen extends ConsumerWidget {
                 icon: PhosphorIconsRegular.bell,
                 label: 'Notifications',
                 onTap: () => context.push(AppRoutes.profileNotifications),
+              ),
+              _MenuItem(
+                icon: PhosphorIconsRegular.translate,
+                label: AppLocalizations.of(context).profileTileLanguageLabel,
+                onTap: () => showLanguagePickerSheet(context),
               ),
               _MenuItem(
                 icon: PhosphorIconsRegular.stack,

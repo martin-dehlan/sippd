@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../common/l10n/generated/app_localizations.dart';
 import '../../wines/domain/entities/wine.entity.dart';
 import 'onboarding_answers.dart';
 
@@ -16,7 +17,7 @@ class TasteArchetype {
   });
 }
 
-TasteArchetype archetypeFor(OnboardingAnswers a) {
+TasteArchetype archetypeFor(OnboardingAnswers a, AppLocalizations l) {
   final level = a.tasteLevel;
   final freq = a.frequency;
   final styles = a.styles;
@@ -24,89 +25,89 @@ TasteArchetype archetypeFor(OnboardingAnswers a) {
   if (level == TasteLevel.pro) {
     if (freq == DrinkFrequency.weekly) {
       return TasteArchetype(
-        title: 'Seasoned Somm',
+        title: l.onbArchSommTitle,
         icon: PhosphorIconsThin.medal,
-        subtitle: 'You know your terroir. Sippd keeps the receipts.',
+        subtitle: l.onbArchSommSubtitle,
       );
     }
     return TasteArchetype(
-      title: 'Sharp Palate',
+      title: l.onbArchPalateTitle,
       icon: PhosphorIconsThin.sparkle,
-      subtitle: 'Nuance-chaser. Sippd captures the detail.',
+      subtitle: l.onbArchPalateSubtitle,
     );
   }
 
   if (level == TasteLevel.enthusiast) {
     if (freq == DrinkFrequency.weekly) {
       return TasteArchetype(
-        title: 'Cellar Regular',
+        title: l.onbArchRegularTitle,
         icon: PhosphorIconsThin.wine,
-        subtitle: 'A bottle a week, opinions sharper every month.',
+        subtitle: l.onbArchRegularSubtitle,
       );
     }
     return TasteArchetype(
-      title: 'Devoted Taster',
+      title: l.onbArchDevotedTitle,
       icon: PhosphorIconsThin.wine,
-      subtitle: 'Serious about each pour. Sippd keeps your notes.',
+      subtitle: l.onbArchDevotedSubtitle,
     );
   }
 
   if (level == TasteLevel.curious) {
     if (styles.length == 1 && styles.contains(WineType.red)) {
       return TasteArchetype(
-        title: 'Red Loyalist',
+        title: l.onbArchRedTitle,
         icon: PhosphorIconsThin.wine,
-        subtitle: "One grape per glass. We'll help you branch out.",
+        subtitle: l.onbArchRedSubtitle,
       );
     }
     if (styles.length == 1 && styles.contains(WineType.sparkling)) {
       return TasteArchetype(
-        title: 'Bubble Chaser',
+        title: l.onbArchBubbleTitle,
         icon: PhosphorIconsThin.champagne,
-        subtitle: 'Bubbles over everything. Sippd tracks the good ones.',
+        subtitle: l.onbArchBubbleSubtitle,
       );
     }
     if (styles.length >= 3) {
       return TasteArchetype(
-        title: 'Open Palate',
+        title: l.onbArchOpenTitle,
         icon: PhosphorIconsThin.compass,
-        subtitle: 'Red, white, pink, sparkling — all welcome. Log them all.',
+        subtitle: l.onbArchOpenSubtitle,
       );
     }
     if (freq == DrinkFrequency.weekly) {
       return TasteArchetype(
-        title: 'Steady Sipper',
+        title: l.onbArchSteadyTitle,
         icon: PhosphorIconsThin.wine,
-        subtitle: 'Wine stays in the rotation. Sippd keeps the thread.',
+        subtitle: l.onbArchSteadySubtitle,
       );
     }
     if (freq == DrinkFrequency.monthly) {
       return TasteArchetype(
-        title: 'Now-and-Then Taster',
+        title: l.onbArchNowAndThenTitle,
         icon: PhosphorIconsThin.champagne,
-        subtitle: 'Wine for the moments that matter.',
+        subtitle: l.onbArchNowAndThenSubtitle,
       );
     }
     if (freq == DrinkFrequency.rare) {
       return TasteArchetype(
-        title: 'Occasional Glass',
+        title: l.onbArchOccasionalTitle,
         icon: PhosphorIconsThin.wine,
-        subtitle: 'Rare pour, worth remembering.',
+        subtitle: l.onbArchOccasionalSubtitle,
       );
     }
   }
 
   if (level == TasteLevel.beginner) {
     return TasteArchetype(
-      title: 'Fresh Palate',
+      title: l.onbArchFreshTitle,
       icon: PhosphorIconsThin.plant,
-      subtitle: 'New journey. Every bottle counts from here.',
+      subtitle: l.onbArchFreshSubtitle,
     );
   }
 
   return TasteArchetype(
-    title: 'Wine Curious',
+    title: l.onbArchCuriousTitle,
     icon: PhosphorIconsThin.compass,
-    subtitle: 'Tell us more and your profile sharpens.',
+    subtitle: l.onbArchCuriousSubtitle,
   );
 }

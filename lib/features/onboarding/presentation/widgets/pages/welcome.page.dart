@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/app_logo.widget.dart';
 import '../../../../../core/routes/app.routes.dart';
@@ -13,6 +14,7 @@ class WelcomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     return GestureDetector(
       // Tapping anywhere outside the Sign-in button still advances the
       // funnel — preserves the original "tap to start" affordance.
@@ -27,7 +29,7 @@ class WelcomePage extends StatelessWidget {
             AppLogo(size: context.w * 0.22),
             SizedBox(height: context.xl),
             Text(
-              'Your wine\nmemory.',
+              l10n.onbWelcomeTitle,
               style: GoogleFonts.playfairDisplay(
                 fontSize: context.titleFont * 1.6,
                 fontWeight: FontWeight.w800,
@@ -38,8 +40,7 @@ class WelcomePage extends StatelessWidget {
             ),
             SizedBox(height: context.m),
             Text(
-              'Rate the wines you love. Remember them forever. '
-              'Taste alongside friends.',
+              l10n.onbWelcomeBody,
               style: TextStyle(
                 fontSize: context.bodyFont * 1.05,
                 height: 1.4,
@@ -63,7 +64,7 @@ class WelcomePage extends StatelessWidget {
                   TextSpan(
                     children: [
                       TextSpan(
-                        text: 'Already have an account? ',
+                        text: l10n.onbWelcomeAlreadyHaveAccount,
                         style: TextStyle(
                           fontSize: context.bodyFont,
                           color: cs.onSurfaceVariant,
@@ -71,7 +72,7 @@ class WelcomePage extends StatelessWidget {
                         ),
                       ),
                       TextSpan(
-                        text: 'Sign in',
+                        text: l10n.onbWelcomeSignIn,
                         style: TextStyle(
                           fontSize: context.bodyFont,
                           color: cs.primary,
