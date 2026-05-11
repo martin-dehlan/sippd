@@ -23,7 +23,7 @@ final fcmServiceProvider = Provider<FcmService>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef FcmServiceRef = ProviderRef<FcmService>;
-String _$pushRegistrationHash() => r'54899fecfe16db841108b97de31452dd56f42740';
+String _$pushRegistrationHash() => r'6b7ea8c282818185d0c1ecb2e7a98363c614d570';
 
 /// Kicks off FCM token registration whenever we have an authenticated user.
 /// Keep-alive so it runs for the lifetime of the app.
