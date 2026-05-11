@@ -4062,6 +4062,277 @@ class PendingImageUploadsTableCompanion
   }
 }
 
+class $RatingSummaryCacheTableTable extends RatingSummaryCacheTable
+    with TableInfo<$RatingSummaryCacheTableTable, RatingSummaryCacheData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $RatingSummaryCacheTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+    'user_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _payloadMeta = const VerificationMeta(
+    'payload',
+  );
+  @override
+  late final GeneratedColumn<String> payload = GeneratedColumn<String>(
+    'payload',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _fetchedAtMeta = const VerificationMeta(
+    'fetchedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> fetchedAt = GeneratedColumn<DateTime>(
+    'fetched_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [userId, payload, fetchedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'rating_summary_cache';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<RatingSummaryCacheData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('user_id')) {
+      context.handle(
+        _userIdMeta,
+        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_userIdMeta);
+    }
+    if (data.containsKey('payload')) {
+      context.handle(
+        _payloadMeta,
+        payload.isAcceptableOrUnknown(data['payload']!, _payloadMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_payloadMeta);
+    }
+    if (data.containsKey('fetched_at')) {
+      context.handle(
+        _fetchedAtMeta,
+        fetchedAt.isAcceptableOrUnknown(data['fetched_at']!, _fetchedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_fetchedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {userId};
+  @override
+  RatingSummaryCacheData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return RatingSummaryCacheData(
+      userId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}user_id'],
+      )!,
+      payload: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}payload'],
+      )!,
+      fetchedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}fetched_at'],
+      )!,
+    );
+  }
+
+  @override
+  $RatingSummaryCacheTableTable createAlias(String alias) {
+    return $RatingSummaryCacheTableTable(attachedDatabase, alias);
+  }
+}
+
+class RatingSummaryCacheData extends DataClass
+    implements Insertable<RatingSummaryCacheData> {
+  final String userId;
+  final String payload;
+  final DateTime fetchedAt;
+  const RatingSummaryCacheData({
+    required this.userId,
+    required this.payload,
+    required this.fetchedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['user_id'] = Variable<String>(userId);
+    map['payload'] = Variable<String>(payload);
+    map['fetched_at'] = Variable<DateTime>(fetchedAt);
+    return map;
+  }
+
+  RatingSummaryCacheTableCompanion toCompanion(bool nullToAbsent) {
+    return RatingSummaryCacheTableCompanion(
+      userId: Value(userId),
+      payload: Value(payload),
+      fetchedAt: Value(fetchedAt),
+    );
+  }
+
+  factory RatingSummaryCacheData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return RatingSummaryCacheData(
+      userId: serializer.fromJson<String>(json['userId']),
+      payload: serializer.fromJson<String>(json['payload']),
+      fetchedAt: serializer.fromJson<DateTime>(json['fetchedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'userId': serializer.toJson<String>(userId),
+      'payload': serializer.toJson<String>(payload),
+      'fetchedAt': serializer.toJson<DateTime>(fetchedAt),
+    };
+  }
+
+  RatingSummaryCacheData copyWith({
+    String? userId,
+    String? payload,
+    DateTime? fetchedAt,
+  }) => RatingSummaryCacheData(
+    userId: userId ?? this.userId,
+    payload: payload ?? this.payload,
+    fetchedAt: fetchedAt ?? this.fetchedAt,
+  );
+  RatingSummaryCacheData copyWithCompanion(
+    RatingSummaryCacheTableCompanion data,
+  ) {
+    return RatingSummaryCacheData(
+      userId: data.userId.present ? data.userId.value : this.userId,
+      payload: data.payload.present ? data.payload.value : this.payload,
+      fetchedAt: data.fetchedAt.present ? data.fetchedAt.value : this.fetchedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RatingSummaryCacheData(')
+          ..write('userId: $userId, ')
+          ..write('payload: $payload, ')
+          ..write('fetchedAt: $fetchedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(userId, payload, fetchedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is RatingSummaryCacheData &&
+          other.userId == this.userId &&
+          other.payload == this.payload &&
+          other.fetchedAt == this.fetchedAt);
+}
+
+class RatingSummaryCacheTableCompanion
+    extends UpdateCompanion<RatingSummaryCacheData> {
+  final Value<String> userId;
+  final Value<String> payload;
+  final Value<DateTime> fetchedAt;
+  final Value<int> rowid;
+  const RatingSummaryCacheTableCompanion({
+    this.userId = const Value.absent(),
+    this.payload = const Value.absent(),
+    this.fetchedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  RatingSummaryCacheTableCompanion.insert({
+    required String userId,
+    required String payload,
+    required DateTime fetchedAt,
+    this.rowid = const Value.absent(),
+  }) : userId = Value(userId),
+       payload = Value(payload),
+       fetchedAt = Value(fetchedAt);
+  static Insertable<RatingSummaryCacheData> custom({
+    Expression<String>? userId,
+    Expression<String>? payload,
+    Expression<DateTime>? fetchedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (userId != null) 'user_id': userId,
+      if (payload != null) 'payload': payload,
+      if (fetchedAt != null) 'fetched_at': fetchedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  RatingSummaryCacheTableCompanion copyWith({
+    Value<String>? userId,
+    Value<String>? payload,
+    Value<DateTime>? fetchedAt,
+    Value<int>? rowid,
+  }) {
+    return RatingSummaryCacheTableCompanion(
+      userId: userId ?? this.userId,
+      payload: payload ?? this.payload,
+      fetchedAt: fetchedAt ?? this.fetchedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
+    if (payload.present) {
+      map['payload'] = Variable<String>(payload.value);
+    }
+    if (fetchedAt.present) {
+      map['fetched_at'] = Variable<DateTime>(fetchedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RatingSummaryCacheTableCompanion(')
+          ..write('userId: $userId, ')
+          ..write('payload: $payload, ')
+          ..write('fetchedAt: $fetchedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -4078,6 +4349,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $ProfilesTableTable profilesTable = $ProfilesTableTable(this);
   late final $PendingImageUploadsTableTable pendingImageUploadsTable =
       $PendingImageUploadsTableTable(this);
+  late final $RatingSummaryCacheTableTable ratingSummaryCacheTable =
+      $RatingSummaryCacheTableTable(this);
   late final WinesDao winesDao = WinesDao(this as AppDatabase);
   late final WineMemoriesDao wineMemoriesDao = WineMemoriesDao(
     this as AppDatabase,
@@ -4094,6 +4367,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final ProfilesDao profilesDao = ProfilesDao(this as AppDatabase);
   late final PendingImageUploadsDao pendingImageUploadsDao =
       PendingImageUploadsDao(this as AppDatabase);
+  late final RatingSummaryCacheDao ratingSummaryCacheDao =
+      RatingSummaryCacheDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -4106,6 +4381,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     canonicalGrapeTable,
     profilesTable,
     pendingImageUploadsTable,
+    ratingSummaryCacheTable,
   ];
 }
 
@@ -6180,6 +6456,187 @@ typedef $$PendingImageUploadsTableTableProcessedTableManager =
       PendingImageUploadData,
       PrefetchHooks Function()
     >;
+typedef $$RatingSummaryCacheTableTableCreateCompanionBuilder =
+    RatingSummaryCacheTableCompanion Function({
+      required String userId,
+      required String payload,
+      required DateTime fetchedAt,
+      Value<int> rowid,
+    });
+typedef $$RatingSummaryCacheTableTableUpdateCompanionBuilder =
+    RatingSummaryCacheTableCompanion Function({
+      Value<String> userId,
+      Value<String> payload,
+      Value<DateTime> fetchedAt,
+      Value<int> rowid,
+    });
+
+class $$RatingSummaryCacheTableTableFilterComposer
+    extends Composer<_$AppDatabase, $RatingSummaryCacheTableTable> {
+  $$RatingSummaryCacheTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get payload => $composableBuilder(
+    column: $table.payload,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get fetchedAt => $composableBuilder(
+    column: $table.fetchedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$RatingSummaryCacheTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $RatingSummaryCacheTableTable> {
+  $$RatingSummaryCacheTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get payload => $composableBuilder(
+    column: $table.payload,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get fetchedAt => $composableBuilder(
+    column: $table.fetchedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$RatingSummaryCacheTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $RatingSummaryCacheTableTable> {
+  $$RatingSummaryCacheTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<String> get payload =>
+      $composableBuilder(column: $table.payload, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get fetchedAt =>
+      $composableBuilder(column: $table.fetchedAt, builder: (column) => column);
+}
+
+class $$RatingSummaryCacheTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $RatingSummaryCacheTableTable,
+          RatingSummaryCacheData,
+          $$RatingSummaryCacheTableTableFilterComposer,
+          $$RatingSummaryCacheTableTableOrderingComposer,
+          $$RatingSummaryCacheTableTableAnnotationComposer,
+          $$RatingSummaryCacheTableTableCreateCompanionBuilder,
+          $$RatingSummaryCacheTableTableUpdateCompanionBuilder,
+          (
+            RatingSummaryCacheData,
+            BaseReferences<
+              _$AppDatabase,
+              $RatingSummaryCacheTableTable,
+              RatingSummaryCacheData
+            >,
+          ),
+          RatingSummaryCacheData,
+          PrefetchHooks Function()
+        > {
+  $$RatingSummaryCacheTableTableTableManager(
+    _$AppDatabase db,
+    $RatingSummaryCacheTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$RatingSummaryCacheTableTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$RatingSummaryCacheTableTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$RatingSummaryCacheTableTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> userId = const Value.absent(),
+                Value<String> payload = const Value.absent(),
+                Value<DateTime> fetchedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => RatingSummaryCacheTableCompanion(
+                userId: userId,
+                payload: payload,
+                fetchedAt: fetchedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String userId,
+                required String payload,
+                required DateTime fetchedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => RatingSummaryCacheTableCompanion.insert(
+                userId: userId,
+                payload: payload,
+                fetchedAt: fetchedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$RatingSummaryCacheTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $RatingSummaryCacheTableTable,
+      RatingSummaryCacheData,
+      $$RatingSummaryCacheTableTableFilterComposer,
+      $$RatingSummaryCacheTableTableOrderingComposer,
+      $$RatingSummaryCacheTableTableAnnotationComposer,
+      $$RatingSummaryCacheTableTableCreateCompanionBuilder,
+      $$RatingSummaryCacheTableTableUpdateCompanionBuilder,
+      (
+        RatingSummaryCacheData,
+        BaseReferences<
+          _$AppDatabase,
+          $RatingSummaryCacheTableTable,
+          RatingSummaryCacheData
+        >,
+      ),
+      RatingSummaryCacheData,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -6203,5 +6660,10 @@ class $AppDatabaseManager {
       $$PendingImageUploadsTableTableTableManager(
         _db,
         _db.pendingImageUploadsTable,
+      );
+  $$RatingSummaryCacheTableTableTableManager get ratingSummaryCacheTable =>
+      $$RatingSummaryCacheTableTableTableManager(
+        _db,
+        _db.ratingSummaryCacheTable,
       );
 }

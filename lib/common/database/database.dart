@@ -8,6 +8,7 @@ import 'tables/notification_prefs.table.dart';
 import 'tables/canonical_grape.table.dart';
 import 'tables/profiles.table.dart';
 import 'tables/pending_image_uploads.table.dart';
+import 'tables/rating_summary_cache.table.dart';
 import 'daos/wines.dao.dart';
 import 'daos/wine_memories.dao.dart';
 import 'daos/wine_aliases.dao.dart';
@@ -15,6 +16,7 @@ import 'daos/notification_prefs.dao.dart';
 import 'daos/canonical_grape.dao.dart';
 import 'daos/profiles.dao.dart';
 import 'daos/pending_image_uploads.dao.dart';
+import 'daos/rating_summary_cache.dao.dart';
 
 part 'database.g.dart';
 
@@ -27,6 +29,7 @@ part 'database.g.dart';
     CanonicalGrapeTable,
     ProfilesTable,
     PendingImageUploadsTable,
+    RatingSummaryCacheTable,
   ],
   daos: [
     WinesDao,
@@ -36,6 +39,7 @@ part 'database.g.dart';
     CanonicalGrapeDao,
     ProfilesDao,
     PendingImageUploadsDao,
+    RatingSummaryCacheDao,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -46,12 +50,17 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (Migrator m) async {
       await m.createAll();
+    },
+    onUpgrade: (Migrator m, int from, int to) async {
+      if (from < 2) {
+        await m.createTable(ratingSummaryCacheTable);
+      }
     },
   );
 
