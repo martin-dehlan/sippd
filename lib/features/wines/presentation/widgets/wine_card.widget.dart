@@ -167,7 +167,7 @@ class WineCardImage extends StatelessWidget {
     final hasImage = wine.imageUrl != null;
     final size = context.w * (compact ? 0.15 : 0.2);
     final inset = context.w * 0.025;
-    final radius = context.w * 0.025;
+    final radius = size / 2;
     return Padding(
       padding: EdgeInsets.all(inset),
       child: SizedBox(

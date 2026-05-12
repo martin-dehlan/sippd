@@ -366,7 +366,7 @@ class _Thumb extends StatelessWidget {
   Widget build(BuildContext context) {
     return Tooltip(
       message: '${wine.name} · ${wine.rating.toStringAsFixed(1)}',
-      child: WineThumb(wine: wine, size: size, radiusFactor: 0.18),
+      child: WineThumb(wine: wine, size: size),
     );
   }
 }
