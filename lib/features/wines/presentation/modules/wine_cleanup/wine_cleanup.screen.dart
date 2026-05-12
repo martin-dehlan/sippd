@@ -197,9 +197,7 @@ class _PairCard extends ConsumerWidget {
               // wire a "different" decision per pair. Keep the affordance
               // visible but inert until decisions cover canonical pairs.
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(l10n.winesCleanupSkippedSnack),
-                ),
+                SnackBar(content: Text(l10n.winesCleanupSkippedSnack)),
               );
             },
             child: Text(
@@ -257,10 +255,7 @@ class _PairCard extends ConsumerWidget {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            describeAppError(
-              e,
-              fallback: l10n.winesCleanupMergeFailedFallback,
-            ),
+            describeAppError(e, fallback: l10n.winesCleanupMergeFailedFallback),
           ),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),

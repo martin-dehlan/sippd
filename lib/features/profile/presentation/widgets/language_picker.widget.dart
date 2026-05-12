@@ -63,7 +63,8 @@ class _LanguagePickerSheet extends ConsumerWidget {
             ),
             for (final locale in supportedAppLocales)
               _OptionTile(
-                label: _nativeLanguageNames[locale.languageCode] ??
+                label:
+                    _nativeLanguageNames[locale.languageCode] ??
                     locale.languageCode,
                 isSelected: selected?.languageCode == locale.languageCode,
                 onTap: () async {

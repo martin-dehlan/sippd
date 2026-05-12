@@ -117,7 +117,8 @@ class _Body extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: padH),
           child: FriendTasteMatchSection(
             friendId: profile.id,
-            friendDisplayName: profile.displayName ??
+            friendDisplayName:
+                profile.displayName ??
                 profile.username ??
                 l10n.friendsProfileNameFallback,
           ),
@@ -162,7 +163,8 @@ class _HeroHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context);
-    final displayName = profile.displayName ??
+    final displayName =
+        profile.displayName ??
         profile.username ??
         l10n.friendsProfileNameFallback;
     return Padding(

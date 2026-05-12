@@ -89,10 +89,9 @@ class WineComparePickerScreen extends ConsumerWidget {
                         child: Text(
                           describeAppError(
                             e,
-                            fallback:
-                                AppLocalizations.of(
-                                  context,
-                                ).winesComparePickerErrorFallback,
+                            fallback: AppLocalizations.of(
+                              context,
+                            ).winesComparePickerErrorFallback,
                           ),
                           textAlign: TextAlign.center,
                           style: TextStyle(

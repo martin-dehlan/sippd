@@ -238,9 +238,7 @@ class _SheetState extends ConsumerState<_Sheet> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(l10n.groupWineRatingUnshareDialogTitle),
-        content: Text(
-          l10n.groupWineRatingUnshareDialogBody(widget.wine.name),
-        ),
+        content: Text(l10n.groupWineRatingUnshareDialogBody(widget.wine.name)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),

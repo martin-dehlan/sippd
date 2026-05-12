@@ -616,13 +616,14 @@ String? _priceFromOfferings(
   return null;
 }
 
-String? _periodSuffix(PackageType type, AppLocalizations l10n) => switch (type) {
-  PackageType.annual => l10n.paywallSubscriptionPeriodYear,
-  PackageType.monthly => l10n.paywallSubscriptionPeriodMonth,
-  PackageType.weekly => l10n.paywallSubscriptionPeriodWeek,
-  PackageType.lifetime => l10n.paywallSubscriptionPeriodLifetime,
-  _ => null,
-};
+String? _periodSuffix(PackageType type, AppLocalizations l10n) =>
+    switch (type) {
+      PackageType.annual => l10n.paywallSubscriptionPeriodYear,
+      PackageType.monthly => l10n.paywallSubscriptionPeriodMonth,
+      PackageType.weekly => l10n.paywallSubscriptionPeriodWeek,
+      PackageType.lifetime => l10n.paywallSubscriptionPeriodLifetime,
+      _ => null,
+    };
 
 String? _billedViaFor(EntitlementInfo? e, AppLocalizations l10n) {
   if (e == null) return null;
@@ -701,9 +702,9 @@ Future<void> _openManagement(BuildContext context, CustomerInfo? info) async {
   final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
   if (!ok && context.mounted) {
     final l10n = AppLocalizations.of(context);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(l10n.paywallSubscriptionOpenError)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(l10n.paywallSubscriptionOpenError)));
   }
 }
 
@@ -731,8 +732,8 @@ Future<void> _restore(BuildContext context, WidgetRef ref) async {
   } catch (_) {
     if (!context.mounted) return;
     final l10n = AppLocalizations.of(context);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(l10n.paywallErrorRestoreFailed)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(l10n.paywallErrorRestoreFailed)));
   }
 }

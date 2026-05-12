@@ -179,7 +179,10 @@ class _ShareWineSheetState extends ConsumerState<_ShareWineSheet> {
               },
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (e, _) => Text(
-                describeAppError(e, fallback: l10n.groupShareWineSheetErrorLoad),
+                describeAppError(
+                  e,
+                  fallback: l10n.groupShareWineSheetErrorLoad,
+                ),
                 style: TextStyle(
                   fontSize: context.captionFont,
                   color: cs.error,

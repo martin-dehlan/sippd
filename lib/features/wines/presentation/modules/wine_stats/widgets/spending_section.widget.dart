@@ -77,7 +77,10 @@ class _Content extends StatelessWidget {
         ),
         SizedBox(height: context.xs),
         Text(
-          l10n.winesStatsSpendingSummary(spend.pricedCount, fmt.format(spend.avg)),
+          l10n.winesStatsSpendingSummary(
+            spend.pricedCount,
+            fmt.format(spend.avg),
+          ),
           style: TextStyle(
             fontSize: context.captionFont,
             color: cs.onSurfaceVariant,

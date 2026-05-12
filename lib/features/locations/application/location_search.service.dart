@@ -45,7 +45,9 @@ class LocationSearchService {
     }
     if (permission == LocationPermission.denied ||
         permission == LocationPermission.deniedForever) {
-      throw const LocationUnavailable(LocationUnavailableReason.permissionDenied);
+      throw const LocationUnavailable(
+        LocationUnavailableReason.permissionDenied,
+      );
     }
 
     final pos = await Geolocator.getCurrentPosition(

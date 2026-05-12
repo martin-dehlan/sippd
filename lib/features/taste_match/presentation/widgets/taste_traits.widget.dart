@@ -285,4 +285,3 @@ class _LockedSection extends StatelessWidget {
     );
   }
 }
-

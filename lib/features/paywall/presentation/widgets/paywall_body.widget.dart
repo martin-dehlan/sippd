@@ -131,9 +131,9 @@ class _PaywallBodyState extends ConsumerState<PaywallBody>
         },
       );
       final l10n = AppLocalizations.of(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.paywallErrorPurchaseFailed)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.paywallErrorPurchaseFailed)));
     } finally {
       if (mounted) setState(() => _purchasing = false);
     }
@@ -163,9 +163,9 @@ class _PaywallBodyState extends ConsumerState<PaywallBody>
     } catch (_) {
       if (!mounted) return;
       final l10n = AppLocalizations.of(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.paywallErrorRestoreFailed)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.paywallErrorRestoreFailed)));
     }
   }
 

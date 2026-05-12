@@ -255,9 +255,7 @@ class _GroupPickerSheet extends ConsumerWidget {
       if (!context.mounted) return;
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l10n.groupInviteSentSnack(friendDisplayName)),
-        ),
+        SnackBar(content: Text(l10n.groupInviteSentSnack(friendDisplayName))),
       );
     } catch (e) {
       if (!context.mounted) return;

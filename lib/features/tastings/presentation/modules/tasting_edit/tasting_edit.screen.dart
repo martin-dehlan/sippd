@@ -155,9 +155,7 @@ class _EditFormState extends ConsumerState<_EditForm> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            AppLocalizations.of(context).tastingUpdateFailedSnack,
-          ),
+          content: Text(AppLocalizations.of(context).tastingUpdateFailedSnack),
         ),
       );
     }

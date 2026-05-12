@@ -1354,7 +1354,9 @@ class _WinesEmptyState extends StatelessWidget {
           ? l10n.tastingEmptyOpenUpcomingHost
           : l10n.tastingEmptyOpenUpcomingGuest;
     }
-    return isOwner ? l10n.tastingEmptyPlannedHost : l10n.tastingEmptyPlannedGuest;
+    return isOwner
+        ? l10n.tastingEmptyPlannedHost
+        : l10n.tastingEmptyPlannedGuest;
   }
 }
 

@@ -18,9 +18,7 @@ Future<void> addTastingToCalendar({
   if (!ok && context.mounted) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(
-          AppLocalizations.of(context).tastingCalendarFailedSnack,
-        ),
+        content: Text(AppLocalizations.of(context).tastingCalendarFailedSnack),
       ),
     );
   }

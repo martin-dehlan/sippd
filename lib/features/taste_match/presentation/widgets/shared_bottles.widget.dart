@@ -154,7 +154,11 @@ class _RatingPair extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            _Score(label: l.tasteFriendRatingYou, value: mine, color: cs.onSurface),
+            _Score(
+              label: l.tasteFriendRatingYou,
+              value: mine,
+              color: cs.onSurface,
+            ),
             SizedBox(height: context.xs * 0.4),
             _Score(
               label: l.tasteFriendRatingThem,

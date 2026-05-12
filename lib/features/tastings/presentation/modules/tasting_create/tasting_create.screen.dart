@@ -109,9 +109,7 @@ class _TastingCreateScreenState extends ConsumerState<TastingCreateScreen> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            AppLocalizations.of(context).tastingCreateFailedSnack,
-          ),
+          content: Text(AppLocalizations.of(context).tastingCreateFailedSnack),
         ),
       );
     }

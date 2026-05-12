@@ -108,12 +108,8 @@ class _EmailConfirmationScreenState
         : (_isSending ? l10n.authConfResendSending : l10n.authConfResendEmail);
 
     final title = _isReset ? l10n.authConfTitleReset : l10n.authConfTitleSignup;
-    final intro = _isReset
-        ? l10n.authConfIntroReset
-        : l10n.authConfIntroSignup;
-    final outro = _isReset
-        ? l10n.authConfOutroReset
-        : l10n.authConfOutroSignup;
+    final intro = _isReset ? l10n.authConfIntroReset : l10n.authConfIntroSignup;
+    final outro = _isReset ? l10n.authConfOutroReset : l10n.authConfOutroSignup;
 
     return Scaffold(
       body: SafeArea(

@@ -54,7 +54,8 @@ class _InviteCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context);
-    final inviter = item.inviterDisplayName ??
+    final inviter =
+        item.inviterDisplayName ??
         item.inviterUsername ??
         l10n.groupInvitationsInviterFallback;
     final size = context.w * 0.12;
@@ -167,7 +168,10 @@ class _InviteCard extends ConsumerWidget {
           .read(groupInvitationControllerProvider.notifier)
           .accept(item.invitation);
       if (!context.mounted) return;
-      AppSnack.success(context, l10n.groupInvitationsJoinedSnack(item.groupName));
+      AppSnack.success(
+        context,
+        l10n.groupInvitationsJoinedSnack(item.groupName),
+      );
     } catch (e) {
       if (!context.mounted) return;
       AppSnack.error(context, l10n.groupInvitationsAcceptFailed);

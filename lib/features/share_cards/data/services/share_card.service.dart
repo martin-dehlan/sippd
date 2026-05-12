@@ -88,10 +88,9 @@ class ShareCardService {
     );
 
     final shareOrigin = shareOriginFor(context);
-    final shareText = AppLocalizations.of(context).shareCompassShareText(
-      data.archetypeName,
-      shareCardUrl,
-    );
+    final shareText = AppLocalizations.of(
+      context,
+    ).shareCompassShareText(data.archetypeName, shareCardUrl);
 
     final card = CompassShareCard(data: data);
     final file = await _renderToFile(
@@ -191,10 +190,7 @@ class ShareCardService {
 
     final shareOrigin = shareOriginFor(context);
     final l = AppLocalizations.of(context);
-    final fallbackText = l.shareInviteFallbackText(
-      data.displayName,
-      inviteUrl,
-    );
+    final fallbackText = l.shareInviteFallbackText(data.displayName, inviteUrl);
     final imageText = l.shareInviteImageText(inviteUrl);
     final subject = l.shareInviteSubject;
 

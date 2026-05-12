@@ -318,9 +318,9 @@ class _FriendList extends ConsumerWidget {
           .read(groupInvitationControllerProvider.notifier)
           .invite(groupId: groupId, inviteeId: friend.id);
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.groupInviteSentSnack(name))),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.groupInviteSentSnack(name))));
     } catch (e) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

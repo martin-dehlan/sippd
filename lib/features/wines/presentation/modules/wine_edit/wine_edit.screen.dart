@@ -81,10 +81,7 @@ class _WineEditScreenState extends ConsumerState<WineEditScreen> {
               ),
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (e, _) => Center(
-                child: ErrorView(
-                  title: l10n.winesEditErrorMemories,
-                  error: e,
-                ),
+                child: ErrorView(title: l10n.winesEditErrorMemories, error: e),
               ),
             );
           },

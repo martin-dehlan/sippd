@@ -18,8 +18,14 @@ class StatsProLock extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context);
     final pills = [
-      (icon: PhosphorIconsRegular.coins, label: l10n.winesStatsProLockPillPrices),
-      (icon: PhosphorIconsRegular.mapPin, label: l10n.winesStatsProLockPillWhere),
+      (
+        icon: PhosphorIconsRegular.coins,
+        label: l10n.winesStatsProLockPillPrices,
+      ),
+      (
+        icon: PhosphorIconsRegular.mapPin,
+        label: l10n.winesStatsProLockPillWhere,
+      ),
       (
         icon: PhosphorIconsRegular.globeHemisphereWest,
         label: l10n.winesStatsProLockPillRegions,

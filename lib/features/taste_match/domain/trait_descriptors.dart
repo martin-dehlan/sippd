@@ -33,36 +33,42 @@ String traitLabel(String axis, AppLocalizations l) => switch (axis) {
 /// in-app copy 1:1 — keep these in sync if either ever moves.
 String traitDescriptor(String axis, double v, AppLocalizations l) =>
     switch (axis) {
-      'body' => v < 0.4
-          ? l.tasteTraitBodyLow
-          : v < 0.65
-          ? l.tasteTraitBodyMid
-          : l.tasteTraitBodyHigh,
-      'tannin' => v < 0.4
-          ? l.tasteTraitTanninLow
-          : v < 0.65
-          ? l.tasteTraitTanninMid
-          : l.tasteTraitTanninHigh,
-      'acidity' => v < 0.4
-          ? l.tasteTraitAcidityLow
-          : v < 0.65
-          ? l.tasteTraitAcidityMid
-          : l.tasteTraitAcidityHigh,
-      'sweetness' => v < 0.15
-          ? l.tasteTraitSweetnessLow
-          : v < 0.4
-          ? l.tasteTraitSweetnessMid
-          : l.tasteTraitSweetnessHigh,
-      'oak' => v < 0.3
-          ? l.tasteTraitOakLow
-          : v < 0.55
-          ? l.tasteTraitOakMid
-          : l.tasteTraitOakHigh,
-      'intensity' => v < 0.4
-          ? l.tasteTraitIntensityLow
-          : v < 0.7
-          ? l.tasteTraitIntensityMid
-          : l.tasteTraitIntensityHigh,
+      'body' =>
+        v < 0.4
+            ? l.tasteTraitBodyLow
+            : v < 0.65
+            ? l.tasteTraitBodyMid
+            : l.tasteTraitBodyHigh,
+      'tannin' =>
+        v < 0.4
+            ? l.tasteTraitTanninLow
+            : v < 0.65
+            ? l.tasteTraitTanninMid
+            : l.tasteTraitTanninHigh,
+      'acidity' =>
+        v < 0.4
+            ? l.tasteTraitAcidityLow
+            : v < 0.65
+            ? l.tasteTraitAcidityMid
+            : l.tasteTraitAcidityHigh,
+      'sweetness' =>
+        v < 0.15
+            ? l.tasteTraitSweetnessLow
+            : v < 0.4
+            ? l.tasteTraitSweetnessMid
+            : l.tasteTraitSweetnessHigh,
+      'oak' =>
+        v < 0.3
+            ? l.tasteTraitOakLow
+            : v < 0.55
+            ? l.tasteTraitOakMid
+            : l.tasteTraitOakHigh,
+      'intensity' =>
+        v < 0.4
+            ? l.tasteTraitIntensityLow
+            : v < 0.7
+            ? l.tasteTraitIntensityMid
+            : l.tasteTraitIntensityHigh,
       _ => '',
     };
 

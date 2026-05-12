@@ -216,9 +216,7 @@ class GroupListScreen extends ConsumerWidget {
             if (ctx.mounted) {
               ScaffoldMessenger.of(ctx).showSnackBar(
                 SnackBar(
-                  content: Text(
-                    AppLocalizations.of(ctx).groupListJoinNotFound,
-                  ),
+                  content: Text(AppLocalizations.of(ctx).groupListJoinNotFound),
                 ),
               );
             }

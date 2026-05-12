@@ -276,7 +276,8 @@ class _SharedByBlock extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context);
-    final name = share.sharer.displayName ??
+    final name =
+        share.sharer.displayName ??
         share.sharer.username ??
         l10n.groupWineDetailSharerFallback;
     return Padding(
@@ -336,7 +337,8 @@ class _RatingRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context);
-    final name = rating.displayName ??
+    final name =
+        rating.displayName ??
         rating.username ??
         l10n.groupWineDetailMemberFallback;
     final profile = FriendProfileEntity(

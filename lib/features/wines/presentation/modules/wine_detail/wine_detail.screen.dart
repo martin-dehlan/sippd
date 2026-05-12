@@ -260,9 +260,7 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
                   widget.wine.notes!.isNotEmpty) ...[
                 SizedBox(height: context.xl),
                 WineDetailSectionHeader(
-                  label: AppLocalizations.of(
-                    context,
-                  ).winesDetailSectionNotes,
+                  label: AppLocalizations.of(context).winesDetailSectionNotes,
                 ),
                 SizedBox(height: context.m),
                 _NotesBlock(notes: widget.wine.notes!),

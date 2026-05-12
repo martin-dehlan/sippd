@@ -54,8 +54,8 @@ extension AppErrorX on AppError {
   String userMessage(AppLocalizations l) => when(
     network: (message, _, _) =>
         message.isEmpty || message == 'Network unavailable.'
-            ? l.errNetworkDefault
-            : message,
+        ? l.errNetworkDefault
+        : message,
     offline: () => l.errOffline,
     database: (message, _) => l.errDatabase(message),
     validation: (message, field) => field == null || field.isEmpty
@@ -63,8 +63,8 @@ extension AppErrorX on AppError {
         : l.errValidation(field, message),
     notFound: (message, resourceType, _) =>
         resourceType == null || resourceType.isEmpty
-            ? (message.isEmpty ? l.errNotFoundDefault : message)
-            : l.errNotFound(resourceType),
+        ? (message.isEmpty ? l.errNotFoundDefault : message)
+        : l.errNotFound(resourceType),
     unauthorized: (_) => l.errUnauthorized,
     serverError: (message, statusCode) => statusCode == null
         ? (message.isEmpty ? l.errServerNoCode : message)
