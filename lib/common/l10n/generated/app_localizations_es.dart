@@ -2342,4 +2342,131 @@ class AppLocalizationsEs extends AppLocalizations {
   String groupWineDetailRelYears(int count) {
     return 'hace ${count}a';
   }
+
+  @override
+  String get friendsHeader => 'AMIGOS';
+
+  @override
+  String get friendsSubtitle => 'Cata con gente que conoces';
+
+  @override
+  String get friendsSearchHint => 'Busca por usuario o nombre';
+
+  @override
+  String get friendsSearchEmpty => 'No se encontraron usuarios';
+
+  @override
+  String get friendsSearchErrorFallback => 'No se pudo cargar la búsqueda.';
+
+  @override
+  String get friendsUnknownUser => 'Desconocido';
+
+  @override
+  String friendsRequestsHeader(int count) {
+    return 'Solicitudes ($count)';
+  }
+
+  @override
+  String friendsOutgoingHeader(int count) {
+    return 'Esperando respuesta ($count)';
+  }
+
+  @override
+  String get friendsRequestSentLabel => 'Solicitud enviada';
+
+  @override
+  String get friendsRequestSubtitle => 'quiere ser tu amigo';
+
+  @override
+  String get friendsActionCancel => 'Cancelar';
+
+  @override
+  String get friendsActionAdd => 'Añadir';
+
+  @override
+  String get friendsCancelDialogFallbackUser => 'este usuario';
+
+  @override
+  String get friendsCancelDialogTitle => '¿Cancelar solicitud?';
+
+  @override
+  String friendsCancelDialogBody(String name) {
+    return '¿Cancelar tu solicitud de amistad a $name?';
+  }
+
+  @override
+  String get friendsCancelDialogKeep => 'Mantener';
+
+  @override
+  String get friendsCancelDialogConfirm => 'Cancelar solicitud';
+
+  @override
+  String get friendsListHeader => 'Tus amigos';
+
+  @override
+  String get friendsListErrorFallback => 'No se pudieron cargar los amigos.';
+
+  @override
+  String get friendsRemoveDialogTitle => '¿Eliminar amigo?';
+
+  @override
+  String friendsRemoveDialogBody(String name) {
+    return '¿Eliminar a $name de tus amigos?';
+  }
+
+  @override
+  String get friendsRemoveDialogConfirm => 'Eliminar';
+
+  @override
+  String get friendsSendRequestErrorFallback =>
+      'No se pudo enviar la solicitud.';
+
+  @override
+  String get friendsStatusChipFriend => 'Amigo';
+
+  @override
+  String get friendsStatusChipPending => 'Pendiente';
+
+  @override
+  String get friendsEmptyDefaultName => 'Un amigo';
+
+  @override
+  String get friendsEmptyTitle => 'Trae tu círculo de cata';
+
+  @override
+  String get friendsEmptyBody =>
+      'Sippd mejora con amigos. Envía una invitación — aterrizan directo en tu perfil.';
+
+  @override
+  String get friendsEmptyInviteCta => 'Invitar amigos';
+
+  @override
+  String get friendsEmptyFindCta => 'Buscar por usuario';
+
+  @override
+  String get friendsProfileNotFound => 'Perfil no encontrado';
+
+  @override
+  String get friendsProfileErrorLoad => 'No se pudo cargar el perfil';
+
+  @override
+  String get friendsProfileNameFallback => 'Amigo';
+
+  @override
+  String get friendsProfileRecentWinesHeader => 'VINOS RECIENTES';
+
+  @override
+  String get friendsProfileWinesErrorLoad => 'No se pudieron cargar los vinos';
+
+  @override
+  String get friendsProfileStatWines => 'Vinos';
+
+  @override
+  String get friendsProfileStatAvg => 'Media';
+
+  @override
+  String get friendsProfileStatCountry => 'País';
+
+  @override
+  String get friendsProfileStatCountries => 'Países';
 }

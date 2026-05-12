@@ -1238,5 +1238,101 @@
     "placeholders": {
       "count": {"type": "int"}
     }
-  }
+  },
+
+  "friendsHeader": "FRIENDS",
+  "@friendsHeader": {},
+  "friendsSubtitle": "Taste with people you know",
+  "@friendsSubtitle": {},
+  "friendsSearchHint": "Search by username or name",
+  "@friendsSearchHint": {},
+  "friendsSearchEmpty": "No users found",
+  "@friendsSearchEmpty": {},
+  "friendsSearchErrorFallback": "Couldn't load search.",
+  "@friendsSearchErrorFallback": {},
+  "friendsUnknownUser": "Unknown",
+  "@friendsUnknownUser": {},
+  "friendsRequestsHeader": "Requests ({count})",
+  "@friendsRequestsHeader": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "friendsOutgoingHeader": "Waiting for reply ({count})",
+  "@friendsOutgoingHeader": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "friendsRequestSentLabel": "Request sent",
+  "@friendsRequestSentLabel": {},
+  "friendsRequestSubtitle": "wants to be friends",
+  "@friendsRequestSubtitle": {},
+  "friendsActionCancel": "Cancel",
+  "@friendsActionCancel": {},
+  "friendsActionAdd": "Add",
+  "@friendsActionAdd": {},
+  "friendsCancelDialogFallbackUser": "this user",
+  "@friendsCancelDialogFallbackUser": {},
+  "friendsCancelDialogTitle": "Cancel request?",
+  "@friendsCancelDialogTitle": {},
+  "friendsCancelDialogBody": "Cancel your friend request to {name}?",
+  "@friendsCancelDialogBody": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "friendsCancelDialogKeep": "Keep",
+  "@friendsCancelDialogKeep": {},
+  "friendsCancelDialogConfirm": "Cancel request",
+  "@friendsCancelDialogConfirm": {},
+  "friendsListHeader": "Your friends",
+  "@friendsListHeader": {},
+  "friendsListErrorFallback": "Couldn't load friends.",
+  "@friendsListErrorFallback": {},
+  "friendsRemoveDialogTitle": "Remove friend?",
+  "@friendsRemoveDialogTitle": {},
+  "friendsRemoveDialogBody": "Remove {name} from your friends?",
+  "@friendsRemoveDialogBody": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "friendsRemoveDialogConfirm": "Remove",
+  "@friendsRemoveDialogConfirm": {},
+  "friendsSendRequestErrorFallback": "Could not send request.",
+  "@friendsSendRequestErrorFallback": {},
+  "friendsStatusChipFriend": "Friend",
+  "@friendsStatusChipFriend": {},
+  "friendsStatusChipPending": "Pending",
+  "@friendsStatusChipPending": {},
+  "friendsEmptyDefaultName": "A friend",
+  "@friendsEmptyDefaultName": {},
+  "friendsEmptyTitle": "Bring your tasting circle",
+  "@friendsEmptyTitle": {},
+  "friendsEmptyBody": "Sippd gets better with friends. Send an invite — they land straight on your profile.",
+  "@friendsEmptyBody": {},
+  "friendsEmptyInviteCta": "Invite friends",
+  "@friendsEmptyInviteCta": {},
+  "friendsEmptyFindCta": "Find by username",
+  "@friendsEmptyFindCta": {},
+
+  "friendsProfileNotFound": "Profile not found",
+  "@friendsProfileNotFound": {},
+  "friendsProfileErrorLoad": "Couldn't load profile",
+  "@friendsProfileErrorLoad": {},
+  "friendsProfileNameFallback": "Friend",
+  "@friendsProfileNameFallback": {},
+  "friendsProfileRecentWinesHeader": "RECENT WINES",
+  "@friendsProfileRecentWinesHeader": {},
+  "friendsProfileWinesErrorLoad": "Couldn't load wines",
+  "@friendsProfileWinesErrorLoad": {},
+  "friendsProfileStatWines": "Wines",
+  "@friendsProfileStatWines": {},
+  "friendsProfileStatAvg": "Avg",
+  "@friendsProfileStatAvg": {},
+  "friendsProfileStatCountry": "Country",
+  "@friendsProfileStatCountry": {},
+  "friendsProfileStatCountries": "Countries",
+  "@friendsProfileStatCountries": {}
 }

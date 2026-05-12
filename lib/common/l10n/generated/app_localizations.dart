@@ -4369,6 +4369,240 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count}y ago'**
   String groupWineDetailRelYears(int count);
+
+  /// No description provided for @friendsHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'FRIENDS'**
+  String get friendsHeader;
+
+  /// No description provided for @friendsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Taste with people you know'**
+  String get friendsSubtitle;
+
+  /// No description provided for @friendsSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by username or name'**
+  String get friendsSearchHint;
+
+  /// No description provided for @friendsSearchEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No users found'**
+  String get friendsSearchEmpty;
+
+  /// No description provided for @friendsSearchErrorFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load search.'**
+  String get friendsSearchErrorFallback;
+
+  /// No description provided for @friendsUnknownUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get friendsUnknownUser;
+
+  /// No description provided for @friendsRequestsHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Requests ({count})'**
+  String friendsRequestsHeader(int count);
+
+  /// No description provided for @friendsOutgoingHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for reply ({count})'**
+  String friendsOutgoingHeader(int count);
+
+  /// No description provided for @friendsRequestSentLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Request sent'**
+  String get friendsRequestSentLabel;
+
+  /// No description provided for @friendsRequestSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'wants to be friends'**
+  String get friendsRequestSubtitle;
+
+  /// No description provided for @friendsActionCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get friendsActionCancel;
+
+  /// No description provided for @friendsActionAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get friendsActionAdd;
+
+  /// No description provided for @friendsCancelDialogFallbackUser.
+  ///
+  /// In en, this message translates to:
+  /// **'this user'**
+  String get friendsCancelDialogFallbackUser;
+
+  /// No description provided for @friendsCancelDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel request?'**
+  String get friendsCancelDialogTitle;
+
+  /// No description provided for @friendsCancelDialogBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel your friend request to {name}?'**
+  String friendsCancelDialogBody(String name);
+
+  /// No description provided for @friendsCancelDialogKeep.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep'**
+  String get friendsCancelDialogKeep;
+
+  /// No description provided for @friendsCancelDialogConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel request'**
+  String get friendsCancelDialogConfirm;
+
+  /// No description provided for @friendsListHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Your friends'**
+  String get friendsListHeader;
+
+  /// No description provided for @friendsListErrorFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load friends.'**
+  String get friendsListErrorFallback;
+
+  /// No description provided for @friendsRemoveDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove friend?'**
+  String get friendsRemoveDialogTitle;
+
+  /// No description provided for @friendsRemoveDialogBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {name} from your friends?'**
+  String friendsRemoveDialogBody(String name);
+
+  /// No description provided for @friendsRemoveDialogConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get friendsRemoveDialogConfirm;
+
+  /// No description provided for @friendsSendRequestErrorFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not send request.'**
+  String get friendsSendRequestErrorFallback;
+
+  /// No description provided for @friendsStatusChipFriend.
+  ///
+  /// In en, this message translates to:
+  /// **'Friend'**
+  String get friendsStatusChipFriend;
+
+  /// No description provided for @friendsStatusChipPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get friendsStatusChipPending;
+
+  /// No description provided for @friendsEmptyDefaultName.
+  ///
+  /// In en, this message translates to:
+  /// **'A friend'**
+  String get friendsEmptyDefaultName;
+
+  /// No description provided for @friendsEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Bring your tasting circle'**
+  String get friendsEmptyTitle;
+
+  /// No description provided for @friendsEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Sippd gets better with friends. Send an invite — they land straight on your profile.'**
+  String get friendsEmptyBody;
+
+  /// No description provided for @friendsEmptyInviteCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite friends'**
+  String get friendsEmptyInviteCta;
+
+  /// No description provided for @friendsEmptyFindCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Find by username'**
+  String get friendsEmptyFindCta;
+
+  /// No description provided for @friendsProfileNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile not found'**
+  String get friendsProfileNotFound;
+
+  /// No description provided for @friendsProfileErrorLoad.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load profile'**
+  String get friendsProfileErrorLoad;
+
+  /// No description provided for @friendsProfileNameFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Friend'**
+  String get friendsProfileNameFallback;
+
+  /// No description provided for @friendsProfileRecentWinesHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'RECENT WINES'**
+  String get friendsProfileRecentWinesHeader;
+
+  /// No description provided for @friendsProfileWinesErrorLoad.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load wines'**
+  String get friendsProfileWinesErrorLoad;
+
+  /// No description provided for @friendsProfileStatWines.
+  ///
+  /// In en, this message translates to:
+  /// **'Wines'**
+  String get friendsProfileStatWines;
+
+  /// No description provided for @friendsProfileStatAvg.
+  ///
+  /// In en, this message translates to:
+  /// **'Avg'**
+  String get friendsProfileStatAvg;
+
+  /// No description provided for @friendsProfileStatCountry.
+  ///
+  /// In en, this message translates to:
+  /// **'Country'**
+  String get friendsProfileStatCountry;
+
+  /// No description provided for @friendsProfileStatCountries.
+  ///
+  /// In en, this message translates to:
+  /// **'Countries'**
+  String get friendsProfileStatCountries;
 }
 
 class _AppLocalizationsDelegate

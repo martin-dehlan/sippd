@@ -2352,4 +2352,132 @@ class AppLocalizationsFr extends AppLocalizations {
   String groupWineDetailRelYears(int count) {
     return 'il y a ${count}a';
   }
+
+  @override
+  String get friendsHeader => 'AMIS';
+
+  @override
+  String get friendsSubtitle => 'Déguste avec des gens que tu connais';
+
+  @override
+  String get friendsSearchHint => 'Recherche par pseudo ou nom';
+
+  @override
+  String get friendsSearchEmpty => 'Aucun utilisateur trouvé';
+
+  @override
+  String get friendsSearchErrorFallback =>
+      'Impossible de charger la recherche.';
+
+  @override
+  String get friendsUnknownUser => 'Inconnu';
+
+  @override
+  String friendsRequestsHeader(int count) {
+    return 'Demandes ($count)';
+  }
+
+  @override
+  String friendsOutgoingHeader(int count) {
+    return 'En attente de réponse ($count)';
+  }
+
+  @override
+  String get friendsRequestSentLabel => 'Demande envoyée';
+
+  @override
+  String get friendsRequestSubtitle => 'souhaite devenir ton ami';
+
+  @override
+  String get friendsActionCancel => 'Annuler';
+
+  @override
+  String get friendsActionAdd => 'Ajouter';
+
+  @override
+  String get friendsCancelDialogFallbackUser => 'cet utilisateur';
+
+  @override
+  String get friendsCancelDialogTitle => 'Annuler la demande ?';
+
+  @override
+  String friendsCancelDialogBody(String name) {
+    return 'Annuler ta demande d\'ami à $name ?';
+  }
+
+  @override
+  String get friendsCancelDialogKeep => 'Garder';
+
+  @override
+  String get friendsCancelDialogConfirm => 'Annuler la demande';
+
+  @override
+  String get friendsListHeader => 'Tes amis';
+
+  @override
+  String get friendsListErrorFallback => 'Impossible de charger les amis.';
+
+  @override
+  String get friendsRemoveDialogTitle => 'Retirer un ami ?';
+
+  @override
+  String friendsRemoveDialogBody(String name) {
+    return 'Retirer $name de tes amis ?';
+  }
+
+  @override
+  String get friendsRemoveDialogConfirm => 'Retirer';
+
+  @override
+  String get friendsSendRequestErrorFallback =>
+      'Impossible d\'envoyer la demande.';
+
+  @override
+  String get friendsStatusChipFriend => 'Ami';
+
+  @override
+  String get friendsStatusChipPending => 'En attente';
+
+  @override
+  String get friendsEmptyDefaultName => 'Un ami';
+
+  @override
+  String get friendsEmptyTitle => 'Réunis ton cercle de dégustation';
+
+  @override
+  String get friendsEmptyBody =>
+      'Sippd est meilleur avec des amis. Envoie une invitation — ils atterrissent direct sur ton profil.';
+
+  @override
+  String get friendsEmptyInviteCta => 'Inviter des amis';
+
+  @override
+  String get friendsEmptyFindCta => 'Trouver par pseudo';
+
+  @override
+  String get friendsProfileNotFound => 'Profil introuvable';
+
+  @override
+  String get friendsProfileErrorLoad => 'Impossible de charger le profil';
+
+  @override
+  String get friendsProfileNameFallback => 'Ami';
+
+  @override
+  String get friendsProfileRecentWinesHeader => 'VINS RÉCENTS';
+
+  @override
+  String get friendsProfileWinesErrorLoad => 'Impossible de charger les vins';
+
+  @override
+  String get friendsProfileStatWines => 'Vins';
+
+  @override
+  String get friendsProfileStatAvg => 'Moy.';
+
+  @override
+  String get friendsProfileStatCountry => 'Pays';
+
+  @override
+  String get friendsProfileStatCountries => 'Pays';
 }

@@ -2357,4 +2357,133 @@ class AppLocalizationsDe extends AppLocalizations {
   String groupWineDetailRelYears(int count) {
     return 'vor ${count}J';
   }
+
+  @override
+  String get friendsHeader => 'FREUNDE';
+
+  @override
+  String get friendsSubtitle => 'Verkoste mit Leuten, die du kennst';
+
+  @override
+  String get friendsSearchHint => 'Nach Username oder Name suchen';
+
+  @override
+  String get friendsSearchEmpty => 'Keine Nutzer gefunden';
+
+  @override
+  String get friendsSearchErrorFallback => 'Suche konnte nicht geladen werden.';
+
+  @override
+  String get friendsUnknownUser => 'Unbekannt';
+
+  @override
+  String friendsRequestsHeader(int count) {
+    return 'Anfragen ($count)';
+  }
+
+  @override
+  String friendsOutgoingHeader(int count) {
+    return 'Warten auf Antwort ($count)';
+  }
+
+  @override
+  String get friendsRequestSentLabel => 'Anfrage gesendet';
+
+  @override
+  String get friendsRequestSubtitle => 'möchte mit dir befreundet sein';
+
+  @override
+  String get friendsActionCancel => 'Abbrechen';
+
+  @override
+  String get friendsActionAdd => 'Hinzufügen';
+
+  @override
+  String get friendsCancelDialogFallbackUser => 'diesen Nutzer';
+
+  @override
+  String get friendsCancelDialogTitle => 'Anfrage zurückziehen?';
+
+  @override
+  String friendsCancelDialogBody(String name) {
+    return 'Deine Freundschaftsanfrage an $name zurückziehen?';
+  }
+
+  @override
+  String get friendsCancelDialogKeep => 'Beibehalten';
+
+  @override
+  String get friendsCancelDialogConfirm => 'Anfrage zurückziehen';
+
+  @override
+  String get friendsListHeader => 'Deine Freunde';
+
+  @override
+  String get friendsListErrorFallback =>
+      'Freunde konnten nicht geladen werden.';
+
+  @override
+  String get friendsRemoveDialogTitle => 'Freund entfernen?';
+
+  @override
+  String friendsRemoveDialogBody(String name) {
+    return '$name aus deinen Freunden entfernen?';
+  }
+
+  @override
+  String get friendsRemoveDialogConfirm => 'Entfernen';
+
+  @override
+  String get friendsSendRequestErrorFallback =>
+      'Anfrage konnte nicht gesendet werden.';
+
+  @override
+  String get friendsStatusChipFriend => 'Freund';
+
+  @override
+  String get friendsStatusChipPending => 'Ausstehend';
+
+  @override
+  String get friendsEmptyDefaultName => 'Ein Freund';
+
+  @override
+  String get friendsEmptyTitle => 'Hol deinen Verkostungskreis dazu';
+
+  @override
+  String get friendsEmptyBody =>
+      'Sippd wird mit Freunden besser. Schick eine Einladung — sie landen direkt auf deinem Profil.';
+
+  @override
+  String get friendsEmptyInviteCta => 'Freunde einladen';
+
+  @override
+  String get friendsEmptyFindCta => 'Per Username finden';
+
+  @override
+  String get friendsProfileNotFound => 'Profil nicht gefunden';
+
+  @override
+  String get friendsProfileErrorLoad => 'Profil konnte nicht geladen werden';
+
+  @override
+  String get friendsProfileNameFallback => 'Freund';
+
+  @override
+  String get friendsProfileRecentWinesHeader => 'LETZTE WEINE';
+
+  @override
+  String get friendsProfileWinesErrorLoad =>
+      'Weine konnten nicht geladen werden';
+
+  @override
+  String get friendsProfileStatWines => 'Weine';
+
+  @override
+  String get friendsProfileStatAvg => 'Ø';
+
+  @override
+  String get friendsProfileStatCountry => 'Land';
+
+  @override
+  String get friendsProfileStatCountries => 'Länder';
 }

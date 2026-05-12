@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../friends/domain/entities/friend_profile.entity.dart';
 import '../../../../friends/presentation/widgets/friend_avatar.widget.dart';
@@ -57,6 +58,7 @@ class _Body extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final canonicalId = wine.canonicalWineId ?? wine.id;
     final ratingsAsync = ref.watch(
       groupWineRatingsProvider(groupId, canonicalId),
@@ -116,7 +118,7 @@ class _Body extends ConsumerWidget {
             error: (_, _) => const SizedBox.shrink(),
           ),
           SizedBox(height: context.xl),
-          const WineDetailSectionHeader(label: 'GROUP RATINGS'),
+          WineDetailSectionHeader(label: l10n.groupWineDetailSectionRatings),
           SizedBox(height: context.m),
           ratingsAsync.when(
             data: (ratings) => _RatingsList(ratings: ratings),
@@ -142,6 +144,7 @@ class _GroupStatsColumn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final hasRatings = ratings.isNotEmpty;
     final avg = hasRatings
         ? ratings.map((r) => r.rating).reduce((a, b) => a + b) / ratings.length
@@ -155,23 +158,33 @@ class _GroupStatsColumn extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           _StatItem(
-            label: 'Group avg',
+            label: l10n.groupWineDetailStatGroupAvg,
             value: hasRatings ? avg.toStringAsFixed(1) : '–',
             unit: '/ 10',
           ),
           SizedBox(height: context.m),
           _StatItem(
-            label: hasRatings ? 'Ratings' : 'No ratings',
+            label: hasRatings
+                ? l10n.groupWineDetailStatRatings
+                : l10n.groupWineDetailStatNoRatings,
             value: hasRatings ? ratings.length.toString() : '0',
           ),
           SizedBox(height: context.m),
           if (wine.region != null)
-            _StatItem(label: 'Region', value: wine.region!, isText: true)
+            _StatItem(
+              label: l10n.groupWineDetailStatRegion,
+              value: wine.region!,
+              isText: true,
+            )
           else if (wine.country != null)
-            _StatItem(label: 'Country', value: wine.country!, isText: true)
+            _StatItem(
+              label: l10n.groupWineDetailStatCountry,
+              value: wine.country!,
+              isText: true,
+            )
           else
             _StatItem(
-              label: 'Origin',
+              label: l10n.groupWineDetailStatOrigin,
               value: '–',
               isText: true,
               subtleColor: cs.onSurfaceVariant,
@@ -262,7 +275,10 @@ class _SharedByBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final name = share.sharer.displayName ?? share.sharer.username ?? 'someone';
+    final l10n = AppLocalizations.of(context);
+    final name = share.sharer.displayName ??
+        share.sharer.username ??
+        l10n.groupWineDetailSharerFallback;
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
       child: Row(
@@ -274,7 +290,7 @@ class _SharedByBlock extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'SHARED BY',
+                  l10n.groupWineDetailSharedByEyebrow,
                   style: TextStyle(
                     fontSize: context.captionFont * 0.9,
                     fontWeight: FontWeight.w700,
@@ -284,7 +300,7 @@ class _SharedByBlock extends StatelessWidget {
                 ),
                 SizedBox(height: context.xs * 0.4),
                 Text(
-                  '$name · ${_relativeTime(share.sharedAt)}',
+                  '$name · ${_relativeTime(share.sharedAt, l10n)}',
                   style: TextStyle(
                     fontSize: context.bodyFont,
                     fontWeight: FontWeight.w600,
@@ -319,7 +335,10 @@ class _RatingRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final name = rating.displayName ?? rating.username ?? 'Member';
+    final l10n = AppLocalizations.of(context);
+    final name = rating.displayName ??
+        rating.username ??
+        l10n.groupWineDetailMemberFallback;
     final profile = FriendProfileEntity(
       id: rating.userId,
       username: rating.username,
@@ -400,13 +419,14 @@ class _EmptyRatings extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     return Padding(
       padding: EdgeInsets.symmetric(
         horizontal: context.paddingH * 1.3,
         vertical: context.l,
       ),
       child: Text(
-        'No group ratings yet.',
+        l10n.groupWineDetailEmptyRatings,
         style: TextStyle(
           fontSize: context.bodyFont,
           color: cs.onSurfaceVariant,
@@ -439,13 +459,17 @@ class _FloatingBackButton extends StatelessWidget {
   }
 }
 
-String _relativeTime(DateTime then) {
+String _relativeTime(DateTime then, AppLocalizations l10n) {
   final diff = DateTime.now().difference(then);
-  if (diff.inMinutes < 1) return 'just now';
-  if (diff.inHours < 1) return '${diff.inMinutes}m ago';
-  if (diff.inDays < 1) return '${diff.inHours}h ago';
-  if (diff.inDays < 7) return '${diff.inDays}d ago';
-  if (diff.inDays < 30) return '${(diff.inDays / 7).floor()}w ago';
-  if (diff.inDays < 365) return '${(diff.inDays / 30).floor()}mo ago';
-  return '${(diff.inDays / 365).floor()}y ago';
+  if (diff.inMinutes < 1) return l10n.groupWineDetailRelJustNow;
+  if (diff.inHours < 1) return l10n.groupWineDetailRelMinutes(diff.inMinutes);
+  if (diff.inDays < 1) return l10n.groupWineDetailRelHours(diff.inHours);
+  if (diff.inDays < 7) return l10n.groupWineDetailRelDays(diff.inDays);
+  if (diff.inDays < 30) {
+    return l10n.groupWineDetailRelWeeks((diff.inDays / 7).floor());
+  }
+  if (diff.inDays < 365) {
+    return l10n.groupWineDetailRelMonths((diff.inDays / 30).floor());
+  }
+  return l10n.groupWineDetailRelYears((diff.inDays / 365).floor());
 }
