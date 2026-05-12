@@ -594,5 +594,112 @@
   "winesStatsTypeBreakdownTotalOne": "vino",
   "winesStatsTypeBreakdownTotalMany": "vinos",
   "winesStatsTypeBreakdownMostDrunk": "Más bebido",
-  "winesStatsTypeBreakdownTopRated": "Mejor valorado"
+  "winesStatsTypeBreakdownTopRated": "Mejor valorado",
+
+  "tastingCreateHeader": "NUEVA CATA",
+  "tastingEditHeader": "EDITAR CATA",
+  "tastingFieldTitleLabel": "Título",
+  "tastingFieldDateLabel": "Fecha",
+  "tastingFieldTimeLabel": "Hora",
+  "tastingFieldPlaceLabel": "Lugar",
+  "tastingFieldDescriptionLabel": "Descripción",
+  "tastingFieldTapToAdd": "Toca para añadir",
+  "tastingFieldOpenLineupLabel": "Lineup abierto",
+  "tastingFieldOpenLineupHint": "Añade vinos a medida que aparecen",
+  "tastingTitleSheetTitle": "Título de la cata",
+  "tastingTitleSheetHint": "p. ej. Noche de Barolo",
+  "tastingDescriptionSheetTitle": "Descripción",
+  "tastingDescriptionSheetHint": "¿De qué va?",
+  "tastingCreateSubmitCta": "Crear cata",
+  "tastingEditSubmitCta": "Guardar cambios",
+  "tastingCreateFailedSnack": "No se pudo crear la cata",
+  "tastingUpdateFailedSnack": "No se pudo actualizar la cata",
+
+  "tastingDetailNotFound": "Cata no encontrada",
+  "tastingDetailErrorLoad": "No se pudo cargar la cata",
+  "tastingDetailMenuAddToCalendar": "Añadir al calendario",
+  "tastingDetailMenuShare": "Compartir",
+  "tastingDetailMenuEdit": "Editar cata",
+  "tastingDetailMenuCancel": "Cancelar cata",
+  "tastingDetailCancelDialogTitle": "¿Cancelar cata?",
+  "tastingDetailCancelDialogBody": "Esto la elimina para todos.",
+  "tastingDetailCancelDialogKeep": "Mantener",
+  "tastingDetailCancelDialogConfirm": "Cancelar",
+  "tastingDetailEndDialogTitle": "¿Terminar cata?",
+  "tastingDetailEndDialogBody": "Esto bloquea el recap. Los asistentes pueden seguir añadiendo notas un rato más.",
+  "tastingDetailEndDialogKeep": "Seguir",
+  "tastingDetailEndDialogConfirm": "Terminar",
+  "tastingCalendarFailedSnack": "No se pudo abrir el calendario",
+
+  "tastingLifecycleUpcoming": "PRÓXIMA",
+  "tastingLifecycleLive": "EN VIVO",
+  "tastingLifecycleConcluded": "TERMINADA",
+  "tastingLifecycleStartCta": "Empezar cata",
+  "tastingLifecycleEndCta": "Terminar cata",
+
+  "tastingDetailSectionPeople": "Gente",
+  "tastingDetailSectionPlace": "Lugar",
+  "tastingDetailSectionWines": "VINOS",
+  "tastingDetailAddWines": "Añadir vinos",
+  "tastingDetailNoAttendees": "Aún no hay nadie invitado.",
+  "tastingDetailUnknownAttendee": "Desconocido",
+  "tastingDetailRsvpYour": "Tu respuesta",
+  "tastingDetailRsvpGoing": "Voy",
+  "tastingDetailRsvpMaybe": "Quizá",
+  "tastingDetailRsvpDeclined": "No",
+  "tastingDetailAttendeesCountGoing": "{count} van",
+  "@tastingDetailAttendeesCountGoing": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "tastingDetailAttendeesCountMaybe": "{count} quizá",
+  "@tastingDetailAttendeesCountMaybe": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "tastingDetailAttendeesCountDeclined": "{count} no van",
+  "@tastingDetailAttendeesCountDeclined": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "tastingDetailAttendeesCountPending": "{count} pendientes",
+  "@tastingDetailAttendeesCountPending": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "tastingDetailAttendeesSheetGoing": "Van",
+  "tastingDetailAttendeesSheetMaybe": "Quizá",
+  "tastingDetailAttendeesSheetDeclined": "No van",
+  "tastingDetailAttendeesSheetPending": "Pendientes",
+
+  "tastingEmptyOpenActiveTitle": "El lineup se llena sobre la marcha",
+  "tastingEmptyOpenActiveBody": "Cualquiera que vaya puede añadir botellas",
+  "tastingEmptyDefaultTitle": "Aún no hay vinos en el lineup",
+  "tastingEmptyOpenUpcomingHost": "Los vinos se podrán añadir cuando empiece la cata",
+  "tastingEmptyOpenUpcomingGuest": "Los vinos se añadirán durante la cata",
+  "tastingEmptyPlannedHost": "Toca «Añadir vinos» para montar el lineup",
+  "tastingEmptyPlannedGuest": "El anfitrión aún no ha añadido vinos",
+
+  "tastingRecapResultsHeader": "RESULTADOS",
+  "tastingRecapShareCta": "Compartir recap",
+  "tastingRecapTopWineEyebrow": "VINO DE LA NOCHE",
+  "tastingRecapEmpty": "Aún no se han enviado puntuaciones para esta cata.",
+  "tastingRecapRowNoRatings": "sin puntuaciones",
+  "tastingRecapGroupFallback": "Cata de grupo",
+
+  "tastingPickerSheetTitle": "Añadir vinos al lineup",
+  "tastingPickerEmpty": "Aún no tienes vinos.",
+  "tastingPickerErrorFallback": "No se pudieron cargar los vinos.",
+  "tastingPickerSubmitDefault": "Añadir vinos",
+  "tastingPickerSubmitWithCount": "{count, plural, =1{Añadir 1 vino} other{Añadir {count} vinos}}",
+  "@tastingPickerSubmitWithCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "tastingPickerAddedChip": "Añadido"
 }

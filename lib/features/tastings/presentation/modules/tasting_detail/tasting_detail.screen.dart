@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
+import '../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/error_view.widget.dart';
 import '../../../../../common/widgets/overflow_menu.widget.dart';
@@ -34,19 +35,20 @@ class TastingDetailScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final tastingAsync = ref.watch(tastingDetailProvider(tastingId));
     return Scaffold(
       body: SafeArea(
         child: tastingAsync.when(
           data: (t) {
             if (t == null) {
-              return const Center(child: Text('Tasting not found'));
+              return Center(child: Text(l10n.tastingDetailNotFound));
             }
             return _Body(tasting: t);
           },
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (e, _) => Center(
-            child: ErrorView(title: "Couldn't load tasting", error: e),
+            child: ErrorView(title: l10n.tastingDetailErrorLoad, error: e),
           ),
         ),
       ),
@@ -129,6 +131,7 @@ class _Body extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final currentUid = ref.watch(currentUserIdProvider);
     final isOwner = currentUid == tasting.createdBy;
     final local = tasting.scheduledAt.toLocal();
@@ -164,7 +167,7 @@ class _Body extends ConsumerWidget {
                   [
                     OverflowMenuItem(
                       icon: PhosphorIconsRegular.calendarBlank,
-                      label: 'Add to calendar',
+                      label: l10n.tastingDetailMenuAddToCalendar,
                       onTap: () => addTastingToCalendar(
                         context: context,
                         tasting: tasting,
@@ -172,7 +175,7 @@ class _Body extends ConsumerWidget {
                     ),
                     OverflowMenuItem(
                       icon: PhosphorIconsRegular.shareNetwork,
-                      label: 'Share',
+                      label: l10n.tastingDetailMenuShare,
                       onTap: () => Share.share(
                         '${tasting.title}\n\n${DeepLinkService.tastingHttpsUri(tasting.id)}',
                         subject: tasting.title,
@@ -184,13 +187,13 @@ class _Body extends ConsumerWidget {
                     [
                       OverflowMenuItem(
                         icon: PhosphorIconsRegular.pencilSimple,
-                        label: 'Edit tasting',
+                        label: l10n.tastingDetailMenuEdit,
                         onTap: () =>
                             context.push(AppRoutes.tastingEditPath(tasting.id)),
                       ),
                       OverflowMenuItem(
                         icon: PhosphorIconsRegular.calendarX,
-                        label: 'Cancel tasting',
+                        label: l10n.tastingDetailMenuCancel,
                         destructive: true,
                         onTap: () => _confirmDelete(context, ref, tasting),
                       ),
@@ -226,7 +229,7 @@ class _Body extends ConsumerWidget {
         ),
         SizedBox(height: context.l),
         _Section(
-          label: 'People',
+          label: l10n.tastingDetailSectionPeople,
           child: _AttendeesCard(tasting: tasting),
         ),
         SizedBox(height: context.l),
@@ -235,7 +238,7 @@ class _Body extends ConsumerWidget {
         if (tasting.location != null) ...[
           if (tasting.state == TastingState.upcoming)
             _Section(
-              label: 'Place',
+              label: l10n.tastingDetailSectionPlace,
               child: _PlaceCard(
                 location: tasting.location!,
                 latitude: tasting.latitude,
@@ -260,20 +263,21 @@ class _Body extends ConsumerWidget {
     WidgetRef ref,
     TastingEntity t,
   ) async {
+    final l10n = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Cancel tasting?'),
-        content: const Text('This removes it for everyone.'),
+        title: Text(l10n.tastingDetailCancelDialogTitle),
+        content: Text(l10n.tastingDetailCancelDialogBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Keep'),
+            child: Text(l10n.tastingDetailCancelDialogKeep),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
             child: Text(
-              'Cancel',
+              l10n.tastingDetailCancelDialogConfirm,
               style: TextStyle(color: Theme.of(ctx).colorScheme.error),
             ),
           ),
@@ -324,21 +328,20 @@ class _PhaseBanner extends ConsumerWidget {
   }
 
   Future<void> _confirmEnd(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context);
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('End tasting?'),
-        content: const Text(
-          'This locks the recap. Attendees can still add ratings briefly afterwards.',
-        ),
+        title: Text(l10n.tastingDetailEndDialogTitle),
+        content: Text(l10n.tastingDetailEndDialogBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Keep going'),
+            child: Text(l10n.tastingDetailEndDialogKeep),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('End'),
+            child: Text(l10n.tastingDetailEndDialogConfirm),
           ),
         ],
       ),
@@ -364,6 +367,7 @@ class _UpcomingBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final now = DateTime.now();
     final hoursUntil = tasting.scheduledAt.difference(now).inHours;
     // Surface the Start CTA only inside a ±6h window around scheduledAt.
@@ -373,12 +377,12 @@ class _UpcomingBanner extends StatelessWidget {
     return _BannerShell(
       cs: cs,
       icon: PhosphorIconsRegular.calendarBlank,
-      label: 'UPCOMING',
+      label: l10n.tastingLifecycleUpcoming,
       tone: cs.surfaceContainerHigh,
       foreground: cs.onSurface,
       action: canStart
           ? _BannerAction(
-              label: 'Start tasting',
+              label: l10n.tastingLifecycleStartCta,
               onTap: onStart,
               filled: true,
               cs: cs,
@@ -402,15 +406,16 @@ class _ActiveBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return _BannerShell(
       cs: cs,
       icon: PhosphorIconsFill.circle,
-      label: 'LIVE',
+      label: l10n.tastingLifecycleLive,
       tone: cs.primaryContainer,
       foreground: cs.onPrimaryContainer,
       action: isOwner
           ? _BannerAction(
-              label: 'End tasting',
+              label: l10n.tastingLifecycleEndCta,
               onTap: onEnd,
               filled: false,
               cs: cs,
@@ -429,7 +434,7 @@ class _ConcludedBanner extends StatelessWidget {
     return _BannerShell(
       cs: cs,
       icon: PhosphorIconsRegular.checkCircle,
-      label: 'CONCLUDED',
+      label: AppLocalizations.of(context).tastingLifecycleConcluded,
       tone: cs.surfaceContainer,
       foreground: cs.onSurfaceVariant,
       action: null,
@@ -598,12 +603,13 @@ class _RsvpBar extends ConsumerWidget {
         ) ??
         RsvpStatus.noResponse;
 
+    final l10n = AppLocalizations.of(context);
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
       child: Row(
         children: [
           Text(
-            'Your response',
+            l10n.tastingDetailRsvpYour,
             style: TextStyle(
               fontSize: context.captionFont,
               color: cs.onSurfaceVariant,
@@ -624,10 +630,19 @@ class _RsvpBar extends ConsumerWidget {
                 ),
               ),
             ),
-            segments: const [
-              ButtonSegment(value: RsvpStatus.going, label: Text('Going')),
-              ButtonSegment(value: RsvpStatus.maybe, label: Text('Maybe')),
-              ButtonSegment(value: RsvpStatus.declined, label: Text('No')),
+            segments: [
+              ButtonSegment(
+                value: RsvpStatus.going,
+                label: Text(l10n.tastingDetailRsvpGoing),
+              ),
+              ButtonSegment(
+                value: RsvpStatus.maybe,
+                label: Text(l10n.tastingDetailRsvpMaybe),
+              ),
+              ButtonSegment(
+                value: RsvpStatus.declined,
+                label: Text(l10n.tastingDetailRsvpDeclined),
+              ),
             ],
             selected: myStatus == RsvpStatus.noResponse
                 ? const <RsvpStatus>{}
@@ -856,11 +871,13 @@ class _AttendeesCard extends ConsumerWidget {
         (profile: m, status: statusById[m.id] ?? RsvpStatus.noResponse),
     ]..sort((a, b) => _rsvpOrder(a.status).compareTo(_rsvpOrder(b.status)));
 
+    final l10n = AppLocalizations.of(context);
+
     if (combined.isEmpty) {
       return Padding(
         padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
         child: Text(
-          'No one invited yet.',
+          l10n.tastingDetailNoAttendees,
           style: TextStyle(
             fontSize: context.captionFont,
             color: cs.onSurfaceVariant,
@@ -890,10 +907,12 @@ class _AttendeesCard extends ConsumerWidget {
             SizedBox(height: context.s),
             Text(
               [
-                if (going > 0) '$going going',
-                if (maybe > 0) '$maybe maybe',
-                if (declined > 0) '$declined declined',
-                if (pending > 0) '$pending pending',
+                if (going > 0) l10n.tastingDetailAttendeesCountGoing(going),
+                if (maybe > 0) l10n.tastingDetailAttendeesCountMaybe(maybe),
+                if (declined > 0)
+                  l10n.tastingDetailAttendeesCountDeclined(declined),
+                if (pending > 0)
+                  l10n.tastingDetailAttendeesCountPending(pending),
               ].join(' · '),
               style: TextStyle(
                 fontSize: context.captionFont,
@@ -1030,11 +1049,12 @@ class _AttendeesSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final groups = <(String, RsvpStatus)>[
-      ('Going', RsvpStatus.going),
-      ('Maybe', RsvpStatus.maybe),
-      ('Declined', RsvpStatus.declined),
-      ('Pending', RsvpStatus.noResponse),
+      (l10n.tastingDetailAttendeesSheetGoing, RsvpStatus.going),
+      (l10n.tastingDetailAttendeesSheetMaybe, RsvpStatus.maybe),
+      (l10n.tastingDetailAttendeesSheetDeclined, RsvpStatus.declined),
+      (l10n.tastingDetailAttendeesSheetPending, RsvpStatus.noResponse),
     ];
 
     final children = <Widget>[];
@@ -1097,7 +1117,9 @@ class _AttendeesSheet extends StatelessWidget {
                   SizedBox(width: context.m),
                   Expanded(
                     child: Text(
-                      m.profile.displayName ?? m.profile.username ?? 'Unknown',
+                      m.profile.displayName ??
+                          m.profile.username ??
+                          l10n.tastingDetailUnknownAttendee,
                       style: TextStyle(
                         fontSize: context.bodyFont,
                         fontWeight: FontWeight.w600,
@@ -1133,6 +1155,7 @@ class _WinesSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final winesAsync = ref.watch(tastingWinesProvider(tasting.id));
     final ratingsAsync = ref.watch(tastingWineRatingsProvider(tasting.id));
     final ratings = ratingsAsync.valueOrNull ?? const {};
@@ -1162,7 +1185,7 @@ class _WinesSection extends ConsumerWidget {
             children: [
               Expanded(
                 child: Text(
-                  'WINES',
+                  l10n.tastingDetailSectionWines,
                   style: TextStyle(
                     fontSize: context.captionFont * 0.95,
                     fontWeight: FontWeight.w700,
@@ -1201,7 +1224,7 @@ class _WinesSection extends ConsumerWidget {
                       ),
                       SizedBox(width: context.w * 0.01),
                       Text(
-                        'Add wines',
+                        l10n.tastingDetailAddWines,
                         style: TextStyle(
                           fontSize: context.captionFont,
                           fontWeight: FontWeight.w600,
@@ -1275,6 +1298,7 @@ class _WinesEmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -1294,7 +1318,7 @@ class _WinesEmptyState extends StatelessWidget {
           ),
           SizedBox(height: context.m),
           Text(
-            _title,
+            _title(l10n),
             style: TextStyle(
               fontSize: context.bodyFont,
               fontWeight: FontWeight.w600,
@@ -1302,7 +1326,7 @@ class _WinesEmptyState extends StatelessWidget {
           ),
           SizedBox(height: context.xs),
           Text(
-            _hint(isOwner: isOwner),
+            _hint(l10n, isOwner: isOwner),
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: context.captionFont,
@@ -1314,25 +1338,23 @@ class _WinesEmptyState extends StatelessWidget {
     );
   }
 
-  String get _title {
+  String _title(AppLocalizations l10n) {
     if (lineupMode == TastingLineupMode.open && state == TastingState.active) {
-      return 'Lineup fills as you go';
+      return l10n.tastingEmptyOpenActiveTitle;
     }
-    return 'No wines lined up yet';
+    return l10n.tastingEmptyDefaultTitle;
   }
 
-  String _hint({required bool isOwner}) {
+  String _hint(AppLocalizations l10n, {required bool isOwner}) {
     if (lineupMode == TastingLineupMode.open && state == TastingState.active) {
-      return 'Anyone going can add bottles as they appear';
+      return l10n.tastingEmptyOpenActiveBody;
     }
     if (lineupMode == TastingLineupMode.open) {
       return isOwner
-          ? 'Wines can be added once the tasting starts'
-          : 'Wines will be added on the night';
+          ? l10n.tastingEmptyOpenUpcomingHost
+          : l10n.tastingEmptyOpenUpcomingGuest;
     }
-    return isOwner
-        ? 'Tap “Add wines” to build the lineup'
-        : 'The host hasn’t added wines yet';
+    return isOwner ? l10n.tastingEmptyPlannedHost : l10n.tastingEmptyPlannedGuest;
   }
 }
 

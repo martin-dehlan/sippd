@@ -1584,4 +1584,254 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get winesStatsTypeBreakdownTopRated => 'Più votato';
+
+  @override
+  String get tastingCreateHeader => 'NUOVA DEGUSTAZIONE';
+
+  @override
+  String get tastingEditHeader => 'MODIFICA DEGUSTAZIONE';
+
+  @override
+  String get tastingFieldTitleLabel => 'Titolo';
+
+  @override
+  String get tastingFieldDateLabel => 'Data';
+
+  @override
+  String get tastingFieldTimeLabel => 'Ora';
+
+  @override
+  String get tastingFieldPlaceLabel => 'Luogo';
+
+  @override
+  String get tastingFieldDescriptionLabel => 'Descrizione';
+
+  @override
+  String get tastingFieldTapToAdd => 'Tocca per aggiungere';
+
+  @override
+  String get tastingFieldOpenLineupLabel => 'Lineup aperto';
+
+  @override
+  String get tastingFieldOpenLineupHint =>
+      'Aggiungi i vini man mano che arrivano';
+
+  @override
+  String get tastingTitleSheetTitle => 'Titolo della degustazione';
+
+  @override
+  String get tastingTitleSheetHint => 'es. Serata Barolo';
+
+  @override
+  String get tastingDescriptionSheetTitle => 'Descrizione';
+
+  @override
+  String get tastingDescriptionSheetHint => 'Di cosa si tratta?';
+
+  @override
+  String get tastingCreateSubmitCta => 'Crea degustazione';
+
+  @override
+  String get tastingEditSubmitCta => 'Salva modifiche';
+
+  @override
+  String get tastingCreateFailedSnack => 'Impossibile creare la degustazione';
+
+  @override
+  String get tastingUpdateFailedSnack =>
+      'Impossibile aggiornare la degustazione';
+
+  @override
+  String get tastingDetailNotFound => 'Degustazione non trovata';
+
+  @override
+  String get tastingDetailErrorLoad => 'Impossibile caricare la degustazione';
+
+  @override
+  String get tastingDetailMenuAddToCalendar => 'Aggiungi al calendario';
+
+  @override
+  String get tastingDetailMenuShare => 'Condividi';
+
+  @override
+  String get tastingDetailMenuEdit => 'Modifica degustazione';
+
+  @override
+  String get tastingDetailMenuCancel => 'Annulla degustazione';
+
+  @override
+  String get tastingDetailCancelDialogTitle => 'Annullare la degustazione?';
+
+  @override
+  String get tastingDetailCancelDialogBody => 'Verrà rimossa per tutti.';
+
+  @override
+  String get tastingDetailCancelDialogKeep => 'Mantieni';
+
+  @override
+  String get tastingDetailCancelDialogConfirm => 'Annulla';
+
+  @override
+  String get tastingDetailEndDialogTitle => 'Terminare la degustazione?';
+
+  @override
+  String get tastingDetailEndDialogBody =>
+      'Questo blocca il recap. I partecipanti possono ancora aggiungere voti per un po’ dopo.';
+
+  @override
+  String get tastingDetailEndDialogKeep => 'Continua';
+
+  @override
+  String get tastingDetailEndDialogConfirm => 'Termina';
+
+  @override
+  String get tastingCalendarFailedSnack => 'Impossibile aprire il calendario';
+
+  @override
+  String get tastingLifecycleUpcoming => 'IN ARRIVO';
+
+  @override
+  String get tastingLifecycleLive => 'LIVE';
+
+  @override
+  String get tastingLifecycleConcluded => 'CONCLUSA';
+
+  @override
+  String get tastingLifecycleStartCta => 'Avvia degustazione';
+
+  @override
+  String get tastingLifecycleEndCta => 'Termina degustazione';
+
+  @override
+  String get tastingDetailSectionPeople => 'Persone';
+
+  @override
+  String get tastingDetailSectionPlace => 'Luogo';
+
+  @override
+  String get tastingDetailSectionWines => 'VINI';
+
+  @override
+  String get tastingDetailAddWines => 'Aggiungi vini';
+
+  @override
+  String get tastingDetailNoAttendees => 'Nessuno invitato per ora.';
+
+  @override
+  String get tastingDetailUnknownAttendee => 'Sconosciuto';
+
+  @override
+  String get tastingDetailRsvpYour => 'La tua risposta';
+
+  @override
+  String get tastingDetailRsvpGoing => 'Ci sono';
+
+  @override
+  String get tastingDetailRsvpMaybe => 'Forse';
+
+  @override
+  String get tastingDetailRsvpDeclined => 'No';
+
+  @override
+  String tastingDetailAttendeesCountGoing(int count) {
+    return '$count ci sono';
+  }
+
+  @override
+  String tastingDetailAttendeesCountMaybe(int count) {
+    return '$count forse';
+  }
+
+  @override
+  String tastingDetailAttendeesCountDeclined(int count) {
+    return '$count non vengono';
+  }
+
+  @override
+  String tastingDetailAttendeesCountPending(int count) {
+    return '$count in attesa';
+  }
+
+  @override
+  String get tastingDetailAttendeesSheetGoing => 'Ci sono';
+
+  @override
+  String get tastingDetailAttendeesSheetMaybe => 'Forse';
+
+  @override
+  String get tastingDetailAttendeesSheetDeclined => 'Non vengono';
+
+  @override
+  String get tastingDetailAttendeesSheetPending => 'In attesa';
+
+  @override
+  String get tastingEmptyOpenActiveTitle =>
+      'Il lineup si riempie strada facendo';
+
+  @override
+  String get tastingEmptyOpenActiveBody =>
+      'Chi partecipa può aggiungere bottiglie';
+
+  @override
+  String get tastingEmptyDefaultTitle => 'Nessun vino nel lineup';
+
+  @override
+  String get tastingEmptyOpenUpcomingHost =>
+      'I vini si potranno aggiungere quando inizia la degustazione';
+
+  @override
+  String get tastingEmptyOpenUpcomingGuest =>
+      'I vini verranno aggiunti durante la serata';
+
+  @override
+  String get tastingEmptyPlannedHost =>
+      'Tocca «Aggiungi vini» per costruire il lineup';
+
+  @override
+  String get tastingEmptyPlannedGuest => 'L’host non ha ancora aggiunto vini';
+
+  @override
+  String get tastingRecapResultsHeader => 'RISULTATI';
+
+  @override
+  String get tastingRecapShareCta => 'Condividi recap';
+
+  @override
+  String get tastingRecapTopWineEyebrow => 'VINO DELLA SERATA';
+
+  @override
+  String get tastingRecapEmpty =>
+      'Ancora nessuna valutazione per questa degustazione.';
+
+  @override
+  String get tastingRecapRowNoRatings => 'nessuna valutazione';
+
+  @override
+  String get tastingRecapGroupFallback => 'Degustazione di gruppo';
+
+  @override
+  String get tastingPickerSheetTitle => 'Aggiungi vini al lineup';
+
+  @override
+  String get tastingPickerEmpty => 'Non hai ancora vini.';
+
+  @override
+  String get tastingPickerErrorFallback => 'Impossibile caricare i vini.';
+
+  @override
+  String get tastingPickerSubmitDefault => 'Aggiungi vini';
+
+  @override
+  String tastingPickerSubmitWithCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Aggiungi $count vini',
+      one: 'Aggiungi 1 vino',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get tastingPickerAddedChip => 'Aggiunto';
 }

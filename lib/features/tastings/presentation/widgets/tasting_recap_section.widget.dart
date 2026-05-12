@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../common/utils/responsive.dart';
 import '../../../auth/controller/auth.provider.dart';
 import '../../../groups/controller/group.provider.dart';
@@ -39,6 +40,7 @@ class TastingRecapSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final winesAsync = ref.watch(tastingWinesProvider(tastingId));
     final entriesAsync = ref.watch(tastingRecapEntriesProvider(tastingId));
 
@@ -99,7 +101,7 @@ class TastingRecapSection extends ConsumerWidget {
             children: [
               Expanded(
                 child: Text(
-                  'RESULTS',
+                  l10n.tastingRecapResultsHeader,
                   style: TextStyle(
                     fontSize: context.captionFont * 0.95,
                     fontWeight: FontWeight.w700,
@@ -197,7 +199,7 @@ class _SectionShell extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  'RESULTS',
+                  AppLocalizations.of(context).tastingRecapResultsHeader,
                   style: TextStyle(
                     fontSize: context.captionFont * 0.95,
                     fontWeight: FontWeight.w700,
@@ -263,7 +265,8 @@ extension on TastingRecapSection {
         ? top.wine.imageUrl
         : null;
     final data = TastingRecapCardData(
-      groupName: group?.name ?? 'Group tasting',
+      groupName:
+          group?.name ?? AppLocalizations.of(context).tastingRecapGroupFallback,
       groupAvatarUrl: group?.imageUrl,
       tastingTitle: tastingTitle,
       date: scheduledAt,
@@ -313,7 +316,7 @@ class _ShareRecapButton extends StatelessWidget {
         ),
         SizedBox(width: context.w * 0.012),
         Text(
-          'Share recap',
+          AppLocalizations.of(context).tastingRecapShareCta,
           style: TextStyle(
             fontSize: context.captionFont,
             fontWeight: FontWeight.w600,
@@ -354,7 +357,7 @@ class _NoRatingsYet extends StatelessWidget {
           SizedBox(width: context.w * 0.03),
           Expanded(
             child: Text(
-              'No ratings submitted for this tasting yet.',
+              AppLocalizations.of(context).tastingRecapEmpty,
               style: TextStyle(
                 fontSize: context.captionFont,
                 color: cs.onSurfaceVariant,
@@ -453,7 +456,7 @@ class _TopWineCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'TOP WINE OF THE NIGHT',
+                  AppLocalizations.of(context).tastingRecapTopWineEyebrow,
                   style: TextStyle(
                     fontSize: context.captionFont * 0.85,
                     fontWeight: FontWeight.w800,
@@ -566,7 +569,7 @@ class _RecapWineRowState extends State<_RecapWineRow> {
                   _AvgPill(value: widget.item.avg!, cs: cs, onPrimary: false)
                 else
                   Text(
-                    'no ratings',
+                    AppLocalizations.of(context).tastingRecapRowNoRatings,
                     style: TextStyle(
                       fontSize: context.captionFont,
                       color: cs.outline,
@@ -642,7 +645,7 @@ class _LeanRaterBar extends StatelessWidget {
         ? entry.displayName!.trim()
         : (entry.username?.trim().isNotEmpty ?? false)
         ? entry.username!.trim()
-        : 'Friend';
+        : AppLocalizations.of(context).winesFriendRatingsFallback;
     final pct = (entry.rating / 10).clamp(0.0, 1.0);
     final barH = context.w * 0.058;
     final avatarSize = barH;

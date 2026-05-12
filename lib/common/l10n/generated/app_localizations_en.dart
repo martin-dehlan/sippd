@@ -1576,4 +1576,249 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get winesStatsTypeBreakdownTopRated => 'Top rated';
+
+  @override
+  String get tastingCreateHeader => 'NEW TASTING';
+
+  @override
+  String get tastingEditHeader => 'EDIT TASTING';
+
+  @override
+  String get tastingFieldTitleLabel => 'Title';
+
+  @override
+  String get tastingFieldDateLabel => 'Date';
+
+  @override
+  String get tastingFieldTimeLabel => 'Time';
+
+  @override
+  String get tastingFieldPlaceLabel => 'Place';
+
+  @override
+  String get tastingFieldDescriptionLabel => 'Description';
+
+  @override
+  String get tastingFieldTapToAdd => 'Tap to add';
+
+  @override
+  String get tastingFieldOpenLineupLabel => 'Open lineup';
+
+  @override
+  String get tastingFieldOpenLineupHint => 'Add wines as they arrive';
+
+  @override
+  String get tastingTitleSheetTitle => 'Tasting title';
+
+  @override
+  String get tastingTitleSheetHint => 'e.g. Barolo night';
+
+  @override
+  String get tastingDescriptionSheetTitle => 'Description';
+
+  @override
+  String get tastingDescriptionSheetHint => 'What is this about?';
+
+  @override
+  String get tastingCreateSubmitCta => 'Create tasting';
+
+  @override
+  String get tastingEditSubmitCta => 'Save changes';
+
+  @override
+  String get tastingCreateFailedSnack => 'Could not create tasting';
+
+  @override
+  String get tastingUpdateFailedSnack => 'Could not update tasting';
+
+  @override
+  String get tastingDetailNotFound => 'Tasting not found';
+
+  @override
+  String get tastingDetailErrorLoad => 'Couldn\'t load tasting';
+
+  @override
+  String get tastingDetailMenuAddToCalendar => 'Add to calendar';
+
+  @override
+  String get tastingDetailMenuShare => 'Share';
+
+  @override
+  String get tastingDetailMenuEdit => 'Edit tasting';
+
+  @override
+  String get tastingDetailMenuCancel => 'Cancel tasting';
+
+  @override
+  String get tastingDetailCancelDialogTitle => 'Cancel tasting?';
+
+  @override
+  String get tastingDetailCancelDialogBody => 'This removes it for everyone.';
+
+  @override
+  String get tastingDetailCancelDialogKeep => 'Keep';
+
+  @override
+  String get tastingDetailCancelDialogConfirm => 'Cancel';
+
+  @override
+  String get tastingDetailEndDialogTitle => 'End tasting?';
+
+  @override
+  String get tastingDetailEndDialogBody =>
+      'This locks the recap. Attendees can still add ratings briefly afterwards.';
+
+  @override
+  String get tastingDetailEndDialogKeep => 'Keep going';
+
+  @override
+  String get tastingDetailEndDialogConfirm => 'End';
+
+  @override
+  String get tastingCalendarFailedSnack => 'Could not open calendar';
+
+  @override
+  String get tastingLifecycleUpcoming => 'UPCOMING';
+
+  @override
+  String get tastingLifecycleLive => 'LIVE';
+
+  @override
+  String get tastingLifecycleConcluded => 'CONCLUDED';
+
+  @override
+  String get tastingLifecycleStartCta => 'Start tasting';
+
+  @override
+  String get tastingLifecycleEndCta => 'End tasting';
+
+  @override
+  String get tastingDetailSectionPeople => 'People';
+
+  @override
+  String get tastingDetailSectionPlace => 'Place';
+
+  @override
+  String get tastingDetailSectionWines => 'WINES';
+
+  @override
+  String get tastingDetailAddWines => 'Add wines';
+
+  @override
+  String get tastingDetailNoAttendees => 'No one invited yet.';
+
+  @override
+  String get tastingDetailUnknownAttendee => 'Unknown';
+
+  @override
+  String get tastingDetailRsvpYour => 'Your response';
+
+  @override
+  String get tastingDetailRsvpGoing => 'Going';
+
+  @override
+  String get tastingDetailRsvpMaybe => 'Maybe';
+
+  @override
+  String get tastingDetailRsvpDeclined => 'No';
+
+  @override
+  String tastingDetailAttendeesCountGoing(int count) {
+    return '$count going';
+  }
+
+  @override
+  String tastingDetailAttendeesCountMaybe(int count) {
+    return '$count maybe';
+  }
+
+  @override
+  String tastingDetailAttendeesCountDeclined(int count) {
+    return '$count declined';
+  }
+
+  @override
+  String tastingDetailAttendeesCountPending(int count) {
+    return '$count pending';
+  }
+
+  @override
+  String get tastingDetailAttendeesSheetGoing => 'Going';
+
+  @override
+  String get tastingDetailAttendeesSheetMaybe => 'Maybe';
+
+  @override
+  String get tastingDetailAttendeesSheetDeclined => 'Declined';
+
+  @override
+  String get tastingDetailAttendeesSheetPending => 'Pending';
+
+  @override
+  String get tastingEmptyOpenActiveTitle => 'Lineup fills as you go';
+
+  @override
+  String get tastingEmptyOpenActiveBody =>
+      'Anyone going can add bottles as they appear';
+
+  @override
+  String get tastingEmptyDefaultTitle => 'No wines lined up yet';
+
+  @override
+  String get tastingEmptyOpenUpcomingHost =>
+      'Wines can be added once the tasting starts';
+
+  @override
+  String get tastingEmptyOpenUpcomingGuest =>
+      'Wines will be added on the night';
+
+  @override
+  String get tastingEmptyPlannedHost => 'Tap “Add wines” to build the lineup';
+
+  @override
+  String get tastingEmptyPlannedGuest => 'The host hasn’t added wines yet';
+
+  @override
+  String get tastingRecapResultsHeader => 'RESULTS';
+
+  @override
+  String get tastingRecapShareCta => 'Share recap';
+
+  @override
+  String get tastingRecapTopWineEyebrow => 'TOP WINE OF THE NIGHT';
+
+  @override
+  String get tastingRecapEmpty => 'No ratings submitted for this tasting yet.';
+
+  @override
+  String get tastingRecapRowNoRatings => 'no ratings';
+
+  @override
+  String get tastingRecapGroupFallback => 'Group tasting';
+
+  @override
+  String get tastingPickerSheetTitle => 'Add wines to lineup';
+
+  @override
+  String get tastingPickerEmpty => 'You have no wines yet.';
+
+  @override
+  String get tastingPickerErrorFallback => 'Couldn\'t load wines.';
+
+  @override
+  String get tastingPickerSubmitDefault => 'Add wines';
+
+  @override
+  String tastingPickerSubmitWithCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Add $count wines',
+      one: 'Add 1 wine',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get tastingPickerAddedChip => 'Added';
 }

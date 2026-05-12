@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import '../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/error_view.widget.dart';
 import '../../../../../common/widgets/text_input_sheet.dart';
@@ -18,18 +19,19 @@ class TastingEditScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final async = ref.watch(tastingDetailProvider(tastingId));
     return Scaffold(
       body: async.when(
         data: (t) {
           if (t == null) {
-            return const Center(child: Text('Tasting not found'));
+            return Center(child: Text(l10n.tastingDetailNotFound));
           }
           return _EditForm(tasting: t);
         },
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(
-          child: ErrorView(title: "Couldn't load tasting", error: e),
+          child: ErrorView(title: l10n.tastingDetailErrorLoad, error: e),
         ),
       ),
       floatingActionButton: const _BackFab(),
@@ -78,11 +80,12 @@ class _EditFormState extends ConsumerState<_EditForm> {
       DateTime(_date.year, _date.month, _date.day, _time.hour, _time.minute);
 
   Future<void> _editTitle() async {
+    final l10n = AppLocalizations.of(context);
     final r = await showTextInputSheet(
       context: context,
-      title: 'Tasting title',
+      title: l10n.tastingTitleSheetTitle,
       initial: _title,
-      hint: 'e.g. Barolo night',
+      hint: l10n.tastingTitleSheetHint,
       maxLength: 80,
     );
     if (r == null) return;
@@ -90,11 +93,12 @@ class _EditFormState extends ConsumerState<_EditForm> {
   }
 
   Future<void> _editDescription() async {
+    final l10n = AppLocalizations.of(context);
     final r = await showTextInputSheet(
       context: context,
-      title: 'Description',
+      title: l10n.tastingDescriptionSheetTitle,
       initial: _description,
-      hint: 'What is this about?',
+      hint: l10n.tastingDescriptionSheetHint,
       maxLines: 4,
       maxLength: 1000,
     );
@@ -149,16 +153,22 @@ class _EditFormState extends ConsumerState<_EditForm> {
     if (updated != null) {
       context.pop();
     } else {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Could not update tasting')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context).tastingUpdateFailedSnack,
+          ),
+        ),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final canSave = _title.trim().isNotEmpty && !_saving;
+    final tapToAdd = l10n.tastingFieldTapToAdd;
 
     return SafeArea(
       child: ListView(
@@ -168,7 +178,7 @@ class _EditFormState extends ConsumerState<_EditForm> {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
             child: Text(
-              'EDIT TASTING',
+              l10n.tastingEditHeader,
               style: GoogleFonts.playfairDisplay(
                 fontSize: context.titleFont * 1.1,
                 fontWeight: FontWeight.w800,
@@ -179,45 +189,45 @@ class _EditFormState extends ConsumerState<_EditForm> {
           ),
           SizedBox(height: context.l),
           _Row(
-            label: 'Title',
-            value: _title.isEmpty ? 'Tap to add' : _title,
+            label: l10n.tastingFieldTitleLabel,
+            value: _title.isEmpty ? tapToAdd : _title,
             isEmpty: _title.isEmpty,
             onTap: _editTitle,
           ),
           _Divider(),
           _Row(
-            label: 'Date',
+            label: l10n.tastingFieldDateLabel,
             value: DateFormat.yMMMMEEEEd().format(_date),
             isEmpty: false,
             onTap: _editDate,
           ),
           _Divider(),
           _Row(
-            label: 'Time',
+            label: l10n.tastingFieldTimeLabel,
             value: _time.format(context),
             isEmpty: false,
             onTap: _editTime,
           ),
           _Divider(),
           _Row(
-            label: 'Place',
+            label: l10n.tastingFieldPlaceLabel,
             value: _location?.shortDisplay.isNotEmpty == true
                 ? _location!.shortDisplay
-                : 'Tap to add',
+                : tapToAdd,
             isEmpty: _location == null || _location!.shortDisplay.isEmpty,
             onTap: _editPlace,
           ),
           _Divider(),
           _Row(
-            label: 'Description',
-            value: _description ?? 'Tap to add',
+            label: l10n.tastingFieldDescriptionLabel,
+            value: _description ?? tapToAdd,
             isEmpty: _description == null,
             onTap: _editDescription,
           ),
           _Divider(),
           _ToggleRow(
-            label: 'Open lineup',
-            hint: 'Add wines as they arrive',
+            label: l10n.tastingFieldOpenLineupLabel,
+            hint: l10n.tastingFieldOpenLineupHint,
             value: _openLineup,
             onChanged: (v) => setState(() => _openLineup = v),
           ),
@@ -246,7 +256,7 @@ class _EditFormState extends ConsumerState<_EditForm> {
                         ),
                       )
                     : Text(
-                        'Save changes',
+                        l10n.tastingEditSubmitCta,
                         style: TextStyle(
                           fontSize: context.bodyFont,
                           fontWeight: FontWeight.w600,

@@ -594,5 +594,112 @@
   "winesStatsTypeBreakdownTotalOne": "vino",
   "winesStatsTypeBreakdownTotalMany": "vini",
   "winesStatsTypeBreakdownMostDrunk": "Più bevuto",
-  "winesStatsTypeBreakdownTopRated": "Più votato"
+  "winesStatsTypeBreakdownTopRated": "Più votato",
+
+  "tastingCreateHeader": "NUOVA DEGUSTAZIONE",
+  "tastingEditHeader": "MODIFICA DEGUSTAZIONE",
+  "tastingFieldTitleLabel": "Titolo",
+  "tastingFieldDateLabel": "Data",
+  "tastingFieldTimeLabel": "Ora",
+  "tastingFieldPlaceLabel": "Luogo",
+  "tastingFieldDescriptionLabel": "Descrizione",
+  "tastingFieldTapToAdd": "Tocca per aggiungere",
+  "tastingFieldOpenLineupLabel": "Lineup aperto",
+  "tastingFieldOpenLineupHint": "Aggiungi i vini man mano che arrivano",
+  "tastingTitleSheetTitle": "Titolo della degustazione",
+  "tastingTitleSheetHint": "es. Serata Barolo",
+  "tastingDescriptionSheetTitle": "Descrizione",
+  "tastingDescriptionSheetHint": "Di cosa si tratta?",
+  "tastingCreateSubmitCta": "Crea degustazione",
+  "tastingEditSubmitCta": "Salva modifiche",
+  "tastingCreateFailedSnack": "Impossibile creare la degustazione",
+  "tastingUpdateFailedSnack": "Impossibile aggiornare la degustazione",
+
+  "tastingDetailNotFound": "Degustazione non trovata",
+  "tastingDetailErrorLoad": "Impossibile caricare la degustazione",
+  "tastingDetailMenuAddToCalendar": "Aggiungi al calendario",
+  "tastingDetailMenuShare": "Condividi",
+  "tastingDetailMenuEdit": "Modifica degustazione",
+  "tastingDetailMenuCancel": "Annulla degustazione",
+  "tastingDetailCancelDialogTitle": "Annullare la degustazione?",
+  "tastingDetailCancelDialogBody": "Verrà rimossa per tutti.",
+  "tastingDetailCancelDialogKeep": "Mantieni",
+  "tastingDetailCancelDialogConfirm": "Annulla",
+  "tastingDetailEndDialogTitle": "Terminare la degustazione?",
+  "tastingDetailEndDialogBody": "Questo blocca il recap. I partecipanti possono ancora aggiungere voti per un po’ dopo.",
+  "tastingDetailEndDialogKeep": "Continua",
+  "tastingDetailEndDialogConfirm": "Termina",
+  "tastingCalendarFailedSnack": "Impossibile aprire il calendario",
+
+  "tastingLifecycleUpcoming": "IN ARRIVO",
+  "tastingLifecycleLive": "LIVE",
+  "tastingLifecycleConcluded": "CONCLUSA",
+  "tastingLifecycleStartCta": "Avvia degustazione",
+  "tastingLifecycleEndCta": "Termina degustazione",
+
+  "tastingDetailSectionPeople": "Persone",
+  "tastingDetailSectionPlace": "Luogo",
+  "tastingDetailSectionWines": "VINI",
+  "tastingDetailAddWines": "Aggiungi vini",
+  "tastingDetailNoAttendees": "Nessuno invitato per ora.",
+  "tastingDetailUnknownAttendee": "Sconosciuto",
+  "tastingDetailRsvpYour": "La tua risposta",
+  "tastingDetailRsvpGoing": "Ci sono",
+  "tastingDetailRsvpMaybe": "Forse",
+  "tastingDetailRsvpDeclined": "No",
+  "tastingDetailAttendeesCountGoing": "{count} ci sono",
+  "@tastingDetailAttendeesCountGoing": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "tastingDetailAttendeesCountMaybe": "{count} forse",
+  "@tastingDetailAttendeesCountMaybe": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "tastingDetailAttendeesCountDeclined": "{count} non vengono",
+  "@tastingDetailAttendeesCountDeclined": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "tastingDetailAttendeesCountPending": "{count} in attesa",
+  "@tastingDetailAttendeesCountPending": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "tastingDetailAttendeesSheetGoing": "Ci sono",
+  "tastingDetailAttendeesSheetMaybe": "Forse",
+  "tastingDetailAttendeesSheetDeclined": "Non vengono",
+  "tastingDetailAttendeesSheetPending": "In attesa",
+
+  "tastingEmptyOpenActiveTitle": "Il lineup si riempie strada facendo",
+  "tastingEmptyOpenActiveBody": "Chi partecipa può aggiungere bottiglie",
+  "tastingEmptyDefaultTitle": "Nessun vino nel lineup",
+  "tastingEmptyOpenUpcomingHost": "I vini si potranno aggiungere quando inizia la degustazione",
+  "tastingEmptyOpenUpcomingGuest": "I vini verranno aggiunti durante la serata",
+  "tastingEmptyPlannedHost": "Tocca «Aggiungi vini» per costruire il lineup",
+  "tastingEmptyPlannedGuest": "L’host non ha ancora aggiunto vini",
+
+  "tastingRecapResultsHeader": "RISULTATI",
+  "tastingRecapShareCta": "Condividi recap",
+  "tastingRecapTopWineEyebrow": "VINO DELLA SERATA",
+  "tastingRecapEmpty": "Ancora nessuna valutazione per questa degustazione.",
+  "tastingRecapRowNoRatings": "nessuna valutazione",
+  "tastingRecapGroupFallback": "Degustazione di gruppo",
+
+  "tastingPickerSheetTitle": "Aggiungi vini al lineup",
+  "tastingPickerEmpty": "Non hai ancora vini.",
+  "tastingPickerErrorFallback": "Impossibile caricare i vini.",
+  "tastingPickerSubmitDefault": "Aggiungi vini",
+  "tastingPickerSubmitWithCount": "{count, plural, =1{Aggiungi 1 vino} other{Aggiungi {count} vini}}",
+  "@tastingPickerSubmitWithCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "tastingPickerAddedChip": "Aggiunto"
 }

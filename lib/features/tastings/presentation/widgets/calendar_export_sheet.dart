@@ -1,5 +1,6 @@
 import 'package:add_2_calendar/add_2_calendar.dart' as a2c;
 import 'package:flutter/material.dart';
+import '../../../../common/l10n/generated/app_localizations.dart';
 import '../../domain/entities/tasting.entity.dart';
 
 Future<void> addTastingToCalendar({
@@ -15,8 +16,12 @@ Future<void> addTastingToCalendar({
   );
   final ok = await a2c.Add2Calendar.addEvent2Cal(event);
   if (!ok && context.mounted) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Could not open calendar')));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          AppLocalizations.of(context).tastingCalendarFailedSnack,
+        ),
+      ),
+    );
   }
 }

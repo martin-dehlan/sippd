@@ -3031,6 +3031,456 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Top rated'**
   String get winesStatsTypeBreakdownTopRated;
+
+  /// No description provided for @tastingCreateHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'NEW TASTING'**
+  String get tastingCreateHeader;
+
+  /// No description provided for @tastingEditHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'EDIT TASTING'**
+  String get tastingEditHeader;
+
+  /// No description provided for @tastingFieldTitleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get tastingFieldTitleLabel;
+
+  /// No description provided for @tastingFieldDateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get tastingFieldDateLabel;
+
+  /// No description provided for @tastingFieldTimeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Time'**
+  String get tastingFieldTimeLabel;
+
+  /// No description provided for @tastingFieldPlaceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Place'**
+  String get tastingFieldPlaceLabel;
+
+  /// No description provided for @tastingFieldDescriptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get tastingFieldDescriptionLabel;
+
+  /// No description provided for @tastingFieldTapToAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to add'**
+  String get tastingFieldTapToAdd;
+
+  /// No description provided for @tastingFieldOpenLineupLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Open lineup'**
+  String get tastingFieldOpenLineupLabel;
+
+  /// No description provided for @tastingFieldOpenLineupHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add wines as they arrive'**
+  String get tastingFieldOpenLineupHint;
+
+  /// No description provided for @tastingTitleSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tasting title'**
+  String get tastingTitleSheetTitle;
+
+  /// No description provided for @tastingTitleSheetHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Barolo night'**
+  String get tastingTitleSheetHint;
+
+  /// No description provided for @tastingDescriptionSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get tastingDescriptionSheetTitle;
+
+  /// No description provided for @tastingDescriptionSheetHint.
+  ///
+  /// In en, this message translates to:
+  /// **'What is this about?'**
+  String get tastingDescriptionSheetHint;
+
+  /// No description provided for @tastingCreateSubmitCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Create tasting'**
+  String get tastingCreateSubmitCta;
+
+  /// No description provided for @tastingEditSubmitCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Save changes'**
+  String get tastingEditSubmitCta;
+
+  /// No description provided for @tastingCreateFailedSnack.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not create tasting'**
+  String get tastingCreateFailedSnack;
+
+  /// No description provided for @tastingUpdateFailedSnack.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not update tasting'**
+  String get tastingUpdateFailedSnack;
+
+  /// No description provided for @tastingDetailNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Tasting not found'**
+  String get tastingDetailNotFound;
+
+  /// No description provided for @tastingDetailErrorLoad.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load tasting'**
+  String get tastingDetailErrorLoad;
+
+  /// No description provided for @tastingDetailMenuAddToCalendar.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to calendar'**
+  String get tastingDetailMenuAddToCalendar;
+
+  /// No description provided for @tastingDetailMenuShare.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get tastingDetailMenuShare;
+
+  /// No description provided for @tastingDetailMenuEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit tasting'**
+  String get tastingDetailMenuEdit;
+
+  /// No description provided for @tastingDetailMenuCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel tasting'**
+  String get tastingDetailMenuCancel;
+
+  /// No description provided for @tastingDetailCancelDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel tasting?'**
+  String get tastingDetailCancelDialogTitle;
+
+  /// No description provided for @tastingDetailCancelDialogBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This removes it for everyone.'**
+  String get tastingDetailCancelDialogBody;
+
+  /// No description provided for @tastingDetailCancelDialogKeep.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep'**
+  String get tastingDetailCancelDialogKeep;
+
+  /// No description provided for @tastingDetailCancelDialogConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get tastingDetailCancelDialogConfirm;
+
+  /// No description provided for @tastingDetailEndDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'End tasting?'**
+  String get tastingDetailEndDialogTitle;
+
+  /// No description provided for @tastingDetailEndDialogBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This locks the recap. Attendees can still add ratings briefly afterwards.'**
+  String get tastingDetailEndDialogBody;
+
+  /// No description provided for @tastingDetailEndDialogKeep.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep going'**
+  String get tastingDetailEndDialogKeep;
+
+  /// No description provided for @tastingDetailEndDialogConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'End'**
+  String get tastingDetailEndDialogConfirm;
+
+  /// No description provided for @tastingCalendarFailedSnack.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open calendar'**
+  String get tastingCalendarFailedSnack;
+
+  /// No description provided for @tastingLifecycleUpcoming.
+  ///
+  /// In en, this message translates to:
+  /// **'UPCOMING'**
+  String get tastingLifecycleUpcoming;
+
+  /// No description provided for @tastingLifecycleLive.
+  ///
+  /// In en, this message translates to:
+  /// **'LIVE'**
+  String get tastingLifecycleLive;
+
+  /// No description provided for @tastingLifecycleConcluded.
+  ///
+  /// In en, this message translates to:
+  /// **'CONCLUDED'**
+  String get tastingLifecycleConcluded;
+
+  /// No description provided for @tastingLifecycleStartCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Start tasting'**
+  String get tastingLifecycleStartCta;
+
+  /// No description provided for @tastingLifecycleEndCta.
+  ///
+  /// In en, this message translates to:
+  /// **'End tasting'**
+  String get tastingLifecycleEndCta;
+
+  /// No description provided for @tastingDetailSectionPeople.
+  ///
+  /// In en, this message translates to:
+  /// **'People'**
+  String get tastingDetailSectionPeople;
+
+  /// No description provided for @tastingDetailSectionPlace.
+  ///
+  /// In en, this message translates to:
+  /// **'Place'**
+  String get tastingDetailSectionPlace;
+
+  /// No description provided for @tastingDetailSectionWines.
+  ///
+  /// In en, this message translates to:
+  /// **'WINES'**
+  String get tastingDetailSectionWines;
+
+  /// No description provided for @tastingDetailAddWines.
+  ///
+  /// In en, this message translates to:
+  /// **'Add wines'**
+  String get tastingDetailAddWines;
+
+  /// No description provided for @tastingDetailNoAttendees.
+  ///
+  /// In en, this message translates to:
+  /// **'No one invited yet.'**
+  String get tastingDetailNoAttendees;
+
+  /// No description provided for @tastingDetailUnknownAttendee.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get tastingDetailUnknownAttendee;
+
+  /// No description provided for @tastingDetailRsvpYour.
+  ///
+  /// In en, this message translates to:
+  /// **'Your response'**
+  String get tastingDetailRsvpYour;
+
+  /// No description provided for @tastingDetailRsvpGoing.
+  ///
+  /// In en, this message translates to:
+  /// **'Going'**
+  String get tastingDetailRsvpGoing;
+
+  /// No description provided for @tastingDetailRsvpMaybe.
+  ///
+  /// In en, this message translates to:
+  /// **'Maybe'**
+  String get tastingDetailRsvpMaybe;
+
+  /// No description provided for @tastingDetailRsvpDeclined.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get tastingDetailRsvpDeclined;
+
+  /// No description provided for @tastingDetailAttendeesCountGoing.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} going'**
+  String tastingDetailAttendeesCountGoing(int count);
+
+  /// No description provided for @tastingDetailAttendeesCountMaybe.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} maybe'**
+  String tastingDetailAttendeesCountMaybe(int count);
+
+  /// No description provided for @tastingDetailAttendeesCountDeclined.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} declined'**
+  String tastingDetailAttendeesCountDeclined(int count);
+
+  /// No description provided for @tastingDetailAttendeesCountPending.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} pending'**
+  String tastingDetailAttendeesCountPending(int count);
+
+  /// No description provided for @tastingDetailAttendeesSheetGoing.
+  ///
+  /// In en, this message translates to:
+  /// **'Going'**
+  String get tastingDetailAttendeesSheetGoing;
+
+  /// No description provided for @tastingDetailAttendeesSheetMaybe.
+  ///
+  /// In en, this message translates to:
+  /// **'Maybe'**
+  String get tastingDetailAttendeesSheetMaybe;
+
+  /// No description provided for @tastingDetailAttendeesSheetDeclined.
+  ///
+  /// In en, this message translates to:
+  /// **'Declined'**
+  String get tastingDetailAttendeesSheetDeclined;
+
+  /// No description provided for @tastingDetailAttendeesSheetPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get tastingDetailAttendeesSheetPending;
+
+  /// No description provided for @tastingEmptyOpenActiveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Lineup fills as you go'**
+  String get tastingEmptyOpenActiveTitle;
+
+  /// No description provided for @tastingEmptyOpenActiveBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Anyone going can add bottles as they appear'**
+  String get tastingEmptyOpenActiveBody;
+
+  /// No description provided for @tastingEmptyDefaultTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No wines lined up yet'**
+  String get tastingEmptyDefaultTitle;
+
+  /// No description provided for @tastingEmptyOpenUpcomingHost.
+  ///
+  /// In en, this message translates to:
+  /// **'Wines can be added once the tasting starts'**
+  String get tastingEmptyOpenUpcomingHost;
+
+  /// No description provided for @tastingEmptyOpenUpcomingGuest.
+  ///
+  /// In en, this message translates to:
+  /// **'Wines will be added on the night'**
+  String get tastingEmptyOpenUpcomingGuest;
+
+  /// No description provided for @tastingEmptyPlannedHost.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap “Add wines” to build the lineup'**
+  String get tastingEmptyPlannedHost;
+
+  /// No description provided for @tastingEmptyPlannedGuest.
+  ///
+  /// In en, this message translates to:
+  /// **'The host hasn’t added wines yet'**
+  String get tastingEmptyPlannedGuest;
+
+  /// No description provided for @tastingRecapResultsHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'RESULTS'**
+  String get tastingRecapResultsHeader;
+
+  /// No description provided for @tastingRecapShareCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Share recap'**
+  String get tastingRecapShareCta;
+
+  /// No description provided for @tastingRecapTopWineEyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'TOP WINE OF THE NIGHT'**
+  String get tastingRecapTopWineEyebrow;
+
+  /// No description provided for @tastingRecapEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No ratings submitted for this tasting yet.'**
+  String get tastingRecapEmpty;
+
+  /// No description provided for @tastingRecapRowNoRatings.
+  ///
+  /// In en, this message translates to:
+  /// **'no ratings'**
+  String get tastingRecapRowNoRatings;
+
+  /// No description provided for @tastingRecapGroupFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Group tasting'**
+  String get tastingRecapGroupFallback;
+
+  /// No description provided for @tastingPickerSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add wines to lineup'**
+  String get tastingPickerSheetTitle;
+
+  /// No description provided for @tastingPickerEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'You have no wines yet.'**
+  String get tastingPickerEmpty;
+
+  /// No description provided for @tastingPickerErrorFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load wines.'**
+  String get tastingPickerErrorFallback;
+
+  /// No description provided for @tastingPickerSubmitDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Add wines'**
+  String get tastingPickerSubmitDefault;
+
+  /// No description provided for @tastingPickerSubmitWithCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Add 1 wine} other{Add {count} wines}}'**
+  String tastingPickerSubmitWithCount(int count);
+
+  /// No description provided for @tastingPickerAddedChip.
+  ///
+  /// In en, this message translates to:
+  /// **'Added'**
+  String get tastingPickerAddedChip;
 }
 
 class _AppLocalizationsDelegate

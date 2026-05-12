@@ -1586,4 +1586,252 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get winesStatsTypeBreakdownTopRated => 'Mejor valorado';
+
+  @override
+  String get tastingCreateHeader => 'NUEVA CATA';
+
+  @override
+  String get tastingEditHeader => 'EDITAR CATA';
+
+  @override
+  String get tastingFieldTitleLabel => 'Título';
+
+  @override
+  String get tastingFieldDateLabel => 'Fecha';
+
+  @override
+  String get tastingFieldTimeLabel => 'Hora';
+
+  @override
+  String get tastingFieldPlaceLabel => 'Lugar';
+
+  @override
+  String get tastingFieldDescriptionLabel => 'Descripción';
+
+  @override
+  String get tastingFieldTapToAdd => 'Toca para añadir';
+
+  @override
+  String get tastingFieldOpenLineupLabel => 'Lineup abierto';
+
+  @override
+  String get tastingFieldOpenLineupHint => 'Añade vinos a medida que aparecen';
+
+  @override
+  String get tastingTitleSheetTitle => 'Título de la cata';
+
+  @override
+  String get tastingTitleSheetHint => 'p. ej. Noche de Barolo';
+
+  @override
+  String get tastingDescriptionSheetTitle => 'Descripción';
+
+  @override
+  String get tastingDescriptionSheetHint => '¿De qué va?';
+
+  @override
+  String get tastingCreateSubmitCta => 'Crear cata';
+
+  @override
+  String get tastingEditSubmitCta => 'Guardar cambios';
+
+  @override
+  String get tastingCreateFailedSnack => 'No se pudo crear la cata';
+
+  @override
+  String get tastingUpdateFailedSnack => 'No se pudo actualizar la cata';
+
+  @override
+  String get tastingDetailNotFound => 'Cata no encontrada';
+
+  @override
+  String get tastingDetailErrorLoad => 'No se pudo cargar la cata';
+
+  @override
+  String get tastingDetailMenuAddToCalendar => 'Añadir al calendario';
+
+  @override
+  String get tastingDetailMenuShare => 'Compartir';
+
+  @override
+  String get tastingDetailMenuEdit => 'Editar cata';
+
+  @override
+  String get tastingDetailMenuCancel => 'Cancelar cata';
+
+  @override
+  String get tastingDetailCancelDialogTitle => '¿Cancelar cata?';
+
+  @override
+  String get tastingDetailCancelDialogBody => 'Esto la elimina para todos.';
+
+  @override
+  String get tastingDetailCancelDialogKeep => 'Mantener';
+
+  @override
+  String get tastingDetailCancelDialogConfirm => 'Cancelar';
+
+  @override
+  String get tastingDetailEndDialogTitle => '¿Terminar cata?';
+
+  @override
+  String get tastingDetailEndDialogBody =>
+      'Esto bloquea el recap. Los asistentes pueden seguir añadiendo notas un rato más.';
+
+  @override
+  String get tastingDetailEndDialogKeep => 'Seguir';
+
+  @override
+  String get tastingDetailEndDialogConfirm => 'Terminar';
+
+  @override
+  String get tastingCalendarFailedSnack => 'No se pudo abrir el calendario';
+
+  @override
+  String get tastingLifecycleUpcoming => 'PRÓXIMA';
+
+  @override
+  String get tastingLifecycleLive => 'EN VIVO';
+
+  @override
+  String get tastingLifecycleConcluded => 'TERMINADA';
+
+  @override
+  String get tastingLifecycleStartCta => 'Empezar cata';
+
+  @override
+  String get tastingLifecycleEndCta => 'Terminar cata';
+
+  @override
+  String get tastingDetailSectionPeople => 'Gente';
+
+  @override
+  String get tastingDetailSectionPlace => 'Lugar';
+
+  @override
+  String get tastingDetailSectionWines => 'VINOS';
+
+  @override
+  String get tastingDetailAddWines => 'Añadir vinos';
+
+  @override
+  String get tastingDetailNoAttendees => 'Aún no hay nadie invitado.';
+
+  @override
+  String get tastingDetailUnknownAttendee => 'Desconocido';
+
+  @override
+  String get tastingDetailRsvpYour => 'Tu respuesta';
+
+  @override
+  String get tastingDetailRsvpGoing => 'Voy';
+
+  @override
+  String get tastingDetailRsvpMaybe => 'Quizá';
+
+  @override
+  String get tastingDetailRsvpDeclined => 'No';
+
+  @override
+  String tastingDetailAttendeesCountGoing(int count) {
+    return '$count van';
+  }
+
+  @override
+  String tastingDetailAttendeesCountMaybe(int count) {
+    return '$count quizá';
+  }
+
+  @override
+  String tastingDetailAttendeesCountDeclined(int count) {
+    return '$count no van';
+  }
+
+  @override
+  String tastingDetailAttendeesCountPending(int count) {
+    return '$count pendientes';
+  }
+
+  @override
+  String get tastingDetailAttendeesSheetGoing => 'Van';
+
+  @override
+  String get tastingDetailAttendeesSheetMaybe => 'Quizá';
+
+  @override
+  String get tastingDetailAttendeesSheetDeclined => 'No van';
+
+  @override
+  String get tastingDetailAttendeesSheetPending => 'Pendientes';
+
+  @override
+  String get tastingEmptyOpenActiveTitle =>
+      'El lineup se llena sobre la marcha';
+
+  @override
+  String get tastingEmptyOpenActiveBody =>
+      'Cualquiera que vaya puede añadir botellas';
+
+  @override
+  String get tastingEmptyDefaultTitle => 'Aún no hay vinos en el lineup';
+
+  @override
+  String get tastingEmptyOpenUpcomingHost =>
+      'Los vinos se podrán añadir cuando empiece la cata';
+
+  @override
+  String get tastingEmptyOpenUpcomingGuest =>
+      'Los vinos se añadirán durante la cata';
+
+  @override
+  String get tastingEmptyPlannedHost =>
+      'Toca «Añadir vinos» para montar el lineup';
+
+  @override
+  String get tastingEmptyPlannedGuest => 'El anfitrión aún no ha añadido vinos';
+
+  @override
+  String get tastingRecapResultsHeader => 'RESULTADOS';
+
+  @override
+  String get tastingRecapShareCta => 'Compartir recap';
+
+  @override
+  String get tastingRecapTopWineEyebrow => 'VINO DE LA NOCHE';
+
+  @override
+  String get tastingRecapEmpty =>
+      'Aún no se han enviado puntuaciones para esta cata.';
+
+  @override
+  String get tastingRecapRowNoRatings => 'sin puntuaciones';
+
+  @override
+  String get tastingRecapGroupFallback => 'Cata de grupo';
+
+  @override
+  String get tastingPickerSheetTitle => 'Añadir vinos al lineup';
+
+  @override
+  String get tastingPickerEmpty => 'Aún no tienes vinos.';
+
+  @override
+  String get tastingPickerErrorFallback => 'No se pudieron cargar los vinos.';
+
+  @override
+  String get tastingPickerSubmitDefault => 'Añadir vinos';
+
+  @override
+  String tastingPickerSubmitWithCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Añadir $count vinos',
+      one: 'Añadir 1 vino',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get tastingPickerAddedChip => 'Añadido';
 }
