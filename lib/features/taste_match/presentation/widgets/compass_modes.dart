@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../common/l10n/generated/app_localizations.dart';
 import '../../domain/entities/taste_compass.entity.dart';
 import '../../domain/entities/user_grape_share.entity.dart';
 import '../../domain/entities/user_style_dna.entity.dart';
@@ -29,11 +30,11 @@ enum CompassMode {
   grapes,
   dna;
 
-  String get displayName => switch (this) {
-    CompassMode.style => 'Style',
-    CompassMode.world => 'World',
-    CompassMode.grapes => 'Grapes',
-    CompassMode.dna => 'DNA',
+  String displayName(AppLocalizations l) => switch (this) {
+    CompassMode.style => l.tasteCompassModeStyle,
+    CompassMode.world => l.tasteCompassModeWorld,
+    CompassMode.grapes => l.tasteCompassModeGrapes,
+    CompassMode.dna => l.tasteCompassModeDna,
   };
 
   bool get isProGated => switch (this) {
@@ -46,9 +47,9 @@ enum CompassMetric {
   count,
   rating;
 
-  String get displayName => switch (this) {
-    CompassMetric.count => 'count',
-    CompassMetric.rating => 'rating',
+  String displayName(AppLocalizations l) => switch (this) {
+    CompassMetric.count => l.tasteCompassMetricCount,
+    CompassMetric.rating => l.tasteCompassMetricRating,
   };
 }
 
@@ -121,7 +122,7 @@ const _europeanCountries = {
   'ireland',
 };
 
-String _continentForCountry(String country) {
+String _continentKey(String country) {
   final c = country.toLowerCase().trim();
   if (_europeanCountries.contains(c)) return 'europe';
   if ({'united states', 'usa', 'us', 'canada', 'mexico'}.contains(c)) {
@@ -157,8 +158,30 @@ String _continentForCountry(String country) {
   return 'europe'; // default fallback
 }
 
+String _continentLabel(String key, AppLocalizations l) => switch (key) {
+  'europe' => l.tasteCompassContinentEurope,
+  'north america' => l.tasteCompassContinentNorthAmerica,
+  'south america' => l.tasteCompassContinentSouthAmerica,
+  'africa' => l.tasteCompassContinentAfrica,
+  'asia' => l.tasteCompassContinentAsia,
+  'oceania' => l.tasteCompassContinentOceania,
+  _ => key,
+};
+
+String _wineTypeLabel(String key, AppLocalizations l) => switch (key) {
+  'red' => l.wineTypeRed,
+  'white' => l.wineTypeWhite,
+  'rose' => l.wineTypeRose,
+  'sparkling' => l.wineTypeSparkling,
+  _ => key,
+};
+
 /// Style mode — wine type breakdown (red/white/rose/sparkling).
-List<RadarAxis> buildStyleAxes(TasteCompassEntity c, CompassMetric metric) {
+List<RadarAxis> buildStyleAxes(
+  TasteCompassEntity c,
+  CompassMetric metric,
+  AppLocalizations l,
+) {
   final total = c.totalCount;
   if (total <= 0) return const [];
 
@@ -168,14 +191,15 @@ List<RadarAxis> buildStyleAxes(TasteCompassEntity c, CompassMetric metric) {
   }
 
   final entries = [
-    ('Red', bucket('red'), _redColor),
-    ('White', bucket('white'), _whiteColor),
-    ('Rosé', bucket('rose'), _roseColor),
-    ('Sparkling', bucket('sparkling'), _sparklingColor),
+    ('red', bucket('red'), _redColor),
+    ('white', bucket('white'), _whiteColor),
+    ('rose', bucket('rose'), _roseColor),
+    ('sparkling', bucket('sparkling'), _sparklingColor),
   ];
 
   return entries.map((e) {
-    final (label, b, color) = e;
+    final (typeKey, b, color) = e;
+    final label = _wineTypeLabel(typeKey, l);
     final count = b?.count ?? 0;
     final avg = b?.avgRating ?? 0;
     final value = metric == CompassMetric.count
@@ -184,9 +208,12 @@ List<RadarAxis> buildStyleAxes(TasteCompassEntity c, CompassMetric metric) {
     final detail = metric == CompassMetric.count
         ? (total == 0 ? '0%' : '${(count * 100 / total).round()}%')
         : (count == 0 ? '—' : '${avg.toStringAsFixed(1)}★');
+    final avgStr = avg.toStringAsFixed(1);
     final headline = count == 0
-        ? 'No $label wines yet'
-        : '$count $label wine${count == 1 ? '' : 's'} · ${avg.toStringAsFixed(1)}★ avg';
+        ? l.tasteCompassStyleNoneYet(label)
+        : count == 1
+        ? l.tasteCompassStyleSummaryOne(count, label, avgStr)
+        : l.tasteCompassStyleSummaryMany(count, label, avgStr);
     return RadarAxis(
       label: label,
       value: value.clamp(0.0, 1.0),
@@ -198,7 +225,11 @@ List<RadarAxis> buildStyleAxes(TasteCompassEntity c, CompassMetric metric) {
 }
 
 /// World mode — continent rollup (always 6 axes).
-List<RadarAxis> buildWorldAxes(TasteCompassEntity c, CompassMetric metric) {
+List<RadarAxis> buildWorldAxes(
+  TasteCompassEntity c,
+  CompassMetric metric,
+  AppLocalizations l,
+) {
   if (c.totalCount <= 0) return const [];
 
   // Aggregate top countries into the 6 continents.
@@ -207,7 +238,7 @@ List<RadarAxis> buildWorldAxes(TasteCompassEntity c, CompassMetric metric) {
     byContinent[cont] = (count: 0, weightedRating: 0);
   }
   for (final b in c.topCountries) {
-    final cont = _continentForCountry(b.label);
+    final cont = _continentKey(b.label);
     final cur = byContinent[cont]!;
     byContinent[cont] = (
       count: cur.count + b.count,
@@ -228,13 +259,13 @@ List<RadarAxis> buildWorldAxes(TasteCompassEntity c, CompassMetric metric) {
     final detail = metric == CompassMetric.count
         ? (total == 0 ? '0%' : '${(stat.count * 100 / total).round()}%')
         : (stat.count == 0 ? '—' : '${avg.toStringAsFixed(1)}★');
-    final label = cont
-        .split(' ')
-        .map((w) => w.isEmpty ? '' : '${w[0].toUpperCase()}${w.substring(1)}')
-        .join(' ');
+    final label = _continentLabel(cont, l);
+    final avgStr = avg.toStringAsFixed(1);
     final headline = stat.count == 0
-        ? 'No bottles from $label yet'
-        : '${stat.count} bottle${stat.count == 1 ? '' : 's'} from $label · ${avg.toStringAsFixed(1)}★ avg';
+        ? l.tasteCompassWorldNoneYet(label)
+        : stat.count == 1
+        ? l.tasteCompassWorldSummaryOne(label, avgStr)
+        : l.tasteCompassWorldSummaryMany(stat.count, label, avgStr);
     return RadarAxis(
       label: label,
       value: value.clamp(0.0, 1.0),
@@ -249,6 +280,7 @@ List<RadarAxis> buildWorldAxes(TasteCompassEntity c, CompassMetric metric) {
 List<RadarAxis> buildGrapeAxes(
   List<UserGrapeShare> shares,
   CompassMetric metric,
+  AppLocalizations l,
 ) {
   if (shares.isEmpty) return const [];
   final maxCount = shares.map((g) => g.count).reduce((a, b) => a > b ? a : b);
@@ -283,29 +315,38 @@ List<RadarAxis> buildGrapeAxes(
             ? '${list[i].count}×'
             : '${list[i].avgRating.toStringAsFixed(1)}★',
         headline: list[i].count == 0
-            ? 'Empty slot — rate more grapes to fill'
-            : '${list[i].grapeName} · ${list[i].count} bottle${list[i].count == 1 ? '' : 's'} · ${list[i].avgRating.toStringAsFixed(1)}★ avg',
+            ? l.tasteCompassGrapeEmptySlot
+            : list[i].count == 1
+            ? l.tasteCompassGrapeSummaryOne(
+                list[i].grapeName,
+                list[i].avgRating.toStringAsFixed(1),
+              )
+            : l.tasteCompassGrapeSummaryMany(
+                list[i].grapeName,
+                list[i].count,
+                list[i].avgRating.toStringAsFixed(1),
+              ),
         color: _grapeAccentColors[i % _grapeAccentColors.length],
       ),
   ];
 }
 
 /// DNA mode — six WSET-aligned style axes from server-side aggregation.
-List<RadarAxis> buildDnaAxes(UserStyleDna dna) {
+List<RadarAxis> buildDnaAxes(UserStyleDna dna, AppLocalizations l) {
   String label(String k) {
     switch (k) {
       case 'body':
-        return 'Body';
+        return l.tasteTraitBody;
       case 'tannin':
-        return 'Tannin';
+        return l.tasteTraitTannin;
       case 'acidity':
-        return 'Acidity';
+        return l.tasteTraitAcidity;
       case 'sweetness':
-        return 'Sweet';
+        return l.tasteTraitSweetShort;
       case 'oak':
-        return 'Oak';
+        return l.tasteTraitOak;
       case 'intensity':
-        return 'Intensity';
+        return l.tasteTraitIntensity;
     }
     return k;
   }
@@ -315,40 +356,40 @@ List<RadarAxis> buildDnaAxes(UserStyleDna dna) {
     switch (k) {
       case 'body':
         return v < 0.4
-            ? 'You lean light-bodied · $pct%'
+            ? l.tasteDnaBodyLowPct(pct)
             : v < 0.65
-            ? 'Balanced body · $pct%'
-            : 'You lean full-bodied · $pct%';
+            ? l.tasteDnaBodyMidPct(pct)
+            : l.tasteDnaBodyHighPct(pct);
       case 'tannin':
         return v < 0.4
-            ? 'Soft tannins · $pct%'
+            ? l.tasteDnaTanninLowPct(pct)
             : v < 0.65
-            ? 'Medium tannin · $pct%'
-            : 'Bold, gripping tannins · $pct%';
+            ? l.tasteDnaTanninMidPct(pct)
+            : l.tasteDnaTanninHighPct(pct);
       case 'acidity':
         return v < 0.4
-            ? 'Soft acid · $pct%'
+            ? l.tasteDnaAcidityLowPct(pct)
             : v < 0.65
-            ? 'Balanced acid · $pct%'
-            : 'High-acid drinker · $pct%';
+            ? l.tasteDnaAcidityMidPct(pct)
+            : l.tasteDnaAcidityHighPct(pct);
       case 'sweetness':
         return v < 0.15
-            ? 'Bone dry · $pct%'
+            ? l.tasteDnaSweetnessLowPct(pct)
             : v < 0.4
-            ? 'Off-dry tendency · $pct%'
-            : 'Sweet leaning · $pct%';
+            ? l.tasteDnaSweetnessMidPct(pct)
+            : l.tasteDnaSweetnessHighPct(pct);
       case 'oak':
         return v < 0.3
-            ? 'Unoaked / fresh · $pct%'
+            ? l.tasteDnaOakLowPct(pct)
             : v < 0.55
-            ? 'Some oak · $pct%'
-            : 'Oak lover · $pct%';
+            ? l.tasteDnaOakMidPct(pct)
+            : l.tasteDnaOakHighPct(pct);
       case 'intensity':
         return v < 0.4
-            ? 'Subtle aromatics · $pct%'
+            ? l.tasteDnaIntensityLowPct(pct)
             : v < 0.7
-            ? 'Expressive · $pct%'
-            : 'Bold aromatics · $pct%';
+            ? l.tasteDnaIntensityMidPct(pct)
+            : l.tasteDnaIntensityHighPct(pct);
     }
     return '$pct%';
   }
@@ -361,7 +402,7 @@ List<RadarAxis> buildDnaAxes(UserStyleDna dna) {
       value: v,
       detail: dna.attributedCount < 3 ? '—' : '${(v * 100).round()}%',
       headline: dna.attributedCount < 3
-          ? 'Not enough rated wines yet — keep going'
+          ? l.tasteDnaNotEnoughYet
           : descriptor(key, v),
       color: entry.value,
     );

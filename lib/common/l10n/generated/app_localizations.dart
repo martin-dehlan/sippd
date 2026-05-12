@@ -5143,6 +5143,1032 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Dec'**
   String get paywallMonthShortDec;
+
+  /// DNA axis label
+  ///
+  /// In en, this message translates to:
+  /// **'Body'**
+  String get tasteTraitBody;
+
+  /// No description provided for @tasteTraitTannin.
+  ///
+  /// In en, this message translates to:
+  /// **'Tannin'**
+  String get tasteTraitTannin;
+
+  /// No description provided for @tasteTraitAcidity.
+  ///
+  /// In en, this message translates to:
+  /// **'Acidity'**
+  String get tasteTraitAcidity;
+
+  /// No description provided for @tasteTraitSweetness.
+  ///
+  /// In en, this message translates to:
+  /// **'Sweetness'**
+  String get tasteTraitSweetness;
+
+  /// No description provided for @tasteTraitOak.
+  ///
+  /// In en, this message translates to:
+  /// **'Oak'**
+  String get tasteTraitOak;
+
+  /// No description provided for @tasteTraitIntensity.
+  ///
+  /// In en, this message translates to:
+  /// **'Intensity'**
+  String get tasteTraitIntensity;
+
+  /// Shorter label for Sweetness used in radar charts
+  ///
+  /// In en, this message translates to:
+  /// **'Sweet'**
+  String get tasteTraitSweetShort;
+
+  /// No description provided for @tasteTraitBodyLow.
+  ///
+  /// In en, this message translates to:
+  /// **'Light, easy-drinking'**
+  String get tasteTraitBodyLow;
+
+  /// No description provided for @tasteTraitBodyMid.
+  ///
+  /// In en, this message translates to:
+  /// **'Balanced'**
+  String get tasteTraitBodyMid;
+
+  /// No description provided for @tasteTraitBodyHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'Bold, full-bodied'**
+  String get tasteTraitBodyHigh;
+
+  /// No description provided for @tasteTraitTanninLow.
+  ///
+  /// In en, this message translates to:
+  /// **'Soft, low-grip'**
+  String get tasteTraitTanninLow;
+
+  /// No description provided for @tasteTraitTanninMid.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium grip'**
+  String get tasteTraitTanninMid;
+
+  /// No description provided for @tasteTraitTanninHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'Grippy, structured'**
+  String get tasteTraitTanninHigh;
+
+  /// No description provided for @tasteTraitAcidityLow.
+  ///
+  /// In en, this message translates to:
+  /// **'Soft, round'**
+  String get tasteTraitAcidityLow;
+
+  /// No description provided for @tasteTraitAcidityMid.
+  ///
+  /// In en, this message translates to:
+  /// **'Balanced'**
+  String get tasteTraitAcidityMid;
+
+  /// No description provided for @tasteTraitAcidityHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'Crisp, bright'**
+  String get tasteTraitAcidityHigh;
+
+  /// No description provided for @tasteTraitSweetnessLow.
+  ///
+  /// In en, this message translates to:
+  /// **'Bone dry'**
+  String get tasteTraitSweetnessLow;
+
+  /// No description provided for @tasteTraitSweetnessMid.
+  ///
+  /// In en, this message translates to:
+  /// **'Off-dry'**
+  String get tasteTraitSweetnessMid;
+
+  /// No description provided for @tasteTraitSweetnessHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'Sweet-leaning'**
+  String get tasteTraitSweetnessHigh;
+
+  /// No description provided for @tasteTraitOakLow.
+  ///
+  /// In en, this message translates to:
+  /// **'Unoaked, fresh'**
+  String get tasteTraitOakLow;
+
+  /// No description provided for @tasteTraitOakMid.
+  ///
+  /// In en, this message translates to:
+  /// **'Touch of oak'**
+  String get tasteTraitOakMid;
+
+  /// No description provided for @tasteTraitOakHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'Oak-forward'**
+  String get tasteTraitOakHigh;
+
+  /// No description provided for @tasteTraitIntensityLow.
+  ///
+  /// In en, this message translates to:
+  /// **'Subtle aromatics'**
+  String get tasteTraitIntensityLow;
+
+  /// No description provided for @tasteTraitIntensityMid.
+  ///
+  /// In en, this message translates to:
+  /// **'Expressive'**
+  String get tasteTraitIntensityMid;
+
+  /// No description provided for @tasteTraitIntensityHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'Bold, aromatic'**
+  String get tasteTraitIntensityHigh;
+
+  /// No description provided for @tasteDnaBodyLowPct.
+  ///
+  /// In en, this message translates to:
+  /// **'You lean light-bodied · {pct}%'**
+  String tasteDnaBodyLowPct(int pct);
+
+  /// No description provided for @tasteDnaBodyMidPct.
+  ///
+  /// In en, this message translates to:
+  /// **'Balanced body · {pct}%'**
+  String tasteDnaBodyMidPct(int pct);
+
+  /// No description provided for @tasteDnaBodyHighPct.
+  ///
+  /// In en, this message translates to:
+  /// **'You lean full-bodied · {pct}%'**
+  String tasteDnaBodyHighPct(int pct);
+
+  /// No description provided for @tasteDnaTanninLowPct.
+  ///
+  /// In en, this message translates to:
+  /// **'Soft tannins · {pct}%'**
+  String tasteDnaTanninLowPct(int pct);
+
+  /// No description provided for @tasteDnaTanninMidPct.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium tannin · {pct}%'**
+  String tasteDnaTanninMidPct(int pct);
+
+  /// No description provided for @tasteDnaTanninHighPct.
+  ///
+  /// In en, this message translates to:
+  /// **'Bold, gripping tannins · {pct}%'**
+  String tasteDnaTanninHighPct(int pct);
+
+  /// No description provided for @tasteDnaAcidityLowPct.
+  ///
+  /// In en, this message translates to:
+  /// **'Soft acid · {pct}%'**
+  String tasteDnaAcidityLowPct(int pct);
+
+  /// No description provided for @tasteDnaAcidityMidPct.
+  ///
+  /// In en, this message translates to:
+  /// **'Balanced acid · {pct}%'**
+  String tasteDnaAcidityMidPct(int pct);
+
+  /// No description provided for @tasteDnaAcidityHighPct.
+  ///
+  /// In en, this message translates to:
+  /// **'High-acid drinker · {pct}%'**
+  String tasteDnaAcidityHighPct(int pct);
+
+  /// No description provided for @tasteDnaSweetnessLowPct.
+  ///
+  /// In en, this message translates to:
+  /// **'Bone dry · {pct}%'**
+  String tasteDnaSweetnessLowPct(int pct);
+
+  /// No description provided for @tasteDnaSweetnessMidPct.
+  ///
+  /// In en, this message translates to:
+  /// **'Off-dry tendency · {pct}%'**
+  String tasteDnaSweetnessMidPct(int pct);
+
+  /// No description provided for @tasteDnaSweetnessHighPct.
+  ///
+  /// In en, this message translates to:
+  /// **'Sweet leaning · {pct}%'**
+  String tasteDnaSweetnessHighPct(int pct);
+
+  /// No description provided for @tasteDnaOakLowPct.
+  ///
+  /// In en, this message translates to:
+  /// **'Unoaked / fresh · {pct}%'**
+  String tasteDnaOakLowPct(int pct);
+
+  /// No description provided for @tasteDnaOakMidPct.
+  ///
+  /// In en, this message translates to:
+  /// **'Some oak · {pct}%'**
+  String tasteDnaOakMidPct(int pct);
+
+  /// No description provided for @tasteDnaOakHighPct.
+  ///
+  /// In en, this message translates to:
+  /// **'Oak lover · {pct}%'**
+  String tasteDnaOakHighPct(int pct);
+
+  /// No description provided for @tasteDnaIntensityLowPct.
+  ///
+  /// In en, this message translates to:
+  /// **'Subtle aromatics · {pct}%'**
+  String tasteDnaIntensityLowPct(int pct);
+
+  /// No description provided for @tasteDnaIntensityMidPct.
+  ///
+  /// In en, this message translates to:
+  /// **'Expressive · {pct}%'**
+  String tasteDnaIntensityMidPct(int pct);
+
+  /// No description provided for @tasteDnaIntensityHighPct.
+  ///
+  /// In en, this message translates to:
+  /// **'Bold aromatics · {pct}%'**
+  String tasteDnaIntensityHighPct(int pct);
+
+  /// No description provided for @tasteDnaNotEnoughYet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not enough rated wines yet — keep going'**
+  String get tasteDnaNotEnoughYet;
+
+  /// No description provided for @tasteArchetypeBoldRedHunter.
+  ///
+  /// In en, this message translates to:
+  /// **'Bold Red Hunter'**
+  String get tasteArchetypeBoldRedHunter;
+
+  /// No description provided for @tasteArchetypeBoldRedHunterTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Full-bodied, tannin-rich reds are your home turf.'**
+  String get tasteArchetypeBoldRedHunterTagline;
+
+  /// No description provided for @tasteArchetypeElegantBurgundian.
+  ///
+  /// In en, this message translates to:
+  /// **'Elegant Burgundian'**
+  String get tasteArchetypeElegantBurgundian;
+
+  /// No description provided for @tasteArchetypeElegantBurgundianTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Lighter reds with bright acidity drive your palate.'**
+  String get tasteArchetypeElegantBurgundianTagline;
+
+  /// No description provided for @tasteArchetypeAromaticWhiteLover.
+  ///
+  /// In en, this message translates to:
+  /// **'Aromatic White Lover'**
+  String get tasteArchetypeAromaticWhiteLover;
+
+  /// No description provided for @tasteArchetypeAromaticWhiteLoverTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Crisp, expressive whites with cut-through acidity.'**
+  String get tasteArchetypeAromaticWhiteLoverTagline;
+
+  /// No description provided for @tasteArchetypeSparklingSociable.
+  ///
+  /// In en, this message translates to:
+  /// **'Sparkling Sociable'**
+  String get tasteArchetypeSparklingSociable;
+
+  /// No description provided for @tasteArchetypeSparklingSociableTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Bubbles and pale wines feature heavily in your collection.'**
+  String get tasteArchetypeSparklingSociableTagline;
+
+  /// No description provided for @tasteArchetypeClassicStructure.
+  ///
+  /// In en, this message translates to:
+  /// **'Classic Structure'**
+  String get tasteArchetypeClassicStructure;
+
+  /// No description provided for @tasteArchetypeClassicStructureTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Restrained, food-aligned wines with bright acidity.'**
+  String get tasteArchetypeClassicStructureTagline;
+
+  /// No description provided for @tasteArchetypeSunRipenedBold.
+  ///
+  /// In en, this message translates to:
+  /// **'Sun-Ripened Bold'**
+  String get tasteArchetypeSunRipenedBold;
+
+  /// No description provided for @tasteArchetypeSunRipenedBoldTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Big fruit, oak-friendly wines from sun-soaked vineyards.'**
+  String get tasteArchetypeSunRipenedBoldTagline;
+
+  /// No description provided for @tasteArchetypeDessertOffDry.
+  ///
+  /// In en, this message translates to:
+  /// **'Dessert / Off-Dry'**
+  String get tasteArchetypeDessertOffDry;
+
+  /// No description provided for @tasteArchetypeDessertOffDryTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'You lean toward bottles with a touch of sweetness.'**
+  String get tasteArchetypeDessertOffDryTagline;
+
+  /// No description provided for @tasteArchetypeNaturalLowIntervention.
+  ///
+  /// In en, this message translates to:
+  /// **'Natural / Low-Intervention'**
+  String get tasteArchetypeNaturalLowIntervention;
+
+  /// No description provided for @tasteArchetypeNaturalLowInterventionTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Unoaked, lighter wines — the freshness camp.'**
+  String get tasteArchetypeNaturalLowInterventionTagline;
+
+  /// No description provided for @tasteArchetypeCrispMineralFan.
+  ///
+  /// In en, this message translates to:
+  /// **'Crisp Mineral Fan'**
+  String get tasteArchetypeCrispMineralFan;
+
+  /// No description provided for @tasteArchetypeCrispMineralFanTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Tight, mineral, high-acid styles are your signature.'**
+  String get tasteArchetypeCrispMineralFanTagline;
+
+  /// No description provided for @tasteArchetypeEclecticExplorer.
+  ///
+  /// In en, this message translates to:
+  /// **'Eclectic Explorer'**
+  String get tasteArchetypeEclecticExplorer;
+
+  /// No description provided for @tasteArchetypeEclecticExplorerTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Wide-ranging palate — you taste across the wine map.'**
+  String get tasteArchetypeEclecticExplorerTagline;
+
+  /// No description provided for @tasteArchetypeCuriousNewcomer.
+  ///
+  /// In en, this message translates to:
+  /// **'Curious Newcomer'**
+  String get tasteArchetypeCuriousNewcomer;
+
+  /// No description provided for @tasteArchetypeCuriousNewcomerTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate a few more wines and your personality reveals itself.'**
+  String get tasteArchetypeCuriousNewcomerTagline;
+
+  /// No description provided for @tasteCompassModeStyle.
+  ///
+  /// In en, this message translates to:
+  /// **'Style'**
+  String get tasteCompassModeStyle;
+
+  /// No description provided for @tasteCompassModeWorld.
+  ///
+  /// In en, this message translates to:
+  /// **'World'**
+  String get tasteCompassModeWorld;
+
+  /// No description provided for @tasteCompassModeGrapes.
+  ///
+  /// In en, this message translates to:
+  /// **'Grapes'**
+  String get tasteCompassModeGrapes;
+
+  /// No description provided for @tasteCompassModeDna.
+  ///
+  /// In en, this message translates to:
+  /// **'DNA'**
+  String get tasteCompassModeDna;
+
+  /// No description provided for @tasteCompassMetricCount.
+  ///
+  /// In en, this message translates to:
+  /// **'count'**
+  String get tasteCompassMetricCount;
+
+  /// No description provided for @tasteCompassMetricRating.
+  ///
+  /// In en, this message translates to:
+  /// **'rating'**
+  String get tasteCompassMetricRating;
+
+  /// No description provided for @tasteCompassContinentEurope.
+  ///
+  /// In en, this message translates to:
+  /// **'Europe'**
+  String get tasteCompassContinentEurope;
+
+  /// No description provided for @tasteCompassContinentNorthAmerica.
+  ///
+  /// In en, this message translates to:
+  /// **'North America'**
+  String get tasteCompassContinentNorthAmerica;
+
+  /// No description provided for @tasteCompassContinentSouthAmerica.
+  ///
+  /// In en, this message translates to:
+  /// **'South America'**
+  String get tasteCompassContinentSouthAmerica;
+
+  /// No description provided for @tasteCompassContinentAfrica.
+  ///
+  /// In en, this message translates to:
+  /// **'Africa'**
+  String get tasteCompassContinentAfrica;
+
+  /// No description provided for @tasteCompassContinentAsia.
+  ///
+  /// In en, this message translates to:
+  /// **'Asia'**
+  String get tasteCompassContinentAsia;
+
+  /// No description provided for @tasteCompassContinentOceania.
+  ///
+  /// In en, this message translates to:
+  /// **'Oceania'**
+  String get tasteCompassContinentOceania;
+
+  /// No description provided for @tasteCompassStyleNoneYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No {label} wines yet'**
+  String tasteCompassStyleNoneYet(String label);
+
+  /// No description provided for @tasteCompassStyleSummaryOne.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} {label} wine · {avg}★ avg'**
+  String tasteCompassStyleSummaryOne(int count, String label, String avg);
+
+  /// No description provided for @tasteCompassStyleSummaryMany.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} {label} wines · {avg}★ avg'**
+  String tasteCompassStyleSummaryMany(int count, String label, String avg);
+
+  /// No description provided for @tasteCompassWorldNoneYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No bottles from {label} yet'**
+  String tasteCompassWorldNoneYet(String label);
+
+  /// No description provided for @tasteCompassWorldSummaryOne.
+  ///
+  /// In en, this message translates to:
+  /// **'1 bottle from {label} · {avg}★ avg'**
+  String tasteCompassWorldSummaryOne(String label, String avg);
+
+  /// No description provided for @tasteCompassWorldSummaryMany.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} bottles from {label} · {avg}★ avg'**
+  String tasteCompassWorldSummaryMany(int count, String label, String avg);
+
+  /// No description provided for @tasteCompassGrapeEmptySlot.
+  ///
+  /// In en, this message translates to:
+  /// **'Empty slot — rate more grapes to fill'**
+  String get tasteCompassGrapeEmptySlot;
+
+  /// No description provided for @tasteCompassGrapeSummaryOne.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} · 1 bottle · {avg}★ avg'**
+  String tasteCompassGrapeSummaryOne(String name, String avg);
+
+  /// No description provided for @tasteCompassGrapeSummaryMany.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} · {count} bottles · {avg}★ avg'**
+  String tasteCompassGrapeSummaryMany(String name, int count, String avg);
+
+  /// No description provided for @tasteCompassTitleDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Taste compass'**
+  String get tasteCompassTitleDefault;
+
+  /// No description provided for @tasteCompassEmptyPromptOne.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate 1 more wine to unlock the compass.'**
+  String get tasteCompassEmptyPromptOne;
+
+  /// No description provided for @tasteCompassEmptyPromptMany.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate {count} more wines to unlock the compass.'**
+  String tasteCompassEmptyPromptMany(int count);
+
+  /// No description provided for @tasteCompassNotEnoughData.
+  ///
+  /// In en, this message translates to:
+  /// **'Not enough data for this mode yet.'**
+  String get tasteCompassNotEnoughData;
+
+  /// No description provided for @tasteCompassDnaNeedsGrapes.
+  ///
+  /// In en, this message translates to:
+  /// **'DNA needs a few wines whose grape we recognise. Pick a canonical grape on your wines to unlock this view.'**
+  String get tasteCompassDnaNeedsGrapes;
+
+  /// No description provided for @tasteCompassEyebrowPersonality.
+  ///
+  /// In en, this message translates to:
+  /// **'YOUR WINE PERSONALITY'**
+  String get tasteCompassEyebrowPersonality;
+
+  /// No description provided for @tasteCompassTentativeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tentative — rate more wines for a sharper read'**
+  String get tasteCompassTentativeHint;
+
+  /// No description provided for @tasteCompassTopRegions.
+  ///
+  /// In en, this message translates to:
+  /// **'Top regions'**
+  String get tasteCompassTopRegions;
+
+  /// No description provided for @tasteCompassTopCountries.
+  ///
+  /// In en, this message translates to:
+  /// **'Top countries'**
+  String get tasteCompassTopCountries;
+
+  /// No description provided for @tasteCompassFooterWinesOne.
+  ///
+  /// In en, this message translates to:
+  /// **'1 wine'**
+  String get tasteCompassFooterWinesOne;
+
+  /// No description provided for @tasteCompassFooterWinesMany.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} wines'**
+  String tasteCompassFooterWinesMany(int count);
+
+  /// No description provided for @tasteCompassFooterAvg.
+  ///
+  /// In en, this message translates to:
+  /// **'{avg} ★ avg'**
+  String tasteCompassFooterAvg(String avg);
+
+  /// No description provided for @tasteHeroEyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'PERSONALITY'**
+  String get tasteHeroEyebrow;
+
+  /// No description provided for @tasteHeroPromptCuriousOne.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate 1 more wine to reveal your personality.'**
+  String get tasteHeroPromptCuriousOne;
+
+  /// No description provided for @tasteHeroPromptCuriousMany.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate {count} more wines to reveal your personality.'**
+  String tasteHeroPromptCuriousMany(int count);
+
+  /// No description provided for @tasteHeroAlmostThere.
+  ///
+  /// In en, this message translates to:
+  /// **'Almost There'**
+  String get tasteHeroAlmostThere;
+
+  /// No description provided for @tasteHeroPromptThinDnaOne.
+  ///
+  /// In en, this message translates to:
+  /// **'Tag a canonical grape on 1 more wine to unlock your archetype.'**
+  String get tasteHeroPromptThinDnaOne;
+
+  /// No description provided for @tasteHeroPromptThinDnaMany.
+  ///
+  /// In en, this message translates to:
+  /// **'Tag a canonical grape on {count} more wines to unlock your archetype.'**
+  String tasteHeroPromptThinDnaMany(int count);
+
+  /// No description provided for @tasteHeroMatchExact.
+  ///
+  /// In en, this message translates to:
+  /// **'{score}% match'**
+  String tasteHeroMatchExact(int score);
+
+  /// No description provided for @tasteHeroMatchTentative.
+  ///
+  /// In en, this message translates to:
+  /// **'~{score}% match'**
+  String tasteHeroMatchTentative(int score);
+
+  /// No description provided for @tasteHeroWinesOne.
+  ///
+  /// In en, this message translates to:
+  /// **'1 wine'**
+  String get tasteHeroWinesOne;
+
+  /// No description provided for @tasteHeroWinesMany.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} wines'**
+  String tasteHeroWinesMany(int count);
+
+  /// No description provided for @tasteHeroAvg.
+  ///
+  /// In en, this message translates to:
+  /// **'{avg}★ avg'**
+  String tasteHeroAvg(String avg);
+
+  /// Button label to share the wine personality card
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get tasteHeroShare;
+
+  /// No description provided for @tasteTraitsHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'TRAITS'**
+  String get tasteTraitsHeading;
+
+  /// No description provided for @tasteTraitsProDivider.
+  ///
+  /// In en, this message translates to:
+  /// **'PRO'**
+  String get tasteTraitsProDivider;
+
+  /// No description provided for @tasteTraitsUnlockAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock all traits with Pro'**
+  String get tasteTraitsUnlockAll;
+
+  /// No description provided for @tasteMatchLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'taste match'**
+  String get tasteMatchLabel;
+
+  /// No description provided for @tasteMatchConfidenceStrong.
+  ///
+  /// In en, this message translates to:
+  /// **'Strong'**
+  String get tasteMatchConfidenceStrong;
+
+  /// No description provided for @tasteMatchConfidenceSolid.
+  ///
+  /// In en, this message translates to:
+  /// **'Solid'**
+  String get tasteMatchConfidenceSolid;
+
+  /// No description provided for @tasteMatchConfidenceEarly.
+  ///
+  /// In en, this message translates to:
+  /// **'Early'**
+  String get tasteMatchConfidenceEarly;
+
+  /// No description provided for @tasteMatchSupportingOne.
+  ///
+  /// In en, this message translates to:
+  /// **'Based on 1 shared region/type bucket{dnaPart}.'**
+  String tasteMatchSupportingOne(String dnaPart);
+
+  /// No description provided for @tasteMatchSupportingMany.
+  ///
+  /// In en, this message translates to:
+  /// **'Based on {overlap} shared region/type buckets{dnaPart}.'**
+  String tasteMatchSupportingMany(int overlap, String dnaPart);
+
+  /// Appended to the supporting sentence when DNA overlap is available
+  ///
+  /// In en, this message translates to:
+  /// **' + WSET style overlap'**
+  String get tasteMatchSupportingDnaPart;
+
+  /// No description provided for @tasteMatchSignalStrong.
+  ///
+  /// In en, this message translates to:
+  /// **'Strong signal.'**
+  String get tasteMatchSignalStrong;
+
+  /// No description provided for @tasteMatchSignalSolid.
+  ///
+  /// In en, this message translates to:
+  /// **'Solid signal.'**
+  String get tasteMatchSignalSolid;
+
+  /// No description provided for @tasteMatchSignalEarly.
+  ///
+  /// In en, this message translates to:
+  /// **'Early signal — keep rating to sharpen this.'**
+  String get tasteMatchSignalEarly;
+
+  /// No description provided for @tasteMatchBreakdownBucket.
+  ///
+  /// In en, this message translates to:
+  /// **'Region & type fit'**
+  String get tasteMatchBreakdownBucket;
+
+  /// No description provided for @tasteMatchBreakdownDna.
+  ///
+  /// In en, this message translates to:
+  /// **'Style DNA fit'**
+  String get tasteMatchBreakdownDna;
+
+  /// No description provided for @tasteMatchEmptyNotEnough.
+  ///
+  /// In en, this message translates to:
+  /// **'Not enough wines to compare yet — rate a few more bottles to unlock taste match.'**
+  String get tasteMatchEmptyNotEnough;
+
+  /// No description provided for @tasteMatchEmptyNoOverlap.
+  ///
+  /// In en, this message translates to:
+  /// **'You haven\'t rated wines from the same regions or types yet. Match opens up as your tastes overlap.'**
+  String get tasteMatchEmptyNoOverlap;
+
+  /// No description provided for @tasteFriendUpsellTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'See how {name} tastes'**
+  String tasteFriendUpsellTitle(String name);
+
+  /// No description provided for @tasteFriendUpsellBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Compare your palates, find wines you both love, and spot where your taste diverges.'**
+  String get tasteFriendUpsellBody;
+
+  /// No description provided for @tasteFriendUpsellPillMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Taste match'**
+  String get tasteFriendUpsellPillMatch;
+
+  /// No description provided for @tasteFriendUpsellPillShared.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared bottles'**
+  String get tasteFriendUpsellPillShared;
+
+  /// No description provided for @tasteFriendUpsellCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock Sippd Pro'**
+  String get tasteFriendUpsellCta;
+
+  /// No description provided for @tasteFriendSharedHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'WINES YOU\'VE BOTH RATED'**
+  String get tasteFriendSharedHeading;
+
+  /// No description provided for @tasteFriendSharedMore.
+  ///
+  /// In en, this message translates to:
+  /// **'+ {count} more'**
+  String tasteFriendSharedMore(int count);
+
+  /// No description provided for @tasteFriendRatingYou.
+  ///
+  /// In en, this message translates to:
+  /// **'you'**
+  String get tasteFriendRatingYou;
+
+  /// No description provided for @tasteFriendRatingThem.
+  ///
+  /// In en, this message translates to:
+  /// **'them'**
+  String get tasteFriendRatingThem;
+
+  /// No description provided for @shareRatedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'RATED · {date}'**
+  String shareRatedOn(String date);
+
+  /// Denominator for the wine rating on share cards, e.g. '8.5 / 10'
+  ///
+  /// In en, this message translates to:
+  /// **'/ 10'**
+  String get shareRatingDenominator;
+
+  /// No description provided for @shareFooterRateYours.
+  ///
+  /// In en, this message translates to:
+  /// **'rate yours at {url}'**
+  String shareFooterRateYours(String url);
+
+  /// No description provided for @shareFooterFindYours.
+  ///
+  /// In en, this message translates to:
+  /// **'find your taste at {url}'**
+  String shareFooterFindYours(String url);
+
+  /// No description provided for @shareFooterHostYours.
+  ///
+  /// In en, this message translates to:
+  /// **'host yours at {url}'**
+  String shareFooterHostYours(String url);
+
+  /// No description provided for @shareFooterJoinAt.
+  ///
+  /// In en, this message translates to:
+  /// **'join at {url}'**
+  String shareFooterJoinAt(String url);
+
+  /// No description provided for @shareCompassEyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'WINE PERSONALITY'**
+  String get shareCompassEyebrow;
+
+  /// No description provided for @shareCompassWhatDefinesMe.
+  ///
+  /// In en, this message translates to:
+  /// **'WHAT DEFINES ME'**
+  String get shareCompassWhatDefinesMe;
+
+  /// No description provided for @shareCompassSampleSizeOne.
+  ///
+  /// In en, this message translates to:
+  /// **'based on 1 wine'**
+  String get shareCompassSampleSizeOne;
+
+  /// No description provided for @shareCompassSampleSizeMany.
+  ///
+  /// In en, this message translates to:
+  /// **'based on {count} wines'**
+  String shareCompassSampleSizeMany(int count);
+
+  /// Combined descriptor + lowercase trait label on the compass share card
+  ///
+  /// In en, this message translates to:
+  /// **'{descriptor} {trait}'**
+  String shareCompassPhrase(String descriptor, String trait);
+
+  /// No description provided for @shareCompassShareText.
+  ///
+  /// In en, this message translates to:
+  /// **'My wine personality: {archetype} · find yours at {url}'**
+  String shareCompassShareText(String archetype, String url);
+
+  /// No description provided for @shareTastingEyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'GROUP TASTING'**
+  String get shareTastingEyebrow;
+
+  /// No description provided for @shareTastingTopWine.
+  ///
+  /// In en, this message translates to:
+  /// **'TOP WINE OF THE NIGHT'**
+  String get shareTastingTopWine;
+
+  /// No description provided for @shareTastingLineup.
+  ///
+  /// In en, this message translates to:
+  /// **'LINEUP'**
+  String get shareTastingLineup;
+
+  /// No description provided for @shareTastingMore.
+  ///
+  /// In en, this message translates to:
+  /// **'+ {count} more'**
+  String shareTastingMore(int count);
+
+  /// No description provided for @shareTastingAttendeesOne.
+  ///
+  /// In en, this message translates to:
+  /// **'1 taster'**
+  String get shareTastingAttendeesOne;
+
+  /// No description provided for @shareTastingAttendeesMany.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} tasters'**
+  String shareTastingAttendeesMany(int count);
+
+  /// No description provided for @shareTastingShareTextTop.
+  ///
+  /// In en, this message translates to:
+  /// **'{wine} took the night at {avg}/10 · hosted on Sippd · {url}'**
+  String shareTastingShareTextTop(String wine, String avg, String url);
+
+  /// No description provided for @shareTastingShareTextTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{title} · hosted on Sippd · {url}'**
+  String shareTastingShareTextTitle(String title, String url);
+
+  /// No description provided for @shareRatingShareText.
+  ///
+  /// In en, this message translates to:
+  /// **'Just rated {wine} {rating}/10 on Sippd · {url}'**
+  String shareRatingShareText(String wine, String rating, String url);
+
+  /// No description provided for @shareInviteEyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'AN INVITATION'**
+  String get shareInviteEyebrow;
+
+  /// No description provided for @shareInviteHero.
+  ///
+  /// In en, this message translates to:
+  /// **'Let\'s taste\ntogether.'**
+  String get shareInviteHero;
+
+  /// No description provided for @shareInviteSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate it. Remember it. Share it.'**
+  String get shareInviteSub;
+
+  /// No description provided for @shareInviteWantsToTaste.
+  ///
+  /// In en, this message translates to:
+  /// **'wants to taste with you'**
+  String get shareInviteWantsToTaste;
+
+  /// No description provided for @shareInviteFallbackText.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} wants to taste with you on Sippd · {url}'**
+  String shareInviteFallbackText(String name, String url);
+
+  /// No description provided for @shareInviteImageText.
+  ///
+  /// In en, this message translates to:
+  /// **'Join me on Sippd 🍷  {url}'**
+  String shareInviteImageText(String url);
+
+  /// No description provided for @shareInviteSubject.
+  ///
+  /// In en, this message translates to:
+  /// **'Join me on Sippd'**
+  String get shareInviteSubject;
+
+  /// No description provided for @shareRatingPromptSavedBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'WINE SAVED'**
+  String get shareRatingPromptSavedBadge;
+
+  /// No description provided for @shareRatingPromptTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your card is ready'**
+  String get shareRatingPromptTitle;
+
+  /// No description provided for @shareRatingPromptBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Send it to friends or post it to your story.'**
+  String get shareRatingPromptBody;
+
+  /// No description provided for @shareRatingPromptCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Share card'**
+  String get shareRatingPromptCta;
+
+  /// No description provided for @shareRatingPromptPreparing.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing…'**
+  String get shareRatingPromptPreparing;
+
+  /// No description provided for @shareRatingPromptDismiss.
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get shareRatingPromptDismiss;
 }
 
 class _AppLocalizationsDelegate

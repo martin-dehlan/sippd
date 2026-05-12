@@ -2775,4 +2775,652 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get paywallMonthShortDec => 'déc.';
+
+  @override
+  String get tasteTraitBody => 'Corps';
+
+  @override
+  String get tasteTraitTannin => 'Tanin';
+
+  @override
+  String get tasteTraitAcidity => 'Acidité';
+
+  @override
+  String get tasteTraitSweetness => 'Sucrosité';
+
+  @override
+  String get tasteTraitOak => 'Boisé';
+
+  @override
+  String get tasteTraitIntensity => 'Intensité';
+
+  @override
+  String get tasteTraitSweetShort => 'Sucré';
+
+  @override
+  String get tasteTraitBodyLow => 'Léger, facile à boire';
+
+  @override
+  String get tasteTraitBodyMid => 'Équilibré';
+
+  @override
+  String get tasteTraitBodyHigh => 'Puissant, charpenté';
+
+  @override
+  String get tasteTraitTanninLow => 'Souple, peu d\'accroche';
+
+  @override
+  String get tasteTraitTanninMid => 'Accroche moyenne';
+
+  @override
+  String get tasteTraitTanninHigh => 'Tannique, structuré';
+
+  @override
+  String get tasteTraitAcidityLow => 'Souple, rond';
+
+  @override
+  String get tasteTraitAcidityMid => 'Équilibré';
+
+  @override
+  String get tasteTraitAcidityHigh => 'Vif, éclatant';
+
+  @override
+  String get tasteTraitSweetnessLow => 'Très sec';
+
+  @override
+  String get tasteTraitSweetnessMid => 'Demi-sec';
+
+  @override
+  String get tasteTraitSweetnessHigh => 'Tendance sucré';
+
+  @override
+  String get tasteTraitOakLow => 'Sans bois, frais';
+
+  @override
+  String get tasteTraitOakMid => 'Touche de bois';
+
+  @override
+  String get tasteTraitOakHigh => 'Très boisé';
+
+  @override
+  String get tasteTraitIntensityLow => 'Aromatique discrète';
+
+  @override
+  String get tasteTraitIntensityMid => 'Expressif';
+
+  @override
+  String get tasteTraitIntensityHigh => 'Intense, aromatique';
+
+  @override
+  String tasteDnaBodyLowPct(int pct) {
+    return 'Tu préfères les vins légers · $pct%';
+  }
+
+  @override
+  String tasteDnaBodyMidPct(int pct) {
+    return 'Corps équilibré · $pct%';
+  }
+
+  @override
+  String tasteDnaBodyHighPct(int pct) {
+    return 'Tu préfères les vins charpentés · $pct%';
+  }
+
+  @override
+  String tasteDnaTanninLowPct(int pct) {
+    return 'Tanins souples · $pct%';
+  }
+
+  @override
+  String tasteDnaTanninMidPct(int pct) {
+    return 'Tanin moyen · $pct%';
+  }
+
+  @override
+  String tasteDnaTanninHighPct(int pct) {
+    return 'Tanins puissants et accrocheurs · $pct%';
+  }
+
+  @override
+  String tasteDnaAcidityLowPct(int pct) {
+    return 'Acidité souple · $pct%';
+  }
+
+  @override
+  String tasteDnaAcidityMidPct(int pct) {
+    return 'Acidité équilibrée · $pct%';
+  }
+
+  @override
+  String tasteDnaAcidityHighPct(int pct) {
+    return 'Amateur d\'acidité · $pct%';
+  }
+
+  @override
+  String tasteDnaSweetnessLowPct(int pct) {
+    return 'Très sec · $pct%';
+  }
+
+  @override
+  String tasteDnaSweetnessMidPct(int pct) {
+    return 'Tendance demi-sec · $pct%';
+  }
+
+  @override
+  String tasteDnaSweetnessHighPct(int pct) {
+    return 'Tendance sucré · $pct%';
+  }
+
+  @override
+  String tasteDnaOakLowPct(int pct) {
+    return 'Sans bois / frais · $pct%';
+  }
+
+  @override
+  String tasteDnaOakMidPct(int pct) {
+    return 'Un peu de bois · $pct%';
+  }
+
+  @override
+  String tasteDnaOakHighPct(int pct) {
+    return 'Amateur de boisé · $pct%';
+  }
+
+  @override
+  String tasteDnaIntensityLowPct(int pct) {
+    return 'Aromatique discrète · $pct%';
+  }
+
+  @override
+  String tasteDnaIntensityMidPct(int pct) {
+    return 'Expressif · $pct%';
+  }
+
+  @override
+  String tasteDnaIntensityHighPct(int pct) {
+    return 'Aromatique intense · $pct%';
+  }
+
+  @override
+  String get tasteDnaNotEnoughYet =>
+      'Pas encore assez de vins notés — continue';
+
+  @override
+  String get tasteArchetypeBoldRedHunter => 'Chasseur de Rouges Puissants';
+
+  @override
+  String get tasteArchetypeBoldRedHunterTagline =>
+      'Les rouges charpentés et tanniques sont ton terrain.';
+
+  @override
+  String get tasteArchetypeElegantBurgundian => 'Bourguignon Élégant';
+
+  @override
+  String get tasteArchetypeElegantBurgundianTagline =>
+      'Des rouges plus légers à l\'acidité vive guident ton palais.';
+
+  @override
+  String get tasteArchetypeAromaticWhiteLover =>
+      'Amateur de Blancs Aromatiques';
+
+  @override
+  String get tasteArchetypeAromaticWhiteLoverTagline =>
+      'Des blancs frais et expressifs à l\'acidité tranchante.';
+
+  @override
+  String get tasteArchetypeSparklingSociable => 'Bulles en Bonne Compagnie';
+
+  @override
+  String get tasteArchetypeSparklingSociableTagline =>
+      'Bulles et vins pâles dominent ta collection.';
+
+  @override
+  String get tasteArchetypeClassicStructure => 'Structure Classique';
+
+  @override
+  String get tasteArchetypeClassicStructureTagline =>
+      'Des vins mesurés, faits pour la table, à l\'acidité vive.';
+
+  @override
+  String get tasteArchetypeSunRipenedBold => 'Mûri au Soleil';
+
+  @override
+  String get tasteArchetypeSunRipenedBoldTagline =>
+      'Fruit généreux et boisé de vignobles ensoleillés.';
+
+  @override
+  String get tasteArchetypeDessertOffDry => 'Dessert / Demi-Sec';
+
+  @override
+  String get tasteArchetypeDessertOffDryTagline =>
+      'Tu aimes les bouteilles avec une pointe de sucre.';
+
+  @override
+  String get tasteArchetypeNaturalLowIntervention =>
+      'Nature / Faible Intervention';
+
+  @override
+  String get tasteArchetypeNaturalLowInterventionTagline =>
+      'Sans bois, plus légers — le camp de la fraîcheur.';
+
+  @override
+  String get tasteArchetypeCrispMineralFan => 'Fan du Minéral';
+
+  @override
+  String get tasteArchetypeCrispMineralFanTagline =>
+      'Styles tendus, minéraux et à forte acidité — ta signature.';
+
+  @override
+  String get tasteArchetypeEclecticExplorer => 'Explorateur Éclectique';
+
+  @override
+  String get tasteArchetypeEclecticExplorerTagline =>
+      'Palais large — tu goûtes à travers toute la carte du vin.';
+
+  @override
+  String get tasteArchetypeCuriousNewcomer => 'Nouveau Venu Curieux';
+
+  @override
+  String get tasteArchetypeCuriousNewcomerTagline =>
+      'Note quelques vins de plus et ta personnalité se révélera.';
+
+  @override
+  String get tasteCompassModeStyle => 'Style';
+
+  @override
+  String get tasteCompassModeWorld => 'Monde';
+
+  @override
+  String get tasteCompassModeGrapes => 'Cépages';
+
+  @override
+  String get tasteCompassModeDna => 'ADN';
+
+  @override
+  String get tasteCompassMetricCount => 'nombre';
+
+  @override
+  String get tasteCompassMetricRating => 'note';
+
+  @override
+  String get tasteCompassContinentEurope => 'Europe';
+
+  @override
+  String get tasteCompassContinentNorthAmerica => 'Amérique du Nord';
+
+  @override
+  String get tasteCompassContinentSouthAmerica => 'Amérique du Sud';
+
+  @override
+  String get tasteCompassContinentAfrica => 'Afrique';
+
+  @override
+  String get tasteCompassContinentAsia => 'Asie';
+
+  @override
+  String get tasteCompassContinentOceania => 'Océanie';
+
+  @override
+  String tasteCompassStyleNoneYet(String label) {
+    return 'Pas encore de vins $label';
+  }
+
+  @override
+  String tasteCompassStyleSummaryOne(int count, String label, String avg) {
+    return '$count vin $label · $avg★ moy.';
+  }
+
+  @override
+  String tasteCompassStyleSummaryMany(int count, String label, String avg) {
+    return '$count vins $label · $avg★ moy.';
+  }
+
+  @override
+  String tasteCompassWorldNoneYet(String label) {
+    return 'Pas encore de bouteilles de $label';
+  }
+
+  @override
+  String tasteCompassWorldSummaryOne(String label, String avg) {
+    return '1 bouteille de $label · $avg★ moy.';
+  }
+
+  @override
+  String tasteCompassWorldSummaryMany(int count, String label, String avg) {
+    return '$count bouteilles de $label · $avg★ moy.';
+  }
+
+  @override
+  String get tasteCompassGrapeEmptySlot =>
+      'Emplacement libre — note plus de cépages';
+
+  @override
+  String tasteCompassGrapeSummaryOne(String name, String avg) {
+    return '$name · 1 bouteille · $avg★ moy.';
+  }
+
+  @override
+  String tasteCompassGrapeSummaryMany(String name, int count, String avg) {
+    return '$name · $count bouteilles · $avg★ moy.';
+  }
+
+  @override
+  String get tasteCompassTitleDefault => 'Boussole du goût';
+
+  @override
+  String get tasteCompassEmptyPromptOne =>
+      'Note 1 vin de plus pour débloquer la boussole.';
+
+  @override
+  String tasteCompassEmptyPromptMany(int count) {
+    return 'Note $count vins de plus pour débloquer la boussole.';
+  }
+
+  @override
+  String get tasteCompassNotEnoughData =>
+      'Pas encore assez de données pour ce mode.';
+
+  @override
+  String get tasteCompassDnaNeedsGrapes =>
+      'L\'ADN a besoin de quelques vins dont on reconnaît le cépage. Choisis un cépage canonique sur tes vins pour débloquer cette vue.';
+
+  @override
+  String get tasteCompassEyebrowPersonality => 'TA PERSONNALITÉ VIN';
+
+  @override
+  String get tasteCompassTentativeHint =>
+      'Provisoire — note plus de vins pour affiner';
+
+  @override
+  String get tasteCompassTopRegions => 'Régions top';
+
+  @override
+  String get tasteCompassTopCountries => 'Pays top';
+
+  @override
+  String get tasteCompassFooterWinesOne => '1 vin';
+
+  @override
+  String tasteCompassFooterWinesMany(int count) {
+    return '$count vins';
+  }
+
+  @override
+  String tasteCompassFooterAvg(String avg) {
+    return '$avg ★ moy.';
+  }
+
+  @override
+  String get tasteHeroEyebrow => 'PERSONNALITÉ';
+
+  @override
+  String get tasteHeroPromptCuriousOne =>
+      'Note 1 vin de plus pour révéler ta personnalité.';
+
+  @override
+  String tasteHeroPromptCuriousMany(int count) {
+    return 'Note $count vins de plus pour révéler ta personnalité.';
+  }
+
+  @override
+  String get tasteHeroAlmostThere => 'Presque';
+
+  @override
+  String get tasteHeroPromptThinDnaOne =>
+      'Tague un cépage canonique sur 1 vin de plus pour débloquer ton archétype.';
+
+  @override
+  String tasteHeroPromptThinDnaMany(int count) {
+    return 'Tague un cépage canonique sur $count vins de plus pour débloquer ton archétype.';
+  }
+
+  @override
+  String tasteHeroMatchExact(int score) {
+    return '$score% match';
+  }
+
+  @override
+  String tasteHeroMatchTentative(int score) {
+    return '~$score% match';
+  }
+
+  @override
+  String get tasteHeroWinesOne => '1 vin';
+
+  @override
+  String tasteHeroWinesMany(int count) {
+    return '$count vins';
+  }
+
+  @override
+  String tasteHeroAvg(String avg) {
+    return '$avg★ moy.';
+  }
+
+  @override
+  String get tasteHeroShare => 'Partager';
+
+  @override
+  String get tasteTraitsHeading => 'TRAITS';
+
+  @override
+  String get tasteTraitsProDivider => 'PRO';
+
+  @override
+  String get tasteTraitsUnlockAll => 'Débloque tous les traits avec Pro';
+
+  @override
+  String get tasteMatchLabel => 'match de goût';
+
+  @override
+  String get tasteMatchConfidenceStrong => 'Fort';
+
+  @override
+  String get tasteMatchConfidenceSolid => 'Solide';
+
+  @override
+  String get tasteMatchConfidenceEarly => 'Début';
+
+  @override
+  String tasteMatchSupportingOne(String dnaPart) {
+    return 'Basé sur 1 zone partagée région/type$dnaPart.';
+  }
+
+  @override
+  String tasteMatchSupportingMany(int overlap, String dnaPart) {
+    return 'Basé sur $overlap zones partagées région/type$dnaPart.';
+  }
+
+  @override
+  String get tasteMatchSupportingDnaPart => ' + recouvrement de style WSET';
+
+  @override
+  String get tasteMatchSignalStrong => 'Signal fort.';
+
+  @override
+  String get tasteMatchSignalSolid => 'Signal solide.';
+
+  @override
+  String get tasteMatchSignalEarly =>
+      'Signal naissant — continue à noter pour l\'affiner.';
+
+  @override
+  String get tasteMatchBreakdownBucket => 'Affinité région et type';
+
+  @override
+  String get tasteMatchBreakdownDna => 'Affinité ADN de style';
+
+  @override
+  String get tasteMatchEmptyNotEnough =>
+      'Pas encore assez de vins à comparer — note quelques bouteilles de plus pour débloquer le match.';
+
+  @override
+  String get tasteMatchEmptyNoOverlap =>
+      'Vous n\'avez pas encore noté de vins des mêmes régions ou types. Le match grandit dès que vos goûts se rejoignent.';
+
+  @override
+  String tasteFriendUpsellTitle(String name) {
+    return 'Découvre comment $name goûte';
+  }
+
+  @override
+  String get tasteFriendUpsellBody =>
+      'Compare vos palais, trouve les vins que vous aimez tous les deux et repère où vos goûts divergent.';
+
+  @override
+  String get tasteFriendUpsellPillMatch => 'Match de goût';
+
+  @override
+  String get tasteFriendUpsellPillShared => 'Bouteilles partagées';
+
+  @override
+  String get tasteFriendUpsellCta => 'Débloquer Sippd Pro';
+
+  @override
+  String get tasteFriendSharedHeading =>
+      'VINS QUE VOUS AVEZ TOUS LES DEUX NOTÉS';
+
+  @override
+  String tasteFriendSharedMore(int count) {
+    return '+ $count autres';
+  }
+
+  @override
+  String get tasteFriendRatingYou => 'toi';
+
+  @override
+  String get tasteFriendRatingThem => 'lui/elle';
+
+  @override
+  String shareRatedOn(String date) {
+    return 'NOTÉ · $date';
+  }
+
+  @override
+  String get shareRatingDenominator => '/ 10';
+
+  @override
+  String shareFooterRateYours(String url) {
+    return 'note les tiens sur $url';
+  }
+
+  @override
+  String shareFooterFindYours(String url) {
+    return 'trouve ton goût sur $url';
+  }
+
+  @override
+  String shareFooterHostYours(String url) {
+    return 'organise la tienne sur $url';
+  }
+
+  @override
+  String shareFooterJoinAt(String url) {
+    return 'rejoins sur $url';
+  }
+
+  @override
+  String get shareCompassEyebrow => 'PERSONNALITÉ VIN';
+
+  @override
+  String get shareCompassWhatDefinesMe => 'CE QUI ME DÉFINIT';
+
+  @override
+  String get shareCompassSampleSizeOne => 'basé sur 1 vin';
+
+  @override
+  String shareCompassSampleSizeMany(int count) {
+    return 'basé sur $count vins';
+  }
+
+  @override
+  String shareCompassPhrase(String descriptor, String trait) {
+    return '$trait $descriptor';
+  }
+
+  @override
+  String shareCompassShareText(String archetype, String url) {
+    return 'Ma personnalité vin : $archetype · trouve la tienne sur $url';
+  }
+
+  @override
+  String get shareTastingEyebrow => 'DÉGUSTATION DE GROUPE';
+
+  @override
+  String get shareTastingTopWine => 'VIN TOP DE LA SOIRÉE';
+
+  @override
+  String get shareTastingLineup => 'PROGRAMME';
+
+  @override
+  String shareTastingMore(int count) {
+    return '+ $count autres';
+  }
+
+  @override
+  String get shareTastingAttendeesOne => '1 dégustateur';
+
+  @override
+  String shareTastingAttendeesMany(int count) {
+    return '$count dégustateurs';
+  }
+
+  @override
+  String shareTastingShareTextTop(String wine, String avg, String url) {
+    return '$wine a remporté la soirée à $avg/10 · organisée sur Sippd · $url';
+  }
+
+  @override
+  String shareTastingShareTextTitle(String title, String url) {
+    return '$title · organisée sur Sippd · $url';
+  }
+
+  @override
+  String shareRatingShareText(String wine, String rating, String url) {
+    return 'Je viens de noter $wine $rating/10 sur Sippd · $url';
+  }
+
+  @override
+  String get shareInviteEyebrow => 'UNE INVITATION';
+
+  @override
+  String get shareInviteHero => 'Dégustons\nensemble.';
+
+  @override
+  String get shareInviteSub => 'Note-le. Souviens-toi. Partage-le.';
+
+  @override
+  String get shareInviteWantsToTaste => 'veut déguster avec toi';
+
+  @override
+  String shareInviteFallbackText(String name, String url) {
+    return '$name veut déguster avec toi sur Sippd · $url';
+  }
+
+  @override
+  String shareInviteImageText(String url) {
+    return 'Rejoins-moi sur Sippd 🍷  $url';
+  }
+
+  @override
+  String get shareInviteSubject => 'Rejoins-moi sur Sippd';
+
+  @override
+  String get shareRatingPromptSavedBadge => 'VIN ENREGISTRÉ';
+
+  @override
+  String get shareRatingPromptTitle => 'Ta carte est prête';
+
+  @override
+  String get shareRatingPromptBody =>
+      'Envoie-la à des amis ou poste-la dans ta story.';
+
+  @override
+  String get shareRatingPromptCta => 'Partager la carte';
+
+  @override
+  String get shareRatingPromptPreparing => 'Préparation…';
+
+  @override
+  String get shareRatingPromptDismiss => 'Pas maintenant';
 }

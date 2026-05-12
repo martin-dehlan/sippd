@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../common/utils/responsive.dart';
 import '../../domain/entities/taste_match.entity.dart';
 
@@ -12,6 +13,7 @@ class TasteMatchScoreWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l = AppLocalizations.of(context);
 
     if (!match.hasScore) {
       return _EmptyState(reason: match.reason, match: match);
@@ -47,7 +49,7 @@ class TasteMatchScoreWidget extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.only(bottom: context.h * 0.012),
                 child: Text(
-                  'taste match',
+                  l.tasteMatchLabel,
                   style: TextStyle(
                     fontSize: context.bodyFont,
                     color: cs.onSurfaceVariant,
@@ -61,7 +63,7 @@ class TasteMatchScoreWidget extends StatelessWidget {
           _ConfidenceBadge(confidence: confidence),
           SizedBox(height: context.xs),
           Text(
-            _supportingText(match),
+            _supportingText(match, l),
             style: TextStyle(
               fontSize: context.captionFont,
               color: cs.onSurfaceVariant,
@@ -88,20 +90,20 @@ class TasteMatchScoreWidget extends StatelessWidget {
     }
   }
 
-  String _supportingText(TasteMatchEntity m) {
+  String _supportingText(TasteMatchEntity m, AppLocalizations l) {
     final c = m.confidence!;
     final overlap = m.overlapCount;
-    final dnaPart = m.hasDna ? ' + WSET style overlap' : '';
-    final base =
-        'Based on $overlap shared region/type bucket'
-        '${overlap == 1 ? '' : 's'}$dnaPart.';
+    final dnaPart = m.hasDna ? l.tasteMatchSupportingDnaPart : '';
+    final base = overlap == 1
+        ? l.tasteMatchSupportingOne(dnaPart)
+        : l.tasteMatchSupportingMany(overlap, dnaPart);
     switch (c) {
       case MatchConfidence.high:
-        return '$base Strong signal.';
+        return '$base ${l.tasteMatchSignalStrong}';
       case MatchConfidence.medium:
-        return '$base Solid signal.';
+        return '$base ${l.tasteMatchSignalSolid}';
       case MatchConfidence.low:
-        return '$base Early signal — keep rating to sharpen this.';
+        return '$base ${l.tasteMatchSignalEarly}';
     }
   }
 }
@@ -114,6 +116,7 @@ class _Breakdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l = AppLocalizations.of(context);
     return Container(
       padding: EdgeInsets.all(context.s),
       decoration: BoxDecoration(
@@ -129,11 +132,14 @@ class _Breakdown extends StatelessWidget {
         children: [
           if (match.bucketScore != null && match.dnaScore != null) ...[
             _BreakdownRow(
-              label: 'Region & type fit',
+              label: l.tasteMatchBreakdownBucket,
               value: '${match.bucketScore!}%',
             ),
             SizedBox(height: context.xs * 0.6),
-            _BreakdownRow(label: 'Style DNA fit', value: '${match.dnaScore!}%'),
+            _BreakdownRow(
+              label: l.tasteMatchBreakdownDna,
+              value: '${match.dnaScore!}%',
+            ),
           ],
         ],
       ),
@@ -182,10 +188,11 @@ class _ConfidenceBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l = AppLocalizations.of(context);
     final (label, dots) = switch (confidence) {
-      MatchConfidence.high => ('Strong', 3),
-      MatchConfidence.medium => ('Solid', 2),
-      MatchConfidence.low => ('Early', 1),
+      MatchConfidence.high => (l.tasteMatchConfidenceStrong, 3),
+      MatchConfidence.medium => (l.tasteMatchConfidenceSolid, 2),
+      MatchConfidence.low => (l.tasteMatchConfidenceEarly, 1),
     };
 
     return Row(
@@ -224,7 +231,8 @@ class _EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final message = _message();
+    final l = AppLocalizations.of(context);
+    final message = _message(l);
 
     if (message == null) return const SizedBox.shrink();
 
@@ -258,12 +266,12 @@ class _EmptyState extends StatelessWidget {
     );
   }
 
-  String? _message() {
+  String? _message(AppLocalizations l) {
     switch (reason) {
       case MatchUnavailableReason.notEnoughRatings:
-        return 'Not enough wines to compare yet — rate a few more bottles to unlock taste match.';
+        return l.tasteMatchEmptyNotEnough;
       case MatchUnavailableReason.notEnoughOverlap:
-        return 'You haven\'t rated wines from the same regions or types yet. Match opens up as your tastes overlap.';
+        return l.tasteMatchEmptyNoOverlap;
       case MatchUnavailableReason.unavailable:
       case null:
         return null;

@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../../common/l10n/generated/app_localizations.dart';
 import 'share_card_branding.widget.dart';
 
 const _bg = Color(0xFF14101A);
@@ -59,6 +60,7 @@ class TastingRecapCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Container(
       width: shareCardWidth,
       height: shareCardHeight,
@@ -81,10 +83,10 @@ class TastingRecapCard extends StatelessWidget {
           const Spacer(flex: 1),
           _AttendeesLine(count: data.attendeeCount),
           const SizedBox(height: 36),
-          const ShareCardFooter(
+          ShareCardFooter(
             textColor: _onBg,
             dividerColor: _divider,
-            tagline: 'host yours at $shareCardUrl',
+            tagline: l.shareFooterHostYours(shareCardUrl),
           ),
         ],
       ),
@@ -100,7 +102,8 @@ class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final loc = (location ?? '').trim();
-    final dateStamp = DateFormat('d MMM yyyy').format(date).toUpperCase();
+    final tag = Localizations.localeOf(context).toLanguageTag();
+    final dateStamp = DateFormat('d MMM yyyy', tag).format(date).toUpperCase();
     final stamp = loc.isEmpty ? dateStamp : '$dateStamp · ${loc.toUpperCase()}';
 
     return Row(
@@ -139,11 +142,12 @@ class _GroupHeading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'GROUP TASTING',
+          l.shareTastingEyebrow,
           style: TextStyle(
             fontSize: 28,
             color: _onBgMuted,
@@ -236,6 +240,7 @@ class _TopWineBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final subtitle = [
       if ((data.topWineWinery ?? '').isNotEmpty) data.topWineWinery!,
       if (data.topWineVintage != null) data.topWineVintage.toString(),
@@ -257,7 +262,7 @@ class _TopWineBlock extends StatelessWidget {
               const Icon(PhosphorIconsFill.trophy, color: _onBg, size: 56),
               const SizedBox(width: 16),
               Text(
-                'TOP WINE OF THE NIGHT',
+                l.shareTastingTopWine,
                 style: TextStyle(
                   fontSize: 24,
                   color: _onBg.withValues(alpha: 0.85),
@@ -323,7 +328,7 @@ class _TopWineBlock extends StatelessWidget {
                           Padding(
                             padding: const EdgeInsets.only(bottom: 22),
                             child: Text(
-                              '/ 10',
+                              l.shareRatingDenominator,
                               style: TextStyle(
                                 fontSize: 36,
                                 color: _onBg.withValues(alpha: 0.7),
@@ -370,6 +375,7 @@ class _LineupBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final visible = data.ranked.take(5).toList();
     final remaining = data.ranked.length - visible.length;
 
@@ -377,7 +383,7 @@ class _LineupBlock extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'LINEUP',
+          l.shareTastingLineup,
           style: TextStyle(
             fontSize: 26,
             color: _onBgMuted,
@@ -393,7 +399,7 @@ class _LineupBlock extends StatelessWidget {
         if (remaining > 0) ...[
           const SizedBox(height: 24),
           Text(
-            '+ $remaining more',
+            l.shareTastingMore(remaining),
             style: TextStyle(
               fontSize: 30,
               color: _onBgMuted,
@@ -464,6 +470,7 @@ class _AttendeesLine extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (count <= 0) return const SizedBox.shrink();
+    final l = AppLocalizations.of(context);
     return Row(
       children: [
         const Icon(
@@ -473,7 +480,9 @@ class _AttendeesLine extends StatelessWidget {
         ),
         const SizedBox(width: 12),
         Text(
-          count == 1 ? '1 taster' : '$count tasters',
+          count == 1
+              ? l.shareTastingAttendeesOne
+              : l.shareTastingAttendeesMany(count),
           style: TextStyle(
             fontSize: 30,
             color: _onBgMuted,

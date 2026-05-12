@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../../common/l10n/generated/app_localizations.dart';
 import '../../../taste_match/domain/entities/user_style_dna.entity.dart';
 import '../../../taste_match/domain/trait_descriptors.dart';
 import '../../../taste_match/presentation/widgets/dna_shape.widget.dart';
@@ -95,7 +96,9 @@ class _Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final stamp = DateFormat('d MMM yyyy').format(date).toUpperCase();
+    final l = AppLocalizations.of(context);
+    final tag = Localizations.localeOf(context).toLanguageTag();
+    final stamp = DateFormat('d MMM yyyy', tag).format(date).toUpperCase();
     final byLine = (username ?? '').trim().isEmpty
         ? stamp
         : '@$username · $stamp';
@@ -114,7 +117,7 @@ class _Header extends StatelessWidget {
             Icon(PhosphorIconsRegular.wine, color: accent, size: 38),
             const SizedBox(width: 16),
             Text(
-              'WINE PERSONALITY',
+              l.shareCompassEyebrow,
               style: TextStyle(
                 fontSize: 28,
                 color: _onBgMuted,
@@ -154,6 +157,7 @@ class _BrandedFooter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -187,7 +191,7 @@ class _BrandedFooter extends StatelessWidget {
               ],
             ),
             Text(
-              'find your taste at $shareCardUrl',
+              l.shareFooterFindYours(shareCardUrl),
               style: TextStyle(
                 fontSize: 28,
                 color: _onBg,
@@ -271,6 +275,7 @@ class _LabeledShape extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final cx = _outerSize / 2;
     final cy = _outerSize / 2;
     return SizedBox(
@@ -291,7 +296,7 @@ class _LabeledShape extends StatelessWidget {
             ),
           ),
           for (var i = 0; i < _axes.length; i++)
-            _axisLabel(i: i, cx: cx, cy: cy, label: traitLabel(_axes[i])),
+            _axisLabel(i: i, cx: cx, cy: cy, label: traitLabel(_axes[i], l)),
         ],
       ),
     );
@@ -344,6 +349,7 @@ class _TraitsBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final ranked = rankedTraits(dna).take(3).toList(growable: false);
     if (ranked.isEmpty) return const SizedBox.shrink();
 
@@ -351,7 +357,7 @@ class _TraitsBlock extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'WHAT DEFINES ME',
+          l.shareCompassWhatDefinesMe,
           style: TextStyle(
             fontSize: 26,
             color: _onBgMuted,
@@ -381,8 +387,12 @@ class _TraitRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final descriptor = traitDescriptor(axis, value);
-    final phrase = '$descriptor ${traitLabel(axis).toLowerCase()}';
+    final l = AppLocalizations.of(context);
+    final descriptor = traitDescriptor(axis, value, l);
+    final phrase = l.shareCompassPhrase(
+      descriptor,
+      traitLabel(axis, l).toLowerCase(),
+    );
     return Row(
       crossAxisAlignment: CrossAxisAlignment.baseline,
       textBaseline: TextBaseline.alphabetic,
@@ -424,7 +434,10 @@ class _SampleSize extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final label = total == 1 ? 'based on 1 wine' : 'based on $total wines';
+    final l = AppLocalizations.of(context);
+    final label = total == 1
+        ? l.shareCompassSampleSizeOne
+        : l.shareCompassSampleSizeMany(total);
     return Text(
       label,
       style: TextStyle(

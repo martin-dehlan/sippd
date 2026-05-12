@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../common/l10n/generated/app_localizations.dart';
 import 'entities/taste_compass.entity.dart';
 import 'entities/user_style_dna.entity.dart';
 
@@ -64,14 +65,17 @@ class ArchetypeMatch {
   bool get isNewcomer => archetype.id == 'curious_newcomer';
 }
 
-const _archetypes = <Archetype>[
+/// Build the curated archetype catalogue using the active locale's
+/// strings. Keep the numeric vectors / weights identical to history —
+/// only `name` and `tagline` change with the locale.
+List<Archetype> _archetypes(AppLocalizations l) => <Archetype>[
   Archetype(
     id: 'bold_red_hunter',
-    name: 'Bold Red Hunter',
-    tagline: 'Full-bodied, tannin-rich reds are your home turf.',
+    name: l.tasteArchetypeBoldRedHunter,
+    tagline: l.tasteArchetypeBoldRedHunterTagline,
     icon: PhosphorIconsRegular.flame,
-    color: Color(0xFFE05A6B),
-    targetVector: {
+    color: const Color(0xFFE05A6B),
+    targetVector: const {
       'body': 0.85,
       'tannin': 0.85,
       'acidity': 0.55,
@@ -79,7 +83,7 @@ const _archetypes = <Archetype>[
       'oak': 0.65,
       'intensity': 0.75,
     },
-    weights: {
+    weights: const {
       'body': 0.25,
       'tannin': 0.25,
       'acidity': 0.05,
@@ -90,11 +94,11 @@ const _archetypes = <Archetype>[
   ),
   Archetype(
     id: 'elegant_burgundian',
-    name: 'Elegant Burgundian',
-    tagline: 'Lighter reds with bright acidity drive your palate.',
+    name: l.tasteArchetypeElegantBurgundian,
+    tagline: l.tasteArchetypeElegantBurgundianTagline,
     icon: PhosphorIconsRegular.leaf,
-    color: Color(0xFFD08F5C),
-    targetVector: {
+    color: const Color(0xFFD08F5C),
+    targetVector: const {
       'body': 0.35,
       'tannin': 0.3,
       'acidity': 0.75,
@@ -102,7 +106,7 @@ const _archetypes = <Archetype>[
       'oak': 0.4,
       'intensity': 0.6,
     },
-    weights: {
+    weights: const {
       'body': 0.25,
       'tannin': 0.2,
       'acidity': 0.25,
@@ -113,18 +117,18 @@ const _archetypes = <Archetype>[
   ),
   Archetype(
     id: 'aromatic_white_lover',
-    name: 'Aromatic White Lover',
-    tagline: 'Crisp, expressive whites with cut-through acidity.',
+    name: l.tasteArchetypeAromaticWhiteLover,
+    tagline: l.tasteArchetypeAromaticWhiteLoverTagline,
     icon: PhosphorIconsRegular.flowerLotus,
-    color: Color(0xFFE8D9A1),
-    targetVector: {
+    color: const Color(0xFFE8D9A1),
+    targetVector: const {
       'body': 0.45,
       'acidity': 0.8,
       'sweetness': 0.1,
       'oak': 0.15,
       'intensity': 0.85,
     },
-    weights: {
+    weights: const {
       'body': 0.15,
       'acidity': 0.3,
       'sweetness': 0.1,
@@ -134,18 +138,18 @@ const _archetypes = <Archetype>[
   ),
   Archetype(
     id: 'sparkling_sociable',
-    name: 'Sparkling Sociable',
-    tagline: 'Bubbles and pale wines feature heavily in your collection.',
+    name: l.tasteArchetypeSparklingSociable,
+    tagline: l.tasteArchetypeSparklingSociableTagline,
     icon: PhosphorIconsRegular.sparkle,
-    color: Color(0xFFB7C7DC),
-    targetVector: {
+    color: const Color(0xFFB7C7DC),
+    targetVector: const {
       'body': 0.45,
       'acidity': 0.85,
       'sweetness': 0.1,
       'oak': 0.1,
       'intensity': 0.65,
     },
-    weights: {
+    weights: const {
       'body': 0.15,
       'acidity': 0.25,
       'sweetness': 0.15,
@@ -156,11 +160,11 @@ const _archetypes = <Archetype>[
   ),
   Archetype(
     id: 'classic_structure',
-    name: 'Classic Structure',
-    tagline: 'Restrained, food-aligned wines with bright acidity.',
+    name: l.tasteArchetypeClassicStructure,
+    tagline: l.tasteArchetypeClassicStructureTagline,
     icon: PhosphorIconsRegular.bookOpen,
-    color: Color(0xFFD08F5C),
-    targetVector: {
+    color: const Color(0xFFD08F5C),
+    targetVector: const {
       'body': 0.55,
       'tannin': 0.55,
       'acidity': 0.7,
@@ -168,7 +172,7 @@ const _archetypes = <Archetype>[
       'oak': 0.4,
       'intensity': 0.6,
     },
-    weights: {
+    weights: const {
       'body': 0.1,
       'tannin': 0.1,
       'acidity': 0.2,
@@ -180,11 +184,11 @@ const _archetypes = <Archetype>[
   ),
   Archetype(
     id: 'sun_ripened_bold',
-    name: 'Sun-Ripened Bold',
-    tagline: 'Big fruit, oak-friendly wines from sun-soaked vineyards.',
+    name: l.tasteArchetypeSunRipenedBold,
+    tagline: l.tasteArchetypeSunRipenedBoldTagline,
     icon: PhosphorIconsRegular.sun,
-    color: Color(0xFF4FC3B0),
-    targetVector: {
+    color: const Color(0xFF4FC3B0),
+    targetVector: const {
       'body': 0.75,
       'tannin': 0.65,
       'acidity': 0.55,
@@ -192,7 +196,7 @@ const _archetypes = <Archetype>[
       'oak': 0.65,
       'intensity': 0.7,
     },
-    weights: {
+    weights: const {
       'body': 0.2,
       'tannin': 0.15,
       'acidity': 0.05,
@@ -204,18 +208,18 @@ const _archetypes = <Archetype>[
   ),
   Archetype(
     id: 'dessert_off_dry',
-    name: 'Dessert / Off-Dry',
-    tagline: 'You lean toward bottles with a touch of sweetness.',
+    name: l.tasteArchetypeDessertOffDry,
+    tagline: l.tasteArchetypeDessertOffDryTagline,
     icon: PhosphorIconsRegular.dropHalf,
-    color: Color(0xFFE3A6BA),
-    targetVector: {
+    color: const Color(0xFFE3A6BA),
+    targetVector: const {
       'body': 0.65,
       'acidity': 0.6,
       'sweetness': 0.7,
       'oak': 0.3,
       'intensity': 0.85,
     },
-    weights: {
+    weights: const {
       'body': 0.1,
       'acidity': 0.1,
       'sweetness': 0.5,
@@ -225,11 +229,11 @@ const _archetypes = <Archetype>[
   ),
   Archetype(
     id: 'natural_low_intervention',
-    name: 'Natural / Low-Intervention',
-    tagline: 'Unoaked, lighter wines — the freshness camp.',
+    name: l.tasteArchetypeNaturalLowIntervention,
+    tagline: l.tasteArchetypeNaturalLowInterventionTagline,
     icon: PhosphorIconsRegular.plant,
-    color: Color(0xFFB48BD0),
-    targetVector: {
+    color: const Color(0xFFB48BD0),
+    targetVector: const {
       'body': 0.5,
       'tannin': 0.4,
       'acidity': 0.65,
@@ -237,7 +241,7 @@ const _archetypes = <Archetype>[
       'oak': 0.05,
       'intensity': 0.55,
     },
-    weights: {
+    weights: const {
       'body': 0.1,
       'tannin': 0.1,
       'acidity': 0.15,
@@ -248,18 +252,18 @@ const _archetypes = <Archetype>[
   ),
   Archetype(
     id: 'crisp_mineral_fan',
-    name: 'Crisp Mineral Fan',
-    tagline: 'Tight, mineral, high-acid styles are your signature.',
+    name: l.tasteArchetypeCrispMineralFan,
+    tagline: l.tasteArchetypeCrispMineralFanTagline,
     icon: PhosphorIconsRegular.snowflake,
-    color: Color(0xFFB7C7DC),
-    targetVector: {
+    color: const Color(0xFFB7C7DC),
+    targetVector: const {
       'body': 0.4,
       'acidity': 0.85,
       'sweetness': 0.0,
       'oak': 0.1,
       'intensity': 0.6,
     },
-    weights: {
+    weights: const {
       'body': 0.2,
       'acidity': 0.4,
       'sweetness': 0.1,
@@ -269,11 +273,11 @@ const _archetypes = <Archetype>[
   ),
   Archetype(
     id: 'eclectic_explorer',
-    name: 'Eclectic Explorer',
-    tagline: 'Wide-ranging palate — you taste across the wine map.',
+    name: l.tasteArchetypeEclecticExplorer,
+    tagline: l.tasteArchetypeEclecticExplorerTagline,
     icon: PhosphorIconsRegular.compass,
-    color: Color(0xFF4FC3B0),
-    targetVector: {
+    color: const Color(0xFF4FC3B0),
+    targetVector: const {
       'body': 0.55,
       'tannin': 0.5,
       'acidity': 0.6,
@@ -281,7 +285,7 @@ const _archetypes = <Archetype>[
       'oak': 0.4,
       'intensity': 0.6,
     },
-    weights: {
+    weights: const {
       'body': 0.1,
       'tannin': 0.1,
       'acidity': 0.1,
@@ -293,25 +297,30 @@ const _archetypes = <Archetype>[
   ),
 ];
 
-const _curiousNewcomer = Archetype(
+Archetype _curiousNewcomer(AppLocalizations l) => Archetype(
   id: 'curious_newcomer',
-  name: 'Curious Newcomer',
-  tagline: 'Rate a few more wines and your personality reveals itself.',
+  name: l.tasteArchetypeCuriousNewcomer,
+  tagline: l.tasteArchetypeCuriousNewcomerTagline,
   icon: PhosphorIconsRegular.compass,
-  color: Color(0xFFB48BD0),
-  targetVector: {},
-  weights: {},
+  color: const Color(0xFFB48BD0),
+  targetVector: const {},
+  weights: const {},
 );
 
-ArchetypeMatch matchArchetype(TasteCompassEntity compass, UserStyleDna? dna) {
+ArchetypeMatch matchArchetype(
+  TasteCompassEntity compass,
+  UserStyleDna? dna,
+  AppLocalizations l,
+) {
+  final newcomer = _curiousNewcomer(l);
   if (compass.totalCount < 5 || dna == null || dna.attributedCount < 3) {
-    return ArchetypeMatch(archetype: _curiousNewcomer, score: 0, confidence: 0);
+    return ArchetypeMatch(archetype: newcomer, score: 0, confidence: 0);
   }
 
   Archetype? best;
   double bestScore = -1;
 
-  for (final a in _archetypes) {
+  for (final a in _archetypes(l)) {
     final dist = _weightedDistance(a, dna);
     final maxDist = _maxPossibleDistance(a);
     var score = maxDist == 0 ? 0.0 : 1.0 - (dist / maxDist).clamp(0.0, 1.0);
@@ -324,7 +333,7 @@ ArchetypeMatch matchArchetype(TasteCompassEntity compass, UserStyleDna? dna) {
   }
 
   return ArchetypeMatch(
-    archetype: best ?? _curiousNewcomer,
+    archetype: best ?? newcomer,
     score: bestScore * 100,
     confidence: dna.confidence,
   );

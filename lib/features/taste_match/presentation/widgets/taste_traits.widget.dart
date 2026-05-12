@@ -3,11 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../common/utils/responsive.dart';
 import '../../../../core/routes/app.routes.dart';
 import '../../../paywall/controller/paywall.provider.dart';
 import '../../controller/taste_match.provider.dart';
 import '../../domain/entities/user_style_dna.entity.dart';
+import '../../domain/trait_descriptors.dart';
 
 /// Editorial trait table beneath the personality hero. The two
 /// strongest axes (largest distance from neutral) are shown for free;
@@ -42,6 +44,7 @@ class _Body extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
+    final l = AppLocalizations.of(context);
     final isPro = ref.watch(isProProvider);
     final entries = _orderedEntries(dna);
 
@@ -51,7 +54,7 @@ class _Body extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'TRAITS',
+            l.tasteTraitsHeading,
             style: TextStyle(
               fontSize: context.captionFont * 0.78,
               fontWeight: FontWeight.w700,
@@ -109,6 +112,7 @@ class _TraitRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l = AppLocalizations.of(context);
     final pct = (value * 100).round();
     return Padding(
       padding: EdgeInsets.symmetric(vertical: context.xs * 1.4),
@@ -117,7 +121,7 @@ class _TraitRow extends StatelessWidget {
           SizedBox(
             width: context.w * 0.26,
             child: Text(
-              _label(axis),
+              traitLabel(axis, l),
               style: TextStyle(
                 fontSize: context.bodyFont,
                 fontWeight: FontWeight.w600,
@@ -127,7 +131,7 @@ class _TraitRow extends StatelessWidget {
           ),
           Expanded(
             child: Text(
-              _descriptor(axis, value),
+              traitDescriptor(axis, value, l),
               style: TextStyle(
                 fontSize: context.captionFont,
                 color: cs.onSurfaceVariant,
@@ -195,6 +199,7 @@ class _ProDivider extends StatelessWidget {
       );
     }
     final cs = Theme.of(context).colorScheme;
+    final l = AppLocalizations.of(context);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -202,7 +207,7 @@ class _ProDivider extends StatelessWidget {
         Padding(
           padding: EdgeInsets.symmetric(horizontal: context.w * 0.025),
           child: Text(
-            'PRO',
+            l.tasteTraitsProDivider,
             style: TextStyle(
               fontSize: context.captionFont * 0.75,
               fontWeight: FontWeight.w800,
@@ -233,6 +238,7 @@ class _LockedSection extends StatelessWidget {
     );
     if (isPro) return rows;
     final cs = Theme.of(context).colorScheme;
+    final l = AppLocalizations.of(context);
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () => context.push(
@@ -263,7 +269,7 @@ class _LockedSection extends StatelessWidget {
                 ),
                 SizedBox(width: context.w * 0.018),
                 Text(
-                  'Unlock all traits with Pro',
+                  l.tasteTraitsUnlockAll,
                   style: TextStyle(
                     fontSize: context.captionFont,
                     fontWeight: FontWeight.w700,
@@ -280,53 +286,3 @@ class _LockedSection extends StatelessWidget {
   }
 }
 
-const _labels = {
-  'body': 'Body',
-  'tannin': 'Tannin',
-  'acidity': 'Acidity',
-  'sweetness': 'Sweetness',
-  'oak': 'Oak',
-  'intensity': 'Intensity',
-};
-
-String _label(String axis) => _labels[axis] ?? axis;
-
-String _descriptor(String axis, double v) => switch (axis) {
-  'body' =>
-    v < 0.4
-        ? 'Light, easy-drinking'
-        : v < 0.65
-        ? 'Balanced'
-        : 'Bold, full-bodied',
-  'tannin' =>
-    v < 0.4
-        ? 'Soft, low-grip'
-        : v < 0.65
-        ? 'Medium grip'
-        : 'Grippy, structured',
-  'acidity' =>
-    v < 0.4
-        ? 'Soft, round'
-        : v < 0.65
-        ? 'Balanced'
-        : 'Crisp, bright',
-  'sweetness' =>
-    v < 0.15
-        ? 'Bone dry'
-        : v < 0.4
-        ? 'Off-dry'
-        : 'Sweet-leaning',
-  'oak' =>
-    v < 0.3
-        ? 'Unoaked, fresh'
-        : v < 0.55
-        ? 'Touch of oak'
-        : 'Oak-forward',
-  'intensity' =>
-    v < 0.4
-        ? 'Subtle aromatics'
-        : v < 0.7
-        ? 'Expressive'
-        : 'Bold, aromatic',
-  _ => '',
-};

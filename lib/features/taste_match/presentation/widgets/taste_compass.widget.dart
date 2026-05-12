@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../common/utils/responsive.dart';
 import '../../../../core/routes/app.routes.dart';
 import '../../../paywall/controller/paywall.provider.dart';
@@ -123,12 +124,15 @@ class _TasteCompassWidgetState extends ConsumerState<TasteCompassWidget> {
             ),
             SizedBox(height: context.m),
             if (_mode == CompassMode.style && compass.topRegions.isNotEmpty)
-              _BucketStrip(heading: 'Top regions', buckets: compass.topRegions),
+              _BucketStrip(
+                heading: AppLocalizations.of(context).tasteCompassTopRegions,
+                buckets: compass.topRegions,
+              ),
             if (_mode == CompassMode.style &&
                 compass.topCountries.isNotEmpty) ...[
               SizedBox(height: context.s),
               _BucketStrip(
-                heading: 'Top countries',
+                heading: AppLocalizations.of(context).tasteCompassTopCountries,
                 buckets: compass.topCountries,
               ),
             ],
@@ -152,6 +156,7 @@ class _CompassEmpty extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l = AppLocalizations.of(context);
     final missing = (5 - totalCount).clamp(1, 5);
     return Padding(
       padding: EdgeInsets.symmetric(vertical: context.s),
@@ -165,7 +170,9 @@ class _CompassEmpty extends StatelessWidget {
           SizedBox(width: context.w * 0.03),
           Expanded(
             child: Text(
-              'Rate $missing more wine${missing == 1 ? '' : 's'} to unlock the compass.',
+              missing == 1
+                  ? l.tasteCompassEmptyPromptOne
+                  : l.tasteCompassEmptyPromptMany(missing),
               style: TextStyle(
                 fontSize: context.captionFont,
                 color: cs.onSurfaceVariant,
@@ -234,6 +241,7 @@ class _ModeButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l = AppLocalizations.of(context);
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: onTap,
@@ -248,7 +256,7 @@ class _ModeButton extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              mode.displayName,
+              mode.displayName(l),
               style: TextStyle(
                 fontSize: context.captionFont * 0.95,
                 fontWeight: FontWeight.w700,
@@ -308,7 +316,7 @@ class _MetricToggle extends StatelessWidget {
                   borderRadius: BorderRadius.circular(context.w * 0.04),
                 ),
                 child: Text(
-                  m.displayName,
+                  m.displayName(AppLocalizations.of(context)),
                   style: TextStyle(
                     fontSize: context.captionFont * 0.85,
                     fontWeight: FontWeight.w600,
@@ -344,11 +352,12 @@ class _ModeBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final axes = switch (mode) {
-      CompassMode.style => buildStyleAxes(compass, metric),
-      CompassMode.world => buildWorldAxes(compass, metric),
-      CompassMode.grapes => buildGrapeAxes(grapes, metric),
-      CompassMode.dna => dna == null ? <RadarAxis>[] : buildDnaAxes(dna!),
+      CompassMode.style => buildStyleAxes(compass, metric, l),
+      CompassMode.world => buildWorldAxes(compass, metric, l),
+      CompassMode.grapes => buildGrapeAxes(grapes, metric, l),
+      CompassMode.dna => dna == null ? <RadarAxis>[] : buildDnaAxes(dna!, l),
     };
 
     final loading =
@@ -366,7 +375,7 @@ class _ModeBody extends StatelessWidget {
         height: context.h * 0.32,
         child: Center(
           child: Text(
-            'Not enough data for this mode yet.',
+            l.tasteCompassNotEnoughData,
             style: TextStyle(color: Theme.of(context).colorScheme.outline),
           ),
         ),
@@ -379,8 +388,7 @@ class _ModeBody extends StatelessWidget {
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: context.l),
             child: Text(
-              'DNA needs a few wines whose grape we recognise. '
-              'Pick a canonical grape on your wines to unlock this view.',
+              l.tasteCompassDnaNeedsGrapes,
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -480,10 +488,13 @@ class _Footer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l = AppLocalizations.of(context);
     return Row(
       children: [
         Text(
-          '$totalCount wine${totalCount == 1 ? '' : 's'}',
+          totalCount == 1
+              ? l.tasteCompassFooterWinesOne
+              : l.tasteCompassFooterWinesMany(totalCount),
           style: TextStyle(
             fontSize: context.captionFont,
             color: cs.onSurfaceVariant,
@@ -492,7 +503,7 @@ class _Footer extends StatelessWidget {
         if (overallAvg != null) ...[
           Text(' · ', style: TextStyle(color: cs.outlineVariant)),
           Text(
-            '${overallAvg!.toStringAsFixed(1)} ★ avg',
+            l.tasteCompassFooterAvg(overallAvg!.toStringAsFixed(1)),
             style: TextStyle(
               fontSize: context.captionFont,
               color: cs.onSurfaceVariant,
