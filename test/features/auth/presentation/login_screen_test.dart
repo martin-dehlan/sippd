@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sippd/common/l10n/generated/app_localizations.dart';
 import 'package:sippd/common/services/connectivity/connectivity.provider.dart';
 import 'package:sippd/features/auth/controller/auth.provider.dart';
 import 'package:sippd/features/auth/presentation/modules/login/login.screen.dart';
@@ -75,7 +76,11 @@ void main() {
           authControllerProvider.overrideWith(() => fake),
           connectivityStateProvider.overrideWith(() => _FakeConn(true)),
         ],
-        child: const MaterialApp(home: LoginScreen()),
+        child: MaterialApp(
+          home: const LoginScreen(),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+        ),
       ),
     );
     await tester.pumpAndSettle();

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sippd/common/l10n/generated/app_localizations.dart';
 
 extension PumpProviderApp on WidgetTester {
   /// Pumps [child] inside a `MaterialApp` wrapped in a `ProviderScope`
@@ -14,7 +15,12 @@ extension PumpProviderApp on WidgetTester {
     await pumpWidget(
       ProviderScope(
         overrides: overrides,
-        child: MaterialApp(home: child, debugShowCheckedModeBanner: false),
+        child: MaterialApp(
+          home: child,
+          debugShowCheckedModeBanner: false,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+        ),
       ),
     );
   }
