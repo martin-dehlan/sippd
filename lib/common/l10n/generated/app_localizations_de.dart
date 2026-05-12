@@ -3426,4 +3426,193 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get shareRatingPromptDismiss => 'Nicht jetzt';
+
+  @override
+  String get commonRetry => 'Erneut versuchen';
+
+  @override
+  String get commonSave => 'Speichern';
+
+  @override
+  String get commonClear => 'Löschen';
+
+  @override
+  String get commonGotIt => 'Verstanden';
+
+  @override
+  String get commonOptional => '(optional)';
+
+  @override
+  String get commonOffline => 'Offline';
+
+  @override
+  String get commonOfflineMessage =>
+      'Du bist offline. Verbinde dich neu und versuch\'s nochmal.';
+
+  @override
+  String get commonNetworkErrorMessage =>
+      'Netzwerkfehler. Prüfe deine Verbindung.';
+
+  @override
+  String get commonSomethingWentWrong => 'Etwas ist schiefgelaufen.';
+
+  @override
+  String get commonErrorViewOfflineTitle => 'Du bist offline';
+
+  @override
+  String get commonErrorViewOfflineSubtitle =>
+      'Verbinde dich neu, um das zu laden.';
+
+  @override
+  String get commonErrorViewGenericTitle => 'Konnte nicht geladen werden';
+
+  @override
+  String get commonErrorViewGenericSubtitle =>
+      'Zum Aktualisieren ziehen oder später nochmal versuchen.';
+
+  @override
+  String get commonInlineCouldntSaveRetry =>
+      'Speichern fehlgeschlagen · Erneut';
+
+  @override
+  String get commonInlineOfflineRetry => 'Offline · Erneut';
+
+  @override
+  String get commonPhotoDialogCameraTitle => 'Kamerazugriff aus';
+
+  @override
+  String get commonPhotoDialogCameraBody =>
+      'Sippd braucht Kamerazugriff, um Weinfotos aufzunehmen. Aktiviere ihn in den Einstellungen.';
+
+  @override
+  String get commonPhotoDialogPhotosTitle => 'Fotozugriff aus';
+
+  @override
+  String get commonPhotoDialogPhotosBody =>
+      'Sippd braucht Zugriff auf deine Fotos, um Bilder anzuhängen. Aktiviere ihn in den Einstellungen.';
+
+  @override
+  String get commonPhotoErrorSnack =>
+      'Foto konnte nicht geladen werden. Versuch\'s nochmal.';
+
+  @override
+  String get commonPriceSheetTitle => 'Flaschenpreis';
+
+  @override
+  String get commonYearPickerTitle => 'Jahrgang';
+
+  @override
+  String get locSheetTitle => 'Wo hast du ihn getrunken?';
+
+  @override
+  String get locSearchHint => 'Ort suchen...';
+
+  @override
+  String get locNoResults => 'Keine Orte gefunden';
+
+  @override
+  String get locSearchFailed => 'Suche fehlgeschlagen';
+
+  @override
+  String get locUseMyLocation => 'Meinen aktuellen Standort nutzen';
+
+  @override
+  String get locFindingLocation => 'Standort wird gesucht…';
+
+  @override
+  String get locReadCurrentFailed =>
+      'Aktueller Standort konnte nicht ermittelt werden';
+
+  @override
+  String get locServicesDisabled => 'Ortungsdienste sind deaktiviert';
+
+  @override
+  String get locPermissionDenied => 'Standortberechtigung verweigert';
+
+  @override
+  String get profileEditTitle => 'Profil bearbeiten';
+
+  @override
+  String get profileEditSectionProfile => 'Profil';
+
+  @override
+  String get profileEditFieldUsername => 'Benutzername';
+
+  @override
+  String get profileEditFieldDisplayName => 'Anzeigename';
+
+  @override
+  String profileEditDisplayNameHintWithUsername(String username) {
+    return 'z. B. $username';
+  }
+
+  @override
+  String get profileEditDisplayNameHintGeneric => 'Wie sollen wir dich nennen?';
+
+  @override
+  String get profileEditDisplayNameHelper =>
+      'Wird in Gruppen und Tastings angezeigt. Leer lassen, um deinen Benutzernamen zu nutzen.';
+
+  @override
+  String get profileEditSectionTaste => 'Dein Geschmack';
+
+  @override
+  String get profileEditSectionTasteSubtitle =>
+      'Justiere, was Sippd über dich lernt. Jederzeit änderbar.';
+
+  @override
+  String get profileEditAvatarUpdateFailed =>
+      'Foto konnte nicht aktualisiert werden. Versuch\'s nochmal.';
+
+  @override
+  String get profileEditUploadFailed => 'Upload fehlgeschlagen.';
+
+  @override
+  String get profileEditSaveChangesFailed =>
+      'Änderungen konnten nicht gespeichert werden. Versuch\'s nochmal.';
+
+  @override
+  String get profileAvatarTakePhoto => 'Foto aufnehmen';
+
+  @override
+  String get profileAvatarChooseGallery => 'Aus Galerie wählen';
+
+  @override
+  String get profileAvatarRemove => 'Foto entfernen';
+
+  @override
+  String get profileUsernameTooShort => 'Mindestens 3 Zeichen';
+
+  @override
+  String get profileUsernameInvalid => 'Nur Buchstaben, Zahlen, . und _';
+
+  @override
+  String get profileUsernameTaken => 'Schon vergeben';
+
+  @override
+  String get profileUsernameAvailable => 'Verfügbar';
+
+  @override
+  String get profileUsernameChecking => 'Wird geprüft…';
+
+  @override
+  String get profileUsernameHelperIdle =>
+      '3–20 Zeichen · Buchstaben, Zahlen, . und _';
+
+  @override
+  String get profileChooseUsernameTitle => 'Wähle einen Benutzernamen';
+
+  @override
+  String get profileChooseUsernameSubtitle =>
+      'So finden dich Freunde auf Sippd.';
+
+  @override
+  String get profileChooseUsernameHint => 'benutzername';
+
+  @override
+  String get profileChooseUsernameContinue => 'Weiter';
+
+  @override
+  String get profileChooseUsernameSaveFailed =>
+      'Benutzername konnte nicht gespeichert werden. Versuch\'s nochmal.';
 }

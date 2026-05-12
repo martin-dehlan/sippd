@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../l10n/generated/app_localizations.dart';
 import '../services/connectivity/connectivity.provider.dart';
 import '../utils/responsive.dart';
 
@@ -50,7 +51,7 @@ class OfflineIndicator extends ConsumerWidget {
                   ),
                   SizedBox(width: context.xs * 1.4),
                   Text(
-                    'Offline',
+                    AppLocalizations.of(context).commonOffline,
                     style: TextStyle(
                       fontSize: context.captionFont * 0.95,
                       fontWeight: FontWeight.w600,

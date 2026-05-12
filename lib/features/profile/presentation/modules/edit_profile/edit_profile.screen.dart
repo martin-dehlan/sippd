@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/inline_error.widget.dart';
 import '../../../../auth/controller/auth.provider.dart';
@@ -126,9 +127,16 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(describeAppError(e, fallback: 'Upload failed.')),
+            content: Text(
+              describeAppError(
+                e,
+                context: context,
+                fallback: l10n.profileEditUploadFailed,
+              ),
+            ),
           ),
         );
       }
@@ -196,6 +204,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final profile = ref.watch(currentProfileProvider).valueOrNull;
 
     if (!_loadedInitial && profile != null) {
@@ -220,7 +229,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         ),
         centerTitle: true,
         title: Text(
-          'Edit profile',
+          l10n.profileEditTitle,
           style: TextStyle(
             fontSize: context.bodyFont * 1.1,
             fontWeight: FontWeight.w700,
@@ -246,18 +255,18 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               Center(
                 child: InlineFieldError(
                   error: _avatarError,
-                  fallback: "Couldn't update photo. Try again.",
+                  fallback: l10n.profileEditAvatarUpdateFailed,
                 ),
               ),
             if (_saveError != null)
               InlineFieldError(
                 error: _saveError,
-                fallback: "Couldn't save changes. Try again.",
+                fallback: l10n.profileEditSaveChangesFailed,
               ),
             SizedBox(height: context.xl),
-            _SectionHeader(text: 'Profile'),
+            _SectionHeader(text: l10n.profileEditSectionProfile),
             SizedBox(height: context.m),
-            _FieldLabel(text: 'Username'),
+            _FieldLabel(text: l10n.profileEditFieldUsername),
             SizedBox(height: context.s),
             _UsernameField(
               controller: _usernameController,
@@ -267,7 +276,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             SizedBox(height: context.xs),
             _UsernameStatusLine(status: _usernameStatus),
             SizedBox(height: context.l),
-            _FieldLabel(text: 'Display name', optional: true),
+            _FieldLabel(text: l10n.profileEditFieldDisplayName, optional: true),
             SizedBox(height: context.s),
             TextField(
               controller: _displayNameController,
@@ -275,8 +284,10 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               style: TextStyle(fontSize: context.bodyFont),
               decoration: InputDecoration(
                 hintText: profile?.username != null
-                    ? 'e.g. ${profile!.username}'
-                    : 'How should we call you?',
+                    ? l10n.profileEditDisplayNameHintWithUsername(
+                        profile!.username!,
+                      )
+                    : l10n.profileEditDisplayNameHintGeneric,
                 counterText: '',
                 filled: true,
                 fillColor: cs.surfaceContainer,
@@ -288,8 +299,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             ),
             SizedBox(height: context.xs),
             Text(
-              'Shown in groups and tastings. Leave empty to use your '
-              'username.',
+              l10n.profileEditDisplayNameHelper,
               style: TextStyle(
                 fontSize: context.captionFont * 0.9,
                 color: cs.outline,
@@ -297,8 +307,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             ),
             SizedBox(height: context.xl * 1.2),
             _SectionHeader(
-              text: 'Your taste',
-              subtitle: 'Tune what Sippd learns about you. Change anytime.',
+              text: l10n.profileEditSectionTaste,
+              subtitle: l10n.profileEditSectionTasteSubtitle,
             ),
             SizedBox(height: context.m),
             const TasteProfileEditor(),
@@ -367,7 +377,7 @@ class _FieldLabel extends StatelessWidget {
         if (optional) ...[
           SizedBox(width: context.xs),
           Text(
-            '(optional)',
+            AppLocalizations.of(context).commonOptional,
             style: TextStyle(fontSize: context.captionFont, color: cs.outline),
           ),
         ],
@@ -473,10 +483,11 @@ class _UsernameStatusLine extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final (text, color) = switch (status) {
-      _UsernameState.tooShort => ('At least 3 characters', cs.error),
-      _UsernameState.invalid => ('Only letters, numbers, . and _', cs.error),
-      _UsernameState.taken => ('Already taken', cs.error),
+      _UsernameState.tooShort => (l10n.profileUsernameTooShort, cs.error),
+      _UsernameState.invalid => (l10n.profileUsernameInvalid, cs.error),
+      _UsernameState.taken => (l10n.profileUsernameTaken, cs.error),
       _ => ('', cs.outline),
     };
     if (text.isEmpty) return const SizedBox.shrink();
@@ -558,6 +569,7 @@ Future<_AvatarAction?> _showSourceSheet(
     context: context,
     builder: (ctx) {
       final cs = Theme.of(ctx).colorScheme;
+      final l10n = AppLocalizations.of(ctx);
       return SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(vertical: ctx.m),
@@ -567,7 +579,7 @@ Future<_AvatarAction?> _showSourceSheet(
               ListTile(
                 leading: Icon(PhosphorIconsRegular.camera, color: cs.primary),
                 title: Text(
-                  'Take photo',
+                  l10n.profileAvatarTakePhoto,
                   style: TextStyle(fontSize: ctx.bodyFont),
                 ),
                 onTap: () => Navigator.pop(ctx, _AvatarAction.camera),
@@ -575,7 +587,7 @@ Future<_AvatarAction?> _showSourceSheet(
               ListTile(
                 leading: Icon(PhosphorIconsRegular.images, color: cs.primary),
                 title: Text(
-                  'Choose from gallery',
+                  l10n.profileAvatarChooseGallery,
                   style: TextStyle(fontSize: ctx.bodyFont),
                 ),
                 onTap: () => Navigator.pop(ctx, _AvatarAction.gallery),
@@ -591,7 +603,7 @@ Future<_AvatarAction?> _showSourceSheet(
                 ListTile(
                   leading: Icon(PhosphorIconsRegular.trash, color: cs.error),
                   title: Text(
-                    'Remove photo',
+                    l10n.profileAvatarRemove,
                     style: TextStyle(fontSize: ctx.bodyFont, color: cs.error),
                   ),
                   onTap: () => Navigator.pop(ctx, _AvatarAction.remove),

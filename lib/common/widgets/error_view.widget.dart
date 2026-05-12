@@ -4,6 +4,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../errors/app_error.dart';
+import '../l10n/generated/app_localizations.dart';
 import '../services/connectivity/connectivity.provider.dart';
 import '../utils/responsive.dart';
 
@@ -31,6 +32,7 @@ class ErrorView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final online = ref.watch(isOnlineProvider);
     // Treat AppError.offline / AppError.network as offline regardless
     // of the live connectivity probe — the throw itself is the
@@ -39,12 +41,15 @@ class ErrorView extends ConsumerWidget {
     final showOffline = !online || errorIsOffline;
 
     final resolvedTitle =
-        title ?? (showOffline ? "You're offline" : "Couldn't load");
+        title ??
+        (showOffline
+            ? l10n.commonErrorViewOfflineTitle
+            : l10n.commonErrorViewGenericTitle);
     final resolvedSubtitle =
         subtitle ??
         (showOffline
-            ? 'Reconnect to load this.'
-            : 'Pull to retry or try again later.');
+            ? l10n.commonErrorViewOfflineSubtitle
+            : l10n.commonErrorViewGenericSubtitle);
     final icon = showOffline
         ? PhosphorIconsRegular.wifiSlash
         : PhosphorIconsRegular.warningCircle;
@@ -102,7 +107,7 @@ class ErrorView extends ConsumerWidget {
                 color: cs.tertiary,
               ),
               label: Text(
-                'Retry',
+                l10n.commonRetry,
                 style: TextStyle(
                   fontSize: context.captionFont,
                   fontWeight: FontWeight.w600,

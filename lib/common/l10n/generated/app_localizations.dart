@@ -6169,6 +6169,348 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Not now'**
   String get shareRatingPromptDismiss;
+
+  /// No description provided for @commonRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get commonRetry;
+
+  /// No description provided for @commonSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get commonSave;
+
+  /// No description provided for @commonClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get commonClear;
+
+  /// No description provided for @commonGotIt.
+  ///
+  /// In en, this message translates to:
+  /// **'Got it'**
+  String get commonGotIt;
+
+  /// No description provided for @commonOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'(optional)'**
+  String get commonOptional;
+
+  /// Inline offline indicator label
+  ///
+  /// In en, this message translates to:
+  /// **'Offline'**
+  String get commonOffline;
+
+  /// No description provided for @commonOfflineMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re offline. Reconnect to try again.'**
+  String get commonOfflineMessage;
+
+  /// No description provided for @commonNetworkErrorMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Network error. Check your connection.'**
+  String get commonNetworkErrorMessage;
+
+  /// No description provided for @commonSomethingWentWrong.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong.'**
+  String get commonSomethingWentWrong;
+
+  /// No description provided for @commonErrorViewOfflineTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re offline'**
+  String get commonErrorViewOfflineTitle;
+
+  /// No description provided for @commonErrorViewOfflineSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reconnect to load this.'**
+  String get commonErrorViewOfflineSubtitle;
+
+  /// No description provided for @commonErrorViewGenericTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load'**
+  String get commonErrorViewGenericTitle;
+
+  /// No description provided for @commonErrorViewGenericSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pull to retry or try again later.'**
+  String get commonErrorViewGenericSubtitle;
+
+  /// No description provided for @commonInlineCouldntSaveRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save · Retry'**
+  String get commonInlineCouldntSaveRetry;
+
+  /// No description provided for @commonInlineOfflineRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline · Retry'**
+  String get commonInlineOfflineRetry;
+
+  /// No description provided for @commonPhotoDialogCameraTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera access off'**
+  String get commonPhotoDialogCameraTitle;
+
+  /// No description provided for @commonPhotoDialogCameraBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Sippd needs camera access to capture wine photos. Enable it in Settings to continue.'**
+  String get commonPhotoDialogCameraBody;
+
+  /// No description provided for @commonPhotoDialogPhotosTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos access off'**
+  String get commonPhotoDialogPhotosTitle;
+
+  /// No description provided for @commonPhotoDialogPhotosBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Sippd needs photo library access to attach images. Enable it in Settings to continue.'**
+  String get commonPhotoDialogPhotosBody;
+
+  /// No description provided for @commonPhotoErrorSnack.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load photo. Please try again.'**
+  String get commonPhotoErrorSnack;
+
+  /// No description provided for @commonPriceSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Bottle price'**
+  String get commonPriceSheetTitle;
+
+  /// No description provided for @commonYearPickerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Year'**
+  String get commonYearPickerTitle;
+
+  /// No description provided for @locSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Where did you drink it?'**
+  String get locSheetTitle;
+
+  /// No description provided for @locSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search location...'**
+  String get locSearchHint;
+
+  /// No description provided for @locNoResults.
+  ///
+  /// In en, this message translates to:
+  /// **'No locations found'**
+  String get locNoResults;
+
+  /// No description provided for @locSearchFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Search failed'**
+  String get locSearchFailed;
+
+  /// No description provided for @locUseMyLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Use my current location'**
+  String get locUseMyLocation;
+
+  /// No description provided for @locFindingLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Finding your location…'**
+  String get locFindingLocation;
+
+  /// No description provided for @locReadCurrentFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not read current location'**
+  String get locReadCurrentFailed;
+
+  /// No description provided for @locServicesDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Location services are disabled'**
+  String get locServicesDisabled;
+
+  /// No description provided for @locPermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Location permission denied'**
+  String get locPermissionDenied;
+
+  /// No description provided for @profileEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit profile'**
+  String get profileEditTitle;
+
+  /// No description provided for @profileEditSectionProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get profileEditSectionProfile;
+
+  /// No description provided for @profileEditFieldUsername.
+  ///
+  /// In en, this message translates to:
+  /// **'Username'**
+  String get profileEditFieldUsername;
+
+  /// No description provided for @profileEditFieldDisplayName.
+  ///
+  /// In en, this message translates to:
+  /// **'Display name'**
+  String get profileEditFieldDisplayName;
+
+  /// No description provided for @profileEditDisplayNameHintWithUsername.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. {username}'**
+  String profileEditDisplayNameHintWithUsername(String username);
+
+  /// No description provided for @profileEditDisplayNameHintGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'How should we call you?'**
+  String get profileEditDisplayNameHintGeneric;
+
+  /// No description provided for @profileEditDisplayNameHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Shown in groups and tastings. Leave empty to use your username.'**
+  String get profileEditDisplayNameHelper;
+
+  /// No description provided for @profileEditSectionTaste.
+  ///
+  /// In en, this message translates to:
+  /// **'Your taste'**
+  String get profileEditSectionTaste;
+
+  /// No description provided for @profileEditSectionTasteSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tune what Sippd learns about you. Change anytime.'**
+  String get profileEditSectionTasteSubtitle;
+
+  /// No description provided for @profileEditAvatarUpdateFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t update photo. Try again.'**
+  String get profileEditAvatarUpdateFailed;
+
+  /// No description provided for @profileEditUploadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload failed.'**
+  String get profileEditUploadFailed;
+
+  /// No description provided for @profileEditSaveChangesFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save changes. Try again.'**
+  String get profileEditSaveChangesFailed;
+
+  /// No description provided for @profileAvatarTakePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Take photo'**
+  String get profileAvatarTakePhoto;
+
+  /// No description provided for @profileAvatarChooseGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose from gallery'**
+  String get profileAvatarChooseGallery;
+
+  /// No description provided for @profileAvatarRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove photo'**
+  String get profileAvatarRemove;
+
+  /// No description provided for @profileUsernameTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'At least 3 characters'**
+  String get profileUsernameTooShort;
+
+  /// No description provided for @profileUsernameInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Only letters, numbers, . and _'**
+  String get profileUsernameInvalid;
+
+  /// No description provided for @profileUsernameTaken.
+  ///
+  /// In en, this message translates to:
+  /// **'Already taken'**
+  String get profileUsernameTaken;
+
+  /// No description provided for @profileUsernameAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Available'**
+  String get profileUsernameAvailable;
+
+  /// No description provided for @profileUsernameChecking.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking…'**
+  String get profileUsernameChecking;
+
+  /// No description provided for @profileUsernameHelperIdle.
+  ///
+  /// In en, this message translates to:
+  /// **'3–20 chars · letters, numbers, . and _'**
+  String get profileUsernameHelperIdle;
+
+  /// No description provided for @profileChooseUsernameTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a username'**
+  String get profileChooseUsernameTitle;
+
+  /// No description provided for @profileChooseUsernameSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How friends will find you on Sippd.'**
+  String get profileChooseUsernameSubtitle;
+
+  /// No description provided for @profileChooseUsernameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'username'**
+  String get profileChooseUsernameHint;
+
+  /// No description provided for @profileChooseUsernameContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get profileChooseUsernameContinue;
+
+  /// No description provided for @profileChooseUsernameSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save username. Try again.'**
+  String get profileChooseUsernameSaveFailed;
 }
 
 class _AppLocalizationsDelegate

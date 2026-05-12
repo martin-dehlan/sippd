@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../common/utils/responsive.dart';
 import '../../application/location_search.service.dart';
 import '../../controller/location.provider.dart';
@@ -85,16 +86,21 @@ class _LocationSearchWidgetState extends ConsumerState<LocationSearchWidget> {
     if (_gpsBusy) return;
     setState(() => _gpsBusy = true);
     final messenger = ScaffoldMessenger.maybeOf(context);
+    final l10n = AppLocalizations.of(context);
     try {
       final service = ref.read(locationSearchServiceProvider);
       final loc = await service.resolveCurrentLocation();
       if (!mounted) return;
       _onSelected(loc);
     } on LocationUnavailable catch (e) {
-      messenger?.showSnackBar(SnackBar(content: Text(e.message)));
+      final message = switch (e.reason) {
+        LocationUnavailableReason.servicesOff => l10n.locServicesDisabled,
+        LocationUnavailableReason.permissionDenied => l10n.locPermissionDenied,
+      };
+      messenger?.showSnackBar(SnackBar(content: Text(message)));
     } catch (_) {
       messenger?.showSnackBar(
-        const SnackBar(content: Text('Could not read current location')),
+        SnackBar(content: Text(l10n.locReadCurrentFailed)),
       );
     } finally {
       if (mounted) setState(() => _gpsBusy = false);
@@ -105,6 +111,7 @@ class _LocationSearchWidgetState extends ConsumerState<LocationSearchWidget> {
   Widget build(BuildContext context) {
     final searchState = ref.watch(locationSearchControllerProvider);
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -117,7 +124,7 @@ class _LocationSearchWidgetState extends ConsumerState<LocationSearchWidget> {
           style: TextStyle(fontSize: context.bodyFont),
           decoration: InputDecoration(
             counterText: '',
-            hintText: 'Search location...',
+            hintText: l10n.locSearchHint,
             prefixIcon: Icon(
               PhosphorIconsRegular.mapPin,
               color: cs.primary,
@@ -159,7 +166,7 @@ class _LocationSearchWidgetState extends ConsumerState<LocationSearchWidget> {
                       padding: EdgeInsets.all(context.w * 0.06),
                       child: Center(
                         child: Text(
-                          'No locations found',
+                          l10n.locNoResults,
                           style: TextStyle(
                             fontSize: context.captionFont,
                             color: cs.onSurfaceVariant,
@@ -216,7 +223,7 @@ class _LocationSearchWidgetState extends ConsumerState<LocationSearchWidget> {
                 padding: EdgeInsets.all(context.w * 0.06),
                 child: Center(
                   child: Text(
-                    'Search failed',
+                    l10n.locSearchFailed,
                     style: TextStyle(
                       fontSize: context.captionFont,
                       color: cs.error,
@@ -241,6 +248,7 @@ class _UseMyLocationButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     return Material(
       color: cs.surfaceContainer,
       borderRadius: BorderRadius.circular(context.w * 0.03),
@@ -271,7 +279,7 @@ class _UseMyLocationButton extends StatelessWidget {
               SizedBox(width: context.w * 0.03),
               Expanded(
                 child: Text(
-                  busy ? 'Finding your location…' : 'Use my current location',
+                  busy ? l10n.locFindingLocation : l10n.locUseMyLocation,
                   style: TextStyle(
                     fontSize: context.captionFont,
                     fontWeight: FontWeight.w600,

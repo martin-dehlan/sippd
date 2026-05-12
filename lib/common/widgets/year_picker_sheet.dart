@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/generated/app_localizations.dart';
 import '../utils/responsive.dart';
 
 class YearPickerResult {
@@ -34,6 +35,7 @@ Future<YearPickerResult?> showYearPickerSheet({
     ),
     builder: (ctx) {
       final cs = Theme.of(ctx).colorScheme;
+      final l10n = AppLocalizations.of(ctx);
       return SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(
@@ -56,7 +58,7 @@ Future<YearPickerResult?> showYearPickerSheet({
               ),
               SizedBox(height: ctx.m),
               Text(
-                'Year',
+                l10n.commonYearPickerTitle,
                 style: TextStyle(
                   fontSize: ctx.bodyFont,
                   fontWeight: FontWeight.w600,
@@ -117,7 +119,7 @@ Future<YearPickerResult?> showYearPickerSheet({
                           side: BorderSide(color: cs.outlineVariant),
                         ),
                         child: Text(
-                          'Clear',
+                          l10n.commonClear,
                           style: TextStyle(
                             fontSize: ctx.bodyFont,
                             fontWeight: FontWeight.w600,
@@ -142,7 +144,7 @@ Future<YearPickerResult?> showYearPickerSheet({
                           ),
                         ),
                         child: Text(
-                          'Save',
+                          l10n.commonSave,
                           style: TextStyle(
                             fontSize: ctx.bodyFont,
                             fontWeight: FontWeight.w600,

@@ -4,6 +4,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../errors/app_error.dart';
+import '../l10n/generated/app_localizations.dart';
 import '../services/connectivity/connectivity.provider.dart';
 import '../utils/responsive.dart';
 
@@ -13,14 +14,26 @@ import '../utils/responsive.dart';
 /// non-network AppError variants) falls back to [fallback] so users
 /// never see backend internals like "permission denied for table …".
 /// Centralized so every error UI tells the user the same thing.
+///
+/// Pass [context] to receive localized offline/network copy and a
+/// localized default fallback. Callers that already pass a localized
+/// [fallback] may omit context; in that case the offline/network
+/// branches return English placeholders (used only in non-UI paths).
 String describeAppError(
   Object error, {
-  String fallback = "Something went wrong.",
+  String? fallback,
+  BuildContext? context,
 }) {
+  final l10n = context != null ? AppLocalizations.of(context) : null;
+  final resolvedFallback =
+      fallback ?? l10n?.commonSomethingWentWrong ?? 'Something went wrong.';
   return switch (error) {
-    OfflineError() => "You're offline. Reconnect to try again.",
-    NetworkError() => "Network error. Check your connection.",
-    _ => fallback,
+    OfflineError() =>
+      l10n?.commonOfflineMessage ?? "You're offline. Reconnect to try again.",
+    NetworkError() =>
+      l10n?.commonNetworkErrorMessage ??
+          "Network error. Check your connection.",
+    _ => resolvedFallback,
   };
 }
 
@@ -42,12 +55,17 @@ class InlineFieldError extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     // Re-render on connectivity change so a stale "Network error" caption
     // updates to the right state once the user reconnects.
     ref.watch(isOnlineProvider);
     final text =
         message ??
-        describeAppError(error!, fallback: fallback ?? 'Something went wrong.');
+        describeAppError(
+          error!,
+          context: context,
+          fallback: fallback ?? l10n.commonSomethingWentWrong,
+        );
 
     return Padding(
       padding: EdgeInsets.only(top: context.xs * 1.4),
@@ -119,13 +137,14 @@ class RetryActionButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     ref.watch(isOnlineProvider);
     final hasError = error != null;
     final label = hasError
         ? (retryLabel ??
               (error is OfflineError || error is NetworkError
-                  ? "Offline · Retry"
-                  : "Couldn't save · Retry"))
+                  ? l10n.commonInlineOfflineRetry
+                  : l10n.commonInlineCouldntSaveRetry))
         : idleLabel;
 
     return SizedBox(
