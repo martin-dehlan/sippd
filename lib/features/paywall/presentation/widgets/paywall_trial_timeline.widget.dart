@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../common/utils/responsive.dart';
 
 class PaywallTrialTimeline extends StatelessWidget {
@@ -9,21 +10,22 @@ class PaywallTrialTimeline extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final rows = [
       (
         icon: PhosphorIconsRegular.sparkle,
-        title: 'Today',
-        subtitle: 'Full Pro access unlocked.',
+        title: l10n.paywallTrialTodayTitle,
+        subtitle: l10n.paywallTrialTodaySubtitle,
       ),
       (
         icon: PhosphorIconsRegular.bell,
-        title: 'Day 5',
-        subtitle: 'We\'ll remind you before billing.',
+        title: l10n.paywallTrialDay5Title,
+        subtitle: l10n.paywallTrialDay5Subtitle,
       ),
       (
         icon: PhosphorIconsRegular.creditCard,
-        title: 'Day 7',
-        subtitle: 'Trial ends. Cancel anytime.',
+        title: l10n.paywallTrialDay7Title,
+        subtitle: l10n.paywallTrialDay7Subtitle,
       ),
     ];
 

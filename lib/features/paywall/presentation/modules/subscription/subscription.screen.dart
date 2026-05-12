@@ -4,6 +4,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../common/services/analytics/analytics.provider.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../controller/paywall.provider.dart';
@@ -55,6 +56,7 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen>
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final info = ref.watch(currentCustomerInfoProvider);
     final isPro = ref.watch(isProProvider);
 
@@ -74,7 +76,7 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen>
         // with the hero + Playfair headline below, so drop it.
         title: isPro
             ? Text(
-                'Subscription',
+                l10n.paywallSubscriptionTitle,
                 style: TextStyle(
                   fontSize: context.bodyFont * 1.05,
                   fontWeight: FontWeight.w700,
@@ -113,6 +115,7 @@ class _FreeUpsellContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return SingleChildScrollView(
       padding: EdgeInsets.fromLTRB(
         context.paddingH,
@@ -120,14 +123,14 @@ class _FreeUpsellContent extends StatelessWidget {
         context.paddingH,
         context.l,
       ),
-      child: const PaywallBody(
+      child: PaywallBody(
         triggerSource: 'subscription_screen',
         showHero: true,
-        eyebrow: kProPitchEyebrow,
-        headline: kProPitchHeadline,
-        subhead: kProPitchSubhead,
-        benefits: kProPitchBenefits,
-        primaryLabel: 'Continue',
+        eyebrow: proPitchEyebrow(l10n),
+        headline: proPitchHeadline(l10n),
+        subhead: proPitchSubhead(l10n),
+        benefits: proPitchBenefits(l10n),
+        primaryLabel: l10n.paywallCtaContinue,
       ),
     );
   }
@@ -144,6 +147,7 @@ class _ProManagementContent extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final isLifetime = entitlement != null && _isLifetimeProduct(entitlement!);
     final isTestMode = entitlement == null;
 
@@ -157,19 +161,22 @@ class _ProManagementContent extends ConsumerWidget {
       children: [
         _StatusCard(entitlement: entitlement),
         SizedBox(height: context.l),
-        const _Section(title: 'Included in Pro', children: [_BenefitsBlock()]),
+        _Section(
+          title: l10n.paywallSubscriptionSectionIncluded,
+          children: const [_BenefitsBlock()],
+        ),
         SizedBox(height: context.l),
         _Section(
-          title: 'Manage',
+          title: l10n.paywallSubscriptionSectionManage,
           children: [
             if (!isLifetime && !isTestMode)
               _SectionRow(
-                label: 'Change plan',
+                label: l10n.paywallSubscriptionRowChangePlan,
                 trailing: _TrailingIcon(PhosphorIconsRegular.arrowSquareOut),
                 onTap: () => _openManagement(context, info),
               ),
             _SectionRow(
-              label: 'Restore purchases',
+              label: l10n.paywallSubscriptionRowRestore,
               trailing: _TrailingIcon(
                 PhosphorIconsRegular.clockCounterClockwise,
               ),
@@ -177,7 +184,7 @@ class _ProManagementContent extends ConsumerWidget {
             ),
             if (!isLifetime && !isTestMode)
               _SectionRow(
-                label: 'Cancel subscription',
+                label: l10n.paywallSubscriptionRowCancel,
                 destructive: true,
                 trailing: _TrailingIcon(PhosphorIconsRegular.arrowSquareOut),
                 onTap: () => _openManagement(context, info),
@@ -202,10 +209,11 @@ class _StatusCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final state = _resolveState(entitlement);
-    final planName = _planNameFor(entitlement);
-    final price = _priceFor(ref, entitlement);
-    final billedVia = _billedViaFor(entitlement);
+    final planName = _planNameFor(entitlement, l10n);
+    final price = _priceFor(ref, entitlement, l10n);
+    final billedVia = _billedViaFor(entitlement, l10n);
 
     return Container(
       padding: EdgeInsets.all(context.w * 0.05),
@@ -225,7 +233,7 @@ class _StatusCard extends ConsumerWidget {
               ),
               SizedBox(width: context.w * 0.025),
               Text(
-                'Sippd Pro',
+                l10n.paywallSubscriptionBrand,
                 style: TextStyle(
                   fontSize: context.bodyFont * 1.1,
                   fontWeight: FontWeight.w800,
@@ -262,10 +270,10 @@ class _StatusCard extends ConsumerWidget {
             color: cs.onPrimaryContainer.withValues(alpha: 0.12),
           ),
           SizedBox(height: context.m),
-          _StatusLine(text: _statusLineFor(state, entitlement)),
+          _StatusLine(text: _statusLineFor(state, entitlement, l10n)),
           if (billedVia != null) ...[
             SizedBox(height: context.xs),
-            _StatusLine(text: 'Billed via $billedVia'),
+            _StatusLine(text: l10n.paywallSubscriptionBilledVia(billedVia)),
           ],
         ],
       ),
@@ -281,12 +289,33 @@ class _StatusChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final (label, fg, bg) = switch (state) {
-      _SubState.active => ('ACTIVE', cs.onPrimary, cs.primary),
-      _SubState.trial => ('TRIAL', cs.onPrimary, cs.primary),
-      _SubState.ending => ('ENDING', cs.onErrorContainer, cs.errorContainer),
-      _SubState.lifetime => ('LIFETIME', cs.onPrimary, cs.primary),
-      _SubState.test => ('TEST MODE', cs.onSurface, cs.surfaceContainer),
+      _SubState.active => (
+        l10n.paywallSubscriptionChipActive,
+        cs.onPrimary,
+        cs.primary,
+      ),
+      _SubState.trial => (
+        l10n.paywallSubscriptionChipTrial,
+        cs.onPrimary,
+        cs.primary,
+      ),
+      _SubState.ending => (
+        l10n.paywallSubscriptionChipEnding,
+        cs.onErrorContainer,
+        cs.errorContainer,
+      ),
+      _SubState.lifetime => (
+        l10n.paywallSubscriptionChipLifetime,
+        cs.onPrimary,
+        cs.primary,
+      ),
+      _SubState.test => (
+        l10n.paywallSubscriptionChipTest,
+        cs.onSurface,
+        cs.surfaceContainer,
+      ),
     };
     return Container(
       padding: EdgeInsets.symmetric(
@@ -449,9 +478,11 @@ class _BenefitsBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
+    final benefits = proPitchBenefits(l10n);
     return Column(
       children: [
-        for (var i = 0; i < kProPitchBenefits.length; i++) ...[
+        for (var i = 0; i < benefits.length; i++) ...[
           if (i > 0)
             Padding(
               padding: EdgeInsets.only(left: context.w * 0.14),
@@ -469,7 +500,7 @@ class _BenefitsBlock extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Icon(
-                  kProPitchBenefits[i].icon,
+                  benefits[i].icon,
                   size: context.w * 0.05,
                   color: cs.primary,
                 ),
@@ -479,17 +510,17 @@ class _BenefitsBlock extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        kProPitchBenefits[i].title,
+                        benefits[i].title,
                         style: TextStyle(
                           fontSize: context.bodyFont,
                           fontWeight: FontWeight.w600,
                           color: cs.onSurface,
                         ),
                       ),
-                      if (kProPitchBenefits[i].subtitle != null) ...[
+                      if (benefits[i].subtitle != null) ...[
                         SizedBox(height: context.xs * 0.4),
                         Text(
-                          kProPitchBenefits[i].subtitle!,
+                          benefits[i].subtitle!,
                           style: TextStyle(
                             fontSize: context.captionFont,
                             color: cs.onSurfaceVariant,
@@ -514,12 +545,12 @@ class _Disclosure extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     return Center(
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: context.w * 0.05),
         child: Text(
-          'Subscriptions are billed by Apple or Google. '
-          'Manage them in store settings.',
+          l10n.paywallSubscriptionDisclosure,
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: context.captionFont * 0.9,
@@ -551,77 +582,87 @@ _SubState _resolveState(EntitlementInfo? e) {
   return _SubState.active;
 }
 
-String _planNameFor(EntitlementInfo? e) {
-  if (e == null) return 'Test mode';
-  if (_isLifetimeProduct(e)) return 'Lifetime';
+String _planNameFor(EntitlementInfo? e, AppLocalizations l10n) {
+  if (e == null) return l10n.paywallSubscriptionPlanTest;
+  if (_isLifetimeProduct(e)) return l10n.paywallSubscriptionPlanLifetime;
   final id = e.productIdentifier.toLowerCase();
-  if (id.contains('year') || id.contains('annual')) return 'Annual';
-  if (id.contains('month')) return 'Monthly';
-  if (id.contains('week')) return 'Weekly';
-  return 'Pro plan';
+  if (id.contains('year') || id.contains('annual')) {
+    return l10n.paywallSubscriptionPlanAnnual;
+  }
+  if (id.contains('month')) return l10n.paywallSubscriptionPlanMonthly;
+  if (id.contains('week')) return l10n.paywallSubscriptionPlanWeekly;
+  return l10n.paywallSubscriptionPlanGeneric;
 }
 
-String? _priceFor(WidgetRef ref, EntitlementInfo? e) {
+String? _priceFor(WidgetRef ref, EntitlementInfo? e, AppLocalizations l10n) {
   if (e == null) return null;
-  return _priceFromOfferings(ref, e.productIdentifier);
+  return _priceFromOfferings(ref, e.productIdentifier, l10n);
 }
 
-String? _priceFromOfferings(WidgetRef ref, String productId) {
+String? _priceFromOfferings(
+  WidgetRef ref,
+  String productId,
+  AppLocalizations l10n,
+) {
   final offerings = ref.watch(paywallOfferingsProvider).valueOrNull;
   final packages = offerings?.current?.availablePackages ?? const <Package>[];
   for (final pkg in packages) {
     if (pkg.storeProduct.identifier == productId) {
       final price = pkg.storeProduct.priceString;
-      final period = _periodSuffix(pkg.packageType);
+      final period = _periodSuffix(pkg.packageType, l10n);
       return period == null ? price : '$price $period';
     }
   }
   return null;
 }
 
-String? _periodSuffix(PackageType type) => switch (type) {
-  PackageType.annual => '/ year',
-  PackageType.monthly => '/ month',
-  PackageType.weekly => '/ week',
-  PackageType.lifetime => 'one-time',
+String? _periodSuffix(PackageType type, AppLocalizations l10n) => switch (type) {
+  PackageType.annual => l10n.paywallSubscriptionPeriodYear,
+  PackageType.monthly => l10n.paywallSubscriptionPeriodMonth,
+  PackageType.weekly => l10n.paywallSubscriptionPeriodWeek,
+  PackageType.lifetime => l10n.paywallSubscriptionPeriodLifetime,
   _ => null,
 };
 
-String? _billedViaFor(EntitlementInfo? e) {
+String? _billedViaFor(EntitlementInfo? e, AppLocalizations l10n) {
   if (e == null) return null;
   return switch (e.store) {
-    Store.appStore => 'App Store',
-    Store.playStore => 'Play Store',
-    Store.stripe => 'Stripe',
-    Store.amazon => 'Amazon',
-    Store.macAppStore => 'Mac App Store',
-    Store.promotional => 'Promo grant',
+    Store.appStore => l10n.paywallSubscriptionStoreAppStore,
+    Store.playStore => l10n.paywallSubscriptionStorePlayStore,
+    Store.stripe => l10n.paywallSubscriptionStoreStripe,
+    Store.amazon => l10n.paywallSubscriptionStoreAmazon,
+    Store.macAppStore => l10n.paywallSubscriptionStoreMacAppStore,
+    Store.promotional => l10n.paywallSubscriptionStorePromo,
     _ => null,
   };
 }
 
-String _statusLineFor(_SubState state, EntitlementInfo? e) {
-  if (e == null) return 'Pro features unlocked locally · no real subscription';
+String _statusLineFor(
+  _SubState state,
+  EntitlementInfo? e,
+  AppLocalizations l10n,
+) {
+  if (e == null) return l10n.paywallSubscriptionStatusTestNoSub;
   switch (state) {
     case _SubState.lifetime:
-      return 'Lifetime access — yours forever';
+      return l10n.paywallSubscriptionStatusLifetime;
     case _SubState.ending:
       final date = _parseDate(e.expirationDate);
-      if (date == null) return "Won't renew";
-      return "Access until ${_fmtDate(date)} · won't renew";
+      if (date == null) return l10n.paywallSubscriptionStatusEndingNoDate;
+      return l10n.paywallSubscriptionStatusEndingWithDate(_fmtDate(date, l10n));
     case _SubState.trial:
       final date = _parseDate(e.expirationDate);
-      if (date == null) return 'Trial active';
+      if (date == null) return l10n.paywallSubscriptionStatusTrialActive;
       final days = date.difference(DateTime.now()).inDays;
-      if (days <= 0) return 'Trial ends today';
-      if (days == 1) return 'Trial ends tomorrow';
-      return 'Trial ends in $days days';
+      if (days <= 0) return l10n.paywallSubscriptionStatusTrialEndsToday;
+      if (days == 1) return l10n.paywallSubscriptionStatusTrialEndsTomorrow;
+      return l10n.paywallSubscriptionStatusTrialEndsInDays(days);
     case _SubState.active:
       final date = _parseDate(e.expirationDate);
-      if (date == null) return 'Active';
-      return 'Renews ${_fmtDate(date)}';
+      if (date == null) return l10n.paywallSubscriptionStatusActive;
+      return l10n.paywallSubscriptionStatusRenewsOn(_fmtDate(date, l10n));
     case _SubState.test:
-      return 'Pro features unlocked locally';
+      return l10n.paywallSubscriptionStatusTestLocal;
   }
 }
 
@@ -630,20 +671,20 @@ DateTime? _parseDate(String? raw) {
   return DateTime.tryParse(raw);
 }
 
-String _fmtDate(DateTime d) {
-  const months = [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec',
+String _fmtDate(DateTime d, AppLocalizations l10n) {
+  final months = [
+    l10n.paywallMonthShortJan,
+    l10n.paywallMonthShortFeb,
+    l10n.paywallMonthShortMar,
+    l10n.paywallMonthShortApr,
+    l10n.paywallMonthShortMay,
+    l10n.paywallMonthShortJun,
+    l10n.paywallMonthShortJul,
+    l10n.paywallMonthShortAug,
+    l10n.paywallMonthShortSep,
+    l10n.paywallMonthShortOct,
+    l10n.paywallMonthShortNov,
+    l10n.paywallMonthShortDec,
   ];
   return '${d.day} ${months[d.month - 1]} ${d.year}';
 }
@@ -659,8 +700,9 @@ Future<void> _openManagement(BuildContext context, CustomerInfo? info) async {
   final uri = Uri.parse(target);
   final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
   if (!ok && context.mounted) {
+    final l10n = AppLocalizations.of(context);
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Could not open subscription settings.')),
+      SnackBar(content: Text(l10n.paywallSubscriptionOpenError)),
     );
   }
 }
@@ -675,20 +717,22 @@ Future<void> _restore(BuildContext context, WidgetRef ref) async {
   try {
     final info = await ref.read(paywallProvider).restore();
     if (!context.mounted) return;
+    final l10n = AppLocalizations.of(context);
     final restored = info.entitlements.active.containsKey(proEntitlementId);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
           restored
-              ? 'Welcome back to Sippd Pro!'
-              : 'No active subscription found.',
+              ? l10n.paywallRestoreWelcomeBack
+              : l10n.paywallRestoreNoneFound,
         ),
       ),
     );
   } catch (_) {
     if (!context.mounted) return;
+    final l10n = AppLocalizations.of(context);
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Could not restore purchases.')),
+      SnackBar(content: Text(l10n.paywallErrorRestoreFailed)),
     );
   }
 }

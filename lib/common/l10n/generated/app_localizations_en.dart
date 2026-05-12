@@ -2446,4 +2446,293 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get friendsProfileStatCountries => 'Countries';
+
+  @override
+  String get paywallPitchEyebrow => 'Sippd Pro';
+
+  @override
+  String get paywallPitchHeadline => 'See how you\nreally taste.';
+
+  @override
+  String get paywallPitchSubhead =>
+      'Map every bottle, match with friends who drink like you, and dig deeper into every tasting.';
+
+  @override
+  String get paywallBenefitFriendsTitle => 'Unlimited groups & friend matching';
+
+  @override
+  String get paywallBenefitFriendsSubtitle =>
+      'Bring your circle. See who drinks like you.';
+
+  @override
+  String get paywallBenefitCompassTitle => 'Taste compass & deep stats';
+
+  @override
+  String get paywallBenefitCompassSubtitle => 'Your wine personality, mapped.';
+
+  @override
+  String get paywallBenefitNotesTitle => 'Expert tasting notes';
+
+  @override
+  String get paywallBenefitNotesSubtitle => 'Nose · body · tannins · finish.';
+
+  @override
+  String get paywallPlanMonthly => 'Monthly';
+
+  @override
+  String get paywallPlanAnnual => 'Annual';
+
+  @override
+  String get paywallPlanLifetime => 'Lifetime';
+
+  @override
+  String get paywallPlanSubtitleMonthly => 'Cancel anytime';
+
+  @override
+  String get paywallPlanSubtitleAnnual => 'Most popular';
+
+  @override
+  String get paywallPlanSubtitleLifetime => 'Limited launch offer · pay once';
+
+  @override
+  String get paywallPlanBadgeAnnual => 'MOST POPULAR';
+
+  @override
+  String get paywallPlanBadgeLifetime => 'FOUNDERS EDITION';
+
+  @override
+  String paywallPlanSavingsVsMonthly(int pct) {
+    return 'Save $pct% vs monthly';
+  }
+
+  @override
+  String get paywallTrialTodayTitle => 'Today';
+
+  @override
+  String get paywallTrialTodaySubtitle => 'Full Pro access unlocked.';
+
+  @override
+  String get paywallTrialDay5Title => 'Day 5';
+
+  @override
+  String get paywallTrialDay5Subtitle => 'We\'ll remind you before billing.';
+
+  @override
+  String get paywallTrialDay7Title => 'Day 7';
+
+  @override
+  String get paywallTrialDay7Subtitle => 'Trial ends. Cancel anytime.';
+
+  @override
+  String get paywallCtaContinue => 'Continue';
+
+  @override
+  String get paywallCtaSelectPlan => 'Select a plan';
+
+  @override
+  String get paywallCtaStartTrial => 'Start 7-day free trial';
+
+  @override
+  String get paywallCtaMaybeLater => 'Maybe later';
+
+  @override
+  String get paywallCtaRestore => 'Restore purchases';
+
+  @override
+  String get paywallFooterDisclosure =>
+      'Cancel anytime · billed by Apple or Google';
+
+  @override
+  String get paywallPlansLoadError => 'Couldn\'t load plans';
+
+  @override
+  String get paywallPlansEmpty => 'No plans available yet.';
+
+  @override
+  String get paywallErrorPurchaseFailed => 'Purchase failed. Please try again.';
+
+  @override
+  String get paywallErrorRestoreFailed => 'Could not restore purchases.';
+
+  @override
+  String get paywallRestoreWelcomeBack => 'Welcome back to Sippd Pro!';
+
+  @override
+  String get paywallRestoreNoneFound => 'No active subscription found.';
+
+  @override
+  String get paywallSubscriptionTitle => 'Subscription';
+
+  @override
+  String get paywallSubscriptionBrand => 'Sippd Pro';
+
+  @override
+  String get paywallSubscriptionChipActive => 'ACTIVE';
+
+  @override
+  String get paywallSubscriptionChipTrial => 'TRIAL';
+
+  @override
+  String get paywallSubscriptionChipEnding => 'ENDING';
+
+  @override
+  String get paywallSubscriptionChipLifetime => 'LIFETIME';
+
+  @override
+  String get paywallSubscriptionChipTest => 'TEST MODE';
+
+  @override
+  String get paywallSubscriptionPlanTest => 'Test mode';
+
+  @override
+  String get paywallSubscriptionPlanLifetime => 'Lifetime';
+
+  @override
+  String get paywallSubscriptionPlanAnnual => 'Annual';
+
+  @override
+  String get paywallSubscriptionPlanMonthly => 'Monthly';
+
+  @override
+  String get paywallSubscriptionPlanWeekly => 'Weekly';
+
+  @override
+  String get paywallSubscriptionPlanGeneric => 'Pro plan';
+
+  @override
+  String get paywallSubscriptionPeriodYear => '/ year';
+
+  @override
+  String get paywallSubscriptionPeriodMonth => '/ month';
+
+  @override
+  String get paywallSubscriptionPeriodWeek => '/ week';
+
+  @override
+  String get paywallSubscriptionPeriodLifetime => 'one-time';
+
+  @override
+  String get paywallSubscriptionStoreAppStore => 'App Store';
+
+  @override
+  String get paywallSubscriptionStorePlayStore => 'Play Store';
+
+  @override
+  String get paywallSubscriptionStoreStripe => 'Stripe';
+
+  @override
+  String get paywallSubscriptionStoreAmazon => 'Amazon';
+
+  @override
+  String get paywallSubscriptionStoreMacAppStore => 'Mac App Store';
+
+  @override
+  String get paywallSubscriptionStorePromo => 'Promo grant';
+
+  @override
+  String paywallSubscriptionBilledVia(String store) {
+    return 'Billed via $store';
+  }
+
+  @override
+  String get paywallSubscriptionStatusTestNoSub =>
+      'Pro features unlocked locally · no real subscription';
+
+  @override
+  String get paywallSubscriptionStatusTestLocal =>
+      'Pro features unlocked locally';
+
+  @override
+  String get paywallSubscriptionStatusLifetime =>
+      'Lifetime access — yours forever';
+
+  @override
+  String get paywallSubscriptionStatusEndingNoDate => 'Won\'t renew';
+
+  @override
+  String paywallSubscriptionStatusEndingWithDate(String date) {
+    return 'Access until $date · won\'t renew';
+  }
+
+  @override
+  String get paywallSubscriptionStatusTrialActive => 'Trial active';
+
+  @override
+  String get paywallSubscriptionStatusTrialEndsToday => 'Trial ends today';
+
+  @override
+  String get paywallSubscriptionStatusTrialEndsTomorrow =>
+      'Trial ends tomorrow';
+
+  @override
+  String paywallSubscriptionStatusTrialEndsInDays(int days) {
+    return 'Trial ends in $days days';
+  }
+
+  @override
+  String get paywallSubscriptionStatusActive => 'Active';
+
+  @override
+  String paywallSubscriptionStatusRenewsOn(String date) {
+    return 'Renews $date';
+  }
+
+  @override
+  String get paywallSubscriptionSectionIncluded => 'Included in Pro';
+
+  @override
+  String get paywallSubscriptionSectionManage => 'Manage';
+
+  @override
+  String get paywallSubscriptionRowChangePlan => 'Change plan';
+
+  @override
+  String get paywallSubscriptionRowRestore => 'Restore purchases';
+
+  @override
+  String get paywallSubscriptionRowCancel => 'Cancel subscription';
+
+  @override
+  String get paywallSubscriptionDisclosure =>
+      'Subscriptions are billed by Apple or Google. Manage them in store settings.';
+
+  @override
+  String get paywallSubscriptionOpenError =>
+      'Could not open subscription settings.';
+
+  @override
+  String get paywallMonthShortJan => 'Jan';
+
+  @override
+  String get paywallMonthShortFeb => 'Feb';
+
+  @override
+  String get paywallMonthShortMar => 'Mar';
+
+  @override
+  String get paywallMonthShortApr => 'Apr';
+
+  @override
+  String get paywallMonthShortMay => 'May';
+
+  @override
+  String get paywallMonthShortJun => 'Jun';
+
+  @override
+  String get paywallMonthShortJul => 'Jul';
+
+  @override
+  String get paywallMonthShortAug => 'Aug';
+
+  @override
+  String get paywallMonthShortSep => 'Sep';
+
+  @override
+  String get paywallMonthShortOct => 'Oct';
+
+  @override
+  String get paywallMonthShortNov => 'Nov';
+
+  @override
+  String get paywallMonthShortDec => 'Dec';
 }

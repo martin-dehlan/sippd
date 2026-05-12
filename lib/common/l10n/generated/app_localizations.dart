@@ -4603,6 +4603,546 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Countries'**
   String get friendsProfileStatCountries;
+
+  /// Small uppercase eyebrow above the paywall headline
+  ///
+  /// In en, this message translates to:
+  /// **'Sippd Pro'**
+  String get paywallPitchEyebrow;
+
+  /// Hero headline on the paywall pitch (\n forces a line break)
+  ///
+  /// In en, this message translates to:
+  /// **'See how you\nreally taste.'**
+  String get paywallPitchHeadline;
+
+  /// Sub-headline under the paywall headline
+  ///
+  /// In en, this message translates to:
+  /// **'Map every bottle, match with friends who drink like you, and dig deeper into every tasting.'**
+  String get paywallPitchSubhead;
+
+  /// No description provided for @paywallBenefitFriendsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited groups & friend matching'**
+  String get paywallBenefitFriendsTitle;
+
+  /// No description provided for @paywallBenefitFriendsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Bring your circle. See who drinks like you.'**
+  String get paywallBenefitFriendsSubtitle;
+
+  /// No description provided for @paywallBenefitCompassTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Taste compass & deep stats'**
+  String get paywallBenefitCompassTitle;
+
+  /// No description provided for @paywallBenefitCompassSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your wine personality, mapped.'**
+  String get paywallBenefitCompassSubtitle;
+
+  /// No description provided for @paywallBenefitNotesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Expert tasting notes'**
+  String get paywallBenefitNotesTitle;
+
+  /// No description provided for @paywallBenefitNotesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Nose · body · tannins · finish.'**
+  String get paywallBenefitNotesSubtitle;
+
+  /// No description provided for @paywallPlanMonthly.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly'**
+  String get paywallPlanMonthly;
+
+  /// No description provided for @paywallPlanAnnual.
+  ///
+  /// In en, this message translates to:
+  /// **'Annual'**
+  String get paywallPlanAnnual;
+
+  /// No description provided for @paywallPlanLifetime.
+  ///
+  /// In en, this message translates to:
+  /// **'Lifetime'**
+  String get paywallPlanLifetime;
+
+  /// No description provided for @paywallPlanSubtitleMonthly.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel anytime'**
+  String get paywallPlanSubtitleMonthly;
+
+  /// No description provided for @paywallPlanSubtitleAnnual.
+  ///
+  /// In en, this message translates to:
+  /// **'Most popular'**
+  String get paywallPlanSubtitleAnnual;
+
+  /// No description provided for @paywallPlanSubtitleLifetime.
+  ///
+  /// In en, this message translates to:
+  /// **'Limited launch offer · pay once'**
+  String get paywallPlanSubtitleLifetime;
+
+  /// No description provided for @paywallPlanBadgeAnnual.
+  ///
+  /// In en, this message translates to:
+  /// **'MOST POPULAR'**
+  String get paywallPlanBadgeAnnual;
+
+  /// No description provided for @paywallPlanBadgeLifetime.
+  ///
+  /// In en, this message translates to:
+  /// **'FOUNDERS EDITION'**
+  String get paywallPlanBadgeLifetime;
+
+  /// No description provided for @paywallPlanSavingsVsMonthly.
+  ///
+  /// In en, this message translates to:
+  /// **'Save {pct}% vs monthly'**
+  String paywallPlanSavingsVsMonthly(int pct);
+
+  /// No description provided for @paywallTrialTodayTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get paywallTrialTodayTitle;
+
+  /// No description provided for @paywallTrialTodaySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Full Pro access unlocked.'**
+  String get paywallTrialTodaySubtitle;
+
+  /// No description provided for @paywallTrialDay5Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Day 5'**
+  String get paywallTrialDay5Title;
+
+  /// No description provided for @paywallTrialDay5Subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'ll remind you before billing.'**
+  String get paywallTrialDay5Subtitle;
+
+  /// No description provided for @paywallTrialDay7Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Day 7'**
+  String get paywallTrialDay7Title;
+
+  /// No description provided for @paywallTrialDay7Subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Trial ends. Cancel anytime.'**
+  String get paywallTrialDay7Subtitle;
+
+  /// No description provided for @paywallCtaContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get paywallCtaContinue;
+
+  /// No description provided for @paywallCtaSelectPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a plan'**
+  String get paywallCtaSelectPlan;
+
+  /// No description provided for @paywallCtaStartTrial.
+  ///
+  /// In en, this message translates to:
+  /// **'Start 7-day free trial'**
+  String get paywallCtaStartTrial;
+
+  /// No description provided for @paywallCtaMaybeLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Maybe later'**
+  String get paywallCtaMaybeLater;
+
+  /// No description provided for @paywallCtaRestore.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore purchases'**
+  String get paywallCtaRestore;
+
+  /// No description provided for @paywallFooterDisclosure.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel anytime · billed by Apple or Google'**
+  String get paywallFooterDisclosure;
+
+  /// No description provided for @paywallPlansLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load plans'**
+  String get paywallPlansLoadError;
+
+  /// No description provided for @paywallPlansEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No plans available yet.'**
+  String get paywallPlansEmpty;
+
+  /// No description provided for @paywallErrorPurchaseFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase failed. Please try again.'**
+  String get paywallErrorPurchaseFailed;
+
+  /// No description provided for @paywallErrorRestoreFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not restore purchases.'**
+  String get paywallErrorRestoreFailed;
+
+  /// No description provided for @paywallRestoreWelcomeBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome back to Sippd Pro!'**
+  String get paywallRestoreWelcomeBack;
+
+  /// No description provided for @paywallRestoreNoneFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No active subscription found.'**
+  String get paywallRestoreNoneFound;
+
+  /// No description provided for @paywallSubscriptionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription'**
+  String get paywallSubscriptionTitle;
+
+  /// No description provided for @paywallSubscriptionBrand.
+  ///
+  /// In en, this message translates to:
+  /// **'Sippd Pro'**
+  String get paywallSubscriptionBrand;
+
+  /// No description provided for @paywallSubscriptionChipActive.
+  ///
+  /// In en, this message translates to:
+  /// **'ACTIVE'**
+  String get paywallSubscriptionChipActive;
+
+  /// No description provided for @paywallSubscriptionChipTrial.
+  ///
+  /// In en, this message translates to:
+  /// **'TRIAL'**
+  String get paywallSubscriptionChipTrial;
+
+  /// No description provided for @paywallSubscriptionChipEnding.
+  ///
+  /// In en, this message translates to:
+  /// **'ENDING'**
+  String get paywallSubscriptionChipEnding;
+
+  /// No description provided for @paywallSubscriptionChipLifetime.
+  ///
+  /// In en, this message translates to:
+  /// **'LIFETIME'**
+  String get paywallSubscriptionChipLifetime;
+
+  /// No description provided for @paywallSubscriptionChipTest.
+  ///
+  /// In en, this message translates to:
+  /// **'TEST MODE'**
+  String get paywallSubscriptionChipTest;
+
+  /// No description provided for @paywallSubscriptionPlanTest.
+  ///
+  /// In en, this message translates to:
+  /// **'Test mode'**
+  String get paywallSubscriptionPlanTest;
+
+  /// No description provided for @paywallSubscriptionPlanLifetime.
+  ///
+  /// In en, this message translates to:
+  /// **'Lifetime'**
+  String get paywallSubscriptionPlanLifetime;
+
+  /// No description provided for @paywallSubscriptionPlanAnnual.
+  ///
+  /// In en, this message translates to:
+  /// **'Annual'**
+  String get paywallSubscriptionPlanAnnual;
+
+  /// No description provided for @paywallSubscriptionPlanMonthly.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly'**
+  String get paywallSubscriptionPlanMonthly;
+
+  /// No description provided for @paywallSubscriptionPlanWeekly.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly'**
+  String get paywallSubscriptionPlanWeekly;
+
+  /// No description provided for @paywallSubscriptionPlanGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'Pro plan'**
+  String get paywallSubscriptionPlanGeneric;
+
+  /// No description provided for @paywallSubscriptionPeriodYear.
+  ///
+  /// In en, this message translates to:
+  /// **'/ year'**
+  String get paywallSubscriptionPeriodYear;
+
+  /// No description provided for @paywallSubscriptionPeriodMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'/ month'**
+  String get paywallSubscriptionPeriodMonth;
+
+  /// No description provided for @paywallSubscriptionPeriodWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'/ week'**
+  String get paywallSubscriptionPeriodWeek;
+
+  /// No description provided for @paywallSubscriptionPeriodLifetime.
+  ///
+  /// In en, this message translates to:
+  /// **'one-time'**
+  String get paywallSubscriptionPeriodLifetime;
+
+  /// No description provided for @paywallSubscriptionStoreAppStore.
+  ///
+  /// In en, this message translates to:
+  /// **'App Store'**
+  String get paywallSubscriptionStoreAppStore;
+
+  /// No description provided for @paywallSubscriptionStorePlayStore.
+  ///
+  /// In en, this message translates to:
+  /// **'Play Store'**
+  String get paywallSubscriptionStorePlayStore;
+
+  /// No description provided for @paywallSubscriptionStoreStripe.
+  ///
+  /// In en, this message translates to:
+  /// **'Stripe'**
+  String get paywallSubscriptionStoreStripe;
+
+  /// No description provided for @paywallSubscriptionStoreAmazon.
+  ///
+  /// In en, this message translates to:
+  /// **'Amazon'**
+  String get paywallSubscriptionStoreAmazon;
+
+  /// No description provided for @paywallSubscriptionStoreMacAppStore.
+  ///
+  /// In en, this message translates to:
+  /// **'Mac App Store'**
+  String get paywallSubscriptionStoreMacAppStore;
+
+  /// No description provided for @paywallSubscriptionStorePromo.
+  ///
+  /// In en, this message translates to:
+  /// **'Promo grant'**
+  String get paywallSubscriptionStorePromo;
+
+  /// No description provided for @paywallSubscriptionBilledVia.
+  ///
+  /// In en, this message translates to:
+  /// **'Billed via {store}'**
+  String paywallSubscriptionBilledVia(String store);
+
+  /// No description provided for @paywallSubscriptionStatusTestNoSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Pro features unlocked locally · no real subscription'**
+  String get paywallSubscriptionStatusTestNoSub;
+
+  /// No description provided for @paywallSubscriptionStatusTestLocal.
+  ///
+  /// In en, this message translates to:
+  /// **'Pro features unlocked locally'**
+  String get paywallSubscriptionStatusTestLocal;
+
+  /// No description provided for @paywallSubscriptionStatusLifetime.
+  ///
+  /// In en, this message translates to:
+  /// **'Lifetime access — yours forever'**
+  String get paywallSubscriptionStatusLifetime;
+
+  /// No description provided for @paywallSubscriptionStatusEndingNoDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Won\'t renew'**
+  String get paywallSubscriptionStatusEndingNoDate;
+
+  /// No description provided for @paywallSubscriptionStatusEndingWithDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Access until {date} · won\'t renew'**
+  String paywallSubscriptionStatusEndingWithDate(String date);
+
+  /// No description provided for @paywallSubscriptionStatusTrialActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Trial active'**
+  String get paywallSubscriptionStatusTrialActive;
+
+  /// No description provided for @paywallSubscriptionStatusTrialEndsToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Trial ends today'**
+  String get paywallSubscriptionStatusTrialEndsToday;
+
+  /// No description provided for @paywallSubscriptionStatusTrialEndsTomorrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Trial ends tomorrow'**
+  String get paywallSubscriptionStatusTrialEndsTomorrow;
+
+  /// No description provided for @paywallSubscriptionStatusTrialEndsInDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Trial ends in {days} days'**
+  String paywallSubscriptionStatusTrialEndsInDays(int days);
+
+  /// No description provided for @paywallSubscriptionStatusActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get paywallSubscriptionStatusActive;
+
+  /// No description provided for @paywallSubscriptionStatusRenewsOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Renews {date}'**
+  String paywallSubscriptionStatusRenewsOn(String date);
+
+  /// No description provided for @paywallSubscriptionSectionIncluded.
+  ///
+  /// In en, this message translates to:
+  /// **'Included in Pro'**
+  String get paywallSubscriptionSectionIncluded;
+
+  /// No description provided for @paywallSubscriptionSectionManage.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage'**
+  String get paywallSubscriptionSectionManage;
+
+  /// No description provided for @paywallSubscriptionRowChangePlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Change plan'**
+  String get paywallSubscriptionRowChangePlan;
+
+  /// No description provided for @paywallSubscriptionRowRestore.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore purchases'**
+  String get paywallSubscriptionRowRestore;
+
+  /// No description provided for @paywallSubscriptionRowCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel subscription'**
+  String get paywallSubscriptionRowCancel;
+
+  /// No description provided for @paywallSubscriptionDisclosure.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscriptions are billed by Apple or Google. Manage them in store settings.'**
+  String get paywallSubscriptionDisclosure;
+
+  /// No description provided for @paywallSubscriptionOpenError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open subscription settings.'**
+  String get paywallSubscriptionOpenError;
+
+  /// No description provided for @paywallMonthShortJan.
+  ///
+  /// In en, this message translates to:
+  /// **'Jan'**
+  String get paywallMonthShortJan;
+
+  /// No description provided for @paywallMonthShortFeb.
+  ///
+  /// In en, this message translates to:
+  /// **'Feb'**
+  String get paywallMonthShortFeb;
+
+  /// No description provided for @paywallMonthShortMar.
+  ///
+  /// In en, this message translates to:
+  /// **'Mar'**
+  String get paywallMonthShortMar;
+
+  /// No description provided for @paywallMonthShortApr.
+  ///
+  /// In en, this message translates to:
+  /// **'Apr'**
+  String get paywallMonthShortApr;
+
+  /// No description provided for @paywallMonthShortMay.
+  ///
+  /// In en, this message translates to:
+  /// **'May'**
+  String get paywallMonthShortMay;
+
+  /// No description provided for @paywallMonthShortJun.
+  ///
+  /// In en, this message translates to:
+  /// **'Jun'**
+  String get paywallMonthShortJun;
+
+  /// No description provided for @paywallMonthShortJul.
+  ///
+  /// In en, this message translates to:
+  /// **'Jul'**
+  String get paywallMonthShortJul;
+
+  /// No description provided for @paywallMonthShortAug.
+  ///
+  /// In en, this message translates to:
+  /// **'Aug'**
+  String get paywallMonthShortAug;
+
+  /// No description provided for @paywallMonthShortSep.
+  ///
+  /// In en, this message translates to:
+  /// **'Sep'**
+  String get paywallMonthShortSep;
+
+  /// No description provided for @paywallMonthShortOct.
+  ///
+  /// In en, this message translates to:
+  /// **'Oct'**
+  String get paywallMonthShortOct;
+
+  /// No description provided for @paywallMonthShortNov.
+  ///
+  /// In en, this message translates to:
+  /// **'Nov'**
+  String get paywallMonthShortNov;
+
+  /// No description provided for @paywallMonthShortDec.
+  ///
+  /// In en, this message translates to:
+  /// **'Dec'**
+  String get paywallMonthShortDec;
 }
 
 class _AppLocalizationsDelegate
