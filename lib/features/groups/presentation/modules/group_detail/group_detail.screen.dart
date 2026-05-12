@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/error_view.widget.dart';
 import '../../../../../common/widgets/overflow_menu.widget.dart';
@@ -25,19 +26,20 @@ class GroupDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final groupAsync = ref.watch(groupDetailProvider(groupId));
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       body: SafeArea(
         child: groupAsync.when(
           data: (group) {
             if (group == null) {
-              return const Center(child: Text('Group not found'));
+              return Center(child: Text(l10n.groupDetailNotFound));
             }
             return _Body(group: group);
           },
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (e, _) => Center(
-            child: ErrorView(title: "Couldn't load group", error: e),
+            child: ErrorView(title: l10n.groupDetailErrorLoad, error: e),
           ),
         ),
       ),
@@ -79,6 +81,7 @@ class _Body extends ConsumerWidget {
     final currentUid = ref.watch(currentUserIdProvider);
     final isOwner = currentUid == group.createdBy;
     final padH = context.paddingH * 1.3;
+    final l10n = AppLocalizations.of(context);
 
     return ListView(
       padding: EdgeInsets.zero,
@@ -131,10 +134,10 @@ class _Body extends ConsumerWidget {
         ),
         SizedBox(height: context.l),
         _SectionHeader(
-          label: 'Shared wines',
+          label: l10n.groupDetailSectionSharedWines,
           action: _SectionAction(
             icon: PhosphorIconsRegular.plus,
-            label: 'Share',
+            label: l10n.groupDetailActionShare,
             onTap: () => WinePickerSheet.show(context, groupId: group.id),
           ),
         ),
@@ -142,10 +145,10 @@ class _Body extends ConsumerWidget {
         SharedWinesCarousel(groupId: group.id),
         SizedBox(height: context.l),
         _SectionHeader(
-          label: 'Tastings',
+          label: l10n.groupDetailSectionTastings,
           action: _SectionAction(
             icon: PhosphorIconsRegular.plus,
-            label: 'Plan',
+            label: l10n.groupDetailActionPlan,
             onTap: () => context.push(AppRoutes.tastingCreatePath(group.id)),
           ),
         ),
@@ -161,20 +164,21 @@ class _Body extends ConsumerWidget {
     WidgetRef ref,
     String groupId,
   ) async {
+    final l10n = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Leave group?'),
-        content: const Text('You can rejoin later with the invite code.'),
+        title: Text(l10n.groupDetailLeaveDialogTitle),
+        content: Text(l10n.groupDetailLeaveDialogBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
+            child: Text(l10n.groupDetailLeaveDialogCancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
             child: Text(
-              'Leave',
+              l10n.groupDetailLeaveDialogConfirm,
               style: TextStyle(color: Theme.of(ctx).colorScheme.error),
             ),
           ),
@@ -191,22 +195,21 @@ class _Body extends ConsumerWidget {
     WidgetRef ref,
     String groupId,
   ) async {
+    final l10n = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete group?'),
-        content: const Text(
-          'The group and its shared wines will be removed for everyone.',
-        ),
+        title: Text(l10n.groupDetailDeleteDialogTitle),
+        content: Text(l10n.groupDetailDeleteDialogBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
+            child: Text(l10n.groupDetailDeleteDialogCancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
             child: Text(
-              'Delete',
+              l10n.groupDetailDeleteDialogConfirm,
               style: TextStyle(color: Theme.of(ctx).colorScheme.error),
             ),
           ),
@@ -233,18 +236,19 @@ class _GroupMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return OverflowMenu(
       groups: [
         if (isOwner)
           [
             OverflowMenuItem(
               icon: PhosphorIconsRegular.pencilSimple,
-              label: 'Edit group',
+              label: l10n.groupDetailMenuEdit,
               onTap: onEdit,
             ),
             OverflowMenuItem(
               icon: PhosphorIconsRegular.trash,
-              label: 'Delete group',
+              label: l10n.groupDetailMenuDelete,
               destructive: true,
               onTap: onDelete,
             ),
@@ -253,7 +257,7 @@ class _GroupMenu extends StatelessWidget {
           [
             OverflowMenuItem(
               icon: PhosphorIconsRegular.signOut,
-              label: 'Leave group',
+              label: l10n.groupDetailMenuLeave,
               destructive: true,
               onTap: onLeave,
             ),

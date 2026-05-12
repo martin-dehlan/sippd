@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../../common/services/deep_link/deep_link.service.dart';
 import '../../../../../../common/utils/responsive.dart';
 import '../../../../../../common/utils/share_origin.dart';
@@ -53,6 +54,7 @@ class InviteShareSheet extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final maxH = MediaQuery.of(context).size.height * 0.85;
     return SafeArea(
       child: ConstrainedBox(
@@ -80,7 +82,7 @@ class InviteShareSheet extends ConsumerWidget {
               ),
               SizedBox(height: context.l),
               Text(
-                'INVITE',
+                l10n.groupInviteEyebrow,
                 style: TextStyle(
                   fontSize: context.captionFont * 0.95,
                   fontWeight: FontWeight.w700,
@@ -99,7 +101,7 @@ class InviteShareSheet extends ConsumerWidget {
               Divider(color: cs.outlineVariant, height: 1),
               SizedBox(height: context.m),
               Text(
-                'INVITE FRIENDS',
+                l10n.groupInviteFriendsEyebrow,
                 style: TextStyle(
                   fontSize: context.captionFont * 0.95,
                   fontWeight: FontWeight.w700,
@@ -119,18 +121,20 @@ class InviteShareSheet extends ConsumerWidget {
   Future<void> _copy(BuildContext context) async {
     await Clipboard.setData(ClipboardData(text: code));
     if (!context.mounted) return;
+    final l10n = AppLocalizations.of(context);
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Invite code copied'),
-        duration: Duration(seconds: 2),
+      SnackBar(
+        content: Text(l10n.groupInviteCodeCopied),
+        duration: const Duration(seconds: 2),
       ),
     );
   }
 
   Future<void> _share(BuildContext context) async {
+    final l10n = AppLocalizations.of(context);
     await Share.share(
-      'Join "$groupName" on Sippd 🍷\n\n$_inviteUri\n\nOr enter code: $code',
-      subject: 'Join $groupName on Sippd',
+      l10n.groupInviteShareMessage(groupName, _inviteUri, code),
+      subject: l10n.groupInviteShareSubject(groupName),
       sharePositionOrigin: shareOriginFor(context),
     );
   }
@@ -184,12 +188,13 @@ class _ActionRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Row(
       children: [
         Expanded(
           child: _Action(
             icon: PhosphorIconsRegular.copy,
-            label: 'Copy code',
+            label: l10n.groupInviteActionCopy,
             onTap: onCopy,
           ),
         ),
@@ -197,7 +202,7 @@ class _ActionRow extends StatelessWidget {
         Expanded(
           child: _Action(
             icon: PhosphorIconsRegular.shareNetwork,
-            label: 'Share link',
+            label: l10n.groupInviteActionShare,
             onTap: onShare,
             filled: true,
           ),
@@ -260,6 +265,7 @@ class _FriendList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final friendsAsync = ref.watch(invitableFriendsForGroupProvider(groupId));
 
     return friendsAsync.when(
@@ -268,7 +274,7 @@ class _FriendList extends ConsumerWidget {
           return Padding(
             padding: EdgeInsets.symmetric(vertical: context.m),
             child: Text(
-              'No friends available to invite.',
+              l10n.groupInviteFriendsEmpty,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: context.bodyFont * 0.95,
@@ -291,8 +297,11 @@ class _FriendList extends ConsumerWidget {
         padding: EdgeInsets.symmetric(vertical: context.m),
         child: const Center(child: CircularProgressIndicator()),
       ),
-      error: (e, _) =>
-          ErrorView(title: "Couldn't load friends", compact: true, error: e),
+      error: (e, _) => ErrorView(
+        title: l10n.groupInviteFriendsErrorLoad,
+        compact: true,
+        error: e,
+      ),
     );
   }
 
@@ -301,21 +310,23 @@ class _FriendList extends ConsumerWidget {
     WidgetRef ref,
     FriendProfileEntity friend,
   ) async {
-    final name = friend.displayName ?? friend.username ?? 'friend';
+    final l10n = AppLocalizations.of(context);
+    final name =
+        friend.displayName ?? friend.username ?? l10n.groupInviteFriendFallback;
     try {
       await ref
           .read(groupInvitationControllerProvider.notifier)
           .invite(groupId: groupId, inviteeId: friend.id);
       if (!context.mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Invite sent to $name')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.groupInviteSentSnack(name))),
+      );
     } catch (e) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            describeAppError(e, fallback: 'Could not send invite.'),
+            describeAppError(e, fallback: l10n.groupInviteSendFailedFallback),
           ),
         ),
       );
@@ -332,7 +343,9 @@ class _FriendRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final name = friend.displayName ?? friend.username ?? 'Unknown';
+    final l10n = AppLocalizations.of(context);
+    final name =
+        friend.displayName ?? friend.username ?? l10n.groupInviteUnknownName;
     return Material(
       color: cs.surfaceContainer,
       borderRadius: BorderRadius.circular(context.w * 0.03),

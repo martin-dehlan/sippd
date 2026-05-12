@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../common/utils/responsive.dart';
 import '../../../../common/widgets/app_snack.dart';
 import '../../controller/group_invitation.provider.dart';
@@ -12,6 +13,7 @@ class GroupInvitationsInbox extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final invitesAsync = ref.watch(myGroupInvitationsProvider);
     final invites = invitesAsync.valueOrNull ?? const [];
     if (invites.isEmpty) return const SizedBox.shrink();
@@ -24,7 +26,7 @@ class GroupInvitationsInbox extends ConsumerWidget {
           Padding(
             padding: EdgeInsets.only(bottom: context.s),
             child: Text(
-              'INVITATIONS',
+              l10n.groupInvitationsHeader,
               style: TextStyle(
                 fontSize: context.captionFont,
                 fontWeight: FontWeight.w700,
@@ -51,8 +53,10 @@ class _InviteCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
-    final inviter =
-        item.inviterDisplayName ?? item.inviterUsername ?? 'Someone';
+    final l10n = AppLocalizations.of(context);
+    final inviter = item.inviterDisplayName ??
+        item.inviterUsername ??
+        l10n.groupInvitationsInviterFallback;
     final size = context.w * 0.12;
 
     return Container(
@@ -107,7 +111,7 @@ class _InviteCard extends ConsumerWidget {
                     ),
                     SizedBox(height: context.xs * 0.5),
                     Text(
-                      'Invited by $inviter',
+                      l10n.groupInvitationsInvitedBy(inviter),
                       style: TextStyle(
                         fontSize: context.captionFont * 0.95,
                         color: cs.onSurfaceVariant,
@@ -133,7 +137,7 @@ class _InviteCard extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(context.w * 0.025),
                     ),
                   ),
-                  child: const Text('Decline'),
+                  child: Text(l10n.groupInvitationsDecline),
                 ),
               ),
               SizedBox(width: context.s),
@@ -146,7 +150,7 @@ class _InviteCard extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(context.w * 0.025),
                     ),
                   ),
-                  child: const Text('Accept'),
+                  child: Text(l10n.groupInvitationsAccept),
                 ),
               ),
             ],
@@ -157,15 +161,16 @@ class _InviteCard extends ConsumerWidget {
   }
 
   Future<void> _accept(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context);
     try {
       await ref
           .read(groupInvitationControllerProvider.notifier)
           .accept(item.invitation);
       if (!context.mounted) return;
-      AppSnack.success(context, 'Joined ${item.groupName}');
+      AppSnack.success(context, l10n.groupInvitationsJoinedSnack(item.groupName));
     } catch (e) {
       if (!context.mounted) return;
-      AppSnack.error(context, 'Could not accept invitation');
+      AppSnack.error(context, l10n.groupInvitationsAcceptFailed);
     }
   }
 

@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../../common/utils/responsive.dart';
 import '../../../../../../common/widgets/inline_error.widget.dart';
 import '../../../../controller/group.provider.dart';
@@ -69,9 +70,15 @@ class _EditGroupSheetState extends ConsumerState<EditGroupSheet> {
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(describeAppError(e, fallback: 'Upload failed.')),
+            content: Text(
+              describeAppError(
+                e,
+                fallback: l10n.groupSettingsUploadFailedFallback,
+              ),
+            ),
           ),
         );
       }
@@ -90,9 +97,15 @@ class _EditGroupSheetState extends ConsumerState<EditGroupSheet> {
       if (mounted) setState(() => _imageUrl = null);
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(describeAppError(e, fallback: 'Delete failed.')),
+            content: Text(
+              describeAppError(
+                e,
+                fallback: l10n.groupSettingsDeleteFailedFallback,
+              ),
+            ),
           ),
         );
       }
@@ -103,6 +116,7 @@ class _EditGroupSheetState extends ConsumerState<EditGroupSheet> {
 
   Future<ImageSource?> _pickSource() async {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     return showModalBottomSheet<ImageSource>(
       context: context,
       backgroundColor: cs.surface,
@@ -118,18 +132,21 @@ class _EditGroupSheetState extends ConsumerState<EditGroupSheet> {
             SizedBox(height: context.s),
             ListTile(
               leading: const Icon(PhosphorIconsRegular.camera),
-              title: const Text('Camera'),
+              title: Text(l10n.groupSettingsSourceCamera),
               onTap: () => Navigator.pop(ctx, ImageSource.camera),
             ),
             ListTile(
               leading: const Icon(PhosphorIconsRegular.images),
-              title: const Text('Gallery'),
+              title: Text(l10n.groupSettingsSourceGallery),
               onTap: () => Navigator.pop(ctx, ImageSource.gallery),
             ),
             if (_imageUrl != null)
               ListTile(
                 leading: Icon(PhosphorIconsRegular.trash, color: cs.error),
-                title: Text('Remove photo', style: TextStyle(color: cs.error)),
+                title: Text(
+                  l10n.groupSettingsRemovePhoto,
+                  style: TextStyle(color: cs.error),
+                ),
                 onTap: () {
                   Navigator.pop(ctx);
                   _removeImage();
@@ -168,7 +185,11 @@ class _EditGroupSheetState extends ConsumerState<EditGroupSheet> {
       if (mounted) Navigator.pop(context);
     } catch (e) {
       if (mounted) {
-        setState(() => _errorMessage = 'Save failed: $e');
+        setState(
+          () => _errorMessage = AppLocalizations.of(
+            context,
+          ).groupSettingsSaveFailed(e.toString()),
+        );
       }
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -178,6 +199,7 @@ class _EditGroupSheetState extends ConsumerState<EditGroupSheet> {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final avatarSize = context.w * 0.28;
 
     return Padding(
@@ -203,7 +225,7 @@ class _EditGroupSheetState extends ConsumerState<EditGroupSheet> {
           ),
           SizedBox(height: context.l),
           Text(
-            'Edit group',
+            l10n.groupSettingsEditTitle,
             style: TextStyle(
               fontSize: context.bodyFont * 1.1,
               fontWeight: FontWeight.w700,
@@ -259,7 +281,7 @@ class _EditGroupSheetState extends ConsumerState<EditGroupSheet> {
           ),
           SizedBox(height: context.l),
           Text(
-            'Name',
+            l10n.groupSettingsNameLabel,
             style: TextStyle(
               fontSize: context.captionFont,
               color: cs.onSurfaceVariant,
@@ -310,7 +332,7 @@ class _EditGroupSheetState extends ConsumerState<EditGroupSheet> {
                       width: context.m,
                       child: const CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Text('Save'),
+                  : Text(l10n.groupSettingsSave),
             ),
           ),
         ],

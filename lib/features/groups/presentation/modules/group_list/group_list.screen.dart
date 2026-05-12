@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../common/services/analytics/analytics.provider.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/error_view.widget.dart';
@@ -29,6 +30,7 @@ class GroupListScreen extends ConsumerWidget {
     final groupsAsync = ref.watch(groupControllerProvider);
     final sortMode = ref.watch(groupSortProvider);
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       body: SafeArea(
@@ -46,7 +48,7 @@ class GroupListScreen extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'GROUPS',
+                          l10n.groupListHeader,
                           style: GoogleFonts.playfairDisplay(
                             fontSize: context.titleFont * 1.3,
                             fontWeight: FontWeight.w800,
@@ -56,7 +58,7 @@ class GroupListScreen extends ConsumerWidget {
                         ),
                         SizedBox(height: context.xs),
                         Text(
-                          'Taste together',
+                          l10n.groupListSubtitle,
                           style: TextStyle(
                             fontSize: context.captionFont,
                             color: cs.onSurfaceVariant,
@@ -67,8 +69,8 @@ class GroupListScreen extends ConsumerWidget {
                   ),
                   Tooltip(
                     message: sortMode == GroupSortMode.recent
-                        ? 'Sort: recent'
-                        : 'Sort: name',
+                        ? l10n.groupListSortRecent
+                        : l10n.groupListSortName,
                     child: GestureDetector(
                       behavior: HitTestBehavior.opaque,
                       onTap: () =>
@@ -88,7 +90,7 @@ class GroupListScreen extends ConsumerWidget {
                   SizedBox(width: context.w * 0.01),
                   _HeaderAddButton(
                     onTap: () => _onCreateTap(context, ref),
-                    tooltip: 'Create group',
+                    tooltip: l10n.groupListCreateTooltip,
                   ),
                 ],
               ),
@@ -131,7 +133,7 @@ class GroupListScreen extends ConsumerWidget {
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (e, _) => Center(
                   child: ErrorView(
-                    title: "Couldn't load groups",
+                    title: l10n.groupListErrorLoad,
                     onRetry: () => ref.invalidate(groupControllerProvider),
                     error: e,
                   ),
@@ -212,9 +214,13 @@ class GroupListScreen extends ConsumerWidget {
             if (ctx.mounted) Navigator.pop(ctx);
           } catch (_) {
             if (ctx.mounted) {
-              ScaffoldMessenger.of(
-                ctx,
-              ).showSnackBar(const SnackBar(content: Text('Group not found')));
+              ScaffoldMessenger.of(ctx).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    AppLocalizations.of(ctx).groupListJoinNotFound,
+                  ),
+                ),
+              );
             }
           }
         },
@@ -262,6 +268,7 @@ class _JoinCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -286,7 +293,7 @@ class _JoinCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Join a group',
+                    l10n.groupListJoinTitle,
                     style: TextStyle(
                       fontSize: context.bodyFont,
                       fontWeight: FontWeight.w600,
@@ -294,7 +301,7 @@ class _JoinCard extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'Enter an invite code',
+                    l10n.groupListJoinSubtitle,
                     style: TextStyle(
                       fontSize: context.captionFont,
                       color: cs.onPrimaryContainer.withValues(alpha: 0.7),
@@ -387,6 +394,7 @@ class _GroupEmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -406,7 +414,7 @@ class _GroupEmptyState extends StatelessWidget {
           ),
           SizedBox(height: context.m),
           Text(
-            'No groups yet',
+            l10n.groupListEmptyTitle,
             style: TextStyle(
               fontSize: context.bodyFont,
               fontWeight: FontWeight.w600,
@@ -414,7 +422,7 @@ class _GroupEmptyState extends StatelessWidget {
           ),
           SizedBox(height: context.xs),
           Text(
-            'Create or join one to share wines',
+            l10n.groupListEmptyBody,
             style: TextStyle(
               fontSize: context.captionFont,
               color: cs.onSurfaceVariant,
@@ -424,7 +432,7 @@ class _GroupEmptyState extends StatelessWidget {
           FilledButton.icon(
             onPressed: onCreate,
             icon: const Icon(PhosphorIconsRegular.plus),
-            label: const Text('Create group'),
+            label: Text(l10n.groupListEmptyCta),
           ),
         ],
       ),
@@ -460,6 +468,7 @@ class _CreateSheetState extends ConsumerState<_CreateSheet> {
 
   Future<ImageSource?> _pickSource() {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     return showModalBottomSheet<ImageSource>(
       context: context,
       backgroundColor: cs.surface,
@@ -475,18 +484,21 @@ class _CreateSheetState extends ConsumerState<_CreateSheet> {
             SizedBox(height: context.s),
             ListTile(
               leading: const Icon(PhosphorIconsRegular.camera),
-              title: const Text('Camera'),
+              title: Text(l10n.groupCreateSourceCamera),
               onTap: () => Navigator.pop(ctx, ImageSource.camera),
             ),
             ListTile(
               leading: const Icon(PhosphorIconsRegular.images),
-              title: const Text('Gallery'),
+              title: Text(l10n.groupCreateSourceGallery),
               onTap: () => Navigator.pop(ctx, ImageSource.gallery),
             ),
             if (_pickedImagePath != null)
               ListTile(
                 leading: Icon(PhosphorIconsRegular.trash, color: cs.error),
-                title: Text('Remove photo', style: TextStyle(color: cs.error)),
+                title: Text(
+                  l10n.groupCreateSourceRemovePhoto,
+                  style: TextStyle(color: cs.error),
+                ),
                 onTap: () {
                   Navigator.pop(ctx);
                   setState(() => _pickedImagePath = null);
@@ -516,8 +528,13 @@ class _CreateSheetState extends ConsumerState<_CreateSheet> {
       setState(() => _pickedImagePath = photo.path);
     } catch (e) {
       if (!mounted) return;
+      final l10n = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(describeAppError(e, fallback: 'Pick failed.'))),
+        SnackBar(
+          content: Text(
+            describeAppError(e, fallback: l10n.groupCreatePickFailedFallback),
+          ),
+        ),
       );
     }
   }
@@ -537,7 +554,9 @@ class _CreateSheetState extends ConsumerState<_CreateSheet> {
         if (mounted) {
           setState(() {
             _busy = false;
-            _errorMessage = "Couldn't create group. Try again.";
+            _errorMessage = AppLocalizations.of(
+              context,
+            ).groupCreateFailedFallback;
           });
         }
         return;
@@ -558,10 +577,14 @@ class _CreateSheetState extends ConsumerState<_CreateSheet> {
               .updateGroup(groupId: created.id, imageUrl: url);
         } catch (e) {
           if (mounted) {
+            final l10n = AppLocalizations.of(context);
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
-                  describeAppError(e, fallback: 'Photo upload failed.'),
+                  describeAppError(
+                    e,
+                    fallback: l10n.groupCreateUploadFailedFallback,
+                  ),
                 ),
               ),
             );
@@ -575,7 +598,9 @@ class _CreateSheetState extends ConsumerState<_CreateSheet> {
       if (mounted) {
         setState(() {
           _busy = false;
-          _errorMessage = 'Save failed: $e';
+          _errorMessage = AppLocalizations.of(
+            context,
+          ).groupCreateSaveFailed(e.toString());
         });
       }
     }
@@ -584,6 +609,7 @@ class _CreateSheetState extends ConsumerState<_CreateSheet> {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final bottom = MediaQuery.of(context).viewInsets.bottom;
     final avatarSize = context.w * 0.26;
     return Padding(
@@ -610,7 +636,7 @@ class _CreateSheetState extends ConsumerState<_CreateSheet> {
               ),
               SizedBox(height: context.m),
               Text(
-                'New group',
+                l10n.groupCreateTitle,
                 style: TextStyle(
                   fontSize: context.bodyFont,
                   fontWeight: FontWeight.w600,
@@ -668,7 +694,7 @@ class _CreateSheetState extends ConsumerState<_CreateSheet> {
               SizedBox(height: context.l),
               _BorderlessField(
                 controller: _nameController,
-                hint: 'Group name',
+                hint: l10n.groupCreateNameHint,
                 autofocus: true,
                 big: true,
                 maxLength: 30,
@@ -705,7 +731,7 @@ class _CreateSheetState extends ConsumerState<_CreateSheet> {
                           ),
                         )
                       : Text(
-                          'Create',
+                          l10n.groupCreateSubmit,
                           style: TextStyle(
                             fontSize: context.bodyFont,
                             fontWeight: FontWeight.w600,
@@ -730,6 +756,7 @@ class _JoinSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final bottom = MediaQuery.of(context).viewInsets.bottom;
     return Padding(
       padding: EdgeInsets.only(bottom: bottom),
@@ -755,7 +782,7 @@ class _JoinSheet extends StatelessWidget {
               ),
               SizedBox(height: context.m),
               Text(
-                'Invite code',
+                l10n.groupJoinTitle,
                 style: TextStyle(
                   fontSize: context.bodyFont,
                   fontWeight: FontWeight.w600,
@@ -765,7 +792,7 @@ class _JoinSheet extends StatelessWidget {
               SizedBox(height: context.s),
               _BorderlessField(
                 controller: controller,
-                hint: 'e.g. a1b2c3d4',
+                hint: l10n.groupJoinHint,
                 autofocus: true,
                 big: true,
               ),
@@ -784,7 +811,7 @@ class _JoinSheet extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    'Join',
+                    l10n.groupJoinSubmit,
                     style: TextStyle(
                       fontSize: context.bodyFont,
                       fontWeight: FontWeight.w600,

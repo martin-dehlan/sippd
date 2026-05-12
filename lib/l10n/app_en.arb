@@ -833,5 +833,410 @@
     }
   },
   "tastingPickerAddedChip": "Added",
-  "@tastingPickerAddedChip": {}
+  "@tastingPickerAddedChip": {},
+
+  "groupListHeader": "GROUPS",
+  "@groupListHeader": {},
+  "groupListSubtitle": "Taste together",
+  "@groupListSubtitle": {},
+  "groupListSortRecent": "Sort: recent",
+  "@groupListSortRecent": {},
+  "groupListSortName": "Sort: name",
+  "@groupListSortName": {},
+  "groupListCreateTooltip": "Create group",
+  "@groupListCreateTooltip": {},
+  "groupListJoinTitle": "Join a group",
+  "@groupListJoinTitle": {},
+  "groupListJoinSubtitle": "Enter an invite code",
+  "@groupListJoinSubtitle": {},
+  "groupListJoinNotFound": "Group not found",
+  "@groupListJoinNotFound": {},
+  "groupListErrorLoad": "Couldn't load groups",
+  "@groupListErrorLoad": {},
+  "groupListEmptyTitle": "No groups yet",
+  "@groupListEmptyTitle": {},
+  "groupListEmptyBody": "Create or join one to share wines",
+  "@groupListEmptyBody": {},
+  "groupListEmptyCta": "Create group",
+  "@groupListEmptyCta": {},
+
+  "groupCreateSourceCamera": "Camera",
+  "@groupCreateSourceCamera": {},
+  "groupCreateSourceGallery": "Gallery",
+  "@groupCreateSourceGallery": {},
+  "groupCreateSourceRemovePhoto": "Remove photo",
+  "@groupCreateSourceRemovePhoto": {},
+  "groupCreatePickFailedFallback": "Pick failed.",
+  "@groupCreatePickFailedFallback": {},
+  "groupCreateUploadFailedFallback": "Photo upload failed.",
+  "@groupCreateUploadFailedFallback": {},
+  "groupCreateFailedFallback": "Couldn't create group. Try again.",
+  "@groupCreateFailedFallback": {},
+  "groupCreateSaveFailed": "Save failed: {error}",
+  "@groupCreateSaveFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "groupCreateTitle": "New group",
+  "@groupCreateTitle": {},
+  "groupCreateNameHint": "Group name",
+  "@groupCreateNameHint": {},
+  "groupCreateSubmit": "Create",
+  "@groupCreateSubmit": {},
+
+  "groupJoinTitle": "Invite code",
+  "@groupJoinTitle": {},
+  "groupJoinHint": "e.g. a1b2c3d4",
+  "@groupJoinHint": {},
+  "groupJoinSubmit": "Join",
+  "@groupJoinSubmit": {},
+
+  "groupDetailNotFound": "Group not found",
+  "@groupDetailNotFound": {},
+  "groupDetailErrorLoad": "Couldn't load group",
+  "@groupDetailErrorLoad": {},
+  "groupDetailSectionSharedWines": "Shared wines",
+  "@groupDetailSectionSharedWines": {},
+  "groupDetailSectionTastings": "Tastings",
+  "@groupDetailSectionTastings": {},
+  "groupDetailActionShare": "Share",
+  "@groupDetailActionShare": {},
+  "groupDetailActionPlan": "Plan",
+  "@groupDetailActionPlan": {},
+  "groupDetailMenuEdit": "Edit group",
+  "@groupDetailMenuEdit": {},
+  "groupDetailMenuDelete": "Delete group",
+  "@groupDetailMenuDelete": {},
+  "groupDetailMenuLeave": "Leave group",
+  "@groupDetailMenuLeave": {},
+  "groupDetailLeaveDialogTitle": "Leave group?",
+  "@groupDetailLeaveDialogTitle": {},
+  "groupDetailLeaveDialogBody": "You can rejoin later with the invite code.",
+  "@groupDetailLeaveDialogBody": {},
+  "groupDetailLeaveDialogCancel": "Cancel",
+  "@groupDetailLeaveDialogCancel": {},
+  "groupDetailLeaveDialogConfirm": "Leave",
+  "@groupDetailLeaveDialogConfirm": {},
+  "groupDetailDeleteDialogTitle": "Delete group?",
+  "@groupDetailDeleteDialogTitle": {},
+  "groupDetailDeleteDialogBody": "The group and its shared wines will be removed for everyone.",
+  "@groupDetailDeleteDialogBody": {},
+  "groupDetailDeleteDialogCancel": "Cancel",
+  "@groupDetailDeleteDialogCancel": {},
+  "groupDetailDeleteDialogConfirm": "Delete",
+  "@groupDetailDeleteDialogConfirm": {},
+
+  "groupSettingsEditTitle": "Edit group",
+  "@groupSettingsEditTitle": {},
+  "groupSettingsNameLabel": "Name",
+  "@groupSettingsNameLabel": {},
+  "groupSettingsSourceCamera": "Camera",
+  "@groupSettingsSourceCamera": {},
+  "groupSettingsSourceGallery": "Gallery",
+  "@groupSettingsSourceGallery": {},
+  "groupSettingsRemovePhoto": "Remove photo",
+  "@groupSettingsRemovePhoto": {},
+  "groupSettingsUploadFailedFallback": "Upload failed.",
+  "@groupSettingsUploadFailedFallback": {},
+  "groupSettingsDeleteFailedFallback": "Delete failed.",
+  "@groupSettingsDeleteFailedFallback": {},
+  "groupSettingsSaveFailed": "Save failed: {error}",
+  "@groupSettingsSaveFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "groupSettingsSave": "Save",
+  "@groupSettingsSave": {},
+
+  "groupInviteEyebrow": "INVITE",
+  "@groupInviteEyebrow": {},
+  "groupInviteFriendsEyebrow": "INVITE FRIENDS",
+  "@groupInviteFriendsEyebrow": {},
+  "groupInviteCodeCopied": "Invite code copied",
+  "@groupInviteCodeCopied": {},
+  "groupInviteShareMessage": "Join \"{groupName}\" on Sippd 🍷\n\n{url}\n\nOr enter code: {code}",
+  "@groupInviteShareMessage": {
+    "placeholders": {
+      "groupName": {"type": "String"},
+      "url": {"type": "String"},
+      "code": {"type": "String"}
+    }
+  },
+  "groupInviteShareSubject": "Join {groupName} on Sippd",
+  "@groupInviteShareSubject": {
+    "placeholders": {
+      "groupName": {"type": "String"}
+    }
+  },
+  "groupInviteActionCopy": "Copy code",
+  "@groupInviteActionCopy": {},
+  "groupInviteActionShare": "Share link",
+  "@groupInviteActionShare": {},
+  "groupInviteFriendsEmpty": "No friends available to invite.",
+  "@groupInviteFriendsEmpty": {},
+  "groupInviteFriendsErrorLoad": "Couldn't load friends",
+  "@groupInviteFriendsErrorLoad": {},
+  "groupInviteFriendFallback": "friend",
+  "@groupInviteFriendFallback": {},
+  "groupInviteUnknownName": "Unknown",
+  "@groupInviteUnknownName": {},
+  "groupInviteSentSnack": "Invite sent to {name}",
+  "@groupInviteSentSnack": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "groupInviteSendFailedFallback": "Could not send invite.",
+  "@groupInviteSendFailedFallback": {},
+
+  "groupInvitationsHeader": "INVITATIONS",
+  "@groupInvitationsHeader": {},
+  "groupInvitationsInviterFallback": "Someone",
+  "@groupInvitationsInviterFallback": {},
+  "groupInvitationsInvitedBy": "Invited by {name}",
+  "@groupInvitationsInvitedBy": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "groupInvitationsDecline": "Decline",
+  "@groupInvitationsDecline": {},
+  "groupInvitationsAccept": "Accept",
+  "@groupInvitationsAccept": {},
+  "groupInvitationsJoinedSnack": "Joined {name}",
+  "@groupInvitationsJoinedSnack": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "groupInvitationsAcceptFailed": "Could not accept invitation",
+  "@groupInvitationsAcceptFailed": {},
+
+  "groupMembersCountOne": "1 member",
+  "@groupMembersCountOne": {},
+  "groupMembersCountMany": "{count} members",
+  "@groupMembersCountMany": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "groupMembersUnknown": "Unknown",
+  "@groupMembersUnknown": {},
+  "groupMembersOwnerBadge": "OWNER",
+  "@groupMembersOwnerBadge": {},
+
+  "groupWineCarouselDetails": "Details",
+  "@groupWineCarouselDetails": {},
+  "groupWineCarouselEmptyTitle": "No wines shared yet",
+  "@groupWineCarouselEmptyTitle": {},
+  "groupWineCarouselEmptyBody": "Pick one from your cellar to kick off the list.",
+  "@groupWineCarouselEmptyBody": {},
+  "groupWineCarouselEmptyCta": "Share a wine",
+  "@groupWineCarouselEmptyCta": {},
+  "groupWineTypeRed": "RED",
+  "@groupWineTypeRed": {},
+  "groupWineTypeWhite": "WHITE",
+  "@groupWineTypeWhite": {},
+  "groupWineTypeRose": "ROSÉ",
+  "@groupWineTypeRose": {},
+  "groupWineTypeSparkling": "SPARKLING",
+  "@groupWineTypeSparkling": {},
+
+  "groupWineRatingSaveFirstSnack": "Save the wine first — tasting notes attach to it.",
+  "@groupWineRatingSaveFirstSnack": {},
+  "groupWineRatingNoCanonical": "Wine has no canonical identity yet — try again.",
+  "@groupWineRatingNoCanonical": {},
+  "groupWineRatingNoCanonicalShort": "Wine has no canonical identity yet.",
+  "@groupWineRatingNoCanonicalShort": {},
+  "groupWineRatingNotesHint": "Add a note",
+  "@groupWineRatingNotesHint": {},
+  "groupWineRatingOfflineRetry": "Offline · Retry",
+  "@groupWineRatingOfflineRetry": {},
+  "groupWineRatingSaveFailedRetry": "Couldn't save · Retry",
+  "@groupWineRatingSaveFailedRetry": {},
+  "groupWineRatingSaved": "Saved ✓",
+  "@groupWineRatingSaved": {},
+  "groupWineRatingSaveCta": "Save rating",
+  "@groupWineRatingSaveCta": {},
+  "groupWineRatingRemoveMine": "Remove my rating",
+  "@groupWineRatingRemoveMine": {},
+  "groupWineRatingUnshareDialogTitle": "Remove from group?",
+  "@groupWineRatingUnshareDialogTitle": {},
+  "groupWineRatingUnshareDialogBody": "\"{name}\" will be removed from this group. Ratings from members will also be deleted.",
+  "@groupWineRatingUnshareDialogBody": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "groupWineRatingUnshareCancel": "Cancel",
+  "@groupWineRatingUnshareCancel": {},
+  "groupWineRatingUnshareConfirm": "Remove",
+  "@groupWineRatingUnshareConfirm": {},
+  "groupWineRatingMoreTooltip": "More",
+  "@groupWineRatingMoreTooltip": {},
+  "groupWineRatingUnshareMenu": "Remove from group",
+  "@groupWineRatingUnshareMenu": {},
+  "groupWineRatingsTitle": "Ratings",
+  "@groupWineRatingsTitle": {},
+  "groupWineRatingsCountOne": "1 rating",
+  "@groupWineRatingsCountOne": {},
+  "groupWineRatingsCountMany": "{count} ratings",
+  "@groupWineRatingsCountMany": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "groupWineRatingsAvgLabel": "avg",
+  "@groupWineRatingsAvgLabel": {},
+  "groupWineRatingsBeFirst": "Be the first to rate",
+  "@groupWineRatingsBeFirst": {},
+  "groupWineRatingsSoloMe": "You're the first · invite others to rate",
+  "@groupWineRatingsSoloMe": {},
+
+  "groupShareWineTitle": "Share a wine",
+  "@groupShareWineTitle": {},
+  "groupShareWineErrorLoad": "Couldn't load wines.",
+  "@groupShareWineErrorLoad": {},
+  "groupShareWineEmpty": "You have no wines yet.",
+  "@groupShareWineEmpty": {},
+  "groupShareWineSharedChip": "Shared",
+  "@groupShareWineSharedChip": {},
+  "groupShareWineSheetTitle": "Share to group",
+  "@groupShareWineSheetTitle": {},
+  "groupShareWineSheetEmpty": "You are not in any groups yet.",
+  "@groupShareWineSheetEmpty": {},
+  "groupShareWineSheetErrorLoad": "Couldn't load groups.",
+  "@groupShareWineSheetErrorLoad": {},
+  "groupShareWineSheetAlreadyShared": "Already shared",
+  "@groupShareWineSheetAlreadyShared": {},
+  "groupShareWineSheetSharedSnack": "Shared to {name}",
+  "@groupShareWineSheetSharedSnack": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "groupShareWineRowMemberOne": "1 member",
+  "@groupShareWineRowMemberOne": {},
+  "groupShareWineRowMemberMany": "{count} members",
+  "@groupShareWineRowMemberMany": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "groupShareWineRowWineOne": "1 wine",
+  "@groupShareWineRowWineOne": {},
+  "groupShareWineRowWineMany": "{count} wines",
+  "@groupShareWineRowWineMany": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+
+  "groupShareMatchTitle": "Already in this group",
+  "@groupShareMatchTitle": {},
+  "groupShareMatchBody": "\"{name}\" looks like a wine a member already shared. Is it the same wine?",
+  "@groupShareMatchBody": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "groupShareMatchNone": "None of these — share separately",
+  "@groupShareMatchNone": {},
+  "groupShareMatchCancel": "Cancel",
+  "@groupShareMatchCancel": {},
+  "groupShareMatchSharedBy": "Shared by @{username}",
+  "@groupShareMatchSharedBy": {
+    "placeholders": {
+      "username": {"type": "String"}
+    }
+  },
+
+  "groupFriendActionsInvite": "Invite to a group",
+  "@groupFriendActionsInvite": {},
+  "groupFriendActionsPickerTitle": "Invite {name} to…",
+  "@groupFriendActionsPickerTitle": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "groupFriendActionsPickerEmpty": "No groups to invite to. Create or join one first.",
+  "@groupFriendActionsPickerEmpty": {},
+  "groupFriendActionsPickerErrorLoad": "Couldn't load groups",
+  "@groupFriendActionsPickerErrorLoad": {},
+
+  "groupCalendarPastToggle": "Past tastings ({count})",
+  "@groupCalendarPastToggle": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "groupCalendarEmptyTitle": "No tastings yet",
+  "@groupCalendarEmptyTitle": {},
+  "groupCalendarEmptyBody": "Schedule one to gather the group over a bottle.",
+  "@groupCalendarEmptyBody": {},
+  "groupCalendarEmptyCta": "Plan a tasting",
+  "@groupCalendarEmptyCta": {},
+
+  "groupWineDetailSectionRatings": "GROUP RATINGS",
+  "@groupWineDetailSectionRatings": {},
+  "groupWineDetailEmptyRatings": "No group ratings yet.",
+  "@groupWineDetailEmptyRatings": {},
+  "groupWineDetailStatGroupAvg": "Group avg",
+  "@groupWineDetailStatGroupAvg": {},
+  "groupWineDetailStatRatings": "Ratings",
+  "@groupWineDetailStatRatings": {},
+  "groupWineDetailStatNoRatings": "No ratings",
+  "@groupWineDetailStatNoRatings": {},
+  "groupWineDetailStatRegion": "Region",
+  "@groupWineDetailStatRegion": {},
+  "groupWineDetailStatCountry": "Country",
+  "@groupWineDetailStatCountry": {},
+  "groupWineDetailStatOrigin": "Origin",
+  "@groupWineDetailStatOrigin": {},
+  "groupWineDetailSharedByEyebrow": "SHARED BY",
+  "@groupWineDetailSharedByEyebrow": {},
+  "groupWineDetailSharerFallback": "someone",
+  "@groupWineDetailSharerFallback": {},
+  "groupWineDetailMemberFallback": "Member",
+  "@groupWineDetailMemberFallback": {},
+  "groupWineDetailRelJustNow": "just now",
+  "@groupWineDetailRelJustNow": {},
+  "groupWineDetailRelMinutes": "{count}m ago",
+  "@groupWineDetailRelMinutes": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "groupWineDetailRelHours": "{count}h ago",
+  "@groupWineDetailRelHours": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "groupWineDetailRelDays": "{count}d ago",
+  "@groupWineDetailRelDays": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "groupWineDetailRelWeeks": "{count}w ago",
+  "@groupWineDetailRelWeeks": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "groupWineDetailRelMonths": "{count}mo ago",
+  "@groupWineDetailRelMonths": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "groupWineDetailRelYears": "{count}y ago",
+  "@groupWineDetailRelYears": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  }
 }

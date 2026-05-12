@@ -3,6 +3,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../../common/utils/responsive.dart';
 import '../../../../../wines/presentation/widgets/wine_thumb.widget.dart';
 import '../../../../../../core/routes/app.routes.dart';
@@ -70,6 +71,7 @@ class _DetailsButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     return Material(
       color: cs.surfaceContainerHighest,
       borderRadius: BorderRadius.circular(context.w * 0.025),
@@ -85,7 +87,7 @@ class _DetailsButton extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Details',
+                l10n.groupWineCarouselDetails,
                 style: TextStyle(
                   fontSize: context.captionFont * 0.9,
                   fontWeight: FontWeight.w700,
@@ -208,11 +210,12 @@ class _EmptyShared extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return _EmptyStateCard(
       icon: PhosphorIconsRegular.wine,
-      title: 'No wines shared yet',
-      subtitle: 'Pick one from your cellar to kick off the list.',
-      buttonLabel: 'Share a wine',
+      title: l10n.groupWineCarouselEmptyTitle,
+      subtitle: l10n.groupWineCarouselEmptyBody,
+      buttonLabel: l10n.groupWineCarouselEmptyCta,
       buttonIcon: PhosphorIconsRegular.plus,
       onTap: onShare,
     );
@@ -424,6 +427,7 @@ class _WineCard extends ConsumerWidget {
     final rank = ranksAsync.valueOrNull?[wine.canonicalWineId ?? wine.id];
     final currentUserId = ref.watch(currentUserIdProvider);
     final isOwner = currentUserId != null && wine.userId == currentUserId;
+    final l10n = AppLocalizations.of(context);
     final typeColor = switch (wine.type) {
       WineType.red => const Color(0xFFA84343),
       WineType.white => const Color(0xFFD4C49A),
@@ -460,7 +464,7 @@ class _WineCard extends ConsumerWidget {
           children: [
             Row(
               children: [
-                _TypePill(label: _typeLabel(wine.type), color: typeColor),
+                _TypePill(label: _typeLabel(l10n, wine.type), color: typeColor),
                 const Spacer(),
                 if (rank != null) _RankBadge(rank: rank),
               ],
@@ -516,11 +520,11 @@ class _WineCard extends ConsumerWidget {
     );
   }
 
-  String _typeLabel(WineType type) => switch (type) {
-    WineType.red => 'RED',
-    WineType.white => 'WHITE',
-    WineType.rose => 'ROSÉ',
-    WineType.sparkling => 'SPARKLING',
+  String _typeLabel(AppLocalizations l10n, WineType type) => switch (type) {
+    WineType.red => l10n.groupWineTypeRed,
+    WineType.white => l10n.groupWineTypeWhite,
+    WineType.rose => l10n.groupWineTypeRose,
+    WineType.sparkling => l10n.groupWineTypeSparkling,
   };
 }
 

@@ -1834,4 +1834,512 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get tastingPickerAddedChip => 'Añadido';
+
+  @override
+  String get groupListHeader => 'GRUPOS';
+
+  @override
+  String get groupListSubtitle => 'Cata en grupo';
+
+  @override
+  String get groupListSortRecent => 'Orden: recientes';
+
+  @override
+  String get groupListSortName => 'Orden: nombre';
+
+  @override
+  String get groupListCreateTooltip => 'Crear grupo';
+
+  @override
+  String get groupListJoinTitle => 'Unirse a un grupo';
+
+  @override
+  String get groupListJoinSubtitle => 'Introduce un código de invitación';
+
+  @override
+  String get groupListJoinNotFound => 'Grupo no encontrado';
+
+  @override
+  String get groupListErrorLoad => 'No se pudieron cargar los grupos';
+
+  @override
+  String get groupListEmptyTitle => 'Aún no hay grupos';
+
+  @override
+  String get groupListEmptyBody =>
+      'Crea uno o únete a uno para compartir vinos';
+
+  @override
+  String get groupListEmptyCta => 'Crear grupo';
+
+  @override
+  String get groupCreateSourceCamera => 'Cámara';
+
+  @override
+  String get groupCreateSourceGallery => 'Galería';
+
+  @override
+  String get groupCreateSourceRemovePhoto => 'Quitar foto';
+
+  @override
+  String get groupCreatePickFailedFallback => 'Selección fallida.';
+
+  @override
+  String get groupCreateUploadFailedFallback => 'Error al subir la foto.';
+
+  @override
+  String get groupCreateFailedFallback =>
+      'No se pudo crear el grupo. Inténtalo de nuevo.';
+
+  @override
+  String groupCreateSaveFailed(String error) {
+    return 'Error al guardar: $error';
+  }
+
+  @override
+  String get groupCreateTitle => 'Nuevo grupo';
+
+  @override
+  String get groupCreateNameHint => 'Nombre del grupo';
+
+  @override
+  String get groupCreateSubmit => 'Crear';
+
+  @override
+  String get groupJoinTitle => 'Código de invitación';
+
+  @override
+  String get groupJoinHint => 'p. ej. a1b2c3d4';
+
+  @override
+  String get groupJoinSubmit => 'Unirse';
+
+  @override
+  String get groupDetailNotFound => 'Grupo no encontrado';
+
+  @override
+  String get groupDetailErrorLoad => 'No se pudo cargar el grupo';
+
+  @override
+  String get groupDetailSectionSharedWines => 'Vinos compartidos';
+
+  @override
+  String get groupDetailSectionTastings => 'Catas';
+
+  @override
+  String get groupDetailActionShare => 'Compartir';
+
+  @override
+  String get groupDetailActionPlan => 'Planear';
+
+  @override
+  String get groupDetailMenuEdit => 'Editar grupo';
+
+  @override
+  String get groupDetailMenuDelete => 'Eliminar grupo';
+
+  @override
+  String get groupDetailMenuLeave => 'Salir del grupo';
+
+  @override
+  String get groupDetailLeaveDialogTitle => '¿Salir del grupo?';
+
+  @override
+  String get groupDetailLeaveDialogBody =>
+      'Puedes volver a unirte después con el código de invitación.';
+
+  @override
+  String get groupDetailLeaveDialogCancel => 'Cancelar';
+
+  @override
+  String get groupDetailLeaveDialogConfirm => 'Salir';
+
+  @override
+  String get groupDetailDeleteDialogTitle => '¿Eliminar grupo?';
+
+  @override
+  String get groupDetailDeleteDialogBody =>
+      'El grupo y sus vinos compartidos se eliminarán para todos.';
+
+  @override
+  String get groupDetailDeleteDialogCancel => 'Cancelar';
+
+  @override
+  String get groupDetailDeleteDialogConfirm => 'Eliminar';
+
+  @override
+  String get groupSettingsEditTitle => 'Editar grupo';
+
+  @override
+  String get groupSettingsNameLabel => 'Nombre';
+
+  @override
+  String get groupSettingsSourceCamera => 'Cámara';
+
+  @override
+  String get groupSettingsSourceGallery => 'Galería';
+
+  @override
+  String get groupSettingsRemovePhoto => 'Quitar foto';
+
+  @override
+  String get groupSettingsUploadFailedFallback => 'Error al subir.';
+
+  @override
+  String get groupSettingsDeleteFailedFallback => 'Error al eliminar.';
+
+  @override
+  String groupSettingsSaveFailed(String error) {
+    return 'Error al guardar: $error';
+  }
+
+  @override
+  String get groupSettingsSave => 'Guardar';
+
+  @override
+  String get groupInviteEyebrow => 'INVITACIÓN';
+
+  @override
+  String get groupInviteFriendsEyebrow => 'INVITAR AMIGOS';
+
+  @override
+  String get groupInviteCodeCopied => 'Código de invitación copiado';
+
+  @override
+  String groupInviteShareMessage(String groupName, String url, String code) {
+    return 'Únete a «$groupName» en Sippd 🍷\n\n$url\n\nO introduce el código: $code';
+  }
+
+  @override
+  String groupInviteShareSubject(String groupName) {
+    return 'Únete a $groupName en Sippd';
+  }
+
+  @override
+  String get groupInviteActionCopy => 'Copiar código';
+
+  @override
+  String get groupInviteActionShare => 'Compartir enlace';
+
+  @override
+  String get groupInviteFriendsEmpty =>
+      'No hay amigos disponibles para invitar.';
+
+  @override
+  String get groupInviteFriendsErrorLoad => 'No se pudieron cargar los amigos';
+
+  @override
+  String get groupInviteFriendFallback => 'amigo/a';
+
+  @override
+  String get groupInviteUnknownName => 'Desconocido';
+
+  @override
+  String groupInviteSentSnack(String name) {
+    return 'Invitación enviada a $name';
+  }
+
+  @override
+  String get groupInviteSendFailedFallback =>
+      'No se pudo enviar la invitación.';
+
+  @override
+  String get groupInvitationsHeader => 'INVITACIONES';
+
+  @override
+  String get groupInvitationsInviterFallback => 'Alguien';
+
+  @override
+  String groupInvitationsInvitedBy(String name) {
+    return 'Invitado por $name';
+  }
+
+  @override
+  String get groupInvitationsDecline => 'Rechazar';
+
+  @override
+  String get groupInvitationsAccept => 'Aceptar';
+
+  @override
+  String groupInvitationsJoinedSnack(String name) {
+    return 'Te uniste a $name';
+  }
+
+  @override
+  String get groupInvitationsAcceptFailed => 'No se pudo aceptar la invitación';
+
+  @override
+  String get groupMembersCountOne => '1 miembro';
+
+  @override
+  String groupMembersCountMany(int count) {
+    return '$count miembros';
+  }
+
+  @override
+  String get groupMembersUnknown => 'Desconocido';
+
+  @override
+  String get groupMembersOwnerBadge => 'PROPIETARIO';
+
+  @override
+  String get groupWineCarouselDetails => 'Detalles';
+
+  @override
+  String get groupWineCarouselEmptyTitle =>
+      'Aún no se ha compartido ningún vino';
+
+  @override
+  String get groupWineCarouselEmptyBody =>
+      'Elige uno de tu colección para empezar la lista.';
+
+  @override
+  String get groupWineCarouselEmptyCta => 'Compartir un vino';
+
+  @override
+  String get groupWineTypeRed => 'TINTO';
+
+  @override
+  String get groupWineTypeWhite => 'BLANCO';
+
+  @override
+  String get groupWineTypeRose => 'ROSADO';
+
+  @override
+  String get groupWineTypeSparkling => 'ESPUMOSO';
+
+  @override
+  String get groupWineRatingSaveFirstSnack =>
+      'Guarda primero el vino: las notas se adjuntan a él.';
+
+  @override
+  String get groupWineRatingNoCanonical =>
+      'El vino aún no tiene identidad canónica. Inténtalo de nuevo.';
+
+  @override
+  String get groupWineRatingNoCanonicalShort =>
+      'El vino aún no tiene identidad canónica.';
+
+  @override
+  String get groupWineRatingNotesHint => 'Añade una nota';
+
+  @override
+  String get groupWineRatingOfflineRetry => 'Sin conexión · Reintentar';
+
+  @override
+  String get groupWineRatingSaveFailedRetry =>
+      'No se pudo guardar · Reintentar';
+
+  @override
+  String get groupWineRatingSaved => 'Guardado ✓';
+
+  @override
+  String get groupWineRatingSaveCta => 'Guardar valoración';
+
+  @override
+  String get groupWineRatingRemoveMine => 'Eliminar mi valoración';
+
+  @override
+  String get groupWineRatingUnshareDialogTitle => '¿Quitar del grupo?';
+
+  @override
+  String groupWineRatingUnshareDialogBody(String name) {
+    return '«$name» se eliminará de este grupo. Las valoraciones de los miembros también se borrarán.';
+  }
+
+  @override
+  String get groupWineRatingUnshareCancel => 'Cancelar';
+
+  @override
+  String get groupWineRatingUnshareConfirm => 'Quitar';
+
+  @override
+  String get groupWineRatingMoreTooltip => 'Más';
+
+  @override
+  String get groupWineRatingUnshareMenu => 'Quitar del grupo';
+
+  @override
+  String get groupWineRatingsTitle => 'Valoraciones';
+
+  @override
+  String get groupWineRatingsCountOne => '1 valoración';
+
+  @override
+  String groupWineRatingsCountMany(int count) {
+    return '$count valoraciones';
+  }
+
+  @override
+  String get groupWineRatingsAvgLabel => 'med';
+
+  @override
+  String get groupWineRatingsBeFirst => 'Sé el primero en valorar';
+
+  @override
+  String get groupWineRatingsSoloMe =>
+      'Eres el primero · invita a otros a valorar';
+
+  @override
+  String get groupShareWineTitle => 'Compartir un vino';
+
+  @override
+  String get groupShareWineErrorLoad => 'No se pudieron cargar los vinos.';
+
+  @override
+  String get groupShareWineEmpty => 'Aún no tienes vinos.';
+
+  @override
+  String get groupShareWineSharedChip => 'Compartido';
+
+  @override
+  String get groupShareWineSheetTitle => 'Compartir con un grupo';
+
+  @override
+  String get groupShareWineSheetEmpty => 'Aún no estás en ningún grupo.';
+
+  @override
+  String get groupShareWineSheetErrorLoad =>
+      'No se pudieron cargar los grupos.';
+
+  @override
+  String get groupShareWineSheetAlreadyShared => 'Ya compartido';
+
+  @override
+  String groupShareWineSheetSharedSnack(String name) {
+    return 'Compartido con $name';
+  }
+
+  @override
+  String get groupShareWineRowMemberOne => '1 miembro';
+
+  @override
+  String groupShareWineRowMemberMany(int count) {
+    return '$count miembros';
+  }
+
+  @override
+  String get groupShareWineRowWineOne => '1 vino';
+
+  @override
+  String groupShareWineRowWineMany(int count) {
+    return '$count vinos';
+  }
+
+  @override
+  String get groupShareMatchTitle => 'Ya está en este grupo';
+
+  @override
+  String groupShareMatchBody(String name) {
+    return '«$name» parece un vino que ya ha compartido un miembro. ¿Es el mismo vino?';
+  }
+
+  @override
+  String get groupShareMatchNone => 'Ninguno · compartir por separado';
+
+  @override
+  String get groupShareMatchCancel => 'Cancelar';
+
+  @override
+  String groupShareMatchSharedBy(String username) {
+    return 'Compartido por @$username';
+  }
+
+  @override
+  String get groupFriendActionsInvite => 'Invitar a un grupo';
+
+  @override
+  String groupFriendActionsPickerTitle(String name) {
+    return 'Invitar a $name a…';
+  }
+
+  @override
+  String get groupFriendActionsPickerEmpty =>
+      'No hay grupos para invitar. Crea uno o únete primero.';
+
+  @override
+  String get groupFriendActionsPickerErrorLoad =>
+      'No se pudieron cargar los grupos';
+
+  @override
+  String groupCalendarPastToggle(int count) {
+    return 'Catas pasadas ($count)';
+  }
+
+  @override
+  String get groupCalendarEmptyTitle => 'Aún no hay catas';
+
+  @override
+  String get groupCalendarEmptyBody =>
+      'Programa una para reunir al grupo en torno a una botella.';
+
+  @override
+  String get groupCalendarEmptyCta => 'Planear una cata';
+
+  @override
+  String get groupWineDetailSectionRatings => 'VALORACIONES DEL GRUPO';
+
+  @override
+  String get groupWineDetailEmptyRatings =>
+      'Aún no hay valoraciones del grupo.';
+
+  @override
+  String get groupWineDetailStatGroupAvg => 'Media grupo';
+
+  @override
+  String get groupWineDetailStatRatings => 'Valoraciones';
+
+  @override
+  String get groupWineDetailStatNoRatings => 'Sin valoraciones';
+
+  @override
+  String get groupWineDetailStatRegion => 'Región';
+
+  @override
+  String get groupWineDetailStatCountry => 'País';
+
+  @override
+  String get groupWineDetailStatOrigin => 'Origen';
+
+  @override
+  String get groupWineDetailSharedByEyebrow => 'COMPARTIDO POR';
+
+  @override
+  String get groupWineDetailSharerFallback => 'alguien';
+
+  @override
+  String get groupWineDetailMemberFallback => 'Miembro';
+
+  @override
+  String get groupWineDetailRelJustNow => 'ahora mismo';
+
+  @override
+  String groupWineDetailRelMinutes(int count) {
+    return 'hace ${count}m';
+  }
+
+  @override
+  String groupWineDetailRelHours(int count) {
+    return 'hace ${count}h';
+  }
+
+  @override
+  String groupWineDetailRelDays(int count) {
+    return 'hace ${count}d';
+  }
+
+  @override
+  String groupWineDetailRelWeeks(int count) {
+    return 'hace ${count}sem';
+  }
+
+  @override
+  String groupWineDetailRelMonths(int count) {
+    return 'hace ${count}mes';
+  }
+
+  @override
+  String groupWineDetailRelYears(int count) {
+    return 'hace ${count}a';
+  }
 }

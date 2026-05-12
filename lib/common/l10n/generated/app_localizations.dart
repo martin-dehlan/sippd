@@ -3481,6 +3481,894 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Added'**
   String get tastingPickerAddedChip;
+
+  /// No description provided for @groupListHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'GROUPS'**
+  String get groupListHeader;
+
+  /// No description provided for @groupListSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Taste together'**
+  String get groupListSubtitle;
+
+  /// No description provided for @groupListSortRecent.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort: recent'**
+  String get groupListSortRecent;
+
+  /// No description provided for @groupListSortName.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort: name'**
+  String get groupListSortName;
+
+  /// No description provided for @groupListCreateTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Create group'**
+  String get groupListCreateTooltip;
+
+  /// No description provided for @groupListJoinTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Join a group'**
+  String get groupListJoinTitle;
+
+  /// No description provided for @groupListJoinSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter an invite code'**
+  String get groupListJoinSubtitle;
+
+  /// No description provided for @groupListJoinNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Group not found'**
+  String get groupListJoinNotFound;
+
+  /// No description provided for @groupListErrorLoad.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load groups'**
+  String get groupListErrorLoad;
+
+  /// No description provided for @groupListEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No groups yet'**
+  String get groupListEmptyTitle;
+
+  /// No description provided for @groupListEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Create or join one to share wines'**
+  String get groupListEmptyBody;
+
+  /// No description provided for @groupListEmptyCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Create group'**
+  String get groupListEmptyCta;
+
+  /// No description provided for @groupCreateSourceCamera.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera'**
+  String get groupCreateSourceCamera;
+
+  /// No description provided for @groupCreateSourceGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Gallery'**
+  String get groupCreateSourceGallery;
+
+  /// No description provided for @groupCreateSourceRemovePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove photo'**
+  String get groupCreateSourceRemovePhoto;
+
+  /// No description provided for @groupCreatePickFailedFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick failed.'**
+  String get groupCreatePickFailedFallback;
+
+  /// No description provided for @groupCreateUploadFailedFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo upload failed.'**
+  String get groupCreateUploadFailedFallback;
+
+  /// No description provided for @groupCreateFailedFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t create group. Try again.'**
+  String get groupCreateFailedFallback;
+
+  /// No description provided for @groupCreateSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Save failed: {error}'**
+  String groupCreateSaveFailed(String error);
+
+  /// No description provided for @groupCreateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New group'**
+  String get groupCreateTitle;
+
+  /// No description provided for @groupCreateNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Group name'**
+  String get groupCreateNameHint;
+
+  /// No description provided for @groupCreateSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get groupCreateSubmit;
+
+  /// No description provided for @groupJoinTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite code'**
+  String get groupJoinTitle;
+
+  /// No description provided for @groupJoinHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. a1b2c3d4'**
+  String get groupJoinHint;
+
+  /// No description provided for @groupJoinSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Join'**
+  String get groupJoinSubmit;
+
+  /// No description provided for @groupDetailNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Group not found'**
+  String get groupDetailNotFound;
+
+  /// No description provided for @groupDetailErrorLoad.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load group'**
+  String get groupDetailErrorLoad;
+
+  /// No description provided for @groupDetailSectionSharedWines.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared wines'**
+  String get groupDetailSectionSharedWines;
+
+  /// No description provided for @groupDetailSectionTastings.
+  ///
+  /// In en, this message translates to:
+  /// **'Tastings'**
+  String get groupDetailSectionTastings;
+
+  /// No description provided for @groupDetailActionShare.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get groupDetailActionShare;
+
+  /// No description provided for @groupDetailActionPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan'**
+  String get groupDetailActionPlan;
+
+  /// No description provided for @groupDetailMenuEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit group'**
+  String get groupDetailMenuEdit;
+
+  /// No description provided for @groupDetailMenuDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete group'**
+  String get groupDetailMenuDelete;
+
+  /// No description provided for @groupDetailMenuLeave.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave group'**
+  String get groupDetailMenuLeave;
+
+  /// No description provided for @groupDetailLeaveDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave group?'**
+  String get groupDetailLeaveDialogTitle;
+
+  /// No description provided for @groupDetailLeaveDialogBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You can rejoin later with the invite code.'**
+  String get groupDetailLeaveDialogBody;
+
+  /// No description provided for @groupDetailLeaveDialogCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get groupDetailLeaveDialogCancel;
+
+  /// No description provided for @groupDetailLeaveDialogConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave'**
+  String get groupDetailLeaveDialogConfirm;
+
+  /// No description provided for @groupDetailDeleteDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete group?'**
+  String get groupDetailDeleteDialogTitle;
+
+  /// No description provided for @groupDetailDeleteDialogBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The group and its shared wines will be removed for everyone.'**
+  String get groupDetailDeleteDialogBody;
+
+  /// No description provided for @groupDetailDeleteDialogCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get groupDetailDeleteDialogCancel;
+
+  /// No description provided for @groupDetailDeleteDialogConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get groupDetailDeleteDialogConfirm;
+
+  /// No description provided for @groupSettingsEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit group'**
+  String get groupSettingsEditTitle;
+
+  /// No description provided for @groupSettingsNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get groupSettingsNameLabel;
+
+  /// No description provided for @groupSettingsSourceCamera.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera'**
+  String get groupSettingsSourceCamera;
+
+  /// No description provided for @groupSettingsSourceGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Gallery'**
+  String get groupSettingsSourceGallery;
+
+  /// No description provided for @groupSettingsRemovePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove photo'**
+  String get groupSettingsRemovePhoto;
+
+  /// No description provided for @groupSettingsUploadFailedFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload failed.'**
+  String get groupSettingsUploadFailedFallback;
+
+  /// No description provided for @groupSettingsDeleteFailedFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete failed.'**
+  String get groupSettingsDeleteFailedFallback;
+
+  /// No description provided for @groupSettingsSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Save failed: {error}'**
+  String groupSettingsSaveFailed(String error);
+
+  /// No description provided for @groupSettingsSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get groupSettingsSave;
+
+  /// No description provided for @groupInviteEyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'INVITE'**
+  String get groupInviteEyebrow;
+
+  /// No description provided for @groupInviteFriendsEyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'INVITE FRIENDS'**
+  String get groupInviteFriendsEyebrow;
+
+  /// No description provided for @groupInviteCodeCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite code copied'**
+  String get groupInviteCodeCopied;
+
+  /// No description provided for @groupInviteShareMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Join \"{groupName}\" on Sippd 🍷\n\n{url}\n\nOr enter code: {code}'**
+  String groupInviteShareMessage(String groupName, String url, String code);
+
+  /// No description provided for @groupInviteShareSubject.
+  ///
+  /// In en, this message translates to:
+  /// **'Join {groupName} on Sippd'**
+  String groupInviteShareSubject(String groupName);
+
+  /// No description provided for @groupInviteActionCopy.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy code'**
+  String get groupInviteActionCopy;
+
+  /// No description provided for @groupInviteActionShare.
+  ///
+  /// In en, this message translates to:
+  /// **'Share link'**
+  String get groupInviteActionShare;
+
+  /// No description provided for @groupInviteFriendsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No friends available to invite.'**
+  String get groupInviteFriendsEmpty;
+
+  /// No description provided for @groupInviteFriendsErrorLoad.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load friends'**
+  String get groupInviteFriendsErrorLoad;
+
+  /// No description provided for @groupInviteFriendFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'friend'**
+  String get groupInviteFriendFallback;
+
+  /// No description provided for @groupInviteUnknownName.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get groupInviteUnknownName;
+
+  /// No description provided for @groupInviteSentSnack.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite sent to {name}'**
+  String groupInviteSentSnack(String name);
+
+  /// No description provided for @groupInviteSendFailedFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not send invite.'**
+  String get groupInviteSendFailedFallback;
+
+  /// No description provided for @groupInvitationsHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'INVITATIONS'**
+  String get groupInvitationsHeader;
+
+  /// No description provided for @groupInvitationsInviterFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Someone'**
+  String get groupInvitationsInviterFallback;
+
+  /// No description provided for @groupInvitationsInvitedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Invited by {name}'**
+  String groupInvitationsInvitedBy(String name);
+
+  /// No description provided for @groupInvitationsDecline.
+  ///
+  /// In en, this message translates to:
+  /// **'Decline'**
+  String get groupInvitationsDecline;
+
+  /// No description provided for @groupInvitationsAccept.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept'**
+  String get groupInvitationsAccept;
+
+  /// No description provided for @groupInvitationsJoinedSnack.
+  ///
+  /// In en, this message translates to:
+  /// **'Joined {name}'**
+  String groupInvitationsJoinedSnack(String name);
+
+  /// No description provided for @groupInvitationsAcceptFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not accept invitation'**
+  String get groupInvitationsAcceptFailed;
+
+  /// No description provided for @groupMembersCountOne.
+  ///
+  /// In en, this message translates to:
+  /// **'1 member'**
+  String get groupMembersCountOne;
+
+  /// No description provided for @groupMembersCountMany.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} members'**
+  String groupMembersCountMany(int count);
+
+  /// No description provided for @groupMembersUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get groupMembersUnknown;
+
+  /// No description provided for @groupMembersOwnerBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'OWNER'**
+  String get groupMembersOwnerBadge;
+
+  /// No description provided for @groupWineCarouselDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get groupWineCarouselDetails;
+
+  /// No description provided for @groupWineCarouselEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No wines shared yet'**
+  String get groupWineCarouselEmptyTitle;
+
+  /// No description provided for @groupWineCarouselEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick one from your cellar to kick off the list.'**
+  String get groupWineCarouselEmptyBody;
+
+  /// No description provided for @groupWineCarouselEmptyCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Share a wine'**
+  String get groupWineCarouselEmptyCta;
+
+  /// No description provided for @groupWineTypeRed.
+  ///
+  /// In en, this message translates to:
+  /// **'RED'**
+  String get groupWineTypeRed;
+
+  /// No description provided for @groupWineTypeWhite.
+  ///
+  /// In en, this message translates to:
+  /// **'WHITE'**
+  String get groupWineTypeWhite;
+
+  /// No description provided for @groupWineTypeRose.
+  ///
+  /// In en, this message translates to:
+  /// **'ROSÉ'**
+  String get groupWineTypeRose;
+
+  /// No description provided for @groupWineTypeSparkling.
+  ///
+  /// In en, this message translates to:
+  /// **'SPARKLING'**
+  String get groupWineTypeSparkling;
+
+  /// No description provided for @groupWineRatingSaveFirstSnack.
+  ///
+  /// In en, this message translates to:
+  /// **'Save the wine first — tasting notes attach to it.'**
+  String get groupWineRatingSaveFirstSnack;
+
+  /// No description provided for @groupWineRatingNoCanonical.
+  ///
+  /// In en, this message translates to:
+  /// **'Wine has no canonical identity yet — try again.'**
+  String get groupWineRatingNoCanonical;
+
+  /// No description provided for @groupWineRatingNoCanonicalShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Wine has no canonical identity yet.'**
+  String get groupWineRatingNoCanonicalShort;
+
+  /// No description provided for @groupWineRatingNotesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a note'**
+  String get groupWineRatingNotesHint;
+
+  /// No description provided for @groupWineRatingOfflineRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline · Retry'**
+  String get groupWineRatingOfflineRetry;
+
+  /// No description provided for @groupWineRatingSaveFailedRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save · Retry'**
+  String get groupWineRatingSaveFailedRetry;
+
+  /// No description provided for @groupWineRatingSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved ✓'**
+  String get groupWineRatingSaved;
+
+  /// No description provided for @groupWineRatingSaveCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Save rating'**
+  String get groupWineRatingSaveCta;
+
+  /// No description provided for @groupWineRatingRemoveMine.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove my rating'**
+  String get groupWineRatingRemoveMine;
+
+  /// No description provided for @groupWineRatingUnshareDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from group?'**
+  String get groupWineRatingUnshareDialogTitle;
+
+  /// No description provided for @groupWineRatingUnshareDialogBody.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{name}\" will be removed from this group. Ratings from members will also be deleted.'**
+  String groupWineRatingUnshareDialogBody(String name);
+
+  /// No description provided for @groupWineRatingUnshareCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get groupWineRatingUnshareCancel;
+
+  /// No description provided for @groupWineRatingUnshareConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get groupWineRatingUnshareConfirm;
+
+  /// No description provided for @groupWineRatingMoreTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'More'**
+  String get groupWineRatingMoreTooltip;
+
+  /// No description provided for @groupWineRatingUnshareMenu.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from group'**
+  String get groupWineRatingUnshareMenu;
+
+  /// No description provided for @groupWineRatingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ratings'**
+  String get groupWineRatingsTitle;
+
+  /// No description provided for @groupWineRatingsCountOne.
+  ///
+  /// In en, this message translates to:
+  /// **'1 rating'**
+  String get groupWineRatingsCountOne;
+
+  /// No description provided for @groupWineRatingsCountMany.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} ratings'**
+  String groupWineRatingsCountMany(int count);
+
+  /// No description provided for @groupWineRatingsAvgLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'avg'**
+  String get groupWineRatingsAvgLabel;
+
+  /// No description provided for @groupWineRatingsBeFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Be the first to rate'**
+  String get groupWineRatingsBeFirst;
+
+  /// No description provided for @groupWineRatingsSoloMe.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re the first · invite others to rate'**
+  String get groupWineRatingsSoloMe;
+
+  /// No description provided for @groupShareWineTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Share a wine'**
+  String get groupShareWineTitle;
+
+  /// No description provided for @groupShareWineErrorLoad.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load wines.'**
+  String get groupShareWineErrorLoad;
+
+  /// No description provided for @groupShareWineEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'You have no wines yet.'**
+  String get groupShareWineEmpty;
+
+  /// No description provided for @groupShareWineSharedChip.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared'**
+  String get groupShareWineSharedChip;
+
+  /// No description provided for @groupShareWineSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Share to group'**
+  String get groupShareWineSheetTitle;
+
+  /// No description provided for @groupShareWineSheetEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'You are not in any groups yet.'**
+  String get groupShareWineSheetEmpty;
+
+  /// No description provided for @groupShareWineSheetErrorLoad.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load groups.'**
+  String get groupShareWineSheetErrorLoad;
+
+  /// No description provided for @groupShareWineSheetAlreadyShared.
+  ///
+  /// In en, this message translates to:
+  /// **'Already shared'**
+  String get groupShareWineSheetAlreadyShared;
+
+  /// No description provided for @groupShareWineSheetSharedSnack.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared to {name}'**
+  String groupShareWineSheetSharedSnack(String name);
+
+  /// No description provided for @groupShareWineRowMemberOne.
+  ///
+  /// In en, this message translates to:
+  /// **'1 member'**
+  String get groupShareWineRowMemberOne;
+
+  /// No description provided for @groupShareWineRowMemberMany.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} members'**
+  String groupShareWineRowMemberMany(int count);
+
+  /// No description provided for @groupShareWineRowWineOne.
+  ///
+  /// In en, this message translates to:
+  /// **'1 wine'**
+  String get groupShareWineRowWineOne;
+
+  /// No description provided for @groupShareWineRowWineMany.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} wines'**
+  String groupShareWineRowWineMany(int count);
+
+  /// No description provided for @groupShareMatchTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Already in this group'**
+  String get groupShareMatchTitle;
+
+  /// No description provided for @groupShareMatchBody.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{name}\" looks like a wine a member already shared. Is it the same wine?'**
+  String groupShareMatchBody(String name);
+
+  /// No description provided for @groupShareMatchNone.
+  ///
+  /// In en, this message translates to:
+  /// **'None of these — share separately'**
+  String get groupShareMatchNone;
+
+  /// No description provided for @groupShareMatchCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get groupShareMatchCancel;
+
+  /// No description provided for @groupShareMatchSharedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared by @{username}'**
+  String groupShareMatchSharedBy(String username);
+
+  /// No description provided for @groupFriendActionsInvite.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite to a group'**
+  String get groupFriendActionsInvite;
+
+  /// No description provided for @groupFriendActionsPickerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite {name} to…'**
+  String groupFriendActionsPickerTitle(String name);
+
+  /// No description provided for @groupFriendActionsPickerEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No groups to invite to. Create or join one first.'**
+  String get groupFriendActionsPickerEmpty;
+
+  /// No description provided for @groupFriendActionsPickerErrorLoad.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load groups'**
+  String get groupFriendActionsPickerErrorLoad;
+
+  /// No description provided for @groupCalendarPastToggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Past tastings ({count})'**
+  String groupCalendarPastToggle(int count);
+
+  /// No description provided for @groupCalendarEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No tastings yet'**
+  String get groupCalendarEmptyTitle;
+
+  /// No description provided for @groupCalendarEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule one to gather the group over a bottle.'**
+  String get groupCalendarEmptyBody;
+
+  /// No description provided for @groupCalendarEmptyCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan a tasting'**
+  String get groupCalendarEmptyCta;
+
+  /// No description provided for @groupWineDetailSectionRatings.
+  ///
+  /// In en, this message translates to:
+  /// **'GROUP RATINGS'**
+  String get groupWineDetailSectionRatings;
+
+  /// No description provided for @groupWineDetailEmptyRatings.
+  ///
+  /// In en, this message translates to:
+  /// **'No group ratings yet.'**
+  String get groupWineDetailEmptyRatings;
+
+  /// No description provided for @groupWineDetailStatGroupAvg.
+  ///
+  /// In en, this message translates to:
+  /// **'Group avg'**
+  String get groupWineDetailStatGroupAvg;
+
+  /// No description provided for @groupWineDetailStatRatings.
+  ///
+  /// In en, this message translates to:
+  /// **'Ratings'**
+  String get groupWineDetailStatRatings;
+
+  /// No description provided for @groupWineDetailStatNoRatings.
+  ///
+  /// In en, this message translates to:
+  /// **'No ratings'**
+  String get groupWineDetailStatNoRatings;
+
+  /// No description provided for @groupWineDetailStatRegion.
+  ///
+  /// In en, this message translates to:
+  /// **'Region'**
+  String get groupWineDetailStatRegion;
+
+  /// No description provided for @groupWineDetailStatCountry.
+  ///
+  /// In en, this message translates to:
+  /// **'Country'**
+  String get groupWineDetailStatCountry;
+
+  /// No description provided for @groupWineDetailStatOrigin.
+  ///
+  /// In en, this message translates to:
+  /// **'Origin'**
+  String get groupWineDetailStatOrigin;
+
+  /// No description provided for @groupWineDetailSharedByEyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'SHARED BY'**
+  String get groupWineDetailSharedByEyebrow;
+
+  /// No description provided for @groupWineDetailSharerFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'someone'**
+  String get groupWineDetailSharerFallback;
+
+  /// No description provided for @groupWineDetailMemberFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Member'**
+  String get groupWineDetailMemberFallback;
+
+  /// No description provided for @groupWineDetailRelJustNow.
+  ///
+  /// In en, this message translates to:
+  /// **'just now'**
+  String get groupWineDetailRelJustNow;
+
+  /// No description provided for @groupWineDetailRelMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}m ago'**
+  String groupWineDetailRelMinutes(int count);
+
+  /// No description provided for @groupWineDetailRelHours.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}h ago'**
+  String groupWineDetailRelHours(int count);
+
+  /// No description provided for @groupWineDetailRelDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}d ago'**
+  String groupWineDetailRelDays(int count);
+
+  /// No description provided for @groupWineDetailRelWeeks.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}w ago'**
+  String groupWineDetailRelWeeks(int count);
+
+  /// No description provided for @groupWineDetailRelMonths.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}mo ago'**
+  String groupWineDetailRelMonths(int count);
+
+  /// No description provided for @groupWineDetailRelYears.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}y ago'**
+  String groupWineDetailRelYears(int count);
 }
 
 class _AppLocalizationsDelegate

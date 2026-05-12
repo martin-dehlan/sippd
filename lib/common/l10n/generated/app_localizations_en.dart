@@ -1821,4 +1821,503 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tastingPickerAddedChip => 'Added';
+
+  @override
+  String get groupListHeader => 'GROUPS';
+
+  @override
+  String get groupListSubtitle => 'Taste together';
+
+  @override
+  String get groupListSortRecent => 'Sort: recent';
+
+  @override
+  String get groupListSortName => 'Sort: name';
+
+  @override
+  String get groupListCreateTooltip => 'Create group';
+
+  @override
+  String get groupListJoinTitle => 'Join a group';
+
+  @override
+  String get groupListJoinSubtitle => 'Enter an invite code';
+
+  @override
+  String get groupListJoinNotFound => 'Group not found';
+
+  @override
+  String get groupListErrorLoad => 'Couldn\'t load groups';
+
+  @override
+  String get groupListEmptyTitle => 'No groups yet';
+
+  @override
+  String get groupListEmptyBody => 'Create or join one to share wines';
+
+  @override
+  String get groupListEmptyCta => 'Create group';
+
+  @override
+  String get groupCreateSourceCamera => 'Camera';
+
+  @override
+  String get groupCreateSourceGallery => 'Gallery';
+
+  @override
+  String get groupCreateSourceRemovePhoto => 'Remove photo';
+
+  @override
+  String get groupCreatePickFailedFallback => 'Pick failed.';
+
+  @override
+  String get groupCreateUploadFailedFallback => 'Photo upload failed.';
+
+  @override
+  String get groupCreateFailedFallback => 'Couldn\'t create group. Try again.';
+
+  @override
+  String groupCreateSaveFailed(String error) {
+    return 'Save failed: $error';
+  }
+
+  @override
+  String get groupCreateTitle => 'New group';
+
+  @override
+  String get groupCreateNameHint => 'Group name';
+
+  @override
+  String get groupCreateSubmit => 'Create';
+
+  @override
+  String get groupJoinTitle => 'Invite code';
+
+  @override
+  String get groupJoinHint => 'e.g. a1b2c3d4';
+
+  @override
+  String get groupJoinSubmit => 'Join';
+
+  @override
+  String get groupDetailNotFound => 'Group not found';
+
+  @override
+  String get groupDetailErrorLoad => 'Couldn\'t load group';
+
+  @override
+  String get groupDetailSectionSharedWines => 'Shared wines';
+
+  @override
+  String get groupDetailSectionTastings => 'Tastings';
+
+  @override
+  String get groupDetailActionShare => 'Share';
+
+  @override
+  String get groupDetailActionPlan => 'Plan';
+
+  @override
+  String get groupDetailMenuEdit => 'Edit group';
+
+  @override
+  String get groupDetailMenuDelete => 'Delete group';
+
+  @override
+  String get groupDetailMenuLeave => 'Leave group';
+
+  @override
+  String get groupDetailLeaveDialogTitle => 'Leave group?';
+
+  @override
+  String get groupDetailLeaveDialogBody =>
+      'You can rejoin later with the invite code.';
+
+  @override
+  String get groupDetailLeaveDialogCancel => 'Cancel';
+
+  @override
+  String get groupDetailLeaveDialogConfirm => 'Leave';
+
+  @override
+  String get groupDetailDeleteDialogTitle => 'Delete group?';
+
+  @override
+  String get groupDetailDeleteDialogBody =>
+      'The group and its shared wines will be removed for everyone.';
+
+  @override
+  String get groupDetailDeleteDialogCancel => 'Cancel';
+
+  @override
+  String get groupDetailDeleteDialogConfirm => 'Delete';
+
+  @override
+  String get groupSettingsEditTitle => 'Edit group';
+
+  @override
+  String get groupSettingsNameLabel => 'Name';
+
+  @override
+  String get groupSettingsSourceCamera => 'Camera';
+
+  @override
+  String get groupSettingsSourceGallery => 'Gallery';
+
+  @override
+  String get groupSettingsRemovePhoto => 'Remove photo';
+
+  @override
+  String get groupSettingsUploadFailedFallback => 'Upload failed.';
+
+  @override
+  String get groupSettingsDeleteFailedFallback => 'Delete failed.';
+
+  @override
+  String groupSettingsSaveFailed(String error) {
+    return 'Save failed: $error';
+  }
+
+  @override
+  String get groupSettingsSave => 'Save';
+
+  @override
+  String get groupInviteEyebrow => 'INVITE';
+
+  @override
+  String get groupInviteFriendsEyebrow => 'INVITE FRIENDS';
+
+  @override
+  String get groupInviteCodeCopied => 'Invite code copied';
+
+  @override
+  String groupInviteShareMessage(String groupName, String url, String code) {
+    return 'Join \"$groupName\" on Sippd 🍷\n\n$url\n\nOr enter code: $code';
+  }
+
+  @override
+  String groupInviteShareSubject(String groupName) {
+    return 'Join $groupName on Sippd';
+  }
+
+  @override
+  String get groupInviteActionCopy => 'Copy code';
+
+  @override
+  String get groupInviteActionShare => 'Share link';
+
+  @override
+  String get groupInviteFriendsEmpty => 'No friends available to invite.';
+
+  @override
+  String get groupInviteFriendsErrorLoad => 'Couldn\'t load friends';
+
+  @override
+  String get groupInviteFriendFallback => 'friend';
+
+  @override
+  String get groupInviteUnknownName => 'Unknown';
+
+  @override
+  String groupInviteSentSnack(String name) {
+    return 'Invite sent to $name';
+  }
+
+  @override
+  String get groupInviteSendFailedFallback => 'Could not send invite.';
+
+  @override
+  String get groupInvitationsHeader => 'INVITATIONS';
+
+  @override
+  String get groupInvitationsInviterFallback => 'Someone';
+
+  @override
+  String groupInvitationsInvitedBy(String name) {
+    return 'Invited by $name';
+  }
+
+  @override
+  String get groupInvitationsDecline => 'Decline';
+
+  @override
+  String get groupInvitationsAccept => 'Accept';
+
+  @override
+  String groupInvitationsJoinedSnack(String name) {
+    return 'Joined $name';
+  }
+
+  @override
+  String get groupInvitationsAcceptFailed => 'Could not accept invitation';
+
+  @override
+  String get groupMembersCountOne => '1 member';
+
+  @override
+  String groupMembersCountMany(int count) {
+    return '$count members';
+  }
+
+  @override
+  String get groupMembersUnknown => 'Unknown';
+
+  @override
+  String get groupMembersOwnerBadge => 'OWNER';
+
+  @override
+  String get groupWineCarouselDetails => 'Details';
+
+  @override
+  String get groupWineCarouselEmptyTitle => 'No wines shared yet';
+
+  @override
+  String get groupWineCarouselEmptyBody =>
+      'Pick one from your cellar to kick off the list.';
+
+  @override
+  String get groupWineCarouselEmptyCta => 'Share a wine';
+
+  @override
+  String get groupWineTypeRed => 'RED';
+
+  @override
+  String get groupWineTypeWhite => 'WHITE';
+
+  @override
+  String get groupWineTypeRose => 'ROSÉ';
+
+  @override
+  String get groupWineTypeSparkling => 'SPARKLING';
+
+  @override
+  String get groupWineRatingSaveFirstSnack =>
+      'Save the wine first — tasting notes attach to it.';
+
+  @override
+  String get groupWineRatingNoCanonical =>
+      'Wine has no canonical identity yet — try again.';
+
+  @override
+  String get groupWineRatingNoCanonicalShort =>
+      'Wine has no canonical identity yet.';
+
+  @override
+  String get groupWineRatingNotesHint => 'Add a note';
+
+  @override
+  String get groupWineRatingOfflineRetry => 'Offline · Retry';
+
+  @override
+  String get groupWineRatingSaveFailedRetry => 'Couldn\'t save · Retry';
+
+  @override
+  String get groupWineRatingSaved => 'Saved ✓';
+
+  @override
+  String get groupWineRatingSaveCta => 'Save rating';
+
+  @override
+  String get groupWineRatingRemoveMine => 'Remove my rating';
+
+  @override
+  String get groupWineRatingUnshareDialogTitle => 'Remove from group?';
+
+  @override
+  String groupWineRatingUnshareDialogBody(String name) {
+    return '\"$name\" will be removed from this group. Ratings from members will also be deleted.';
+  }
+
+  @override
+  String get groupWineRatingUnshareCancel => 'Cancel';
+
+  @override
+  String get groupWineRatingUnshareConfirm => 'Remove';
+
+  @override
+  String get groupWineRatingMoreTooltip => 'More';
+
+  @override
+  String get groupWineRatingUnshareMenu => 'Remove from group';
+
+  @override
+  String get groupWineRatingsTitle => 'Ratings';
+
+  @override
+  String get groupWineRatingsCountOne => '1 rating';
+
+  @override
+  String groupWineRatingsCountMany(int count) {
+    return '$count ratings';
+  }
+
+  @override
+  String get groupWineRatingsAvgLabel => 'avg';
+
+  @override
+  String get groupWineRatingsBeFirst => 'Be the first to rate';
+
+  @override
+  String get groupWineRatingsSoloMe =>
+      'You\'re the first · invite others to rate';
+
+  @override
+  String get groupShareWineTitle => 'Share a wine';
+
+  @override
+  String get groupShareWineErrorLoad => 'Couldn\'t load wines.';
+
+  @override
+  String get groupShareWineEmpty => 'You have no wines yet.';
+
+  @override
+  String get groupShareWineSharedChip => 'Shared';
+
+  @override
+  String get groupShareWineSheetTitle => 'Share to group';
+
+  @override
+  String get groupShareWineSheetEmpty => 'You are not in any groups yet.';
+
+  @override
+  String get groupShareWineSheetErrorLoad => 'Couldn\'t load groups.';
+
+  @override
+  String get groupShareWineSheetAlreadyShared => 'Already shared';
+
+  @override
+  String groupShareWineSheetSharedSnack(String name) {
+    return 'Shared to $name';
+  }
+
+  @override
+  String get groupShareWineRowMemberOne => '1 member';
+
+  @override
+  String groupShareWineRowMemberMany(int count) {
+    return '$count members';
+  }
+
+  @override
+  String get groupShareWineRowWineOne => '1 wine';
+
+  @override
+  String groupShareWineRowWineMany(int count) {
+    return '$count wines';
+  }
+
+  @override
+  String get groupShareMatchTitle => 'Already in this group';
+
+  @override
+  String groupShareMatchBody(String name) {
+    return '\"$name\" looks like a wine a member already shared. Is it the same wine?';
+  }
+
+  @override
+  String get groupShareMatchNone => 'None of these — share separately';
+
+  @override
+  String get groupShareMatchCancel => 'Cancel';
+
+  @override
+  String groupShareMatchSharedBy(String username) {
+    return 'Shared by @$username';
+  }
+
+  @override
+  String get groupFriendActionsInvite => 'Invite to a group';
+
+  @override
+  String groupFriendActionsPickerTitle(String name) {
+    return 'Invite $name to…';
+  }
+
+  @override
+  String get groupFriendActionsPickerEmpty =>
+      'No groups to invite to. Create or join one first.';
+
+  @override
+  String get groupFriendActionsPickerErrorLoad => 'Couldn\'t load groups';
+
+  @override
+  String groupCalendarPastToggle(int count) {
+    return 'Past tastings ($count)';
+  }
+
+  @override
+  String get groupCalendarEmptyTitle => 'No tastings yet';
+
+  @override
+  String get groupCalendarEmptyBody =>
+      'Schedule one to gather the group over a bottle.';
+
+  @override
+  String get groupCalendarEmptyCta => 'Plan a tasting';
+
+  @override
+  String get groupWineDetailSectionRatings => 'GROUP RATINGS';
+
+  @override
+  String get groupWineDetailEmptyRatings => 'No group ratings yet.';
+
+  @override
+  String get groupWineDetailStatGroupAvg => 'Group avg';
+
+  @override
+  String get groupWineDetailStatRatings => 'Ratings';
+
+  @override
+  String get groupWineDetailStatNoRatings => 'No ratings';
+
+  @override
+  String get groupWineDetailStatRegion => 'Region';
+
+  @override
+  String get groupWineDetailStatCountry => 'Country';
+
+  @override
+  String get groupWineDetailStatOrigin => 'Origin';
+
+  @override
+  String get groupWineDetailSharedByEyebrow => 'SHARED BY';
+
+  @override
+  String get groupWineDetailSharerFallback => 'someone';
+
+  @override
+  String get groupWineDetailMemberFallback => 'Member';
+
+  @override
+  String get groupWineDetailRelJustNow => 'just now';
+
+  @override
+  String groupWineDetailRelMinutes(int count) {
+    return '${count}m ago';
+  }
+
+  @override
+  String groupWineDetailRelHours(int count) {
+    return '${count}h ago';
+  }
+
+  @override
+  String groupWineDetailRelDays(int count) {
+    return '${count}d ago';
+  }
+
+  @override
+  String groupWineDetailRelWeeks(int count) {
+    return '${count}w ago';
+  }
+
+  @override
+  String groupWineDetailRelMonths(int count) {
+    return '${count}mo ago';
+  }
+
+  @override
+  String groupWineDetailRelYears(int count) {
+    return '${count}y ago';
+  }
 }

@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../../../common/errors/app_error.dart';
+import '../../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../../common/utils/responsive.dart';
 import '../../../../../../core/routes/app.routes.dart';
 import '../../../../../auth/controller/auth.provider.dart';
@@ -95,10 +96,9 @@ class _SheetState extends ConsumerState<_Sheet> {
   Future<void> _toggleExpert() async {
     final canonicalId = widget.wine.canonicalWineId;
     if (canonicalId == null) {
+      final l10n = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Save the wine first — tasting notes attach to it.'),
-        ),
+        SnackBar(content: Text(l10n.groupWineRatingSaveFirstSnack)),
       );
       return;
     }
@@ -233,23 +233,23 @@ class _SheetState extends ConsumerState<_Sheet> {
   }
 
   Future<void> _confirmUnshare() async {
+    final l10n = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Remove from group?'),
+        title: Text(l10n.groupWineRatingUnshareDialogTitle),
         content: Text(
-          '"${widget.wine.name}" will be removed from this group. '
-          'Ratings from members will also be deleted.',
+          l10n.groupWineRatingUnshareDialogBody(widget.wine.name),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
+            child: Text(l10n.groupWineRatingUnshareCancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
             child: Text(
-              'Remove',
+              l10n.groupWineRatingUnshareConfirm,
               style: TextStyle(color: Theme.of(ctx).colorScheme.error),
             ),
           ),
@@ -578,6 +578,7 @@ class _NotesField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     return TextField(
       controller: controller,
       enabled: enabled,
@@ -586,7 +587,7 @@ class _NotesField extends StatelessWidget {
       maxLength: 200,
       style: TextStyle(fontSize: context.captionFont),
       decoration: InputDecoration(
-        hintText: 'Add a note',
+        hintText: l10n.groupWineRatingNotesHint,
         hintStyle: TextStyle(color: cs.outline, fontSize: context.captionFont),
         counterText: '',
         filled: true,
@@ -630,12 +631,13 @@ class _SaveButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final hasError = error != null;
     final label = hasError
         ? (error is OfflineError || error is NetworkError
-              ? 'Offline · Retry'
-              : "Couldn't save · Retry")
-        : (justSaved ? 'Saved ✓' : 'Save rating');
+              ? l10n.groupWineRatingOfflineRetry
+              : l10n.groupWineRatingSaveFailedRetry)
+        : (justSaved ? l10n.groupWineRatingSaved : l10n.groupWineRatingSaveCta);
     return SizedBox(
       height: context.h * 0.055,
       child: FilledButton(
@@ -684,6 +686,7 @@ class _RemoveButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     return Center(
       child: TextButton(
         onPressed: onTap,
@@ -694,7 +697,7 @@ class _RemoveButton extends StatelessWidget {
           ),
         ),
         child: Text(
-          'Remove my rating',
+          l10n.groupWineRatingRemoveMine,
           style: TextStyle(
             fontSize: context.captionFont,
             color: cs.error,
@@ -967,13 +970,14 @@ class _UnshareMenu extends ConsumerWidget {
     if (!isSharer && !isOwner) return const SizedBox.shrink();
 
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     return PopupMenuButton<bool>(
       icon: Icon(
         PhosphorIconsRegular.dotsThree,
         size: context.w * 0.055,
         color: cs.outline,
       ),
-      tooltip: 'More',
+      tooltip: l10n.groupWineRatingMoreTooltip,
       padding: EdgeInsets.zero,
       color: cs.surfaceContainerHigh,
       shape: RoundedRectangleBorder(
@@ -995,7 +999,10 @@ class _UnshareMenu extends ConsumerWidget {
                 color: cs.error,
               ),
               SizedBox(width: context.s),
-              Text('Remove from group', style: TextStyle(color: cs.error)),
+              Text(
+                l10n.groupWineRatingUnshareMenu,
+                style: TextStyle(color: cs.error),
+              ),
             ],
           ),
         ),

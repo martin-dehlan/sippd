@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../../common/utils/responsive.dart';
 import '../../../../../../core/routes/app.routes.dart';
 import '../../../../../tastings/controller/tastings.provider.dart';
@@ -262,6 +263,7 @@ class _PastToggle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
@@ -276,7 +278,7 @@ class _PastToggle extends StatelessWidget {
           ),
           SizedBox(width: context.xs),
           Text(
-            'Past tastings ($count)',
+            l10n.groupCalendarPastToggle(count),
             style: TextStyle(
               fontSize: context.captionFont,
               fontWeight: FontWeight.w600,
@@ -296,6 +298,7 @@ class _EmptyTastings extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     return Container(
       width: double.infinity,
       padding: EdgeInsets.symmetric(
@@ -328,7 +331,7 @@ class _EmptyTastings extends StatelessWidget {
           ),
           SizedBox(height: context.m),
           Text(
-            'No tastings yet',
+            l10n.groupCalendarEmptyTitle,
             style: TextStyle(
               fontSize: context.bodyFont * 1.05,
               fontWeight: FontWeight.w700,
@@ -338,7 +341,7 @@ class _EmptyTastings extends StatelessWidget {
           ),
           SizedBox(height: context.xs),
           Text(
-            'Schedule one to gather the group over a bottle.',
+            l10n.groupCalendarEmptyBody,
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: context.captionFont * 1.05,
@@ -368,7 +371,7 @@ class _EmptyTastings extends StatelessWidget {
                     ),
                     SizedBox(width: context.w * 0.015),
                     Text(
-                      'Plan a tasting',
+                      l10n.groupCalendarEmptyCta,
                       style: TextStyle(
                         fontSize: context.captionFont * 1.1,
                         fontWeight: FontWeight.w700,
