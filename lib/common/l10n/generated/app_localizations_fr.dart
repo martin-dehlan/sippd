@@ -3612,4 +3612,48 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get profileChooseUsernameSaveFailed =>
       'Impossible d\'enregistrer le nom d\'utilisateur. Réessaie.';
+
+  @override
+  String get errNetworkDefault =>
+      'Pas de connexion internet. Utilisation des données en cache.';
+
+  @override
+  String get errOffline => 'Tu es hors ligne. Reconnecte-toi pour réessayer.';
+
+  @override
+  String errDatabase(String msg) {
+    return 'Erreur sur les données locales : $msg';
+  }
+
+  @override
+  String errValidation(String field, String msg) {
+    return '$field : $msg';
+  }
+
+  @override
+  String errValidationNoField(String msg) {
+    return '$msg';
+  }
+
+  @override
+  String errNotFound(String resource) {
+    return '$resource introuvable.';
+  }
+
+  @override
+  String get errNotFoundDefault => 'Introuvable.';
+
+  @override
+  String get errUnauthorized => 'Connecte-toi pour continuer.';
+
+  @override
+  String errServer(int code) {
+    return 'Erreur serveur ($code). Réessaie.';
+  }
+
+  @override
+  String get errServerNoCode => 'Erreur serveur. Réessaie.';
+
+  @override
+  String get errUnknown => 'Quelque chose s\'est mal passé. Réessaie.';
 }

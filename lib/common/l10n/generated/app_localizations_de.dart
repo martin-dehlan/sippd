@@ -3615,4 +3615,50 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get profileChooseUsernameSaveFailed =>
       'Benutzername konnte nicht gespeichert werden. Versuch\'s nochmal.';
+
+  @override
+  String get errNetworkDefault =>
+      'Keine Internetverbindung. Lokale Daten werden verwendet.';
+
+  @override
+  String get errOffline =>
+      'Du bist offline. Verbinde dich neu, um es erneut zu versuchen.';
+
+  @override
+  String errDatabase(String msg) {
+    return 'Fehler in den lokalen Daten: $msg';
+  }
+
+  @override
+  String errValidation(String field, String msg) {
+    return '$field: $msg';
+  }
+
+  @override
+  String errValidationNoField(String msg) {
+    return '$msg';
+  }
+
+  @override
+  String errNotFound(String resource) {
+    return '$resource nicht gefunden.';
+  }
+
+  @override
+  String get errNotFoundDefault => 'Nicht gefunden.';
+
+  @override
+  String get errUnauthorized => 'Bitte melde dich an, um fortzufahren.';
+
+  @override
+  String errServer(int code) {
+    return 'Serverfehler ($code). Versuch\'s nochmal.';
+  }
+
+  @override
+  String get errServerNoCode => 'Serverfehler. Versuch\'s nochmal.';
+
+  @override
+  String get errUnknown =>
+      'Etwas ist schiefgelaufen. Bitte versuch\'s nochmal.';
 }

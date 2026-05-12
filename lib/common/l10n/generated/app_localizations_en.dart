@@ -3563,4 +3563,47 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get profileChooseUsernameSaveFailed =>
       'Couldn\'t save username. Try again.';
+
+  @override
+  String get errNetworkDefault => 'No internet connection. Using cached data.';
+
+  @override
+  String get errOffline => 'You\'re offline. Reconnect to try again.';
+
+  @override
+  String errDatabase(String msg) {
+    return 'Local data error: $msg';
+  }
+
+  @override
+  String errValidation(String field, String msg) {
+    return '$field: $msg';
+  }
+
+  @override
+  String errValidationNoField(String msg) {
+    return '$msg';
+  }
+
+  @override
+  String errNotFound(String resource) {
+    return '$resource not found.';
+  }
+
+  @override
+  String get errNotFoundDefault => 'Not found.';
+
+  @override
+  String get errUnauthorized => 'Please sign in to continue.';
+
+  @override
+  String errServer(int code) {
+    return 'Server error ($code). Try again.';
+  }
+
+  @override
+  String get errServerNoCode => 'Server error. Try again.';
+
+  @override
+  String get errUnknown => 'Something went wrong. Please try again.';
 }

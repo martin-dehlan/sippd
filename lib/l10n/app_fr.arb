@@ -1246,5 +1246,16 @@
   "profileChooseUsernameSubtitle": "C'est comme ça que tes amis te trouvent sur Sippd.",
   "profileChooseUsernameHint": "utilisateur",
   "profileChooseUsernameContinue": "Continuer",
-  "profileChooseUsernameSaveFailed": "Impossible d'enregistrer le nom d'utilisateur. Réessaie."
+  "profileChooseUsernameSaveFailed": "Impossible d'enregistrer le nom d'utilisateur. Réessaie.",
+  "errNetworkDefault": "Pas de connexion internet. Utilisation des données en cache.",
+  "errOffline": "Tu es hors ligne. Reconnecte-toi pour réessayer.",
+  "errDatabase": "Erreur sur les données locales : {msg}",
+  "errValidation": "{field} : {msg}",
+  "errValidationNoField": "{msg}",
+  "errNotFound": "{resource} introuvable.",
+  "errNotFoundDefault": "Introuvable.",
+  "errUnauthorized": "Connecte-toi pour continuer.",
+  "errServer": "Erreur serveur ({code}). Réessaie.",
+  "errServerNoCode": "Erreur serveur. Réessaie.",
+  "errUnknown": "Quelque chose s'est mal passé. Réessaie."
 }

@@ -1246,5 +1246,16 @@
   "profileChooseUsernameSubtitle": "Así te encontrarán tus amigos en Sippd.",
   "profileChooseUsernameHint": "usuario",
   "profileChooseUsernameContinue": "Continuar",
-  "profileChooseUsernameSaveFailed": "No se pudo guardar el nombre de usuario. Inténtalo otra vez."
+  "profileChooseUsernameSaveFailed": "No se pudo guardar el nombre de usuario. Inténtalo otra vez.",
+  "errNetworkDefault": "Sin conexión a internet. Se usan los datos en caché.",
+  "errOffline": "Estás sin conexión. Reconéctate para volver a intentarlo.",
+  "errDatabase": "Error en los datos locales: {msg}",
+  "errValidation": "{field}: {msg}",
+  "errValidationNoField": "{msg}",
+  "errNotFound": "{resource} no encontrado.",
+  "errNotFoundDefault": "No encontrado.",
+  "errUnauthorized": "Inicia sesión para continuar.",
+  "errServer": "Error del servidor ({code}). Inténtalo otra vez.",
+  "errServerNoCode": "Error del servidor. Inténtalo otra vez.",
+  "errUnknown": "Algo salió mal. Inténtalo otra vez."
 }

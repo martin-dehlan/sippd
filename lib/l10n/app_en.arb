@@ -2019,5 +2019,83 @@
   "profileChooseUsernameContinue": "Continue",
   "@profileChooseUsernameContinue": {},
   "profileChooseUsernameSaveFailed": "Couldn't save username. Try again.",
-  "@profileChooseUsernameSaveFailed": {}
+  "@profileChooseUsernameSaveFailed": {},
+  "errNetworkDefault": "No internet connection. Using cached data.",
+  "@errNetworkDefault": {
+    "description": "Fallback message for AppError.network when no message is provided."
+  },
+  "errOffline": "You're offline. Reconnect to try again.",
+  "@errOffline": {
+    "description": "Message for AppError.offline."
+  },
+  "errDatabase": "Local data error: {msg}",
+  "@errDatabase": {
+    "description": "Message for AppError.database with the underlying message.",
+    "placeholders": {
+      "msg": {
+        "type": "String",
+        "example": "table locked"
+      }
+    }
+  },
+  "errValidation": "{field}: {msg}",
+  "@errValidation": {
+    "description": "Message for AppError.validation. Field is optional; when missing the bare message is used (errValidationNoField).",
+    "placeholders": {
+      "field": {
+        "type": "String",
+        "example": "email"
+      },
+      "msg": {
+        "type": "String",
+        "example": "must not be empty"
+      }
+    }
+  },
+  "errValidationNoField": "{msg}",
+  "@errValidationNoField": {
+    "description": "Message for AppError.validation when no field is provided.",
+    "placeholders": {
+      "msg": {
+        "type": "String",
+        "example": "must not be empty"
+      }
+    }
+  },
+  "errNotFound": "{resource} not found.",
+  "@errNotFound": {
+    "description": "Message for AppError.notFound with a resource name.",
+    "placeholders": {
+      "resource": {
+        "type": "String",
+        "example": "wine"
+      }
+    }
+  },
+  "errNotFoundDefault": "Not found.",
+  "@errNotFoundDefault": {
+    "description": "Message for AppError.notFound when no resource is provided."
+  },
+  "errUnauthorized": "Please sign in to continue.",
+  "@errUnauthorized": {
+    "description": "Message for AppError.unauthorized."
+  },
+  "errServer": "Server error ({code}). Try again.",
+  "@errServer": {
+    "description": "Message for AppError.serverError with an HTTP-like status code.",
+    "placeholders": {
+      "code": {
+        "type": "int",
+        "example": "500"
+      }
+    }
+  },
+  "errServerNoCode": "Server error. Try again.",
+  "@errServerNoCode": {
+    "description": "Message for AppError.serverError when no status code is provided."
+  },
+  "errUnknown": "Something went wrong. Please try again.",
+  "@errUnknown": {
+    "description": "Message for AppError.unknown."
+  }
 }

@@ -1246,5 +1246,16 @@
   "profileChooseUsernameSubtitle": "Così gli amici ti trovano su Sippd.",
   "profileChooseUsernameHint": "username",
   "profileChooseUsernameContinue": "Continua",
-  "profileChooseUsernameSaveFailed": "Impossibile salvare l'username. Riprova."
+  "profileChooseUsernameSaveFailed": "Impossibile salvare l'username. Riprova.",
+  "errNetworkDefault": "Nessuna connessione a internet. Utilizzo dei dati in cache.",
+  "errOffline": "Sei offline. Riconnettiti per riprovare.",
+  "errDatabase": "Errore nei dati locali: {msg}",
+  "errValidation": "{field}: {msg}",
+  "errValidationNoField": "{msg}",
+  "errNotFound": "{resource} non trovato.",
+  "errNotFoundDefault": "Non trovato.",
+  "errUnauthorized": "Accedi per continuare.",
+  "errServer": "Errore del server ({code}). Riprova.",
+  "errServerNoCode": "Errore del server. Riprova.",
+  "errUnknown": "Qualcosa è andato storto. Riprova."
 }

@@ -6511,6 +6511,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t save username. Try again.'**
   String get profileChooseUsernameSaveFailed;
+
+  /// Fallback message for AppError.network when no message is provided.
+  ///
+  /// In en, this message translates to:
+  /// **'No internet connection. Using cached data.'**
+  String get errNetworkDefault;
+
+  /// Message for AppError.offline.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re offline. Reconnect to try again.'**
+  String get errOffline;
+
+  /// Message for AppError.database with the underlying message.
+  ///
+  /// In en, this message translates to:
+  /// **'Local data error: {msg}'**
+  String errDatabase(String msg);
+
+  /// Message for AppError.validation. Field is optional; when missing the bare message is used (errValidationNoField).
+  ///
+  /// In en, this message translates to:
+  /// **'{field}: {msg}'**
+  String errValidation(String field, String msg);
+
+  /// Message for AppError.validation when no field is provided.
+  ///
+  /// In en, this message translates to:
+  /// **'{msg}'**
+  String errValidationNoField(String msg);
+
+  /// Message for AppError.notFound with a resource name.
+  ///
+  /// In en, this message translates to:
+  /// **'{resource} not found.'**
+  String errNotFound(String resource);
+
+  /// Message for AppError.notFound when no resource is provided.
+  ///
+  /// In en, this message translates to:
+  /// **'Not found.'**
+  String get errNotFoundDefault;
+
+  /// Message for AppError.unauthorized.
+  ///
+  /// In en, this message translates to:
+  /// **'Please sign in to continue.'**
+  String get errUnauthorized;
+
+  /// Message for AppError.serverError with an HTTP-like status code.
+  ///
+  /// In en, this message translates to:
+  /// **'Server error ({code}). Try again.'**
+  String errServer(int code);
+
+  /// Message for AppError.serverError when no status code is provided.
+  ///
+  /// In en, this message translates to:
+  /// **'Server error. Try again.'**
+  String get errServerNoCode;
+
+  /// Message for AppError.unknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Please try again.'**
+  String get errUnknown;
 }
 
 class _AppLocalizationsDelegate

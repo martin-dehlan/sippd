@@ -3599,4 +3599,49 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get profileChooseUsernameSaveFailed =>
       'No se pudo guardar el nombre de usuario. Inténtalo otra vez.';
+
+  @override
+  String get errNetworkDefault =>
+      'Sin conexión a internet. Se usan los datos en caché.';
+
+  @override
+  String get errOffline =>
+      'Estás sin conexión. Reconéctate para volver a intentarlo.';
+
+  @override
+  String errDatabase(String msg) {
+    return 'Error en los datos locales: $msg';
+  }
+
+  @override
+  String errValidation(String field, String msg) {
+    return '$field: $msg';
+  }
+
+  @override
+  String errValidationNoField(String msg) {
+    return '$msg';
+  }
+
+  @override
+  String errNotFound(String resource) {
+    return '$resource no encontrado.';
+  }
+
+  @override
+  String get errNotFoundDefault => 'No encontrado.';
+
+  @override
+  String get errUnauthorized => 'Inicia sesión para continuar.';
+
+  @override
+  String errServer(int code) {
+    return 'Error del servidor ($code). Inténtalo otra vez.';
+  }
+
+  @override
+  String get errServerNoCode => 'Error del servidor. Inténtalo otra vez.';
+
+  @override
+  String get errUnknown => 'Algo salió mal. Inténtalo otra vez.';
 }

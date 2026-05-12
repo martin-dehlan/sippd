@@ -1246,5 +1246,16 @@
   "profileChooseUsernameSubtitle": "So finden dich Freunde auf Sippd.",
   "profileChooseUsernameHint": "benutzername",
   "profileChooseUsernameContinue": "Weiter",
-  "profileChooseUsernameSaveFailed": "Benutzername konnte nicht gespeichert werden. Versuch's nochmal."
+  "profileChooseUsernameSaveFailed": "Benutzername konnte nicht gespeichert werden. Versuch's nochmal.",
+  "errNetworkDefault": "Keine Internetverbindung. Lokale Daten werden verwendet.",
+  "errOffline": "Du bist offline. Verbinde dich neu, um es erneut zu versuchen.",
+  "errDatabase": "Fehler in den lokalen Daten: {msg}",
+  "errValidation": "{field}: {msg}",
+  "errValidationNoField": "{msg}",
+  "errNotFound": "{resource} nicht gefunden.",
+  "errNotFoundDefault": "Nicht gefunden.",
+  "errUnauthorized": "Bitte melde dich an, um fortzufahren.",
+  "errServer": "Serverfehler ({code}). Versuch's nochmal.",
+  "errServerNoCode": "Serverfehler. Versuch's nochmal.",
+  "errUnknown": "Etwas ist schiefgelaufen. Bitte versuch's nochmal."
 }
