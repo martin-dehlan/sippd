@@ -1257,5 +1257,6 @@
   "errUnauthorized": "Accedi per continuare.",
   "errServer": "Errore del server ({code}). Riprova.",
   "errServerNoCode": "Errore del server. Riprova.",
-  "errUnknown": "Qualcosa è andato storto. Riprova."
+  "errUnknown": "Qualcosa è andato storto. Riprova.",
+  "routeNotFound": "Pagina non trovata: {uri}"
 }

@@ -1257,5 +1257,6 @@
   "errUnauthorized": "Connecte-toi pour continuer.",
   "errServer": "Erreur serveur ({code}). Réessaie.",
   "errServerNoCode": "Erreur serveur. Réessaie.",
-  "errUnknown": "Quelque chose s'est mal passé. Réessaie."
+  "errUnknown": "Quelque chose s'est mal passé. Réessaie.",
+  "routeNotFound": "Page introuvable : {uri}"
 }

@@ -3656,4 +3656,9 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get errUnknown => 'Quelque chose s\'est mal passé. Réessaie.';
+
+  @override
+  String routeNotFound(String uri) {
+    return 'Page introuvable : $uri';
+  }
 }

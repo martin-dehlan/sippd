@@ -1257,5 +1257,6 @@
   "errUnauthorized": "Inicia sesión para continuar.",
   "errServer": "Error del servidor ({code}). Inténtalo otra vez.",
   "errServerNoCode": "Error del servidor. Inténtalo otra vez.",
-  "errUnknown": "Algo salió mal. Inténtalo otra vez."
+  "errUnknown": "Algo salió mal. Inténtalo otra vez.",
+  "routeNotFound": "Página no encontrada: {uri}"
 }

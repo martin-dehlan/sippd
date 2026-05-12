@@ -2097,5 +2097,15 @@
   "errUnknown": "Something went wrong. Please try again.",
   "@errUnknown": {
     "description": "Message for AppError.unknown."
+  },
+  "routeNotFound": "Page not found: {uri}",
+  "@routeNotFound": {
+    "description": "Fallback shown when GoRouter cannot match a route.",
+    "placeholders": {
+      "uri": {
+        "type": "String",
+        "example": "/unknown-path"
+      }
+    }
   }
 }

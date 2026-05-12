@@ -6577,6 +6577,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Something went wrong. Please try again.'**
   String get errUnknown;
+
+  /// Fallback shown when GoRouter cannot match a route.
+  ///
+  /// In en, this message translates to:
+  /// **'Page not found: {uri}'**
+  String routeNotFound(String uri);
 }
 
 class _AppLocalizationsDelegate

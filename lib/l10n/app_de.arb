@@ -1257,5 +1257,6 @@
   "errUnauthorized": "Bitte melde dich an, um fortzufahren.",
   "errServer": "Serverfehler ({code}). Versuch's nochmal.",
   "errServerNoCode": "Serverfehler. Versuch's nochmal.",
-  "errUnknown": "Etwas ist schiefgelaufen. Bitte versuch's nochmal."
+  "errUnknown": "Etwas ist schiefgelaufen. Bitte versuch's nochmal.",
+  "routeNotFound": "Seite nicht gefunden: {uri}"
 }

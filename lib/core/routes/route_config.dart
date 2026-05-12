@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../common/l10n/generated/app_localizations.dart';
 import '../../common/services/analytics/analytics.provider.dart';
 import '../../common/widgets/offline_indicator.widget.dart';
 import '../../common/widgets/splash.screen.dart';
@@ -408,8 +409,13 @@ GoRouter goRouter(GoRouterRef ref) {
             FriendProfileScreen(friendId: state.pathParameters['id']!),
       ),
     ],
-    errorBuilder: (context, state) =>
-        Scaffold(body: Center(child: Text('Page not found: ${state.uri}'))),
+    errorBuilder: (context, state) => Scaffold(
+      body: Center(
+        child: Text(
+          AppLocalizations.of(context).routeNotFound(state.uri.toString()),
+        ),
+      ),
+    ),
   );
 
   String? lastTrackedLocation;

@@ -3633,4 +3633,9 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get errUnknown => 'Qualcosa è andato storto. Riprova.';
+
+  @override
+  String routeNotFound(String uri) {
+    return 'Pagina non trovata: $uri';
+  }
 }
