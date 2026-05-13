@@ -30,8 +30,26 @@ mixin _$WineMemoryModel {
   String? get imageUrl => throw _privateConstructorUsedError;
   @JsonKey(name: 'local_image_path')
   String? get localImagePath => throw _privateConstructorUsedError;
+  String? get caption => throw _privateConstructorUsedError;
   @JsonKey(name: 'created_at')
   DateTime get createdAt => throw _privateConstructorUsedError;
+  @JsonKey(name: 'occurred_at')
+  DateTime? get occurredAt => throw _privateConstructorUsedError;
+  String? get occasion => throw _privateConstructorUsedError;
+  @JsonKey(name: 'place_name')
+  String? get placeName => throw _privateConstructorUsedError;
+  @JsonKey(name: 'place_lat')
+  double? get placeLat => throw _privateConstructorUsedError;
+  @JsonKey(name: 'place_lng')
+  double? get placeLng => throw _privateConstructorUsedError;
+  @JsonKey(name: 'food_paired')
+  String? get foodPaired => throw _privateConstructorUsedError;
+  @JsonKey(name: 'companion_user_ids')
+  List<String> get companionUserIds => throw _privateConstructorUsedError;
+  String? get note => throw _privateConstructorUsedError;
+  String get visibility => throw _privateConstructorUsedError;
+  @JsonKey(name: 'updated_at')
+  DateTime? get updatedAt => throw _privateConstructorUsedError;
 
   /// Serializes this WineMemoryModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -56,7 +74,18 @@ abstract class $WineMemoryModelCopyWith<$Res> {
     @JsonKey(name: 'user_id') String userId,
     @JsonKey(name: 'image_url') String? imageUrl,
     @JsonKey(name: 'local_image_path') String? localImagePath,
+    String? caption,
     @JsonKey(name: 'created_at') DateTime createdAt,
+    @JsonKey(name: 'occurred_at') DateTime? occurredAt,
+    String? occasion,
+    @JsonKey(name: 'place_name') String? placeName,
+    @JsonKey(name: 'place_lat') double? placeLat,
+    @JsonKey(name: 'place_lng') double? placeLng,
+    @JsonKey(name: 'food_paired') String? foodPaired,
+    @JsonKey(name: 'companion_user_ids') List<String> companionUserIds,
+    String? note,
+    String visibility,
+    @JsonKey(name: 'updated_at') DateTime? updatedAt,
   });
 }
 
@@ -80,7 +109,18 @@ class _$WineMemoryModelCopyWithImpl<$Res, $Val extends WineMemoryModel>
     Object? userId = null,
     Object? imageUrl = freezed,
     Object? localImagePath = freezed,
+    Object? caption = freezed,
     Object? createdAt = null,
+    Object? occurredAt = freezed,
+    Object? occasion = freezed,
+    Object? placeName = freezed,
+    Object? placeLat = freezed,
+    Object? placeLng = freezed,
+    Object? foodPaired = freezed,
+    Object? companionUserIds = null,
+    Object? note = freezed,
+    Object? visibility = null,
+    Object? updatedAt = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -104,10 +144,54 @@ class _$WineMemoryModelCopyWithImpl<$Res, $Val extends WineMemoryModel>
                 ? _value.localImagePath
                 : localImagePath // ignore: cast_nullable_to_non_nullable
                       as String?,
+            caption: freezed == caption
+                ? _value.caption
+                : caption // ignore: cast_nullable_to_non_nullable
+                      as String?,
             createdAt: null == createdAt
                 ? _value.createdAt
                 : createdAt // ignore: cast_nullable_to_non_nullable
                       as DateTime,
+            occurredAt: freezed == occurredAt
+                ? _value.occurredAt
+                : occurredAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+            occasion: freezed == occasion
+                ? _value.occasion
+                : occasion // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            placeName: freezed == placeName
+                ? _value.placeName
+                : placeName // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            placeLat: freezed == placeLat
+                ? _value.placeLat
+                : placeLat // ignore: cast_nullable_to_non_nullable
+                      as double?,
+            placeLng: freezed == placeLng
+                ? _value.placeLng
+                : placeLng // ignore: cast_nullable_to_non_nullable
+                      as double?,
+            foodPaired: freezed == foodPaired
+                ? _value.foodPaired
+                : foodPaired // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            companionUserIds: null == companionUserIds
+                ? _value.companionUserIds
+                : companionUserIds // ignore: cast_nullable_to_non_nullable
+                      as List<String>,
+            note: freezed == note
+                ? _value.note
+                : note // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            visibility: null == visibility
+                ? _value.visibility
+                : visibility // ignore: cast_nullable_to_non_nullable
+                      as String,
+            updatedAt: freezed == updatedAt
+                ? _value.updatedAt
+                : updatedAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
           )
           as $Val,
     );
@@ -129,7 +213,18 @@ abstract class _$$WineMemoryModelImplCopyWith<$Res>
     @JsonKey(name: 'user_id') String userId,
     @JsonKey(name: 'image_url') String? imageUrl,
     @JsonKey(name: 'local_image_path') String? localImagePath,
+    String? caption,
     @JsonKey(name: 'created_at') DateTime createdAt,
+    @JsonKey(name: 'occurred_at') DateTime? occurredAt,
+    String? occasion,
+    @JsonKey(name: 'place_name') String? placeName,
+    @JsonKey(name: 'place_lat') double? placeLat,
+    @JsonKey(name: 'place_lng') double? placeLng,
+    @JsonKey(name: 'food_paired') String? foodPaired,
+    @JsonKey(name: 'companion_user_ids') List<String> companionUserIds,
+    String? note,
+    String visibility,
+    @JsonKey(name: 'updated_at') DateTime? updatedAt,
   });
 }
 
@@ -152,7 +247,18 @@ class __$$WineMemoryModelImplCopyWithImpl<$Res>
     Object? userId = null,
     Object? imageUrl = freezed,
     Object? localImagePath = freezed,
+    Object? caption = freezed,
     Object? createdAt = null,
+    Object? occurredAt = freezed,
+    Object? occasion = freezed,
+    Object? placeName = freezed,
+    Object? placeLat = freezed,
+    Object? placeLng = freezed,
+    Object? foodPaired = freezed,
+    Object? companionUserIds = null,
+    Object? note = freezed,
+    Object? visibility = null,
+    Object? updatedAt = freezed,
   }) {
     return _then(
       _$WineMemoryModelImpl(
@@ -176,10 +282,54 @@ class __$$WineMemoryModelImplCopyWithImpl<$Res>
             ? _value.localImagePath
             : localImagePath // ignore: cast_nullable_to_non_nullable
                   as String?,
+        caption: freezed == caption
+            ? _value.caption
+            : caption // ignore: cast_nullable_to_non_nullable
+                  as String?,
         createdAt: null == createdAt
             ? _value.createdAt
             : createdAt // ignore: cast_nullable_to_non_nullable
                   as DateTime,
+        occurredAt: freezed == occurredAt
+            ? _value.occurredAt
+            : occurredAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+        occasion: freezed == occasion
+            ? _value.occasion
+            : occasion // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        placeName: freezed == placeName
+            ? _value.placeName
+            : placeName // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        placeLat: freezed == placeLat
+            ? _value.placeLat
+            : placeLat // ignore: cast_nullable_to_non_nullable
+                  as double?,
+        placeLng: freezed == placeLng
+            ? _value.placeLng
+            : placeLng // ignore: cast_nullable_to_non_nullable
+                  as double?,
+        foodPaired: freezed == foodPaired
+            ? _value.foodPaired
+            : foodPaired // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        companionUserIds: null == companionUserIds
+            ? _value._companionUserIds
+            : companionUserIds // ignore: cast_nullable_to_non_nullable
+                  as List<String>,
+        note: freezed == note
+            ? _value.note
+            : note // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        visibility: null == visibility
+            ? _value.visibility
+            : visibility // ignore: cast_nullable_to_non_nullable
+                  as String,
+        updatedAt: freezed == updatedAt
+            ? _value.updatedAt
+            : updatedAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
       ),
     );
   }
@@ -194,8 +344,20 @@ class _$WineMemoryModelImpl implements _WineMemoryModel {
     @JsonKey(name: 'user_id') required this.userId,
     @JsonKey(name: 'image_url') this.imageUrl,
     @JsonKey(name: 'local_image_path') this.localImagePath,
+    this.caption,
     @JsonKey(name: 'created_at') required this.createdAt,
-  });
+    @JsonKey(name: 'occurred_at') this.occurredAt,
+    this.occasion,
+    @JsonKey(name: 'place_name') this.placeName,
+    @JsonKey(name: 'place_lat') this.placeLat,
+    @JsonKey(name: 'place_lng') this.placeLng,
+    @JsonKey(name: 'food_paired') this.foodPaired,
+    @JsonKey(name: 'companion_user_ids')
+    final List<String> companionUserIds = const <String>[],
+    this.note,
+    this.visibility = 'friends',
+    @JsonKey(name: 'updated_at') this.updatedAt,
+  }) : _companionUserIds = companionUserIds;
 
   factory _$WineMemoryModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$WineMemoryModelImplFromJson(json);
@@ -215,12 +377,49 @@ class _$WineMemoryModelImpl implements _WineMemoryModel {
   @JsonKey(name: 'local_image_path')
   final String? localImagePath;
   @override
+  final String? caption;
+  @override
   @JsonKey(name: 'created_at')
   final DateTime createdAt;
+  @override
+  @JsonKey(name: 'occurred_at')
+  final DateTime? occurredAt;
+  @override
+  final String? occasion;
+  @override
+  @JsonKey(name: 'place_name')
+  final String? placeName;
+  @override
+  @JsonKey(name: 'place_lat')
+  final double? placeLat;
+  @override
+  @JsonKey(name: 'place_lng')
+  final double? placeLng;
+  @override
+  @JsonKey(name: 'food_paired')
+  final String? foodPaired;
+  final List<String> _companionUserIds;
+  @override
+  @JsonKey(name: 'companion_user_ids')
+  List<String> get companionUserIds {
+    if (_companionUserIds is EqualUnmodifiableListView)
+      return _companionUserIds;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_companionUserIds);
+  }
+
+  @override
+  final String? note;
+  @override
+  @JsonKey()
+  final String visibility;
+  @override
+  @JsonKey(name: 'updated_at')
+  final DateTime? updatedAt;
 
   @override
   String toString() {
-    return 'WineMemoryModel(id: $id, wineId: $wineId, userId: $userId, imageUrl: $imageUrl, localImagePath: $localImagePath, createdAt: $createdAt)';
+    return 'WineMemoryModel(id: $id, wineId: $wineId, userId: $userId, imageUrl: $imageUrl, localImagePath: $localImagePath, caption: $caption, createdAt: $createdAt, occurredAt: $occurredAt, occasion: $occasion, placeName: $placeName, placeLat: $placeLat, placeLng: $placeLng, foodPaired: $foodPaired, companionUserIds: $companionUserIds, note: $note, visibility: $visibility, updatedAt: $updatedAt)';
   }
 
   @override
@@ -235,8 +434,30 @@ class _$WineMemoryModelImpl implements _WineMemoryModel {
                 other.imageUrl == imageUrl) &&
             (identical(other.localImagePath, localImagePath) ||
                 other.localImagePath == localImagePath) &&
+            (identical(other.caption, caption) || other.caption == caption) &&
             (identical(other.createdAt, createdAt) ||
-                other.createdAt == createdAt));
+                other.createdAt == createdAt) &&
+            (identical(other.occurredAt, occurredAt) ||
+                other.occurredAt == occurredAt) &&
+            (identical(other.occasion, occasion) ||
+                other.occasion == occasion) &&
+            (identical(other.placeName, placeName) ||
+                other.placeName == placeName) &&
+            (identical(other.placeLat, placeLat) ||
+                other.placeLat == placeLat) &&
+            (identical(other.placeLng, placeLng) ||
+                other.placeLng == placeLng) &&
+            (identical(other.foodPaired, foodPaired) ||
+                other.foodPaired == foodPaired) &&
+            const DeepCollectionEquality().equals(
+              other._companionUserIds,
+              _companionUserIds,
+            ) &&
+            (identical(other.note, note) || other.note == note) &&
+            (identical(other.visibility, visibility) ||
+                other.visibility == visibility) &&
+            (identical(other.updatedAt, updatedAt) ||
+                other.updatedAt == updatedAt));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -248,7 +469,18 @@ class _$WineMemoryModelImpl implements _WineMemoryModel {
     userId,
     imageUrl,
     localImagePath,
+    caption,
     createdAt,
+    occurredAt,
+    occasion,
+    placeName,
+    placeLat,
+    placeLng,
+    foodPaired,
+    const DeepCollectionEquality().hash(_companionUserIds),
+    note,
+    visibility,
+    updatedAt,
   );
 
   /// Create a copy of WineMemoryModel
@@ -275,7 +507,18 @@ abstract class _WineMemoryModel implements WineMemoryModel {
     @JsonKey(name: 'user_id') required final String userId,
     @JsonKey(name: 'image_url') final String? imageUrl,
     @JsonKey(name: 'local_image_path') final String? localImagePath,
+    final String? caption,
     @JsonKey(name: 'created_at') required final DateTime createdAt,
+    @JsonKey(name: 'occurred_at') final DateTime? occurredAt,
+    final String? occasion,
+    @JsonKey(name: 'place_name') final String? placeName,
+    @JsonKey(name: 'place_lat') final double? placeLat,
+    @JsonKey(name: 'place_lng') final double? placeLng,
+    @JsonKey(name: 'food_paired') final String? foodPaired,
+    @JsonKey(name: 'companion_user_ids') final List<String> companionUserIds,
+    final String? note,
+    final String visibility,
+    @JsonKey(name: 'updated_at') final DateTime? updatedAt,
   }) = _$WineMemoryModelImpl;
 
   factory _WineMemoryModel.fromJson(Map<String, dynamic> json) =
@@ -296,8 +539,37 @@ abstract class _WineMemoryModel implements WineMemoryModel {
   @JsonKey(name: 'local_image_path')
   String? get localImagePath;
   @override
+  String? get caption;
+  @override
   @JsonKey(name: 'created_at')
   DateTime get createdAt;
+  @override
+  @JsonKey(name: 'occurred_at')
+  DateTime? get occurredAt;
+  @override
+  String? get occasion;
+  @override
+  @JsonKey(name: 'place_name')
+  String? get placeName;
+  @override
+  @JsonKey(name: 'place_lat')
+  double? get placeLat;
+  @override
+  @JsonKey(name: 'place_lng')
+  double? get placeLng;
+  @override
+  @JsonKey(name: 'food_paired')
+  String? get foodPaired;
+  @override
+  @JsonKey(name: 'companion_user_ids')
+  List<String> get companionUserIds;
+  @override
+  String? get note;
+  @override
+  String get visibility;
+  @override
+  @JsonKey(name: 'updated_at')
+  DateTime? get updatedAt;
 
   /// Create a copy of WineMemoryModel
   /// with the given fields replaced by the non-null parameter values.

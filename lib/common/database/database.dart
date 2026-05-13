@@ -3,6 +3,7 @@ import 'package:drift_flutter/drift_flutter.dart';
 
 import 'tables/wines.table.dart';
 import 'tables/wine_memories.table.dart';
+import 'tables/wine_memory_photos.table.dart';
 import 'tables/wine_aliases.table.dart';
 import 'tables/notification_prefs.table.dart';
 import 'tables/canonical_grape.table.dart';
@@ -11,6 +12,7 @@ import 'tables/pending_image_uploads.table.dart';
 import 'tables/rating_summary_cache.table.dart';
 import 'daos/wines.dao.dart';
 import 'daos/wine_memories.dao.dart';
+import 'daos/wine_memory_photos.dao.dart';
 import 'daos/wine_aliases.dao.dart';
 import 'daos/notification_prefs.dao.dart';
 import 'daos/canonical_grape.dao.dart';
@@ -24,6 +26,7 @@ part 'database.g.dart';
   tables: [
     WinesTable,
     WineMemoriesTable,
+    WineMemoryPhotosTable,
     WineAliasesTable,
     NotificationPrefsTable,
     CanonicalGrapeTable,
@@ -34,6 +37,7 @@ part 'database.g.dart';
   daos: [
     WinesDao,
     WineMemoriesDao,
+    WineMemoryPhotosDao,
     WineAliasesDao,
     NotificationPrefsDao,
     CanonicalGrapeDao,
@@ -50,7 +54,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -60,6 +64,24 @@ class AppDatabase extends _$AppDatabase {
     onUpgrade: (Migrator m, int from, int to) async {
       if (from < 2) {
         await m.createTable(ratingSummaryCacheTable);
+      }
+      if (from < 3) {
+        // Wine Moments phase 1 — extend wine_memories with moment
+        // context fields and add wine_memory_photos sibling table.
+        await m.addColumn(wineMemoriesTable, wineMemoriesTable.occurredAt);
+        await m.addColumn(wineMemoriesTable, wineMemoriesTable.occasion);
+        await m.addColumn(wineMemoriesTable, wineMemoriesTable.placeName);
+        await m.addColumn(wineMemoriesTable, wineMemoriesTable.placeLat);
+        await m.addColumn(wineMemoriesTable, wineMemoriesTable.placeLng);
+        await m.addColumn(wineMemoriesTable, wineMemoriesTable.foodPaired);
+        await m.addColumn(
+          wineMemoriesTable,
+          wineMemoriesTable.companionUserIds,
+        );
+        await m.addColumn(wineMemoriesTable, wineMemoriesTable.note);
+        await m.addColumn(wineMemoriesTable, wineMemoriesTable.visibility);
+        await m.addColumn(wineMemoriesTable, wineMemoriesTable.updatedAt);
+        await m.createTable(wineMemoryPhotosTable);
       }
     },
   );
