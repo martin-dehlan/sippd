@@ -548,33 +548,77 @@ class _NotesBlock extends StatelessWidget {
   }
 }
 
-class _PlaceSection extends ConsumerWidget {
+class _PlaceSection extends ConsumerStatefulWidget {
   final WineEntity wine;
   final bool hasCoords;
 
   const _PlaceSection({required this.wine, required this.hasCoords});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_PlaceSection> createState() => _PlaceSectionState();
+}
+
+class _PlaceSectionState extends ConsumerState<_PlaceSection>
+    with TickerProviderStateMixin {
+  late final MapController _mapCtrl = MapController();
+  // Track the active mark so its pill reads as selected. -1 = whole
+  // bounds (default). Tapping a pill flies the camera + selects.
+  int _selectedIndex = -1;
+  AnimationController? _flyCtrl;
+
+  @override
+  void dispose() {
+    _flyCtrl?.dispose();
+    _mapCtrl.dispose();
+    super.dispose();
+  }
+
+  /// Smooth camera fly from current center+zoom to the target. Drops
+  /// any in-flight animation so back-to-back pill taps feel snappy.
+  void _flyTo(LatLng target, double zoom) {
+    _flyCtrl?.dispose();
+    final start = _mapCtrl.camera.center;
+    final startZoom = _mapCtrl.camera.zoom;
+    final ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 420),
+    );
+    final latTween = Tween<double>(begin: start.latitude, end: target.latitude);
+    final lngTween = Tween<double>(
+      begin: start.longitude,
+      end: target.longitude,
+    );
+    final zoomTween = Tween<double>(begin: startZoom, end: zoom);
+    final anim = CurvedAnimation(parent: ctrl, curve: Curves.easeOutCubic);
+    anim.addListener(() {
+      _mapCtrl.move(
+        LatLng(latTween.evaluate(anim), lngTween.evaluate(anim)),
+        zoomTween.evaluate(anim),
+      );
+    });
+    _flyCtrl = ctrl;
+    ctrl.forward();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
 
-    final memoriesAsync = ref.watch(wineMemoriesControllerProvider(wine.id));
+    final memoriesAsync = ref.watch(
+      wineMemoriesControllerProvider(widget.wine.id),
+    );
     final momentPoints = (memoriesAsync.valueOrNull ?? const [])
         .where((m) => m.placeLat != null && m.placeLng != null)
         .toList();
 
-    final winePoint = hasCoords
-        ? LatLng(wine.latitude!, wine.longitude!)
+    final winePoint = widget.hasCoords
+        ? LatLng(widget.wine.latitude!, widget.wine.longitude!)
         : null;
 
     if (winePoint == null && momentPoints.isEmpty) {
-      return _EmptyPlace(location: wine.location);
+      return _EmptyPlace(location: widget.wine.location);
     }
 
-    // Build a flat list of place marks so the map and the bottom
-    // pill row stay perfectly in sync — same colour, same order.
-    // Wine sits at index 0 (wine-glass glyph). Each moment with
-    // lat/lng gets a numbered pin (1, 2, 3, …).
     final palette = <Color>[
       cs.primary,
       cs.tertiary,
@@ -586,7 +630,7 @@ class _PlaceSection extends ConsumerWidget {
     final marks = <_PlaceMark>[
       if (winePoint != null)
         _PlaceMark(
-          label: wine.location ?? '',
+          label: widget.wine.location ?? '',
           point: winePoint,
           color: palette[0],
           glyph: PhosphorIconsFill.wine,
@@ -610,6 +654,7 @@ class _PlaceSection extends ConsumerWidget {
       child: Stack(
         children: [
           FlutterMap(
+            mapController: _mapCtrl,
             options: MapOptions(
               initialCameraFit: marks.length == 1
                   ? null
@@ -632,20 +677,22 @@ class _PlaceSection extends ConsumerWidget {
               ),
               MarkerLayer(
                 markers: [
-                  for (final mark in marks)
+                  for (var i = 0; i < marks.length; i++)
                     Marker(
-                      point: mark.point,
-                      width: context.w * 0.075,
-                      height: context.w * 0.075,
+                      point: marks[i].point,
+                      width: context.w * (i == _selectedIndex ? 0.095 : 0.075),
+                      height: context.w * (i == _selectedIndex ? 0.095 : 0.075),
                       alignment: Alignment.bottomCenter,
-                      child: _MapPin(mark: mark),
+                      child: _MapPin(
+                        mark: marks[i],
+                        selected: i == _selectedIndex,
+                      ),
                     ),
                 ],
               ),
             ],
           ),
-          // Bottom pill row — one chip per place, colour-coded to
-          // match its map pin. Horizontal scroll when many places.
+          // Bottom pill row — tap a pill to fly the camera to its pin.
           Positioned(
             left: context.s,
             right: context.s,
@@ -657,7 +704,14 @@ class _PlaceSection extends ConsumerWidget {
                 children: [
                   for (var i = 0; i < marks.length; i++) ...[
                     if (i != 0) SizedBox(width: context.xs * 1.5),
-                    _PlacePill(mark: marks[i]),
+                    _PlacePill(
+                      mark: marks[i],
+                      selected: i == _selectedIndex,
+                      onTap: () {
+                        setState(() => _selectedIndex = i);
+                        _flyTo(marks[i].point, 15);
+                      },
+                    ),
                   ],
                 ],
               ),
@@ -687,31 +741,38 @@ class _PlaceMark {
 
 class _MapPin extends StatelessWidget {
   final _PlaceMark mark;
-  const _MapPin({required this.mark});
+  final bool selected;
+  const _MapPin({required this.mark, this.selected = false});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 220),
+      curve: Curves.easeOut,
       decoration: BoxDecoration(
         color: mark.color,
         shape: BoxShape.circle,
-        border: Border.all(color: Colors.white, width: 2),
+        border: Border.all(color: Colors.white, width: selected ? 3 : 2),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.25),
-            blurRadius: 4,
+            color: Colors.black.withValues(alpha: selected ? 0.45 : 0.25),
+            blurRadius: selected ? 8 : 4,
             offset: const Offset(0, 1),
           ),
         ],
       ),
       alignment: Alignment.center,
       child: mark.glyph != null
-          ? Icon(mark.glyph, color: Colors.white, size: context.w * 0.04)
+          ? Icon(
+              mark.glyph,
+              color: Colors.white,
+              size: context.w * (selected ? 0.046 : 0.04),
+            )
           : Text(
               '${mark.number}',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: context.w * 0.034,
+                fontSize: context.w * (selected ? 0.038 : 0.034),
                 fontWeight: FontWeight.w800,
                 height: 1,
               ),
@@ -722,60 +783,82 @@ class _MapPin extends StatelessWidget {
 
 class _PlacePill extends StatelessWidget {
   final _PlaceMark mark;
-  const _PlacePill({required this.mark});
+  final bool selected;
+  final VoidCallback onTap;
+  const _PlacePill({
+    required this.mark,
+    required this.selected,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final label = mark.label.isEmpty ? '·' : mark.label;
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: context.s,
-        vertical: context.xs,
-      ),
-      decoration: BoxDecoration(
-        color: cs.surface.withValues(alpha: 0.94),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
         borderRadius: BorderRadius.circular(context.w * 0.05),
-        border: Border.all(color: cs.outlineVariant, width: 0.5),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: context.w * 0.05,
-            height: context.w * 0.05,
-            decoration: BoxDecoration(
-              color: mark.color,
-              shape: BoxShape.circle,
-            ),
-            alignment: Alignment.center,
-            child: mark.glyph != null
-                ? Icon(mark.glyph, color: Colors.white, size: context.w * 0.03)
-                : Text(
-                    '${mark.number}',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: context.w * 0.025,
-                      fontWeight: FontWeight.w800,
-                      height: 1,
-                    ),
-                  ),
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeOut,
+          padding: EdgeInsets.symmetric(
+            horizontal: context.s,
+            vertical: context.xs,
           ),
-          SizedBox(width: context.xs * 1.5),
-          ConstrainedBox(
-            constraints: BoxConstraints(maxWidth: context.w * 0.4),
-            child: Text(
-              label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontSize: context.captionFont,
-                fontWeight: FontWeight.w600,
-                color: cs.onSurface,
+          decoration: BoxDecoration(
+            color: selected ? mark.color : cs.surface.withValues(alpha: 0.94),
+            borderRadius: BorderRadius.circular(context.w * 0.05),
+            border: Border.all(
+              color: selected ? mark.color : cs.outlineVariant,
+              width: selected ? 1.5 : 0.5,
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: context.w * 0.05,
+                height: context.w * 0.05,
+                decoration: BoxDecoration(
+                  color: selected ? Colors.white : mark.color,
+                  shape: BoxShape.circle,
+                ),
+                alignment: Alignment.center,
+                child: mark.glyph != null
+                    ? Icon(
+                        mark.glyph,
+                        color: selected ? mark.color : Colors.white,
+                        size: context.w * 0.03,
+                      )
+                    : Text(
+                        '${mark.number}',
+                        style: TextStyle(
+                          color: selected ? mark.color : Colors.white,
+                          fontSize: context.w * 0.025,
+                          fontWeight: FontWeight.w800,
+                          height: 1,
+                        ),
+                      ),
               ),
-            ),
+              SizedBox(width: context.xs * 1.5),
+              ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: context.w * 0.4),
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: context.captionFont,
+                    fontWeight: FontWeight.w600,
+                    color: selected ? Colors.white : cs.onSurface,
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
