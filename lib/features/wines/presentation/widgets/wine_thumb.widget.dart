@@ -34,7 +34,7 @@ class WineThumb extends StatelessWidget {
     required this.wine,
     required this.size,
     this.cornerOverlay,
-    this.radiusFactor = 0.22,
+    this.radiusFactor = 0.18,
   });
 
   @override
