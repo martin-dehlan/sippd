@@ -571,39 +571,34 @@ class _PlaceSection extends ConsumerWidget {
       return _EmptyPlace(location: wine.location);
     }
 
-    final markers = <Marker>[
+    // Build a flat list of place marks so the map and the bottom
+    // pill row stay perfectly in sync — same colour, same order.
+    // Wine sits at index 0 (wine-glass glyph). Each moment with
+    // lat/lng gets a numbered pin (1, 2, 3, …).
+    final palette = <Color>[
+      cs.primary,
+      cs.tertiary,
+      const Color(0xFFE3A6BA),
+      const Color(0xFFB7C7DC),
+      const Color(0xFFE8D9A1),
+      cs.secondary,
+    ];
+    final marks = <_PlaceMark>[
       if (winePoint != null)
-        Marker(
+        _PlaceMark(
+          label: wine.location ?? '',
           point: winePoint,
-          width: context.w * 0.1,
-          height: context.w * 0.1,
-          child: Icon(
-            PhosphorIconsFill.mapPin,
-            size: context.w * 0.1,
-            color: cs.primary,
-          ),
+          color: palette[0],
+          glyph: PhosphorIconsFill.wine,
         ),
-      for (final m in momentPoints)
-        Marker(
-          point: LatLng(m.placeLat!, m.placeLng!),
-          width: context.w * 0.08,
-          height: context.w * 0.08,
-          child: Icon(
-            PhosphorIconsFill.mapPin,
-            size: context.w * 0.08,
-            color: cs.tertiary,
-          ),
+      for (var i = 0; i < momentPoints.length; i++)
+        _PlaceMark(
+          label: momentPoints[i].placeName ?? '·',
+          point: LatLng(momentPoints[i].placeLat!, momentPoints[i].placeLng!),
+          color: palette[(i + 1) % palette.length],
+          number: i + 1,
         ),
     ];
-
-    final allPoints = <LatLng>[
-      ?winePoint,
-      for (final m in momentPoints) LatLng(m.placeLat!, m.placeLng!),
-    ];
-
-    final caption =
-        wine.location ??
-        (momentPoints.isNotEmpty ? (momentPoints.first.placeName ?? '') : null);
 
     return Container(
       margin: EdgeInsets.symmetric(horizontal: context.paddingH),
@@ -616,13 +611,15 @@ class _PlaceSection extends ConsumerWidget {
         children: [
           FlutterMap(
             options: MapOptions(
-              initialCameraFit: allPoints.length == 1
+              initialCameraFit: marks.length == 1
                   ? null
                   : CameraFit.bounds(
-                      bounds: LatLngBounds.fromPoints(allPoints),
+                      bounds: LatLngBounds.fromPoints(
+                        marks.map((m) => m.point).toList(),
+                      ),
                       padding: EdgeInsets.all(context.w * 0.1),
                     ),
-              initialCenter: allPoints.first,
+              initialCenter: marks.first.point,
               initialZoom: 14,
               interactionOptions: const InteractionOptions(
                 flags: InteractiveFlag.none,
@@ -633,66 +630,151 @@ class _PlaceSection extends ConsumerWidget {
                 urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                 userAgentPackageName: 'xyz.sippd.app',
               ),
-              MarkerLayer(markers: markers),
+              MarkerLayer(
+                markers: [
+                  for (final mark in marks)
+                    Marker(
+                      point: mark.point,
+                      width: context.w * 0.075,
+                      height: context.w * 0.075,
+                      alignment: Alignment.bottomCenter,
+                      child: _MapPin(mark: mark),
+                    ),
+                ],
+              ),
             ],
           ),
-          if (caption != null && caption.isNotEmpty)
-            Positioned(
-              left: context.m,
-              right: context.m,
-              bottom: context.m,
-              child: Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: context.m,
-                  vertical: context.s,
-                ),
-                decoration: BoxDecoration(
-                  color: cs.surface.withValues(alpha: 0.92),
-                  borderRadius: BorderRadius.circular(context.w * 0.02),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      PhosphorIconsRegular.mapPin,
-                      size: context.w * 0.045,
-                      color: cs.primary,
-                    ),
-                    SizedBox(width: context.w * 0.02),
-                    Expanded(
-                      child: Text(
-                        caption,
-                        style: TextStyle(
-                          fontSize: context.bodyFont,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    if (momentPoints.isNotEmpty) ...[
-                      SizedBox(width: context.w * 0.02),
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: context.w * 0.02,
-                          vertical: context.xs,
-                        ),
-                        decoration: BoxDecoration(
-                          color: cs.tertiaryContainer,
-                          borderRadius: BorderRadius.circular(context.w * 0.02),
-                        ),
-                        child: Text(
-                          '+${momentPoints.length}',
-                          style: TextStyle(
-                            fontSize: context.captionFont * 0.9,
-                            fontWeight: FontWeight.w700,
-                            color: cs.onTertiaryContainer,
-                          ),
-                        ),
-                      ),
-                    ],
+          // Bottom pill row — one chip per place, colour-coded to
+          // match its map pin. Horizontal scroll when many places.
+          Positioned(
+            left: context.s,
+            right: context.s,
+            bottom: context.m,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              padding: EdgeInsets.symmetric(horizontal: context.s),
+              child: Row(
+                children: [
+                  for (var i = 0; i < marks.length; i++) ...[
+                    if (i != 0) SizedBox(width: context.xs * 1.5),
+                    _PlacePill(mark: marks[i]),
                   ],
-                ),
+                ],
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PlaceMark {
+  final String label;
+  final LatLng point;
+  final Color color;
+  final IconData? glyph;
+  final int? number;
+
+  const _PlaceMark({
+    required this.label,
+    required this.point,
+    required this.color,
+    this.glyph,
+    this.number,
+  });
+}
+
+class _MapPin extends StatelessWidget {
+  final _PlaceMark mark;
+  const _MapPin({required this.mark});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: mark.color,
+        shape: BoxShape.circle,
+        border: Border.all(color: Colors.white, width: 2),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.25),
+            blurRadius: 4,
+            offset: const Offset(0, 1),
+          ),
+        ],
+      ),
+      alignment: Alignment.center,
+      child: mark.glyph != null
+          ? Icon(mark.glyph, color: Colors.white, size: context.w * 0.04)
+          : Text(
+              '${mark.number}',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: context.w * 0.034,
+                fontWeight: FontWeight.w800,
+                height: 1,
+              ),
+            ),
+    );
+  }
+}
+
+class _PlacePill extends StatelessWidget {
+  final _PlaceMark mark;
+  const _PlacePill({required this.mark});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final label = mark.label.isEmpty ? '·' : mark.label;
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: context.s,
+        vertical: context.xs,
+      ),
+      decoration: BoxDecoration(
+        color: cs.surface.withValues(alpha: 0.94),
+        borderRadius: BorderRadius.circular(context.w * 0.05),
+        border: Border.all(color: cs.outlineVariant, width: 0.5),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: context.w * 0.05,
+            height: context.w * 0.05,
+            decoration: BoxDecoration(
+              color: mark.color,
+              shape: BoxShape.circle,
+            ),
+            alignment: Alignment.center,
+            child: mark.glyph != null
+                ? Icon(mark.glyph, color: Colors.white, size: context.w * 0.03)
+                : Text(
+                    '${mark.number}',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: context.w * 0.025,
+                      fontWeight: FontWeight.w800,
+                      height: 1,
+                    ),
+                  ),
+          ),
+          SizedBox(width: context.xs * 1.5),
+          ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: context.w * 0.4),
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: context.captionFont,
+                fontWeight: FontWeight.w600,
+                color: cs.onSurface,
+              ),
+            ),
+          ),
         ],
       ),
     );
