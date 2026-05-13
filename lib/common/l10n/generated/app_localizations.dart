@@ -2162,6 +2162,36 @@ abstract class AppLocalizations {
   /// **'No friends to tag yet.'**
   String get momentCompanionsEmpty;
 
+  /// No description provided for @friendsProfileSharedMoments.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared moments'**
+  String get friendsProfileSharedMoments;
+
+  /// No description provided for @winesShareToFriend.
+  ///
+  /// In en, this message translates to:
+  /// **'Share with friend'**
+  String get winesShareToFriend;
+
+  /// No description provided for @winesShareSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Wine shared with {name}'**
+  String winesShareSuccess(String name);
+
+  /// No description provided for @winesShareError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t share — try again'**
+  String get winesShareError;
+
+  /// No description provided for @winesSharePickFriendsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Share with'**
+  String get winesSharePickFriendsTitle;
+
   /// No description provided for @momentPlaceHint.
   ///
   /// In en, this message translates to:

@@ -113,6 +113,17 @@ class WineRepositoryImpl implements WineRepository {
     return data.map((td) => td.toEntity()).toList();
   }
 
+  @override
+  Future<String> shareToFriend({
+    required String friendId,
+    required String wineId,
+  }) async {
+    if (_api == null) {
+      throw StateError('shareToFriend requires an API client');
+    }
+    return _api.shareToFriend(friendId: friendId, wineId: wineId);
+  }
+
   // ── Sync helpers ──────────────────────────────────────────
 
   Future<void> _syncToRemote(WineEntity wine) async {

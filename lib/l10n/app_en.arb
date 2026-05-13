@@ -467,6 +467,16 @@
   "momentOccasionBirthday": "Birthday",
   "momentCompanionsAddFriend": "Add friend",
   "momentCompanionsEmpty": "No friends to tag yet.",
+  "friendsProfileSharedMoments": "Shared moments",
+  "winesShareToFriend": "Share with friend",
+  "winesShareSuccess": "Wine shared with {name}",
+  "@winesShareSuccess": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "winesShareError": "Couldn't share — try again",
+  "winesSharePickFriendsTitle": "Share with",
   "momentPlaceHint": "Restaurant or place",
   "momentFoodHint": "What did you pair it with?",
   "momentNoteHint": "Anything to remember?",

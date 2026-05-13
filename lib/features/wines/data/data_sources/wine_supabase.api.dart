@@ -33,4 +33,19 @@ class WineSupabaseApi {
   Future<void> deleteWine(String id) async {
     await _client.from('wines').delete().eq('id', id);
   }
+
+  /// Pushes the wine identity (canonical_wine + core attrs) into a
+  /// friend's personal wines list. No-op if the friend already has
+  /// a wines row with the same canonical_wine_id. Returns the
+  /// friend's wine_id either way.
+  Future<String> shareToFriend({
+    required String friendId,
+    required String wineId,
+  }) async {
+    final result = await _client.rpc<String>(
+      'share_wine_to_friend',
+      params: {'p_friend_id': friendId, 'p_wine_id': wineId},
+    );
+    return result;
+  }
 }

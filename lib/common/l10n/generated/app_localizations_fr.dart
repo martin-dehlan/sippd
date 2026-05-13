@@ -1113,6 +1113,23 @@ class AppLocalizationsFr extends AppLocalizations {
   String get momentCompanionsEmpty => 'Aucun ami à identifier pour l\'instant.';
 
   @override
+  String get friendsProfileSharedMoments => 'Moments partagés';
+
+  @override
+  String get winesShareToFriend => 'Partager avec un ami';
+
+  @override
+  String winesShareSuccess(String name) {
+    return 'Vin partagé avec $name';
+  }
+
+  @override
+  String get winesShareError => 'Échec du partage — réessaie';
+
+  @override
+  String get winesSharePickFriendsTitle => 'Partager avec';
+
+  @override
   String get momentPlaceHint => 'Restaurant ou lieu';
 
   @override

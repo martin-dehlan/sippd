@@ -13,6 +13,9 @@ import '../../../../../common/widgets/error_view.widget.dart';
 import '../../../../../common/widgets/overflow_menu.widget.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../../auth/controller/auth.provider.dart';
+import '../../../../friends/controller/friends.provider.dart';
+import '../../../../friends/domain/entities/friend_profile.entity.dart';
+import '../../../../friends/presentation/widgets/friend_multi_picker.widget.dart';
 import '../../../../groups/presentation/widgets/share_wine_sheet.dart';
 import '../../../../paywall/controller/paywall.provider.dart';
 import '../../../../profile/controller/profile.provider.dart';
@@ -169,6 +172,8 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
                                 context: context,
                                 wineId: widget.wine.id,
                               ),
+                              onShareToFriend: () =>
+                                  _shareToFriend(context, ref),
                               onShareImage: () {
                                 final username = ref
                                     .read(currentProfileProvider)
@@ -284,6 +289,41 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
     );
   }
 
+  Future<void> _shareToFriend(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context);
+    final selected = await showFriendMultiPicker(
+      context: context,
+      initialSelected: const {},
+      title: l10n.winesSharePickFriendsTitle,
+    );
+    if (selected == null || selected.isEmpty || !context.mounted) return;
+
+    final friends =
+        ref.read(friendsListProvider).valueOrNull ??
+        const <FriendProfileEntity>[];
+    final byId = {for (final f in friends) f.id: f};
+    final repo = ref.read(wineRepositoryProvider);
+    final messenger = ScaffoldMessenger.of(context);
+    final sharedNames = <String>[];
+    for (final friendId in selected) {
+      try {
+        await repo.shareToFriend(friendId: friendId, wineId: widget.wine.id);
+        final f = byId[friendId];
+        sharedNames.add(
+          f?.displayName ?? f?.username ?? friendId.substring(0, 6),
+        );
+      } catch (_) {
+        messenger.showSnackBar(SnackBar(content: Text(l10n.winesShareError)));
+        return;
+      }
+    }
+    if (sharedNames.isNotEmpty) {
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.winesShareSuccess(sharedNames.join(', ')))),
+      );
+    }
+  }
+
   Future<void> _confirmDelete(BuildContext context) async {
     final l10n = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(
@@ -336,6 +376,7 @@ class _FloatingBackButton extends StatelessWidget {
 class _WineOverflowMenu extends StatelessWidget {
   final VoidCallback onCompare;
   final VoidCallback onShareToGroup;
+  final VoidCallback onShareToFriend;
   final VoidCallback onShareImage;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
@@ -344,6 +385,7 @@ class _WineOverflowMenu extends StatelessWidget {
   const _WineOverflowMenu({
     required this.onCompare,
     required this.onShareToGroup,
+    required this.onShareToFriend,
     required this.onShareImage,
     required this.onEdit,
     required this.onDelete,
@@ -371,6 +413,11 @@ class _WineOverflowMenu extends StatelessWidget {
             icon: PhosphorIconsRegular.usersThree,
             label: l10n.winesDetailMenuShareToGroup,
             onTap: onShareToGroup,
+          ),
+          OverflowMenuItem(
+            icon: PhosphorIconsRegular.userPlus,
+            label: l10n.winesShareToFriend,
+            onTap: onShareToFriend,
           ),
         ],
         [

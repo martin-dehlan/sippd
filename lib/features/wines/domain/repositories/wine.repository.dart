@@ -14,4 +14,13 @@ abstract class WineRepository {
   /// latest local state reaches Supabase before the timer would have
   /// fired naturally.
   Future<void> flushPendingSync(String wineId);
+
+  /// Share a wine identity with a friend so the wine appears in their
+  /// personal list. Server-side RPC handles ownership + friendship
+  /// checks and is a no-op if the friend already has the same
+  /// canonical wine. Returns the friend's wine_id.
+  Future<String> shareToFriend({
+    required String friendId,
+    required String wineId,
+  });
 }

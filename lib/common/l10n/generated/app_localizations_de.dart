@@ -1111,6 +1111,23 @@ class AppLocalizationsDe extends AppLocalizations {
   String get momentCompanionsEmpty => 'Noch keine Freunde zum Taggen.';
 
   @override
+  String get friendsProfileSharedMoments => 'Gemeinsame Momente';
+
+  @override
+  String get winesShareToFriend => 'Mit Freund teilen';
+
+  @override
+  String winesShareSuccess(String name) {
+    return 'Wein mit $name geteilt';
+  }
+
+  @override
+  String get winesShareError => 'Teilen fehlgeschlagen — nochmal versuchen';
+
+  @override
+  String get winesSharePickFriendsTitle => 'Teilen mit';
+
+  @override
   String get momentPlaceHint => 'Restaurant oder Ort';
 
   @override
