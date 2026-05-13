@@ -664,7 +664,7 @@ class _MemoriesSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final memoriesAsync = ref.watch(wineMemoriesControllerProvider(wineId));
     final memories = memoriesAsync.valueOrNull ?? const [];
-    final ringSize = context.w * 0.18;
+    final ringSize = context.w * 0.14;
     final l10n = AppLocalizations.of(context);
     final cs = Theme.of(context).colorScheme;
 
@@ -675,98 +675,89 @@ class _MemoriesSection extends ConsumerWidget {
         children: [
           Padding(
             padding: EdgeInsets.symmetric(horizontal: context.paddingH),
-            child: Text(
-              l10n.momentSectionHeader,
-              style: TextStyle(
-                fontSize: context.bodyFont,
-                fontWeight: FontWeight.w700,
-                color: cs.onSurface,
-              ),
-            ),
-          ),
-          SizedBox(height: context.s),
-          SizedBox(
-            height: ringSize + context.s + 14,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              padding: EdgeInsets.symmetric(horizontal: context.paddingH),
-              itemCount: memories.length + 1,
-              separatorBuilder: (_, _) => SizedBox(width: context.w * 0.035),
-              itemBuilder: (_, i) {
-                if (i == 0) {
-                  return _AddMomentTile(
-                    size: ringSize,
-                    label: l10n.momentSectionAdd,
-                    onTap: () => pushMomentCapture(context, wineId: wineId),
-                  );
-                }
-                final memory = memories[i - 1];
-                return _MomentStoryTile(
-                  memory: memory,
-                  size: ringSize,
-                  onTap: () => pushMomentViewer(
-                    context,
-                    wineId: wineId,
-                    moments: memories,
-                    initialIndex: i - 1,
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    l10n.momentSectionHeader,
+                    style: TextStyle(
+                      fontSize: context.bodyFont,
+                      fontWeight: FontWeight.w700,
+                      color: cs.onSurface,
+                    ),
                   ),
-                );
-              },
+                ),
+                GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () => pushMomentCapture(context, ref, wineId: wineId),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: context.s,
+                      vertical: context.xs,
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          PhosphorIconsRegular.plus,
+                          size: context.w * 0.04,
+                          color: cs.primary,
+                        ),
+                        SizedBox(width: context.xs * 1.2),
+                        Text(
+                          l10n.momentSectionAdd,
+                          style: TextStyle(
+                            fontSize: context.captionFont,
+                            fontWeight: FontWeight.w600,
+                            color: cs.primary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class _AddMomentTile extends StatelessWidget {
-  final double size;
-  final String label;
-  final VoidCallback onTap;
-  const _AddMomentTile({
-    required this.size,
-    required this.label,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return GestureDetector(
-      onTap: onTap,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: size,
-            height: size,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: cs.surfaceContainer,
-              border: Border.all(color: cs.outlineVariant, width: 1.5),
-            ),
-            alignment: Alignment.center,
-            child: Icon(
-              PhosphorIconsRegular.plus,
-              color: cs.onSurfaceVariant,
-              size: size * 0.4,
-            ),
-          ),
-          SizedBox(height: context.xs),
-          SizedBox(
-            width: size,
-            child: Text(
-              label,
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontSize: context.captionFont * 0.85,
-                color: cs.onSurfaceVariant,
+          if (memories.isEmpty)
+            Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: context.paddingH,
+                vertical: context.s,
+              ),
+              child: Text(
+                l10n.momentSectionEmpty,
+                style: TextStyle(
+                  fontSize: context.captionFont,
+                  color: cs.onSurfaceVariant,
+                ),
+              ),
+            )
+          else ...[
+            SizedBox(height: context.s),
+            SizedBox(
+              height: ringSize,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                padding: EdgeInsets.symmetric(horizontal: context.paddingH),
+                itemCount: memories.length,
+                separatorBuilder: (_, _) => SizedBox(width: context.w * 0.025),
+                itemBuilder: (_, i) {
+                  final memory = memories[i];
+                  return _MomentStoryTile(
+                    memory: memory,
+                    size: ringSize,
+                    onTap: () => pushMomentViewer(
+                      context,
+                      wineId: wineId,
+                      moments: memories,
+                      initialIndex: i,
+                    ),
+                  );
+                },
               ),
             ),
-          ),
+          ],
         ],
       ),
     );
@@ -787,46 +778,21 @@ class _MomentStoryTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final ringColors = [cs.primary, cs.tertiary, cs.primaryContainer];
-    final label = memory.placeName ?? _occasionLabel(context, memory) ?? '';
     return GestureDetector(
       onTap: onTap,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: size,
-            height: size,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: SweepGradient(
-                colors: [...ringColors, ringColors.first],
-              ),
-            ),
-            padding: const EdgeInsets.all(2),
-            child: Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: cs.surface,
-              ),
-              padding: const EdgeInsets.all(2),
-              child: ClipOval(child: _avatarImage(memory, cs)),
-            ),
-          ),
-          SizedBox(height: context.xs),
-          SizedBox(
-            width: size,
-            child: Text(
-              label.isEmpty ? '·' : label,
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontSize: context.captionFont * 0.85,
-                color: cs.onSurfaceVariant,
-              ),
-            ),
-          ),
-        ],
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: SweepGradient(colors: [...ringColors, ringColors.first]),
+        ),
+        padding: const EdgeInsets.all(2),
+        child: Container(
+          decoration: BoxDecoration(shape: BoxShape.circle, color: cs.surface),
+          padding: const EdgeInsets.all(2),
+          child: ClipOval(child: _avatarImage(memory, cs)),
+        ),
       ),
     );
   }
@@ -847,27 +813,6 @@ class _MomentStoryTile extends StatelessWidget {
       color: cs.surfaceContainer,
       child: Icon(PhosphorIconsRegular.image, color: cs.outline),
     );
-  }
-
-  String? _occasionLabel(BuildContext ctx, WineMemoryEntity m) {
-    final key = m.occasion;
-    if (key == null) return null;
-    final l10n = AppLocalizations.of(ctx);
-    switch (key) {
-      case 'dinner':
-        return l10n.momentOccasionDinner;
-      case 'date':
-        return l10n.momentOccasionDate;
-      case 'celebration':
-        return l10n.momentOccasionCelebration;
-      case 'tasting':
-        return l10n.momentOccasionTasting;
-      case 'casual':
-        return l10n.momentOccasionCasual;
-      case 'birthday':
-        return l10n.momentOccasionBirthday;
-    }
-    return null;
   }
 }
 

@@ -19,90 +19,25 @@ import '../../../domain/entities/wine_memory_photo.entity.dart';
 /// fields (occasion / place / food / companions) move to an edit menu
 /// reachable from the story viewer — capture itself stays minimal.
 ///
+/// New-moment flow shows the source picker FIRST (over the calling
+/// screen) and only pushes the capture page once a photo is in hand,
+/// so the user never sees an empty black canvas behind the bottom
+/// sheet. Edit flow skips the picker and goes straight in.
+///
 /// Returns true if at least one moment was saved.
 Future<bool?> pushMomentCapture(
-  BuildContext context, {
+  BuildContext context,
+  WidgetRef ref, {
   required String wineId,
   WineMemoryEntity? existing,
   List<WineMemoryPhotoEntity> existingPhotos = const [],
-}) {
-  return Navigator.of(context, rootNavigator: true).push<bool>(
-    MaterialPageRoute(
-      fullscreenDialog: true,
-      builder: (_) => MomentCaptureScreen(
-        wineId: wineId,
-        existing: existing,
-        existingPhotos: existingPhotos,
-      ),
-    ),
-  );
-}
-
-class MomentCaptureScreen extends ConsumerStatefulWidget {
-  const MomentCaptureScreen({
-    super.key,
-    required this.wineId,
-    this.existing,
-    this.existingPhotos = const [],
-  });
-
-  final String wineId;
-  final WineMemoryEntity? existing;
-  final List<WineMemoryPhotoEntity> existingPhotos;
-
-  @override
-  ConsumerState<MomentCaptureScreen> createState() =>
-      _MomentCaptureScreenState();
-}
-
-class _MomentCaptureScreenState extends ConsumerState<MomentCaptureScreen> {
-  final List<_PhotoSlot> _photos = [];
-  final TextEditingController _captionCtrl = TextEditingController();
-  int _activeIndex = 0;
-  bool _saving = false;
-  bool _firstPickInFlight = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _captionCtrl.text = widget.existing?.note ?? '';
-    _photos.addAll(
-      widget.existingPhotos.map(
-        (p) => _PhotoSlot(id: p.id, url: p.storagePath),
-      ),
-    );
-    // First-time creation: jump straight into the picker so the user
-    // never sees an empty form, only a photo.
-    if (widget.existing == null && _photos.isEmpty) {
-      WidgetsBinding.instance.addPostFrameCallback((_) => _pickFirst());
-    }
-  }
-
-  @override
-  void dispose() {
-    _captionCtrl.dispose();
-    super.dispose();
-  }
-
-  Future<void> _pickFirst() async {
-    if (_firstPickInFlight) return;
-    setState(() => _firstPickInFlight = true);
-    final picked = await _addPhoto(autoCloseOnCancel: true);
-    if (!mounted) return;
-    setState(() => _firstPickInFlight = false);
-    if (!picked) {
-      // User dismissed the very first picker — bail out of capture so
-      // they don't sit on an empty black screen.
-      Navigator.of(context).pop(false);
-    }
-  }
-
-  Future<bool> _addPhoto({bool autoCloseOnCancel = false}) async {
-    if (_photos.length >= 10) return false;
-    final l10n = AppLocalizations.of(context);
-    final source = await _showSourceSheet(context, l10n);
+}) async {
+  String? initialUrl;
+  if (existing == null && existingPhotos.isEmpty) {
+    // Source picker over the caller, not over an empty capture page.
+    final source = await _showSourceSheet(context);
     if (source == null) return false;
-    if (!mounted) return false;
+    if (!context.mounted) return false;
     try {
       final picker = ImagePicker();
       final picked = await picker.pickImage(
@@ -116,45 +51,124 @@ class _MomentCaptureScreenState extends ConsumerState<MomentCaptureScreen> {
       final userId = ref.read(currentUserIdProvider);
       final svc = ref.read(wineImageServiceProvider);
       if (userId == null || svc == null) return false;
+      initialUrl = await svc.uploadImage(userId: userId, filePath: picked.path);
+    } catch (e) {
+      if (context.mounted) await PhotoErrorHandler.handle(context, e);
+      return false;
+    }
+  }
+  if (!context.mounted) return false;
+  return Navigator.of(context, rootNavigator: true).push<bool>(
+    MaterialPageRoute(
+      fullscreenDialog: true,
+      builder: (_) => MomentCaptureScreen(
+        wineId: wineId,
+        existing: existing,
+        existingPhotos: existingPhotos,
+        initialPhotoUrl: initialUrl,
+      ),
+    ),
+  );
+}
+
+Future<ImageSource?> _showSourceSheet(BuildContext ctx) {
+  final l10n = AppLocalizations.of(ctx);
+  return showModalBottomSheet<ImageSource>(
+    context: ctx,
+    backgroundColor: Theme.of(ctx).colorScheme.surface,
+    builder: (sheetCtx) => SafeArea(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            leading: const Icon(PhosphorIconsRegular.camera),
+            title: Text(l10n.winesPhotoSourceTake),
+            onTap: () => Navigator.pop(sheetCtx, ImageSource.camera),
+          ),
+          ListTile(
+            leading: const Icon(PhosphorIconsRegular.image),
+            title: Text(l10n.winesPhotoSourceGallery),
+            onTap: () => Navigator.pop(sheetCtx, ImageSource.gallery),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+class MomentCaptureScreen extends ConsumerStatefulWidget {
+  const MomentCaptureScreen({
+    super.key,
+    required this.wineId,
+    this.existing,
+    this.existingPhotos = const [],
+    this.initialPhotoUrl,
+  });
+
+  final String wineId;
+  final WineMemoryEntity? existing;
+  final List<WineMemoryPhotoEntity> existingPhotos;
+  final String? initialPhotoUrl;
+
+  @override
+  ConsumerState<MomentCaptureScreen> createState() =>
+      _MomentCaptureScreenState();
+}
+
+class _MomentCaptureScreenState extends ConsumerState<MomentCaptureScreen> {
+  final List<_PhotoSlot> _photos = [];
+  final TextEditingController _captionCtrl = TextEditingController();
+  int _activeIndex = 0;
+  bool _saving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _captionCtrl.text = widget.existing?.note ?? '';
+    _photos.addAll(
+      widget.existingPhotos.map(
+        (p) => _PhotoSlot(id: p.id, url: p.storagePath),
+      ),
+    );
+    if (widget.initialPhotoUrl != null) {
+      _photos.add(
+        _PhotoSlot(id: const Uuid().v4(), url: widget.initialPhotoUrl!),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _captionCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _addPhoto() async {
+    if (_photos.length >= 10) return;
+    final source = await _showSourceSheet(context);
+    if (source == null || !mounted) return;
+    try {
+      final picker = ImagePicker();
+      final picked = await picker.pickImage(
+        source: source,
+        maxWidth: 1600,
+        maxHeight: 1600,
+        imageQuality: 85,
+        requestFullMetadata: false,
+      );
+      if (picked == null) return;
+      final userId = ref.read(currentUserIdProvider);
+      final svc = ref.read(wineImageServiceProvider);
+      if (userId == null || svc == null) return;
       final url = await svc.uploadImage(userId: userId, filePath: picked.path);
-      if (!mounted) return true;
+      if (!mounted) return;
       setState(() {
         _photos.add(_PhotoSlot(id: const Uuid().v4(), url: url));
         _activeIndex = _photos.length - 1;
       });
-      return true;
     } catch (e) {
       if (mounted) await PhotoErrorHandler.handle(context, e);
-      // Errors don't auto-close capture — keep user on the screen.
-      return autoCloseOnCancel ? true : false;
     }
-  }
-
-  Future<ImageSource?> _showSourceSheet(
-    BuildContext ctx,
-    AppLocalizations l10n,
-  ) {
-    return showModalBottomSheet<ImageSource>(
-      context: ctx,
-      backgroundColor: Theme.of(ctx).colorScheme.surface,
-      builder: (sheetCtx) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(PhosphorIconsRegular.camera),
-              title: Text(l10n.winesPhotoSourceTake),
-              onTap: () => Navigator.pop(sheetCtx, ImageSource.camera),
-            ),
-            ListTile(
-              leading: const Icon(PhosphorIconsRegular.image),
-              title: Text(l10n.winesPhotoSourceGallery),
-              onTap: () => Navigator.pop(sheetCtx, ImageSource.gallery),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
   void _removeActive() {

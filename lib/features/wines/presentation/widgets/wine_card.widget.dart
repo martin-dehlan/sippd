@@ -167,7 +167,10 @@ class WineCardImage extends StatelessWidget {
     final hasImage = wine.imageUrl != null;
     final size = context.w * (compact ? 0.15 : 0.2);
     final inset = context.w * 0.025;
-    final radius = size / 2;
+    // Compact = avatar-style (used inside group/tasting pickers,
+    // wine compare hero) → full circle. Default (main wine list) =
+    // rounded square that matches surrounding card chrome.
+    final radius = compact ? size / 2 : context.w * 0.025;
     return Padding(
       padding: EdgeInsets.all(inset),
       child: SizedBox(

@@ -229,6 +229,7 @@ class _MomentViewerScreenState extends ConsumerState<MomentViewerScreen> {
       case _MenuAction.edit:
         await pushMomentCapture(
           context,
+          ref,
           wineId: widget.wineId,
           existing: moment,
           existingPhotos: photos,
