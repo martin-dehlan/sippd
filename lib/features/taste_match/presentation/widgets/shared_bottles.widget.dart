@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../common/utils/responsive.dart';
 import '../../domain/entities/shared_bottle.entity.dart';
 
@@ -17,6 +18,7 @@ class SharedBottlesWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l = AppLocalizations.of(context);
 
     if (bottles.isEmpty) return const SizedBox.shrink();
 
@@ -34,7 +36,7 @@ class SharedBottlesWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'WINES YOU\'VE BOTH RATED',
+            l.tasteFriendSharedHeading,
             style: TextStyle(
               fontSize: context.captionFont * 0.9,
               fontWeight: FontWeight.w700,
@@ -55,7 +57,7 @@ class SharedBottlesWidget extends StatelessWidget {
           if (remaining > 0) ...[
             SizedBox(height: context.s),
             Text(
-              '+ $remaining more',
+              l.tasteFriendSharedMore(remaining),
               style: TextStyle(
                 fontSize: context.captionFont,
                 color: cs.outline,
@@ -140,6 +142,7 @@ class _RatingPair extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l = AppLocalizations.of(context);
     final agree = delta <= 0.5;
     final deltaColor = agree ? cs.primary : cs.error;
     final deltaIcon = agree
@@ -151,9 +154,17 @@ class _RatingPair extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            _Score(label: 'you', value: mine, color: cs.onSurface),
+            _Score(
+              label: l.tasteFriendRatingYou,
+              value: mine,
+              color: cs.onSurface,
+            ),
             SizedBox(height: context.xs * 0.4),
-            _Score(label: 'them', value: theirs, color: cs.onSurfaceVariant),
+            _Score(
+              label: l.tasteFriendRatingThem,
+              value: theirs,
+              color: cs.onSurfaceVariant,
+            ),
           ],
         ),
         SizedBox(width: context.w * 0.025),

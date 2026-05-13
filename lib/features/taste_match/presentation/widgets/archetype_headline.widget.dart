@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../common/utils/responsive.dart';
 import '../../domain/archetype_match.dart';
 import '../../domain/entities/taste_compass.entity.dart';
@@ -18,7 +19,8 @@ class ArchetypeHeadline extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final match = matchArchetype(compass, dna);
+    final l = AppLocalizations.of(context);
+    final match = matchArchetype(compass, dna, l);
     final a = match.archetype;
     final score = match.score.round();
     final showScore =
@@ -56,7 +58,7 @@ class ArchetypeHeadline extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      'YOUR WINE PERSONALITY',
+                      l.tasteCompassEyebrowPersonality,
                       style: TextStyle(
                         fontSize: context.captionFont * 0.75,
                         fontWeight: FontWeight.w700,
@@ -109,7 +111,7 @@ class ArchetypeHeadline extends StatelessWidget {
                 if (match.isTentative && showScore) ...[
                   SizedBox(height: context.xs * 0.6),
                   Text(
-                    'Tentative — rate more wines for a sharper read',
+                    l.tasteCompassTentativeHint,
                     style: TextStyle(
                       fontSize: context.captionFont * 0.85,
                       fontStyle: FontStyle.italic,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../l10n/generated/app_localizations.dart';
 import '../utils/responsive.dart';
 
 Future<String?> showTextInputSheet({
@@ -133,7 +134,7 @@ Future<String?> showTextInputSheet({
                       ),
                     ),
                     child: Text(
-                      'Save',
+                      AppLocalizations.of(ctx).commonSave,
                       style: TextStyle(
                         fontSize: ctx.bodyFont,
                         fontWeight: FontWeight.w600,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../../common/l10n/generated/app_localizations.dart';
 import 'share_card_branding.widget.dart';
 
 const _bg = Color(0xFF14101A);
@@ -66,6 +67,7 @@ class _Eyebrow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Row(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -73,7 +75,7 @@ class _Eyebrow extends StatelessWidget {
         Icon(PhosphorIconsRegular.wine, color: _accent, size: 38),
         const SizedBox(width: 16),
         Text(
-          'AN INVITATION',
+          l.shareInviteEyebrow,
           style: TextStyle(
             fontSize: 28,
             color: _onBgMuted,
@@ -91,8 +93,9 @@ class _Hero extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Text(
-      "Let's taste\ntogether.",
+      l.shareInviteHero,
       style: GoogleFonts.playfairDisplay(
         fontSize: 168,
         height: 1.0,
@@ -109,8 +112,9 @@ class _Sub extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Text(
-      'Rate it. Remember it. Share it.',
+      l.shareInviteSub,
       style: TextStyle(
         fontSize: 38,
         height: 1.3,
@@ -128,6 +132,7 @@ class _Inviter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final hasAvatar =
         data.avatarUrl != null && data.avatarUrl!.trim().isNotEmpty;
     final initials = data.displayName.trim().isEmpty
@@ -195,7 +200,7 @@ class _Inviter extends StatelessWidget {
               ],
               const SizedBox(height: 6),
               Text(
-                'wants to taste with you',
+                l.shareInviteWantsToTaste,
                 style: TextStyle(
                   fontSize: 26,
                   color: _onBgMuted,
@@ -219,6 +224,7 @@ class _Footer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -252,7 +258,7 @@ class _Footer extends StatelessWidget {
               ],
             ),
             Text(
-              'join at $shareCardUrl',
+              l.shareFooterJoinAt(shareCardUrl),
               style: TextStyle(
                 fontSize: 28,
                 color: _onBg,

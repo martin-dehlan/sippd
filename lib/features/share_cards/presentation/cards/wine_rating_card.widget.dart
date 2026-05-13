@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../../common/l10n/generated/app_localizations.dart';
 import '../../../wines/domain/entities/wine.entity.dart';
 import 'share_card_branding.widget.dart';
 
@@ -43,8 +44,10 @@ ImageProvider? _resolveImage(WineEntity wine) {
   return null;
 }
 
-String _formatRated(DateTime d) =>
-    DateFormat('d MMM yyyy').format(d).toUpperCase();
+String _formatRated(DateTime d, BuildContext context) {
+  final tag = Localizations.localeOf(context).toLanguageTag();
+  return DateFormat('d MMM yyyy', tag).format(d).toUpperCase();
+}
 
 class _PhotoLayout extends StatelessWidget {
   final WineEntity wine;
@@ -59,6 +62,7 @@ class _PhotoLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final origin = wine.region ?? wine.country;
     final byLine = username == null ? null : '@$username';
     final notesTeaser = _teaserFromNotes(wine.notes);
@@ -86,7 +90,7 @@ class _PhotoLayout extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'RATED · ${_formatRated(wine.createdAt)}',
+                    l.shareRatedOn(_formatRated(wine.createdAt, context)),
                     style: TextStyle(
                       fontSize: 24,
                       color: _onBgMuted,
@@ -120,7 +124,7 @@ class _PhotoLayout extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.only(top: 60),
                         child: Text(
-                          '/ 10',
+                          l.shareRatingDenominator,
                           style: TextStyle(
                             fontSize: 50,
                             color: _onBgMuted,
@@ -164,6 +168,7 @@ class _TypographicLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final origin = wine.region ?? wine.country;
     final byLine = username == null ? null : '@$username';
     final notesTeaser = _teaserFromNotes(wine.notes);
@@ -179,7 +184,7 @@ class _TypographicLayout extends StatelessWidget {
           _Header(byLine: byLine),
           const Spacer(flex: 1),
           Text(
-            'RATED · ${_formatRated(wine.createdAt)}',
+            l.shareRatedOn(_formatRated(wine.createdAt, context)),
             style: TextStyle(
               fontSize: 26,
               color: _onBgMuted,
@@ -213,7 +218,7 @@ class _TypographicLayout extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(bottom: 40),
                 child: Text(
-                  '/ 10',
+                  l.shareRatingDenominator,
                   style: TextStyle(
                     fontSize: 60,
                     color: _onBgMuted,
@@ -397,6 +402,7 @@ class _OriginRow extends StatelessWidget {
 class _Footer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -418,7 +424,7 @@ class _Footer extends StatelessWidget {
               ),
             ),
             Text(
-              'rate yours at sippd.xyz',
+              l.shareFooterRateYours(shareCardUrl),
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.w600,

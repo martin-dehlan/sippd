@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../widgets/paywall_body.widget.dart';
 import '../../widgets/paywall_pitch.dart';
@@ -18,6 +19,7 @@ class PaywallScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       backgroundColor: cs.surface,
@@ -41,11 +43,11 @@ class PaywallScreen extends ConsumerWidget {
           child: PaywallBody(
             triggerSource: triggerSource ?? 'standalone',
             showHero: true,
-            eyebrow: kProPitchEyebrow,
-            headline: kProPitchHeadline,
-            subhead: kProPitchSubhead,
-            benefits: kProPitchBenefits,
-            primaryLabel: 'Continue',
+            eyebrow: proPitchEyebrow(l10n),
+            headline: proPitchHeadline(l10n),
+            subhead: proPitchSubhead(l10n),
+            benefits: proPitchBenefits(l10n),
+            primaryLabel: l10n.paywallCtaContinue,
             onSuccess: () => Navigator.of(context).pop(true),
           ),
         ),

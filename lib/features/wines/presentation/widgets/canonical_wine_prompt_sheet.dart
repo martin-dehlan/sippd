@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../common/utils/responsive.dart';
 import '../../domain/entities/canonical_wine_candidate.entity.dart';
 
@@ -60,6 +61,7 @@ class _PromptSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     return SafeArea(
       child: Padding(
         padding: EdgeInsets.symmetric(
@@ -82,7 +84,7 @@ class _PromptSheet extends StatelessWidget {
             ),
             SizedBox(height: context.m),
             Text(
-              'Same wine?',
+              l10n.winesCanonicalPromptTitle,
               style: TextStyle(
                 fontSize: context.headingFont,
                 fontWeight: FontWeight.w700,
@@ -91,8 +93,7 @@ class _PromptSheet extends StatelessWidget {
             ),
             SizedBox(height: context.xs),
             Text(
-              "Looks similar to a wine that's already in the catalog. "
-              'Linking them keeps your stats and matches accurate.',
+              l10n.winesCanonicalPromptBody,
               style: TextStyle(
                 fontSize: context.captionFont,
                 color: cs.onSurfaceVariant,
@@ -104,7 +105,7 @@ class _PromptSheet extends StatelessWidget {
               name: inputName,
               winery: inputWinery,
               vintage: inputVintage,
-              label: "What you're adding",
+              label: l10n.winesCanonicalPromptInputLabel,
             ),
             SizedBox(height: context.s),
             for (final c in candidates) ...[
@@ -124,7 +125,7 @@ class _PromptSheet extends StatelessWidget {
                 const CanonicalMatchPromptResult.different(),
               ),
               child: Text(
-                'No, this is a different wine',
+                l10n.winesCanonicalPromptDifferent,
                 style: TextStyle(
                   fontSize: context.bodyFont,
                   color: cs.onSurfaceVariant,
@@ -230,7 +231,9 @@ class _CandidateTile extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        'EXISTING IN CATALOG',
+                        AppLocalizations.of(
+                          context,
+                        ).winesCanonicalPromptExistingLabel,
                         style: TextStyle(
                           fontSize: context.captionFont * 0.85,
                           fontWeight: FontWeight.w700,
@@ -249,7 +252,9 @@ class _CandidateTile extends StatelessWidget {
                           borderRadius: BorderRadius.circular(context.xs),
                         ),
                         child: Text(
-                          '$pct% match',
+                          AppLocalizations.of(
+                            context,
+                          ).winesCleanupMatchPct(pct),
                           style: TextStyle(
                             fontSize: context.captionFont * 0.8,
                             fontWeight: FontWeight.w600,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../common/data/avatar_icons.dart';
+import '../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../controller/onboarding.provider.dart';
 import '../onboarding_page_shell.widget.dart';
@@ -32,6 +33,7 @@ class _NamePageState extends ConsumerState<NamePage> {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final answers = ref.watch(onboardingAnswersControllerProvider);
     final notifier = ref.read(onboardingAnswersControllerProvider.notifier);
 
@@ -41,9 +43,9 @@ class _NamePageState extends ConsumerState<NamePage> {
     }
 
     return OnboardingPageShell(
-      eyebrow: 'Almost there',
-      title: 'What should we\ncall you?',
-      subtitle: 'First name, nickname — whatever fits. Pick an icon too.',
+      eyebrow: l10n.onbNameEyebrow,
+      title: l10n.onbNameTitle,
+      subtitle: l10n.onbNameSubtitle,
       child: ListView(
         children: [
           TextField(
@@ -56,7 +58,7 @@ class _NamePageState extends ConsumerState<NamePage> {
             ),
             onChanged: (v) => notifier.setName(displayName: v.trim()),
             decoration: InputDecoration(
-              hintText: 'Your name',
+              hintText: l10n.onbNameHint,
               counterText: '',
               filled: true,
               fillColor: cs.surfaceContainer,
@@ -72,7 +74,7 @@ class _NamePageState extends ConsumerState<NamePage> {
           ),
           SizedBox(height: context.l),
           Text(
-            'Pick your icon',
+            l10n.onbNameIconLabel,
             style: TextStyle(
               fontSize: context.captionFont,
               fontWeight: FontWeight.w600,
@@ -81,7 +83,7 @@ class _NamePageState extends ConsumerState<NamePage> {
           ),
           SizedBox(height: context.s),
           Text(
-            'Shows up as your avatar.',
+            l10n.onbNameIconSubtitle,
             style: TextStyle(
               fontSize: context.captionFont * 0.9,
               color: cs.outline,

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../common/utils/responsive.dart';
 import '../../../../common/widgets/inline_error.widget.dart';
 import '../../../../core/routes/app.routes.dart';
@@ -199,9 +200,12 @@ class _WineRatingSheetState extends ConsumerState<_WineRatingSheet> {
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(describeAppError(e, fallback: 'Could not save.')),
+            content: Text(
+              describeAppError(e, fallback: l10n.winesRatingSheetSaveError),
+            ),
           ),
         );
       }
@@ -217,6 +221,7 @@ class _WineRatingSheetState extends ConsumerState<_WineRatingSheet> {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final isPro = ref.watch(isProProvider);
     final wine = widget.wine;
 
@@ -315,7 +320,7 @@ class _WineRatingSheetState extends ConsumerState<_WineRatingSheet> {
                         ),
                       )
                     : Text(
-                        'Save rating',
+                        l10n.winesRatingSheetSaveCta,
                         style: TextStyle(
                           fontSize: context.bodyFont * 1.05,
                           fontWeight: FontWeight.w700,
@@ -328,7 +333,7 @@ class _WineRatingSheetState extends ConsumerState<_WineRatingSheet> {
               child: TextButton(
                 onPressed: _saving ? null : () => Navigator.pop(context),
                 child: Text(
-                  'Cancel',
+                  l10n.winesRatingSheetCancel,
                   style: TextStyle(
                     fontSize: context.bodyFont * 0.95,
                     color: cs.onSurfaceVariant,
@@ -369,7 +374,7 @@ class _Hero extends StatelessWidget {
         ),
         SizedBox(width: context.w * 0.015),
         Text(
-          '/ 10',
+          AppLocalizations.of(context).winesFormStatRatingUnit,
           style: TextStyle(
             fontSize: context.bodyFont,
             color: cs.onSurfaceVariant,

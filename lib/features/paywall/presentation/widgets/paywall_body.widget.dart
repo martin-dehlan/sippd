@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
+import '../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../common/services/analytics/analytics.provider.dart';
 import '../../../../common/utils/responsive.dart';
 import '../../../../common/widgets/error_view.widget.dart';
@@ -129,9 +130,10 @@ class _PaywallBodyState extends ConsumerState<PaywallBody>
           'error': e.toString(),
         },
       );
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Purchase failed. Please try again.')),
-      );
+      final l10n = AppLocalizations.of(context);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.paywallErrorPurchaseFailed)));
     } finally {
       if (mounted) setState(() => _purchasing = false);
     }
@@ -146,22 +148,24 @@ class _PaywallBodyState extends ConsumerState<PaywallBody>
     try {
       final info = await ref.read(paywallProvider).restore();
       if (!mounted) return;
+      final l10n = AppLocalizations.of(context);
       final restored = info.entitlements.active.containsKey(proEntitlementId);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
             restored
-                ? 'Welcome back to Sippd Pro!'
-                : 'No active subscription found.',
+                ? l10n.paywallRestoreWelcomeBack
+                : l10n.paywallRestoreNoneFound,
           ),
         ),
       );
       if (restored) widget.onSuccess?.call();
     } catch (_) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not restore purchases.')),
-      );
+      final l10n = AppLocalizations.of(context);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.paywallErrorRestoreFailed)));
     }
   }
 
@@ -196,6 +200,7 @@ class _PaywallBodyState extends ConsumerState<PaywallBody>
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final offeringsAsync = ref.watch(paywallOfferingsProvider);
 
     final children = <Widget>[];
@@ -297,7 +302,7 @@ class _PaywallBodyState extends ConsumerState<PaywallBody>
           child: const Center(child: CircularProgressIndicator()),
         ),
         error: (e, _) => ErrorView(
-          title: "Couldn't load plans",
+          title: l10n.paywallPlansLoadError,
           onRetry: () => ref.invalidate(paywallOfferingsProvider),
           compact: true,
           error: e,
@@ -309,7 +314,7 @@ class _PaywallBodyState extends ConsumerState<PaywallBody>
             return Padding(
               padding: EdgeInsets.symmetric(vertical: context.m),
               child: Text(
-                'No plans available yet.',
+                l10n.paywallPlansEmpty,
                 style: TextStyle(color: cs.onSurfaceVariant),
               ),
             );
@@ -326,8 +331,12 @@ class _PaywallBodyState extends ConsumerState<PaywallBody>
                       package: packages[i],
                       selected: _selected?.identifier == packages[i].identifier,
                       onTap: () => setState(() => _selected = packages[i]),
-                      badge: _badgeFor(packages[i]),
-                      savingsLabel: _savingsLabelFor(packages[i], savingsPct),
+                      badge: _badgeFor(packages[i], l10n),
+                      savingsLabel: _savingsLabelFor(
+                        packages[i],
+                        savingsPct,
+                        l10n,
+                      ),
                     ),
                   ],
                 ],
@@ -365,7 +374,9 @@ class _PaywallBodyState extends ConsumerState<PaywallBody>
                     )
                   : Text(
                       widget.primaryLabel ??
-                          (_selected == null ? 'Select a plan' : 'Continue'),
+                          (_selected == null
+                              ? l10n.paywallCtaSelectPlan
+                              : l10n.paywallCtaContinue),
                       style: TextStyle(
                         fontSize: context.bodyFont * 1.05,
                         fontWeight: FontWeight.w700,
@@ -412,7 +423,7 @@ class _PaywallBodyState extends ConsumerState<PaywallBody>
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
             child: Text(
-              'Restore purchases',
+              l10n.paywallCtaRestore,
               style: TextStyle(
                 fontSize: context.captionFont,
                 color: cs.onSurfaceVariant,
@@ -427,7 +438,7 @@ class _PaywallBodyState extends ConsumerState<PaywallBody>
       ..add(
         Center(
           child: Text(
-            'Cancel anytime · billed by Apple or Google',
+            l10n.paywallFooterDisclosure,
             style: TextStyle(
               fontSize: context.captionFont * 0.85,
               color: cs.outline,
@@ -443,20 +454,20 @@ class _PaywallBodyState extends ConsumerState<PaywallBody>
     );
   }
 
-  String? _badgeFor(Package p) {
+  String? _badgeFor(Package p, AppLocalizations l10n) {
     switch (p.packageType) {
       case PackageType.annual:
-        return 'MOST POPULAR';
+        return l10n.paywallPlanBadgeAnnual;
       case PackageType.lifetime:
-        return 'FOUNDERS EDITION';
+        return l10n.paywallPlanBadgeLifetime;
       default:
         return null;
     }
   }
 
-  String? _savingsLabelFor(Package p, int? savingsPct) {
+  String? _savingsLabelFor(Package p, int? savingsPct, AppLocalizations l10n) {
     if (p.packageType == PackageType.annual && savingsPct != null) {
-      return 'Save $savingsPct% vs monthly';
+      return l10n.paywallPlanSavingsVsMonthly(savingsPct);
     }
     return null;
   }

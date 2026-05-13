@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../common/services/analytics/analytics.provider.dart';
 import '../../../../../common/services/deep_link/deep_link.service.dart';
 import '../../../../../common/utils/responsive.dart';
@@ -61,6 +62,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final padH = context.paddingH * 1.3;
     final searchMode = _query.isNotEmpty;
     final friends = ref.watch(friendsListProvider).valueOrNull ?? const [];
@@ -85,7 +87,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: padH),
                 child: Text(
-                  'FRIENDS',
+                  l10n.friendsHeader,
                   style: GoogleFonts.playfairDisplay(
                     fontSize: context.titleFont * 1.3,
                     fontWeight: FontWeight.w800,
@@ -98,7 +100,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: padH),
                 child: Text(
-                  'Taste with people you know',
+                  l10n.friendsSubtitle,
                   style: TextStyle(
                     fontSize: context.captionFont,
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -171,6 +173,7 @@ class _SearchField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     return TextField(
       controller: controller,
       focusNode: focusNode,
@@ -179,7 +182,7 @@ class _SearchField extends StatelessWidget {
       inputFormatters: [LengthLimitingTextInputFormatter(60)],
       decoration: InputDecoration(
         counterText: '',
-        hintText: 'Search by username or name',
+        hintText: l10n.friendsSearchHint,
         prefixIcon: Icon(
           PhosphorIconsRegular.magnifyingGlass,
           color: cs.primary,
@@ -236,6 +239,7 @@ class _SearchResultsSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final resultsAsync = ref.watch(friendSearchControllerProvider);
     return resultsAsync.when(
       data: (results) {
@@ -246,7 +250,7 @@ class _SearchResultsSection extends ConsumerWidget {
               vertical: context.l,
             ),
             child: Text(
-              'No users found',
+              l10n.friendsSearchEmpty,
               style: TextStyle(
                 fontSize: context.bodyFont,
                 color: cs.onSurfaceVariant,
@@ -276,7 +280,7 @@ class _SearchResultsSection extends ConsumerWidget {
       error: (e, _) => Padding(
         padding: EdgeInsets.all(context.l),
         child: Text(
-          describeAppError(e, fallback: "Couldn't load search."),
+          describeAppError(e, fallback: l10n.friendsSearchErrorFallback),
           style: TextStyle(color: cs.error, fontSize: context.bodyFont),
         ),
       ),
@@ -289,6 +293,7 @@ class _RequestsSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final requestsAsync = ref.watch(incomingFriendRequestsProvider);
     final requests = requestsAsync.valueOrNull ?? const [];
     if (requests.isEmpty) return const SizedBox.shrink();
@@ -296,7 +301,7 @@ class _RequestsSection extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(height: context.m),
-        _SectionHeader(label: 'Requests (${requests.length})'),
+        _SectionHeader(label: l10n.friendsRequestsHeader(requests.length)),
         SizedBox(height: context.s),
         for (final r in requests)
           Padding(
@@ -324,6 +329,7 @@ class _OutgoingRequestsSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final outgoing =
         ref.watch(outgoingFriendRequestsProvider).valueOrNull ?? const [];
     if (outgoing.isEmpty) return const SizedBox.shrink();
@@ -331,7 +337,7 @@ class _OutgoingRequestsSection extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(height: context.m),
-        _SectionHeader(label: 'Waiting for reply (${outgoing.length})'),
+        _SectionHeader(label: l10n.friendsOutgoingHeader(outgoing.length)),
         SizedBox(height: context.s),
         for (final r in outgoing)
           Padding(
@@ -355,8 +361,10 @@ class _OutgoingRequestRow extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final profile = request.receiverProfile;
-    final name = profile?.displayName ?? profile?.username ?? 'Unknown';
+    final name =
+        profile?.displayName ?? profile?.username ?? l10n.friendsUnknownUser;
     return Container(
       padding: EdgeInsets.all(context.w * 0.04),
       decoration: BoxDecoration(
@@ -397,7 +405,7 @@ class _OutgoingRequestRow extends ConsumerWidget {
                     ),
                     SizedBox(width: context.w * 0.015),
                     Text(
-                      'Request sent',
+                      l10n.friendsRequestSentLabel,
                       style: TextStyle(
                         fontSize: context.captionFont,
                         color: cs.primary,
@@ -420,7 +428,7 @@ class _OutgoingRequestRow extends ConsumerWidget {
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
             child: Text(
-              'Cancel',
+              l10n.friendsActionCancel,
               style: TextStyle(
                 fontSize: context.captionFont,
                 color: cs.onSurfaceVariant,
@@ -434,26 +442,30 @@ class _OutgoingRequestRow extends ConsumerWidget {
   }
 
   Future<void> _confirmCancel(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context);
     final name =
         request.receiverProfile?.displayName ??
         request.receiverProfile?.username ??
-        'this user';
+        l10n.friendsCancelDialogFallbackUser;
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Cancel request?'),
-        content: Text('Cancel your friend request to $name?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Keep'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Cancel request'),
-          ),
-        ],
-      ),
+      builder: (ctx) {
+        final dl = AppLocalizations.of(ctx);
+        return AlertDialog(
+          title: Text(dl.friendsCancelDialogTitle),
+          content: Text(dl.friendsCancelDialogBody(name)),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text(dl.friendsCancelDialogKeep),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: Text(dl.friendsCancelDialogConfirm),
+            ),
+          ],
+        );
+      },
     );
     if (confirmed == true) {
       await ref
@@ -469,6 +481,7 @@ class _FriendsSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final friendsAsync = ref.watch(friendsListProvider);
     final friends = friendsAsync.valueOrNull ?? const [];
     if (friends.isEmpty && !friendsAsync.isLoading && !friendsAsync.hasError) {
@@ -478,7 +491,7 @@ class _FriendsSection extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(height: context.m),
-        _SectionHeader(label: 'Your friends'),
+        _SectionHeader(label: l10n.friendsListHeader),
         SizedBox(height: context.s),
         friendsAsync.when(
           data: (friends) {
@@ -505,7 +518,7 @@ class _FriendsSection extends ConsumerWidget {
           error: (e, _) => Padding(
             padding: EdgeInsets.all(context.l),
             child: Text(
-              describeAppError(e, fallback: "Couldn't load friends."),
+              describeAppError(e, fallback: l10n.friendsListErrorFallback),
               style: TextStyle(color: cs.error, fontSize: context.bodyFont),
             ),
           ),
@@ -522,6 +535,7 @@ class _FriendRow extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     return GestureDetector(
       onTap: () => context.push(AppRoutes.friendProfilePath(friend.id)),
       child: Container(
@@ -542,7 +556,9 @@ class _FriendRow extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    friend.displayName ?? friend.username ?? 'Unknown',
+                    friend.displayName ??
+                        friend.username ??
+                        l10n.friendsUnknownUser,
                     style: TextStyle(
                       fontSize: context.bodyFont,
                       fontWeight: FontWeight.w600,
@@ -576,24 +592,30 @@ class _FriendRow extends ConsumerWidget {
   }
 
   Future<void> _confirmRemove(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context);
+    final name =
+        friend.displayName ??
+        friend.username ??
+        l10n.friendsCancelDialogFallbackUser;
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Remove friend?'),
-        content: Text(
-          'Remove ${friend.displayName ?? friend.username ?? 'this user'} from your friends?',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Remove'),
-          ),
-        ],
-      ),
+      builder: (ctx) {
+        final dl = AppLocalizations.of(ctx);
+        return AlertDialog(
+          title: Text(dl.friendsRemoveDialogTitle),
+          content: Text(dl.friendsRemoveDialogBody(name)),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text(dl.friendsActionCancel),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: Text(dl.friendsRemoveDialogConfirm),
+            ),
+          ],
+        );
+      },
     );
     if (confirmed == true) {
       await ref
@@ -653,8 +675,10 @@ class _RequestRowState extends ConsumerState<_RequestRow>
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final profile = widget.request.senderProfile;
-    final name = profile?.displayName ?? profile?.username ?? 'Unknown';
+    final name =
+        profile?.displayName ?? profile?.username ?? l10n.friendsUnknownUser;
 
     return AnimatedSize(
       duration: const Duration(milliseconds: 240),
@@ -695,7 +719,7 @@ class _RequestRowState extends ConsumerState<_RequestRow>
                             overflow: TextOverflow.ellipsis,
                           ),
                           Text(
-                            'wants to be friends',
+                            l10n.friendsRequestSubtitle,
                             style: TextStyle(
                               fontSize: context.captionFont,
                               color: cs.onSurfaceVariant,
@@ -762,11 +786,12 @@ class _SearchResultRowState extends ConsumerState<_SearchResultRow> {
       });
     } catch (e) {
       if (!mounted) return;
+      final l10n = AppLocalizations.of(context);
       setState(() => _sending = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            describeAppError(e, fallback: 'Could not send request.'),
+            describeAppError(e, fallback: l10n.friendsSendRequestErrorFallback),
           ),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
@@ -777,6 +802,7 @@ class _SearchResultRowState extends ConsumerState<_SearchResultRow> {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final friends = ref.watch(friendsListProvider).valueOrNull ?? const [];
     final outgoing =
         ref.watch(outgoingFriendRequestsProvider).valueOrNull ?? const [];
@@ -801,7 +827,7 @@ class _SearchResultRowState extends ConsumerState<_SearchResultRow> {
                 Text(
                   widget.profile.displayName ??
                       widget.profile.username ??
-                      'Unknown',
+                      l10n.friendsUnknownUser,
                   style: TextStyle(
                     fontSize: context.bodyFont,
                     fontWeight: FontWeight.w600,
@@ -850,17 +876,18 @@ class _SearchResultTrailing extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     if (alreadyFriend) {
       return _StatusChip(
         icon: PhosphorIconsRegular.checkCircle,
-        label: 'Friend',
+        label: l10n.friendsStatusChipFriend,
         color: cs.primary,
       );
     }
     if (alreadyPending || optimisticallySent) {
       return _StatusChip(
         icon: PhosphorIconsRegular.clock,
-        label: 'Pending',
+        label: l10n.friendsStatusChipPending,
         color: cs.onSurfaceVariant,
       );
     }
@@ -874,7 +901,7 @@ class _SearchResultTrailing extends StatelessWidget {
     return TextButton(
       onPressed: onAdd,
       child: Text(
-        'Add',
+        l10n.friendsActionAdd,
         style: TextStyle(
           fontSize: context.captionFont,
           color: cs.primary,
@@ -922,6 +949,7 @@ class _EmptyFriendsState extends ConsumerWidget {
   Future<void> _shareInvite(BuildContext context, WidgetRef ref) async {
     final userId = ref.read(currentUserIdProvider);
     if (userId == null) return;
+    final l10n = AppLocalizations.of(context);
     ref
         .read(analyticsProvider)
         .capture(
@@ -932,7 +960,7 @@ class _EmptyFriendsState extends ConsumerWidget {
     final inviteUrl = DeepLinkService.friendHttpsUri(userId);
     final displayName = (profile?.displayName?.trim().isNotEmpty ?? false)
         ? profile!.displayName!.trim()
-        : (profile?.username?.trim() ?? 'A friend');
+        : (profile?.username?.trim() ?? l10n.friendsEmptyDefaultName);
     await ref
         .read(shareCardProvider)
         .shareFriendInviteCard(
@@ -950,6 +978,7 @@ class _EmptyFriendsState extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final padH = context.paddingH * 1.3;
     return Padding(
       padding: EdgeInsets.fromLTRB(padH, context.l, padH, context.m),
@@ -981,7 +1010,7 @@ class _EmptyFriendsState extends ConsumerWidget {
             ),
             SizedBox(height: context.m),
             Text(
-              'Bring your tasting circle',
+              l10n.friendsEmptyTitle,
               style: TextStyle(
                 fontSize: context.headingFont,
                 fontWeight: FontWeight.w700,
@@ -993,7 +1022,7 @@ class _EmptyFriendsState extends ConsumerWidget {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: context.w * 0.04),
               child: Text(
-                'Sippd gets better with friends. Send an invite — they land straight on your profile.',
+                l10n.friendsEmptyBody,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: context.captionFont,
@@ -1010,7 +1039,7 @@ class _EmptyFriendsState extends ConsumerWidget {
                 size: context.w * 0.045,
               ),
               label: Text(
-                'Invite friends',
+                l10n.friendsEmptyInviteCta,
                 style: TextStyle(
                   fontSize: context.captionFont,
                   fontWeight: FontWeight.w700,
@@ -1034,7 +1063,7 @@ class _EmptyFriendsState extends ConsumerWidget {
                 size: context.w * 0.04,
               ),
               label: Text(
-                'Find by username',
+                l10n.friendsEmptyFindCta,
                 style: TextStyle(
                   fontSize: context.captionFont,
                   fontWeight: FontWeight.w600,

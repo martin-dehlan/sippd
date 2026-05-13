@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../../common/utils/responsive.dart';
 import '../../../../../../common/widgets/skeleton.widget.dart';
 import '../../../../controller/wine_stats.provider.dart';
@@ -56,8 +57,10 @@ class WineTimeline extends StatelessWidget {
             SizedBox(height: context.s),
             _RailFootnote(
               text: hidden == 1
-                  ? '+ 1 earlier month'
-                  : '+ $hidden earlier months',
+                  ? AppLocalizations.of(context).winesStatsTimelineEarlierOne
+                  : AppLocalizations.of(
+                      context,
+                    ).winesStatsTimelineEarlierMany(hidden),
             ),
           ],
         ],
@@ -313,7 +316,7 @@ class _IntensityRow extends StatelessWidget {
         ),
         SizedBox(width: context.s),
         Text(
-          month.count == 1 ? '1 wine' : '${month.count} wines',
+          AppLocalizations.of(context).winesStatsTimelineWines(month.count),
           style: TextStyle(
             fontSize: context.captionFont,
             color: cs.onSurfaceVariant,
@@ -363,7 +366,7 @@ class _Thumb extends StatelessWidget {
   Widget build(BuildContext context) {
     return Tooltip(
       message: '${wine.name} · ${wine.rating.toStringAsFixed(1)}',
-      child: WineThumb(wine: wine, size: size, radiusFactor: 0.18),
+      child: WineThumb(wine: wine, size: size),
     );
   }
 }

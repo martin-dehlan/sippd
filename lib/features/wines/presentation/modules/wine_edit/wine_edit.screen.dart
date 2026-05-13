@@ -3,6 +3,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/error_view.widget.dart';
 import '../../../../locations/domain/entities/location.entity.dart';
@@ -36,13 +37,14 @@ class _WineEditScreenState extends ConsumerState<WineEditScreen> {
     final memoriesAsync = ref.watch(
       wineMemoriesControllerProvider(widget.wineId),
     );
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       body: SafeArea(
         child: wineAsync.when(
           data: (wine) {
             if (wine == null) {
-              return const Center(child: Text('Wine not found'));
+              return Center(child: Text(l10n.winesEditNotFound));
             }
             return memoriesAsync.when(
               data: (memories) => WineForm(
@@ -79,13 +81,13 @@ class _WineEditScreenState extends ConsumerState<WineEditScreen> {
               ),
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (e, _) => Center(
-                child: ErrorView(title: "Couldn't load memories", error: e),
+                child: ErrorView(title: l10n.winesEditErrorMemories, error: e),
               ),
             );
           },
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (e, _) => Center(
-            child: ErrorView(title: "Couldn't load wine", error: e),
+            child: ErrorView(title: l10n.winesEditErrorLoad, error: e),
           ),
         ),
       ),

@@ -1,9 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sippd/common/l10n/generated/app_localizations.dart';
+import 'package:sippd/common/l10n/generated/app_localizations_en.dart';
 import 'package:sippd/features/taste_match/domain/archetype_match.dart';
 import 'package:sippd/features/taste_match/domain/entities/taste_compass.entity.dart';
 import 'package:sippd/features/taste_match/domain/entities/user_style_dna.entity.dart';
 
 void main() {
+  final AppLocalizations l = AppLocalizationsEn();
+
   TasteCompassEntity compass({int total = 30}) =>
       TasteCompassEntity(totalCount: total);
 
@@ -22,6 +26,7 @@ void main() {
       final m = matchArchetype(
         const TasteCompassEntity(totalCount: 4),
         dna(const {'body': 0.5}, attributedCount: 5),
+        l,
       );
       expect(m.archetype.id, 'curious_newcomer');
       expect(m.score, 0);
@@ -30,7 +35,7 @@ void main() {
     });
 
     test('newcomer when DNA is null', () {
-      final m = matchArchetype(compass(), null);
+      final m = matchArchetype(compass(), null, l);
       expect(m.archetype.id, 'curious_newcomer');
     });
 
@@ -38,6 +43,7 @@ void main() {
       final m = matchArchetype(
         compass(),
         dna({'body': 0.5}, attributedCount: 2),
+        l,
       );
       expect(m.archetype.id, 'curious_newcomer');
     });
@@ -56,6 +62,7 @@ void main() {
           'oak': 0.65,
           'intensity': 0.75,
         }),
+        l,
       );
       expect(m.archetype.id, 'bold_red_hunter');
       expect(
@@ -77,6 +84,7 @@ void main() {
           'oak': 0.4,
           'intensity': 0.6,
         }),
+        l,
       );
       expect(m.archetype.id, 'elegant_burgundian');
     });
@@ -92,6 +100,7 @@ void main() {
           'oak': 0.65,
           'intensity': 0.75,
         }, confidence: 0.3),
+        l,
       );
       expect(m.isTentative, isTrue);
     });
@@ -107,6 +116,7 @@ void main() {
           'oak': 0.65,
           'intensity': 0.75,
         }),
+        l,
       );
       expect(m.score, lessThanOrEqualTo(100));
       expect(m.score, greaterThanOrEqualTo(0));

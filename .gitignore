@@ -90,3 +90,4 @@ supabase/.temp/
 # DB backup dumps must NEVER be committed (public repo)
 pre_wipe_backup*
 *_backup_*.sql
+.claude-flow/

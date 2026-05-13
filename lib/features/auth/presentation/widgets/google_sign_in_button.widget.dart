@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../common/utils/responsive.dart';
 import '../../controller/auth.provider.dart';
 
@@ -20,8 +21,8 @@ class _GoogleSignInButtonState extends ConsumerState<GoogleSignInButton> {
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Google sign-in failed. Please try again.'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context).authGoogleFailed),
           ),
         );
       }
@@ -33,6 +34,7 @@ class _GoogleSignInButtonState extends ConsumerState<GoogleSignInButton> {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
 
     return SizedBox(
       width: double.infinity,
@@ -60,7 +62,7 @@ class _GoogleSignInButtonState extends ConsumerState<GoogleSignInButton> {
                   SizedBox(width: context.w * 0.03),
                   Flexible(
                     child: Text(
-                      'Continue with Google',
+                      l10n.authGoogleContinue,
                       style: TextStyle(
                         fontSize: context.bodyFont,
                         fontWeight: FontWeight.w500,

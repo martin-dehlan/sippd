@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
+import '../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../common/utils/responsive.dart';
 
 class PaywallPlanCard extends StatelessWidget {
@@ -26,10 +27,11 @@ class PaywallPlanCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final product = package.storeProduct;
-    final title = _titleForPackage(package);
+    final title = _titleForPackage(package, l10n);
     final hasSavings = savingsLabel != null;
-    final subtitle = savingsLabel ?? _defaultSubtitle(package);
+    final subtitle = savingsLabel ?? _defaultSubtitle(package, l10n);
 
     return InkWell(
       onTap: onTap,
@@ -129,27 +131,27 @@ class PaywallPlanCard extends StatelessWidget {
     );
   }
 
-  String _titleForPackage(Package package) {
+  String _titleForPackage(Package package, AppLocalizations l10n) {
     switch (package.packageType) {
       case PackageType.monthly:
-        return 'Monthly';
+        return l10n.paywallPlanMonthly;
       case PackageType.annual:
-        return 'Annual';
+        return l10n.paywallPlanAnnual;
       case PackageType.lifetime:
-        return 'Lifetime';
+        return l10n.paywallPlanLifetime;
       default:
         return package.storeProduct.title;
     }
   }
 
-  String? _defaultSubtitle(Package package) {
+  String? _defaultSubtitle(Package package, AppLocalizations l10n) {
     switch (package.packageType) {
       case PackageType.annual:
-        return 'Most popular';
+        return l10n.paywallPlanSubtitleAnnual;
       case PackageType.lifetime:
-        return 'Limited launch offer · pay once';
+        return l10n.paywallPlanSubtitleLifetime;
       case PackageType.monthly:
-        return 'Cancel anytime';
+        return l10n.paywallPlanSubtitleMonthly;
       default:
         return null;
     }

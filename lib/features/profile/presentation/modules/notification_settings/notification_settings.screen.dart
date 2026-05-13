@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/error_view.widget.dart';
 import '../../../../push/controller/push.provider.dart';
@@ -19,12 +20,13 @@ class NotificationSettingsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final prefsAsync = ref.watch(notificationPrefsControllerProvider);
     final controller = ref.read(notificationPrefsControllerProvider.notifier);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Notifications'),
+        title: Text(l10n.notificationsTitle),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
@@ -33,7 +35,7 @@ class NotificationSettingsScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(
           child: ErrorView(
-            title: "Couldn't load notification settings",
+            title: l10n.notificationsLoadError,
             onRetry: () => ref.invalidate(notificationPrefsControllerProvider),
             error: e,
           ),
@@ -52,17 +54,18 @@ class _Body extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     return ListView(
       padding: EdgeInsets.symmetric(
         horizontal: context.paddingH,
         vertical: context.l,
       ),
       children: [
-        const _SectionLabel('Tastings'),
+        _SectionLabel(l10n.sectionTastings),
         _ToggleTile(
           icon: PhosphorIconsRegular.wine,
-          label: 'Tasting reminders',
-          subtitle: 'Push before a tasting starts',
+          label: l10n.tileTastingRemindersLabel,
+          subtitle: l10n.tileTastingRemindersSubtitle,
           value: prefs.tastingReminders,
           onChanged: controller.setTastingReminders,
         ),
@@ -76,7 +79,7 @@ class _Body extends StatelessWidget {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: context.w * 0.02),
             child: Text(
-              'Applies to all upcoming tastings — change anytime.',
+              l10n.hoursPickerHint,
               style: TextStyle(
                 fontSize: context.captionFont * 0.9,
                 color: cs.onSurfaceVariant,
@@ -86,29 +89,29 @@ class _Body extends StatelessWidget {
         ],
         SizedBox(height: context.l),
 
-        const _SectionLabel('Friends'),
+        _SectionLabel(l10n.sectionFriends),
         _ToggleTile(
           icon: PhosphorIconsRegular.users,
-          label: 'Friend activity',
-          subtitle: 'Requests and acceptances',
+          label: l10n.tileFriendActivityLabel,
+          subtitle: l10n.tileFriendActivitySubtitle,
           value: prefs.friendActivity,
           onChanged: controller.setFriendActivity,
         ),
         SizedBox(height: context.l),
 
-        const _SectionLabel('Groups'),
+        _SectionLabel(l10n.sectionGroups),
         _ToggleTile(
           icon: PhosphorIconsRegular.usersThree,
-          label: 'Group activity',
-          subtitle: 'Invites, joins and new tastings',
+          label: l10n.tileGroupActivityLabel,
+          subtitle: l10n.tileGroupActivitySubtitle,
           value: prefs.groupActivity,
           onChanged: controller.setGroupActivity,
         ),
         SizedBox(height: context.s),
         _ToggleTile(
           icon: PhosphorIconsRegular.shareNetwork,
-          label: 'New wine shared',
-          subtitle: 'When a friend adds a wine to your group',
+          label: l10n.tileGroupWineSharedLabel,
+          subtitle: l10n.tileGroupWineSharedSubtitle,
           value: prefs.groupWineShared,
           onChanged: controller.setGroupWineShared,
         ),
@@ -214,6 +217,7 @@ class _HourPicker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: EdgeInsets.symmetric(
         vertical: context.m,
@@ -227,7 +231,7 @@ class _HourPicker extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Notify me before',
+            l10n.hoursPickerLabel,
             style: TextStyle(
               fontSize: context.bodyFont,
               fontWeight: FontWeight.w500,
@@ -245,8 +249,8 @@ class _HourPicker extends StatelessWidget {
                 ].map((h) {
                   final isSelected = h == selected;
                   final label = h == _debugReminderHoursValue
-                      ? '30s · debug'
-                      : (h == 1 ? '1h' : '${h}h');
+                      ? l10n.hoursPickerDebugOption
+                      : l10n.hoursPickerOption(h);
                   return ChoiceChip(
                     label: Text(label),
                     selected: isSelected,

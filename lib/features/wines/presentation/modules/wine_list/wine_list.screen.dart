@@ -3,6 +3,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/error_view.widget.dart';
 import '../../../../../core/routes/app.routes.dart';
@@ -21,6 +22,7 @@ class WineListScreen extends ConsumerWidget {
     final typeFilter = ref.watch(wineTypeFilterProvider);
     final sortMode = ref.watch(wineSortProvider);
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       body: SafeArea(
@@ -53,7 +55,7 @@ class WineListScreen extends ConsumerWidget {
                           ),
                           SizedBox(height: context.xs),
                           Text(
-                            'Your wine rankings',
+                            l10n.winesListSubtitle,
                             style: TextStyle(
                               fontSize: context.captionFont,
                               color: cs.onSurfaceVariant,
@@ -64,9 +66,9 @@ class WineListScreen extends ConsumerWidget {
                     ),
                     Tooltip(
                       message: switch (sortMode) {
-                        WineSortMode.rating => 'Sort: rating',
-                        WineSortMode.recent => 'Sort: recent',
-                        WineSortMode.name => 'Sort: name',
+                        WineSortMode.rating => l10n.winesListSortRating,
+                        WineSortMode.recent => l10n.winesListSortRecent,
+                        WineSortMode.name => l10n.winesListSortName,
                       },
                       child: GestureDetector(
                         behavior: HitTestBehavior.opaque,
@@ -93,13 +95,13 @@ class WineListScreen extends ConsumerWidget {
                     _HeaderIconButton(
                       icon: PhosphorIconsRegular.chartBar,
                       onTap: () => context.push(AppRoutes.wineStats),
-                      tooltip: 'Your stats',
+                      tooltip: l10n.winesListTooltipStats,
                     ),
                     SizedBox(width: context.w * 0.01),
                     _HeaderIconButton(
                       icon: PhosphorIconsRegular.plus,
                       onTap: () => context.push(AppRoutes.wineAdd),
-                      tooltip: 'Add wine',
+                      tooltip: l10n.winesListTooltipAddWine,
                     ),
                   ],
                 ),
@@ -181,7 +183,7 @@ class WineListScreen extends ConsumerWidget {
               error: (error, _) => SliverFillRemaining(
                 child: Center(
                   child: ErrorView(
-                    title: "Couldn't load wines",
+                    title: l10n.winesListErrorLoad,
                     onRetry: () => ref.invalidate(wineControllerProvider),
                     error: error,
                   ),
@@ -290,6 +292,7 @@ class WineEmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
 
     return Center(
       child: Column(
@@ -310,7 +313,7 @@ class WineEmptyState extends StatelessWidget {
           ),
           SizedBox(height: context.m),
           Text(
-            hasFilter ? 'No wines match filter' : 'No wines yet',
+            hasFilter ? l10n.winesEmptyFilteredTitle : l10n.winesEmptyTitle,
             style: TextStyle(
               fontSize: context.bodyFont,
               fontWeight: FontWeight.w600,
@@ -319,7 +322,7 @@ class WineEmptyState extends StatelessWidget {
           if (hasFilter) ...[
             SizedBox(height: context.xs),
             Text(
-              'Try a different filter',
+              l10n.winesEmptyFilteredBody,
               style: TextStyle(
                 fontSize: context.captionFont,
                 color: cs.onSurfaceVariant,
@@ -330,7 +333,7 @@ class WineEmptyState extends StatelessWidget {
             FilledButton.icon(
               onPressed: () => context.push(AppRoutes.wineAdd),
               icon: const Icon(PhosphorIconsRegular.plus),
-              label: const Text('Add wine'),
+              label: Text(l10n.winesEmptyAddWineCta),
             ),
           ],
         ],

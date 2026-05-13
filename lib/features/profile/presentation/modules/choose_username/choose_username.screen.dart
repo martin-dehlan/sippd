@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/inline_error.widget.dart';
 import '../../../../onboarding/controller/onboarding.provider.dart';
@@ -108,6 +109,7 @@ class _ChooseUsernameScreenState extends ConsumerState<ChooseUsernameScreen> {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final canSave = _status == _UsernameState.available && !_saving;
 
     return Scaffold(
@@ -119,7 +121,7 @@ class _ChooseUsernameScreenState extends ConsumerState<ChooseUsernameScreen> {
             children: [
               SizedBox(height: context.xl),
               Text(
-                'Pick a username',
+                l10n.profileChooseUsernameTitle,
                 style: TextStyle(
                   fontSize: context.titleFont,
                   fontWeight: FontWeight.bold,
@@ -128,7 +130,7 @@ class _ChooseUsernameScreenState extends ConsumerState<ChooseUsernameScreen> {
               ),
               SizedBox(height: context.s),
               Text(
-                'How friends will find you on Sippd.',
+                l10n.profileChooseUsernameSubtitle,
                 style: TextStyle(
                   fontSize: context.captionFont,
                   color: cs.onSurfaceVariant,
@@ -146,12 +148,12 @@ class _ChooseUsernameScreenState extends ConsumerState<ChooseUsernameScreen> {
               if (_saveError != null) ...[
                 InlineFieldError(
                   error: _saveError,
-                  fallback: "Couldn't save username. Try again.",
+                  fallback: l10n.profileChooseUsernameSaveFailed,
                 ),
                 SizedBox(height: context.s),
               ],
               RetryActionButton(
-                idleLabel: 'Continue',
+                idleLabel: l10n.profileChooseUsernameContinue,
                 loading: _saving,
                 error: _saveError,
                 onPressed: canSave || _saveError != null ? _save : null,
@@ -211,7 +213,7 @@ class _UsernameField extends StatelessWidget {
           fontWeight: FontWeight.bold,
           color: cs.onSurfaceVariant,
         ),
-        hintText: 'username',
+        hintText: AppLocalizations.of(context).profileChooseUsernameHint,
         hintStyle: TextStyle(
           fontSize: context.titleFont * 1.1,
           fontWeight: FontWeight.bold,
@@ -240,16 +242,17 @@ class _StatusLine extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final (text, color) = switch (status) {
-      _UsernameState.idle => (
-        '3–20 chars · letters, numbers, . and _',
-        cs.outline,
+      _UsernameState.idle => (l10n.profileUsernameHelperIdle, cs.outline),
+      _UsernameState.tooShort => (l10n.profileUsernameTooShort, cs.error),
+      _UsernameState.invalid => (l10n.profileUsernameInvalid, cs.error),
+      _UsernameState.checking => (
+        l10n.profileUsernameChecking,
+        cs.onSurfaceVariant,
       ),
-      _UsernameState.tooShort => ('At least 3 characters', cs.error),
-      _UsernameState.invalid => ('Only letters, numbers, . and _', cs.error),
-      _UsernameState.checking => ('Checking…', cs.onSurfaceVariant),
-      _UsernameState.available => ('Available', cs.primary),
-      _UsernameState.taken => ('Already taken', cs.error),
+      _UsernameState.available => (l10n.profileUsernameAvailable, cs.primary),
+      _UsernameState.taken => (l10n.profileUsernameTaken, cs.error),
     };
     return Text(
       text,

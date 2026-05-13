@@ -36,7 +36,7 @@ class LocationSearchService {
   }) async {
     final servicesEnabled = await Geolocator.isLocationServiceEnabled();
     if (!servicesEnabled) {
-      throw const LocationUnavailable('Location services are disabled');
+      throw const LocationUnavailable(LocationUnavailableReason.servicesOff);
     }
 
     var permission = await Geolocator.checkPermission();
@@ -45,7 +45,9 @@ class LocationSearchService {
     }
     if (permission == LocationPermission.denied ||
         permission == LocationPermission.deniedForever) {
-      throw const LocationUnavailable('Location permission denied');
+      throw const LocationUnavailable(
+        LocationUnavailableReason.permissionDenied,
+      );
     }
 
     final pos = await Geolocator.getCurrentPosition(
@@ -111,10 +113,12 @@ class LocationSearchService {
   }
 }
 
+enum LocationUnavailableReason { servicesOff, permissionDenied }
+
 class LocationUnavailable implements Exception {
-  final String message;
-  const LocationUnavailable(this.message);
+  final LocationUnavailableReason reason;
+  const LocationUnavailable(this.reason);
 
   @override
-  String toString() => message;
+  String toString() => 'LocationUnavailable(${reason.name})';
 }

@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../onboarding_page_shell.widget.dart';
 
@@ -23,13 +24,11 @@ class ResponsibilityPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     return OnboardingPageShell(
-      eyebrow: 'A note from us',
-      title: 'Drink less,\ntaste more.',
-      subtitle:
-          'Sippd is for remembering and rating wines you\'ve enjoyed — '
-          'not pressure to drink more. We don\'t do streaks or daily '
-          'quotas, on purpose.',
+      eyebrow: l10n.onbRespEyebrow,
+      title: l10n.onbRespTitle,
+      subtitle: l10n.onbRespSubtitle,
       child: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -59,8 +58,7 @@ class ResponsibilityPage extends StatelessWidget {
                 ),
             SizedBox(height: context.l),
             Text(
-                  'If alcohol is hurting you or someone close,\n'
-                  'free confidential help is available.',
+                  l10n.onbRespHelpBody,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: context.bodyFont * 0.95,
@@ -84,7 +82,7 @@ class ResponsibilityPage extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    'Find help',
+                    l10n.onbRespHelpCta,
                     style: TextStyle(
                       fontSize: context.bodyFont,
                       fontWeight: FontWeight.w800,

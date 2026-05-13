@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../common/utils/responsive.dart';
 import '../../../../common/widgets/inline_error.widget.dart';
 import '../../../auth/controller/auth.provider.dart';
@@ -19,12 +20,9 @@ Future<void> showExpertTastingSheet({
   required WineEntity wine,
 }) {
   if (wine.canonicalWineId == null) {
+    final l10n = AppLocalizations.of(context);
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text(
-          'Save the wine first — tasting notes attach to the canonical id.',
-        ),
-      ),
+      SnackBar(content: Text(l10n.winesExpertSheetSaveFirstSnack)),
     );
     return Future.value();
   }
@@ -139,6 +137,7 @@ class _ExpertSheetState extends ConsumerState<_ExpertSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Padding(
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -171,45 +170,45 @@ class _ExpertSheetState extends ConsumerState<_ExpertSheet> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         TastingCompactRow(
-                          label: 'Body',
-                          lowLabel: 'light',
-                          highLabel: 'full',
+                          label: l10n.winesExpertAxisBody,
+                          lowLabel: l10n.winesExpertBodyLow,
+                          highLabel: l10n.winesExpertBodyHigh,
                           value: _draft.body,
                           onChanged: (v) =>
                               setState(() => _draft = _draft.copyWith(body: v)),
                         ),
                         if (_isRed)
                           TastingCompactRow(
-                            label: 'Tannin',
-                            lowLabel: 'soft',
-                            highLabel: 'gripping',
+                            label: l10n.winesExpertAxisTannin,
+                            lowLabel: l10n.winesExpertTanninLow,
+                            highLabel: l10n.winesExpertTanninHigh,
                             value: _draft.tannin,
                             onChanged: (v) => setState(
                               () => _draft = _draft.copyWith(tannin: v),
                             ),
                           ),
                         TastingCompactRow(
-                          label: 'Acidity',
-                          lowLabel: 'soft',
-                          highLabel: 'crisp',
+                          label: l10n.winesExpertAxisAcidity,
+                          lowLabel: l10n.winesExpertAcidityLow,
+                          highLabel: l10n.winesExpertAcidityHigh,
                           value: _draft.acidity,
                           onChanged: (v) => setState(
                             () => _draft = _draft.copyWith(acidity: v),
                           ),
                         ),
                         TastingCompactRow(
-                          label: 'Sweetness',
-                          lowLabel: 'dry',
-                          highLabel: 'sweet',
+                          label: l10n.winesExpertAxisSweetness,
+                          lowLabel: l10n.winesExpertSweetnessLow,
+                          highLabel: l10n.winesExpertSweetnessHigh,
                           value: _draft.sweetness,
                           onChanged: (v) => setState(
                             () => _draft = _draft.copyWith(sweetness: v),
                           ),
                         ),
                         TastingCompactRow(
-                          label: 'Oak',
-                          lowLabel: 'unoaked',
-                          highLabel: 'heavy',
+                          label: l10n.winesExpertAxisOak,
+                          lowLabel: l10n.winesExpertOakLow,
+                          highLabel: l10n.winesExpertOakHigh,
                           value: _draft.oak,
                           onChanged: (v) =>
                               setState(() => _draft = _draft.copyWith(oak: v)),
@@ -246,7 +245,7 @@ class _ExpertSheetState extends ConsumerState<_ExpertSheet> {
                 ),
                 SizedBox(height: context.m),
                 RetryActionButton(
-                  idleLabel: 'Save',
+                  idleLabel: l10n.winesExpertSheetSave,
                   loading: _saving,
                   error: _saveError,
                   onPressed: _save,
@@ -269,6 +268,7 @@ class _SheetHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     return Stack(
       alignment: Alignment.center,
       children: [
@@ -292,7 +292,7 @@ class _SheetHeader extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Tasting notes',
+                      l10n.winesExpertSheetTitle,
                       style: TextStyle(
                         fontSize: context.bodyFont * 1.05,
                         fontWeight: FontWeight.w800,
@@ -300,7 +300,7 @@ class _SheetHeader extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      'WSET-style perceptions',
+                      l10n.winesExpertSheetSubtitle,
                       style: TextStyle(
                         fontSize: context.captionFont * 0.85,
                         color: cs.onSurfaceVariant,
@@ -420,6 +420,12 @@ class TastingFinishRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
+    final labels = [
+      l10n.winesExpertFinishShort,
+      l10n.winesExpertFinishMedium,
+      l10n.winesExpertFinishLong,
+    ];
     return Padding(
       padding: EdgeInsets.symmetric(vertical: context.xs * 0.6),
       child: Row(
@@ -427,7 +433,7 @@ class TastingFinishRow extends StatelessWidget {
           SizedBox(
             width: context.w * 0.22,
             child: Text(
-              'Finish',
+              l10n.winesExpertAxisFinish,
               style: TextStyle(
                 fontSize: context.captionFont,
                 fontWeight: FontWeight.w700,
@@ -454,7 +460,7 @@ class TastingFinishRow extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    ['Short', 'Medium', 'Long'][i - 1],
+                    labels[i - 1],
                     style: TextStyle(
                       color: i == value ? cs.primary : cs.onSurface,
                       fontWeight: FontWeight.w700,
@@ -496,7 +502,7 @@ class TastingAromaSection extends StatelessWidget {
           child: Row(
             children: [
               Text(
-                'Aromas',
+                AppLocalizations.of(context).winesExpertAxisAromas,
                 style: TextStyle(
                   fontSize: context.captionFont,
                   fontWeight: FontWeight.w700,

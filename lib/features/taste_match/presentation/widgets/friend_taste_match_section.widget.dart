@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../common/utils/responsive.dart';
 import '../../../../core/routes/app.routes.dart';
 import '../../../paywall/controller/paywall.provider.dart';
@@ -86,11 +87,15 @@ class _TasteMatchUpsell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l = AppLocalizations.of(context);
     final firstName = friendDisplayName.split(' ').first;
 
     final pills = [
-      (icon: PhosphorIconsRegular.percent, label: 'Taste match'),
-      (icon: PhosphorIconsRegular.handshake, label: 'Shared bottles'),
+      (icon: PhosphorIconsRegular.percent, label: l.tasteFriendUpsellPillMatch),
+      (
+        icon: PhosphorIconsRegular.handshake,
+        label: l.tasteFriendUpsellPillShared,
+      ),
     ];
 
     return Container(
@@ -123,7 +128,7 @@ class _TasteMatchUpsell extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'See how $firstName tastes',
+                      l.tasteFriendUpsellTitle(firstName),
                       style: TextStyle(
                         fontSize: context.bodyFont * 1.05,
                         fontWeight: FontWeight.w800,
@@ -133,8 +138,7 @@ class _TasteMatchUpsell extends StatelessWidget {
                     ),
                     SizedBox(height: context.xs * 0.5),
                     Text(
-                      'Compare your palettes, find wines you both love, '
-                      'and spot where your taste diverges.',
+                      l.tasteFriendUpsellBody,
                       style: TextStyle(
                         fontSize: context.captionFont,
                         color: cs.onSurfaceVariant,
@@ -170,7 +174,7 @@ class _TasteMatchUpsell extends StatelessWidget {
                 ),
               ),
               child: Text(
-                'Unlock Sippd Pro',
+                l.tasteFriendUpsellCta,
                 style: TextStyle(
                   fontSize: context.bodyFont,
                   fontWeight: FontWeight.w700,

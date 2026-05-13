@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../common/utils/responsive.dart';
 import '../../../../common/widgets/inline_error.widget.dart';
 import '../../../wines/controller/wine.provider.dart';
@@ -38,6 +39,7 @@ class _SheetState extends ConsumerState<_Sheet> {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final winesAsync = ref.watch(wineControllerProvider);
     final sheetHeight = MediaQuery.of(context).size.height * 0.7;
 
@@ -64,7 +66,7 @@ class _SheetState extends ConsumerState<_Sheet> {
               ),
               SizedBox(height: context.m),
               Text(
-                'Add wines to lineup',
+                l10n.tastingPickerSheetTitle,
                 style: TextStyle(
                   fontSize: context.bodyFont * 1.1,
                   fontWeight: FontWeight.w700,
@@ -78,7 +80,7 @@ class _SheetState extends ConsumerState<_Sheet> {
                       return Padding(
                         padding: EdgeInsets.symmetric(vertical: context.l),
                         child: Text(
-                          'You have no wines yet.',
+                          l10n.tastingPickerEmpty,
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: context.captionFont,
@@ -131,7 +133,10 @@ class _SheetState extends ConsumerState<_Sheet> {
                       const Center(child: CircularProgressIndicator()),
                   error: (e, _) => Center(
                     child: Text(
-                      describeAppError(e, fallback: "Couldn't load wines."),
+                      describeAppError(
+                        e,
+                        fallback: l10n.tastingPickerErrorFallback,
+                      ),
                       style: TextStyle(
                         fontSize: context.captionFont,
                         color: cs.error,
@@ -156,8 +161,8 @@ class _SheetState extends ConsumerState<_Sheet> {
                   ),
                   child: Text(
                     _selected.isEmpty
-                        ? 'Add wines'
-                        : 'Add ${_selected.length} wine${_selected.length == 1 ? '' : 's'}',
+                        ? l10n.tastingPickerSubmitDefault
+                        : l10n.tastingPickerSubmitWithCount(_selected.length),
                     style: TextStyle(
                       fontSize: context.bodyFont,
                       fontWeight: FontWeight.w600,
@@ -296,7 +301,7 @@ class _AddedChip extends StatelessWidget {
           ),
           SizedBox(width: context.xs),
           Text(
-            'Added',
+            AppLocalizations.of(context).tastingPickerAddedChip,
             style: TextStyle(
               fontSize: context.captionFont * 0.9,
               fontWeight: FontWeight.w600,

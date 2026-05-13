@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../l10n/generated/app_localizations.dart';
 import '../utils/responsive.dart';
 import 'app_snack.dart';
 
@@ -15,7 +16,10 @@ class PhotoErrorHandler {
       return;
     }
     if (context.mounted) {
-      AppSnack.error(context, 'Could not load photo. Please try again.');
+      AppSnack.error(
+        context,
+        AppLocalizations.of(context).commonPhotoErrorSnack,
+      );
     }
   }
 
@@ -54,16 +58,17 @@ class _PermissionDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final (icon, title, body) = switch (kind) {
       _PermissionKind.camera => (
         PhosphorIconsRegular.camera,
-        'Camera access off',
-        'Sippd needs camera access to capture wine photos. Enable it in Settings to continue.',
+        l10n.commonPhotoDialogCameraTitle,
+        l10n.commonPhotoDialogCameraBody,
       ),
       _PermissionKind.photos => (
         PhosphorIconsRegular.images,
-        'Photos access off',
-        'Sippd needs photo library access to attach images. Enable it in Settings to continue.',
+        l10n.commonPhotoDialogPhotosTitle,
+        l10n.commonPhotoDialogPhotosBody,
       ),
     };
 
@@ -127,7 +132,7 @@ class _PermissionDialog extends StatelessWidget {
                 ),
               ),
               child: Text(
-                'Got it',
+                l10n.commonGotIt,
                 style: TextStyle(
                   fontSize: context.bodyFont,
                   fontWeight: FontWeight.w600,

@@ -6,6 +6,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
+import '../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../common/utils/price_format.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/error_view.widget.dart';
@@ -35,6 +36,7 @@ class WineDetailScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final wineAsync = ref.watch(wineDetailProvider(wineId));
     final currentUserId = ref.watch(currentUserIdProvider);
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       body: wineAsync.when(
@@ -43,7 +45,7 @@ class WineDetailScreen extends ConsumerWidget {
           // Fall back to the entity passed via go_router extra.
           final resolved = wine ?? initial;
           if (resolved == null) {
-            return const Center(child: Text('Wine not found'));
+            return Center(child: Text(l10n.winesDetailNotFound));
           }
           final isOwner = resolved.userId == currentUserId;
           return WineDetailBody(
@@ -78,7 +80,7 @@ class WineDetailScreen extends ConsumerWidget {
             );
           }
           return Center(
-            child: ErrorView(title: "Couldn't load wine", error: e),
+            child: ErrorView(title: l10n.winesDetailErrorLoad, error: e),
           );
         },
       ),
@@ -257,12 +259,16 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
               if (widget.wine.notes != null &&
                   widget.wine.notes!.isNotEmpty) ...[
                 SizedBox(height: context.xl),
-                const WineDetailSectionHeader(label: 'NOTES'),
+                WineDetailSectionHeader(
+                  label: AppLocalizations.of(context).winesDetailSectionNotes,
+                ),
                 SizedBox(height: context.m),
                 _NotesBlock(notes: widget.wine.notes!),
               ],
               SizedBox(height: context.xl),
-              const WineDetailSectionHeader(label: 'PLACE'),
+              WineDetailSectionHeader(
+                label: AppLocalizations.of(context).winesDetailSectionPlace,
+              ),
               SizedBox(height: context.s),
               SizedBox(
                 height: context.h * 0.28,
@@ -282,20 +288,21 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
   }
 
   Future<void> _confirmDelete(BuildContext context) async {
+    final l10n = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete wine?'),
-        content: const Text('This cannot be undone.'),
+        title: Text(l10n.winesDetailDeleteTitle),
+        content: Text(l10n.winesDetailDeleteBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
+            child: Text(l10n.winesDetailDeleteCancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
             child: Text(
-              'Delete',
+              l10n.winesDetailDeleteConfirm,
               style: TextStyle(color: Theme.of(ctx).colorScheme.error),
             ),
           ),
@@ -348,41 +355,42 @@ class _WineOverflowMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return OverflowMenu(
       circleBackground: true,
       groups: [
         [
           OverflowMenuItem(
             icon: PhosphorIconsRegular.swap,
-            label: 'Compare with…',
+            label: l10n.winesDetailMenuCompare,
             onTap: onCompare,
           ),
           OverflowMenuItem(
             icon: PhosphorIconsRegular.megaphoneSimple,
-            label: 'Share rating',
+            label: l10n.winesDetailMenuShareRating,
             onTap: onShareImage,
           ),
           OverflowMenuItem(
             icon: PhosphorIconsRegular.usersThree,
-            label: 'Share to group',
+            label: l10n.winesDetailMenuShareToGroup,
             onTap: onShareToGroup,
           ),
         ],
         [
           OverflowMenuItem(
             icon: PhosphorIconsRegular.pencilSimple,
-            label: 'Edit wine',
+            label: l10n.winesDetailMenuEdit,
             onTap: onEdit,
           ),
           if (onTastingNotes != null)
             OverflowMenuItem(
               icon: PhosphorIconsRegular.notebook,
-              label: 'Tasting notes (Pro)',
+              label: l10n.winesDetailMenuTastingNotesPro,
               onTap: onTastingNotes!,
             ),
           OverflowMenuItem(
             icon: PhosphorIconsRegular.trash,
-            label: 'Delete wine',
+            label: l10n.winesDetailMenuDelete,
             destructive: true,
             onTap: onDelete,
           ),
@@ -398,6 +406,7 @@ class _StatsColumn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Padding(
       padding: EdgeInsets.only(left: context.w * 0.02),
       child: Column(
@@ -405,23 +414,31 @@ class _StatsColumn extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           _StatItem(
-            label: 'Rating',
+            label: l10n.winesDetailStatRating,
             value: wine.rating.toStringAsFixed(1),
-            unit: '/ 10',
+            unit: l10n.winesDetailStatRatingUnit,
           ),
           SizedBox(height: context.l),
           if (wine.price != null) ...[
             _StatItem(
-              label: 'Price',
+              label: l10n.winesDetailStatPrice,
               value: formatPrice(wine.price!),
               unit: wine.currency,
             ),
             SizedBox(height: context.l),
           ],
           if (wine.region != null)
-            _StatItem(label: 'Region', value: wine.region!, isText: true)
+            _StatItem(
+              label: l10n.winesDetailStatRegion,
+              value: wine.region!,
+              isText: true,
+            )
           else if (wine.country != null)
-            _StatItem(label: 'Country', value: wine.country!, isText: true),
+            _StatItem(
+              label: l10n.winesDetailStatCountry,
+              value: wine.country!,
+              isText: true,
+            ),
         ],
       ),
     );
@@ -869,7 +886,7 @@ class _EmptyPlace extends StatelessWidget {
             ),
             SizedBox(height: context.s),
             Text(
-              location ?? 'No place set',
+              location ?? AppLocalizations.of(context).winesDetailPlaceEmpty,
               style: TextStyle(
                 fontSize: context.bodyFont,
                 color: cs.onSurfaceVariant,

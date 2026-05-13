@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../common/utils/responsive.dart';
 import '../../../../common/widgets/error_view.widget.dart';
 import '../../../../common/widgets/inline_error.widget.dart';
@@ -33,6 +34,7 @@ class _Sheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     return SafeArea(
       child: Padding(
         padding: EdgeInsets.symmetric(
@@ -65,7 +67,7 @@ class _Sheet extends StatelessWidget {
             SizedBox(height: context.m),
             _ActionTile(
               icon: PhosphorIconsRegular.userPlus,
-              label: 'Invite to a group',
+              label: l10n.groupFriendActionsInvite,
               onTap: () {
                 Navigator.pop(context);
                 _openGroupPicker(context, friendId, friendDisplayName);
@@ -162,6 +164,7 @@ class _GroupPickerSheet extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final groupsAsync = ref.watch(invitableGroupsForFriendProvider(friendId));
 
     return SafeArea(
@@ -186,7 +189,9 @@ class _GroupPickerSheet extends ConsumerWidget {
             ),
             SizedBox(height: context.m),
             Text(
-              'Invite ${friendDisplayName.split(' ').first} to…',
+              l10n.groupFriendActionsPickerTitle(
+                friendDisplayName.split(' ').first,
+              ),
               style: TextStyle(
                 fontSize: context.bodyFont,
                 fontWeight: FontWeight.w600,
@@ -202,7 +207,7 @@ class _GroupPickerSheet extends ConsumerWidget {
                     return Padding(
                       padding: EdgeInsets.symmetric(vertical: context.l),
                       child: Text(
-                        'No groups to invite to. Create or join one first.',
+                        l10n.groupFriendActionsPickerEmpty,
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: context.bodyFont * 0.95,
@@ -224,7 +229,7 @@ class _GroupPickerSheet extends ConsumerWidget {
                 },
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (e, _) => ErrorView(
-                  title: "Couldn't load groups",
+                  title: l10n.groupFriendActionsPickerErrorLoad,
                   compact: true,
                   error: e,
                 ),
@@ -242,6 +247,7 @@ class _GroupPickerSheet extends ConsumerWidget {
     WidgetRef ref,
     String groupId,
   ) async {
+    final l10n = AppLocalizations.of(context);
     try {
       await ref
           .read(groupInvitationControllerProvider.notifier)
@@ -249,14 +255,14 @@ class _GroupPickerSheet extends ConsumerWidget {
       if (!context.mounted) return;
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Invite sent to $friendDisplayName')),
+        SnackBar(content: Text(l10n.groupInviteSentSnack(friendDisplayName))),
       );
     } catch (e) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            describeAppError(e, fallback: 'Could not send invite.'),
+            describeAppError(e, fallback: l10n.groupInviteSendFailedFallback),
           ),
         ),
       );

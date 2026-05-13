@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../common/utils/responsive.dart';
 import '../../../../core/routes/app.routes.dart';
 import '../../../paywall/controller/paywall.provider.dart';
@@ -57,7 +58,8 @@ class _WinePersonalityHeroState extends ConsumerState<WinePersonalityHero> {
 
   Widget _build(TasteCompassEntity compass, UserStyleDna? dna) {
     final cs = Theme.of(context).colorScheme;
-    final match = matchArchetype(compass, dna);
+    final l = AppLocalizations.of(context);
+    final match = matchArchetype(compass, dna, l);
     final accent = match.isNewcomer ? cs.outline : match.archetype.color;
     final tooFewWines = compass.totalCount < 5;
     final thinDna = !tooFewWines && match.isNewcomer;
@@ -161,7 +163,8 @@ class _CompactHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final (title, subtitle) = _copy();
+    final l = AppLocalizations.of(context);
+    final (title, subtitle) = _copy(l);
     return Padding(
       padding: EdgeInsets.symmetric(vertical: context.m),
       child: Row(
@@ -172,7 +175,7 @@ class _CompactHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'PERSONALITY',
+                  l.tasteHeroEyebrow,
                   style: TextStyle(
                     fontSize: context.captionFont * 0.78,
                     fontWeight: FontWeight.w700,
@@ -219,35 +222,45 @@ class _CompactHeader extends StatelessWidget {
     );
   }
 
-  (String, String) _copy() {
+  (String, String) _copy(AppLocalizations l) {
     if (tooFewWines) {
       final missing = (5 - compass.totalCount).clamp(1, 5);
       return (
-        'Curious Newcomer',
-        'Rate $missing more wine${missing == 1 ? '' : 's'} to reveal your personality.',
+        l.tasteArchetypeCuriousNewcomer,
+        missing == 1
+            ? l.tasteHeroPromptCuriousOne
+            : l.tasteHeroPromptCuriousMany(missing),
       );
     }
     if (thinDna) {
       final missing = (3 - attributedCount).clamp(1, 3);
       return (
-        'Almost There',
-        'Tag a canonical grape on $missing more wine${missing == 1 ? '' : 's'} to unlock your archetype.',
+        l.tasteHeroAlmostThere,
+        missing == 1
+            ? l.tasteHeroPromptThinDnaOne
+            : l.tasteHeroPromptThinDnaMany(missing),
       );
     }
-    return (match.archetype.name, _matchedSubtitle());
+    return (match.archetype.name, _matchedSubtitle(l));
   }
 
-  String _matchedSubtitle() {
+  String _matchedSubtitle(AppLocalizations l) {
     final parts = <String>[];
     if (match.score > 0 && match.confidence > 0) {
       final score = match.score.round();
-      parts.add(match.isTentative ? '~$score% match' : '$score% match');
+      parts.add(
+        match.isTentative
+            ? l.tasteHeroMatchTentative(score)
+            : l.tasteHeroMatchExact(score),
+      );
     }
     parts.add(
-      '${compass.totalCount} wine${compass.totalCount == 1 ? '' : 's'}',
+      compass.totalCount == 1
+          ? l.tasteHeroWinesOne
+          : l.tasteHeroWinesMany(compass.totalCount),
     );
     if (compass.overallAvg != null) {
-      parts.add('${compass.overallAvg!.toStringAsFixed(1)}★ avg');
+      parts.add(l.tasteHeroAvg(compass.overallAvg!.toStringAsFixed(1)));
     }
     return parts.join('  ·  ');
   }
@@ -277,6 +290,7 @@ class _ExpandedDetail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l = AppLocalizations.of(context);
     return Padding(
       padding: EdgeInsets.only(bottom: context.l),
       child: Column(
@@ -325,7 +339,7 @@ class _ExpandedDetail extends StatelessWidget {
                   size: context.bodyFont,
                 ),
                 label: Text(
-                  'Share',
+                  l.tasteHeroShare,
                   style: TextStyle(
                     fontSize: context.bodyFont,
                     fontWeight: FontWeight.w700,

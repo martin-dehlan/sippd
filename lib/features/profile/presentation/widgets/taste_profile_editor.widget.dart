@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../common/utils/responsive.dart';
 import '../../../onboarding/controller/onboarding.provider.dart';
 import '../../../onboarding/domain/onboarding_answers.dart';
@@ -11,6 +12,7 @@ class TasteProfileEditor extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final answers = ref.watch(onboardingAnswersControllerProvider);
     final notifier = ref.read(onboardingAnswersControllerProvider.notifier);
 
@@ -18,42 +20,42 @@ class TasteProfileEditor extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _Group(
-          label: 'Level',
+          label: l10n.tasteEditorLevel,
           child: _SegmentRow<TasteLevel>(
             options: TasteLevel.values,
             current: answers.tasteLevel,
-            labelOf: (l) => l.label,
+            labelOf: (level) => level.label(l10n),
             onSelect: notifier.setTasteLevel,
           ),
         ),
         SizedBox(height: context.l),
         _Group(
-          label: 'How often',
+          label: l10n.tasteEditorFreq,
           child: _SegmentRow<DrinkFrequency>(
             options: DrinkFrequency.values,
             current: answers.frequency,
-            labelOf: (f) => _shortFreq(f),
+            labelOf: (f) => _shortFreq(f, l10n),
             onSelect: notifier.setFrequency,
           ),
         ),
         SizedBox(height: context.l),
         _Group(
-          label: 'Favourite styles',
+          label: l10n.tasteEditorStyles,
           child: _ChipGrid<WineType>(
             options: WineType.values,
             current: answers.styles,
-            labelOf: (t) => t.onboardingLabel,
+            labelOf: (t) => t.onboardingLabel(l10n),
             emojiOf: (t) => t.onboardingEmoji,
             onToggle: notifier.toggleStyle,
           ),
         ),
         SizedBox(height: context.l),
         _Group(
-          label: "What you're after",
+          label: l10n.tasteEditorGoals,
           child: _ChipGrid<OnboardingGoal>(
             options: OnboardingGoal.values,
             current: answers.goals,
-            labelOf: (g) => _shortGoal(g),
+            labelOf: (g) => _shortGoal(g, l10n),
             emojiOf: (g) => g.emoji,
             onToggle: notifier.toggleGoal,
           ),
@@ -63,17 +65,17 @@ class TasteProfileEditor extends ConsumerWidget {
   }
 }
 
-String _shortFreq(DrinkFrequency f) => switch (f) {
-  DrinkFrequency.weekly => 'Weekly',
-  DrinkFrequency.monthly => 'Monthly',
-  DrinkFrequency.rare => 'Rarely',
+String _shortFreq(DrinkFrequency f, AppLocalizations l) => switch (f) {
+  DrinkFrequency.weekly => l.tasteEditorFreqWeekly,
+  DrinkFrequency.monthly => l.tasteEditorFreqMonthly,
+  DrinkFrequency.rare => l.tasteEditorFreqRare,
 };
 
-String _shortGoal(OnboardingGoal g) => switch (g) {
-  OnboardingGoal.remember => 'Remember',
-  OnboardingGoal.discover => 'Discover',
-  OnboardingGoal.social => 'Social',
-  OnboardingGoal.value => 'Value',
+String _shortGoal(OnboardingGoal g, AppLocalizations l) => switch (g) {
+  OnboardingGoal.remember => l.tasteEditorGoalRemember,
+  OnboardingGoal.discover => l.tasteEditorGoalDiscover,
+  OnboardingGoal.social => l.tasteEditorGoalSocial,
+  OnboardingGoal.value => l.tasteEditorGoalValue,
 };
 
 class _Group extends StatelessWidget {

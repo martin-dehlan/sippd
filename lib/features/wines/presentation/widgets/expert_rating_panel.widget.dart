@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../common/utils/responsive.dart';
 import '../../domain/entities/expert_tasting.entity.dart';
 import '../../domain/entities/wine.entity.dart';
@@ -70,7 +71,7 @@ class ExpertRatingChip extends StatelessWidget {
             ),
             SizedBox(width: context.xs * 1.2),
             Text(
-              'Tasting notes',
+              AppLocalizations.of(context).winesRatingChipTasting,
               style: TextStyle(
                 fontSize: context.captionFont * 0.85,
                 fontWeight: FontWeight.w700,
@@ -111,7 +112,7 @@ class YourRatingHeader extends StatelessWidget {
       children: [
         Expanded(
           child: Text(
-            'YOUR RATING',
+            AppLocalizations.of(context).winesRatingHeaderLabel,
             style: TextStyle(
               fontSize: context.captionFont * 0.85,
               fontWeight: FontWeight.w700,
@@ -155,6 +156,7 @@ class ExpertRatingPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     if (loading) {
       return Padding(
         padding: EdgeInsets.symmetric(vertical: context.l),
@@ -174,7 +176,7 @@ class ExpertRatingPanel extends StatelessWidget {
             ),
           ),
           Text(
-            'WSET-style perceptions',
+            l10n.winesExpertSheetSubtitle,
             style: TextStyle(
               fontSize: context.captionFont * 0.85,
               fontWeight: FontWeight.w600,
@@ -184,38 +186,38 @@ class ExpertRatingPanel extends StatelessWidget {
           ),
           SizedBox(height: context.xs),
           ets.TastingCompactRow(
-            label: 'Body',
-            lowLabel: 'light',
-            highLabel: 'full',
+            label: l10n.winesExpertAxisBody,
+            lowLabel: l10n.winesExpertBodyLow,
+            highLabel: l10n.winesExpertBodyHigh,
             value: tasting.body,
             onChanged: (v) => onTastingChange(tasting.copyWith(body: v)),
           ),
           if (_isRed)
             ets.TastingCompactRow(
-              label: 'Tannin',
-              lowLabel: 'soft',
-              highLabel: 'gripping',
+              label: l10n.winesExpertAxisTannin,
+              lowLabel: l10n.winesExpertTanninLow,
+              highLabel: l10n.winesExpertTanninHigh,
               value: tasting.tannin,
               onChanged: (v) => onTastingChange(tasting.copyWith(tannin: v)),
             ),
           ets.TastingCompactRow(
-            label: 'Acidity',
-            lowLabel: 'soft',
-            highLabel: 'crisp',
+            label: l10n.winesExpertAxisAcidity,
+            lowLabel: l10n.winesExpertAcidityLow,
+            highLabel: l10n.winesExpertAcidityHigh,
             value: tasting.acidity,
             onChanged: (v) => onTastingChange(tasting.copyWith(acidity: v)),
           ),
           ets.TastingCompactRow(
-            label: 'Sweetness',
-            lowLabel: 'dry',
-            highLabel: 'sweet',
+            label: l10n.winesExpertAxisSweetness,
+            lowLabel: l10n.winesExpertSweetnessLow,
+            highLabel: l10n.winesExpertSweetnessHigh,
             value: tasting.sweetness,
             onChanged: (v) => onTastingChange(tasting.copyWith(sweetness: v)),
           ),
           ets.TastingCompactRow(
-            label: 'Oak',
-            lowLabel: 'unoaked',
-            highLabel: 'heavy',
+            label: l10n.winesExpertAxisOak,
+            lowLabel: l10n.winesExpertOakLow,
+            highLabel: l10n.winesExpertOakHigh,
             value: tasting.oak,
             onChanged: (v) => onTastingChange(tasting.copyWith(oak: v)),
           ),

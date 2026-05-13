@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../common/l10n/generated/app_localizations.dart';
 import '../../wines/domain/entities/wine.entity.dart';
 
 enum TasteLevel { beginner, curious, enthusiast, pro }
@@ -86,18 +87,18 @@ T? _enumByName<T extends Enum>(List<T> values, String? name) {
 }
 
 extension TasteLevelX on TasteLevel {
-  String get label => switch (this) {
-    TasteLevel.beginner => 'Beginner',
-    TasteLevel.curious => 'Curious',
-    TasteLevel.enthusiast => 'Enthusiast',
-    TasteLevel.pro => 'Pro',
+  String label(AppLocalizations l) => switch (this) {
+    TasteLevel.beginner => l.onbLevelBeginnerLabel,
+    TasteLevel.curious => l.onbLevelCuriousLabel,
+    TasteLevel.enthusiast => l.onbLevelEnthusiastLabel,
+    TasteLevel.pro => l.onbLevelProLabel,
   };
 
-  String get subtitle => switch (this) {
-    TasteLevel.beginner => 'Just starting out',
-    TasteLevel.curious => 'A few favorites',
-    TasteLevel.enthusiast => 'I know what I like',
-    TasteLevel.pro => 'Somm-level',
+  String subtitle(AppLocalizations l) => switch (this) {
+    TasteLevel.beginner => l.onbLevelBeginnerSubtitle,
+    TasteLevel.curious => l.onbLevelCuriousSubtitle,
+    TasteLevel.enthusiast => l.onbLevelEnthusiastSubtitle,
+    TasteLevel.pro => l.onbLevelProSubtitle,
   };
 
   IconData get icon => switch (this) {
@@ -109,10 +110,10 @@ extension TasteLevelX on TasteLevel {
 }
 
 extension DrinkFrequencyX on DrinkFrequency {
-  String get label => switch (this) {
-    DrinkFrequency.weekly => 'Weekly',
-    DrinkFrequency.monthly => 'A few times a month',
-    DrinkFrequency.rare => 'Now and then',
+  String label(AppLocalizations l) => switch (this) {
+    DrinkFrequency.weekly => l.onbFreqWeekly,
+    DrinkFrequency.monthly => l.onbFreqMonthly,
+    DrinkFrequency.rare => l.onbFreqRare,
   };
 
   IconData get icon => switch (this) {
@@ -123,11 +124,11 @@ extension DrinkFrequencyX on DrinkFrequency {
 }
 
 extension OnboardingGoalX on OnboardingGoal {
-  String get label => switch (this) {
-    OnboardingGoal.remember => 'Remember bottles I love',
-    OnboardingGoal.discover => 'Discover new styles',
-    OnboardingGoal.social => 'Taste with friends',
-    OnboardingGoal.value => 'Track what I pay',
+  String label(AppLocalizations l) => switch (this) {
+    OnboardingGoal.remember => l.onbGoalRemember,
+    OnboardingGoal.discover => l.onbGoalDiscover,
+    OnboardingGoal.social => l.onbGoalSocial,
+    OnboardingGoal.value => l.onbGoalValue,
   };
 
   String get emoji => switch (this) {
@@ -146,11 +147,11 @@ extension OnboardingGoalX on OnboardingGoal {
 }
 
 extension WineTypeOnboardingX on WineType {
-  String get onboardingLabel => switch (this) {
-    WineType.red => 'Red',
-    WineType.white => 'White',
-    WineType.rose => 'Rosé',
-    WineType.sparkling => 'Sparkling',
+  String onboardingLabel(AppLocalizations l) => switch (this) {
+    WineType.red => l.wineTypeRed,
+    WineType.white => l.wineTypeWhite,
+    WineType.rose => l.wineTypeRose,
+    WineType.sparkling => l.wineTypeSparkling,
   };
 
   String get onboardingEmoji => switch (this) {

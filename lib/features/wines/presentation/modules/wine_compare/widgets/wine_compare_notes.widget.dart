@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../../common/utils/responsive.dart';
 import '../../../../domain/entities/wine.entity.dart';
 
@@ -20,6 +21,7 @@ class WineCompareNotesWidget extends StatelessWidget {
     if (!hasLeft && !hasRight) return const SizedBox.shrink();
 
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: EdgeInsets.all(context.w * 0.045),
       decoration: BoxDecoration(
@@ -31,7 +33,7 @@ class WineCompareNotesWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            'NOTES',
+            l10n.winesCompareNotesEyebrow,
             style: TextStyle(
               fontSize: context.captionFont * 0.85,
               fontWeight: FontWeight.w700,
@@ -40,7 +42,11 @@ class WineCompareNotesWidget extends StatelessWidget {
             ),
           ),
           SizedBox(height: context.m),
-          if (hasLeft) _NoteBlock(slot: 'WINE A', text: left.notes!),
+          if (hasLeft)
+            _NoteBlock(
+              slot: l10n.winesCompareSlotWineLabel('A'),
+              text: left.notes!,
+            ),
           if (hasLeft && hasRight) ...[
             SizedBox(height: context.m),
             Container(
@@ -49,7 +55,11 @@ class WineCompareNotesWidget extends StatelessWidget {
             ),
             SizedBox(height: context.m),
           ],
-          if (hasRight) _NoteBlock(slot: 'WINE B', text: right.notes!),
+          if (hasRight)
+            _NoteBlock(
+              slot: l10n.winesCompareSlotWineLabel('B'),
+              text: right.notes!,
+            ),
         ],
       ),
     );

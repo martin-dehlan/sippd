@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/inline_error.widget.dart';
 import '../../../controller/wine.provider.dart';
@@ -86,7 +87,12 @@ class WineComparePickerScreen extends ConsumerWidget {
                       child: Padding(
                         padding: EdgeInsets.all(context.paddingH),
                         child: Text(
-                          describeAppError(e, fallback: "Couldn't load wines."),
+                          describeAppError(
+                            e,
+                            fallback: AppLocalizations.of(
+                              context,
+                            ).winesComparePickerErrorFallback,
+                          ),
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: context.captionFont,
@@ -118,13 +124,14 @@ class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     return Animate(
       effects: [FadeEffect(duration: 360.ms)],
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'COMPARE',
+            l10n.winesCompareHeader,
             style: GoogleFonts.playfairDisplay(
               fontSize: context.titleFont * 1.3,
               fontWeight: FontWeight.w800,
@@ -135,7 +142,7 @@ class _Header extends StatelessWidget {
           ),
           SizedBox(height: context.xs),
           Text(
-            'Pick the second wine.',
+            l10n.winesComparePickerSubtitle,
             style: TextStyle(
               fontSize: context.captionFont,
               color: cs.onSurfaceVariant,
@@ -153,6 +160,7 @@ class _EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     return Center(
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: context.paddingH),
@@ -166,7 +174,7 @@ class _EmptyState extends StatelessWidget {
             ),
             SizedBox(height: context.m),
             Text(
-              'No other wines yet',
+              l10n.winesComparePickerEmptyTitle,
               textAlign: TextAlign.center,
               style: GoogleFonts.playfairDisplay(
                 fontSize: context.bodyFont * 1.1,
@@ -176,7 +184,7 @@ class _EmptyState extends StatelessWidget {
             ),
             SizedBox(height: context.xs),
             Text(
-              'Add at least one more wine to compare.',
+              l10n.winesComparePickerEmptyBody,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: context.captionFont,

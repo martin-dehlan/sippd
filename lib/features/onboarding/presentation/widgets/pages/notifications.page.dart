@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../push/controller/push.provider.dart';
 import '../../../controller/onboarding.provider.dart';
@@ -45,16 +46,15 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final asked = ref
         .watch(onboardingAnswersControllerProvider)
         .notificationsAsked;
 
     return OnboardingPageShell(
-      eyebrow: 'Stay in the loop',
-      title: 'Never lose a great\nbottle again.',
-      subtitle:
-          'We\'ll nudge you when friends start tastings or invite you to '
-          'groups. You can turn this off anytime.',
+      eyebrow: l10n.onbNotifEyebrow,
+      title: l10n.onbNotifTitle,
+      subtitle: l10n.onbNotifSubtitle,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -74,7 +74,7 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
                 SizedBox(width: context.w * 0.04),
                 Expanded(
                   child: Text(
-                    'Tasting invites\nGroup ratings\nFriend activity',
+                    l10n.onbNotifPreview,
                     style: TextStyle(
                       fontSize: context.bodyFont * 0.95,
                       height: 1.5,
@@ -107,7 +107,7 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
                         ),
                       )
                     : Text(
-                        'Turn on notifications',
+                        l10n.onbNotifTurnOn,
                         style: TextStyle(
                           fontSize: context.bodyFont * 1.05,
                           fontWeight: FontWeight.w700,
@@ -120,7 +120,7 @@ class _NotificationsPageState extends ConsumerState<NotificationsPage> {
               child: TextButton(
                 onPressed: _skip,
                 child: Text(
-                  'Not now',
+                  l10n.onbNotifNotNow,
                   style: TextStyle(
                     fontSize: context.captionFont,
                     color: cs.onSurfaceVariant,

@@ -3,6 +3,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../common/utils/responsive.dart';
 import '../../../../core/routes/app.routes.dart';
 import '../../../auth/controller/auth.provider.dart';
@@ -178,21 +179,22 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     }
   }
 
-  String _ctaLabel(_Step step) {
+  String _ctaLabel(_Step step, AppLocalizations l) {
     final isLast = _index == _steps.length - 1;
     if (isLast) {
       return ref.read(isAuthenticatedProvider)
-          ? 'Save and continue'
-          : 'Sign in to save it';
+          ? l.onbCtaSaveAndContinue
+          : l.onbCtaSignInToSave;
     }
-    if (step == _Step.welcome) return 'Get started';
-    if (step == _Step.responsibility) return 'I understand';
-    return 'Continue';
+    if (step == _Step.welcome) return l.onbCtaGetStarted;
+    if (step == _Step.responsibility) return l.onbCtaIUnderstand;
+    return l.onbCtaContinue;
   }
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final answers = ref.watch(onboardingAnswersControllerProvider);
     final step = _steps[_index];
     final canAdvance = _canAdvance(answers);
@@ -203,6 +205,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             _Header(
               index: _index,
               total: _steps.length,
+              counterLabel: l10n.onbStepCounter(_index + 1, _steps.length),
               onBack: _index == 0 || step == _Step.loader
                   ? null
                   : () => _goTo(_index - 1),
@@ -264,7 +267,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       ),
                     ),
                     child: Text(
-                      _ctaLabel(step),
+                      _ctaLabel(step, l10n),
                       style: TextStyle(
                         fontSize: context.bodyFont * 1.05,
                         fontWeight: FontWeight.w700,
@@ -283,10 +286,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 class _Header extends StatelessWidget {
   final int index;
   final int total;
+  final String counterLabel;
   final VoidCallback? onBack;
   const _Header({
     required this.index,
     required this.total,
+    required this.counterLabel,
     required this.onBack,
   });
 
@@ -332,7 +337,7 @@ class _Header extends StatelessWidget {
           SizedBox(
             width: context.w * 0.1,
             child: Text(
-              '${index + 1}/$total',
+              counterLabel,
               textAlign: TextAlign.right,
               style: TextStyle(
                 fontSize: context.captionFont * 0.9,

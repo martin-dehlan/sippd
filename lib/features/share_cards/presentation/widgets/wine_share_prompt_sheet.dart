@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../common/utils/responsive.dart';
 import '../../../profile/controller/profile.provider.dart';
 import '../../../wines/domain/entities/wine.entity.dart';
@@ -78,6 +79,7 @@ class _WineSharePromptSheetState extends ConsumerState<_WineSharePromptSheet> {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l = AppLocalizations.of(context);
     final username = ref.watch(currentProfileProvider).valueOrNull?.username;
 
     return SingleChildScrollView(
@@ -123,7 +125,7 @@ class _WineSharePromptSheetState extends ConsumerState<_WineSharePromptSheet> {
                   ),
                   SizedBox(width: context.xs * 1.2),
                   Text(
-                    'WINE SAVED',
+                    l.shareRatingPromptSavedBadge,
                     style: TextStyle(
                       fontSize: context.captionFont * 0.85,
                       fontWeight: FontWeight.w800,
@@ -137,7 +139,7 @@ class _WineSharePromptSheetState extends ConsumerState<_WineSharePromptSheet> {
           ),
           SizedBox(height: context.m),
           Text(
-            'Your card is ready',
+            l.shareRatingPromptTitle,
             textAlign: TextAlign.center,
             style: GoogleFonts.playfairDisplay(
               fontSize: context.titleFont * 0.95,
@@ -149,7 +151,7 @@ class _WineSharePromptSheetState extends ConsumerState<_WineSharePromptSheet> {
           ),
           SizedBox(height: context.xs * 1.4),
           Text(
-            'Send it to friends or post it to your story.',
+            l.shareRatingPromptBody,
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: context.bodyFont * 0.95,
@@ -192,7 +194,9 @@ class _WineSharePromptSheetState extends ConsumerState<_WineSharePromptSheet> {
                       size: context.w * 0.05,
                     ),
               label: Text(
-                _sharing ? 'Preparing…' : 'Share card',
+                _sharing
+                    ? l.shareRatingPromptPreparing
+                    : l.shareRatingPromptCta,
                 style: TextStyle(
                   fontSize: context.bodyFont * 1.05,
                   fontWeight: FontWeight.w700,
@@ -212,7 +216,7 @@ class _WineSharePromptSheetState extends ConsumerState<_WineSharePromptSheet> {
                 ),
               ),
               child: Text(
-                'Not now',
+                l.shareRatingPromptDismiss,
                 style: TextStyle(
                   fontSize: context.bodyFont * 0.95,
                   color: cs.onSurfaceVariant,

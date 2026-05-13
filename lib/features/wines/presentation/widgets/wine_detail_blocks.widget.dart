@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../common/utils/responsive.dart';
 import '../../controller/wine.provider.dart';
 import '../../domain/entities/wine.entity.dart';
@@ -55,11 +56,12 @@ class WineDetailMetaLine extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final typeLabel = switch (type) {
-      WineType.red => 'Red',
-      WineType.white => 'White',
-      WineType.rose => 'Rosé',
-      WineType.sparkling => 'Sparkling',
+      WineType.red => l10n.wineTypeRed,
+      WineType.white => l10n.wineTypeWhite,
+      WineType.rose => l10n.wineTypeRose,
+      WineType.sparkling => l10n.wineTypeSparkling,
     };
 
     String? grapeText;

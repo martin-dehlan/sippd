@@ -7,7 +7,9 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'common/l10n/generated/app_localizations.dart';
 import 'common/services/analytics/analytics.provider.dart';
+import 'common/services/locale/locale.provider.dart';
 import 'common/services/analytics/analytics.service.dart';
 import 'common/services/deep_link/deep_link.provider.dart';
 import 'features/paywall/controller/paywall.provider.dart';
@@ -187,6 +189,9 @@ class _SippdAppState extends ConsumerState<SippdApp> {
       routerConfig: router,
       restorationScopeId: 'sippd_app',
       debugShowCheckedModeBanner: false,
+      locale: ref.watch(appLocaleControllerProvider),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
     );
   }
 }

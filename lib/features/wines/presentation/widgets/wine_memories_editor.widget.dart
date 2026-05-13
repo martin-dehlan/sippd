@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../common/utils/responsive.dart';
 import '../../../../common/widgets/photo_error.dart';
 import '../../../auth/controller/auth.provider.dart';
@@ -87,20 +88,21 @@ class _WineMemoriesEditorState extends ConsumerState<WineMemoriesEditor> {
   }
 
   Future<void> _confirmRemove(String id) async {
+    final l10n = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Remove memory?'),
-        content: const Text('This will remove this photo from the wine.'),
+        title: Text(l10n.winesMemoriesRemoveTitle),
+        content: Text(l10n.winesMemoriesRemoveBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
+            child: Text(l10n.winesMemoriesRemoveCancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
             child: Text(
-              'Remove',
+              l10n.winesMemoriesRemoveConfirm,
               style: TextStyle(color: Theme.of(ctx).colorScheme.error),
             ),
           ),
@@ -144,6 +146,7 @@ class _MemoriesHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     return Row(
       children: [
         Icon(
@@ -153,7 +156,9 @@ class _MemoriesHeader extends StatelessWidget {
         ),
         SizedBox(width: context.w * 0.02),
         Text(
-          count == 0 ? 'Memories' : 'Memories ($count)',
+          count == 0
+              ? l10n.winesMemoriesHeader
+              : l10n.winesMemoriesHeaderWithCount(count),
           style: TextStyle(
             fontSize: context.bodyFont,
             fontWeight: FontWeight.w600,
@@ -270,7 +275,7 @@ class _AddTile extends StatelessWidget {
                   ),
                   SizedBox(height: context.xs),
                   Text(
-                    'Add',
+                    AppLocalizations.of(context).winesMemoriesAddTile,
                     style: TextStyle(
                       fontSize: context.captionFont * 0.85,
                       color: cs.outline,
@@ -289,6 +294,7 @@ Future<ImageSource?> _showSourceSheet(BuildContext context) {
     context: context,
     builder: (ctx) {
       final cs = Theme.of(ctx).colorScheme;
+      final l10n = AppLocalizations.of(ctx);
       return SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(vertical: ctx.m),
@@ -298,7 +304,7 @@ Future<ImageSource?> _showSourceSheet(BuildContext context) {
               ListTile(
                 leading: Icon(PhosphorIconsRegular.camera, color: cs.primary),
                 title: Text(
-                  'Take photo',
+                  l10n.winesPhotoSourceTake,
                   style: TextStyle(fontSize: ctx.bodyFont),
                 ),
                 onTap: () => Navigator.pop(ctx, ImageSource.camera),
@@ -306,7 +312,7 @@ Future<ImageSource?> _showSourceSheet(BuildContext context) {
               ListTile(
                 leading: Icon(PhosphorIconsRegular.images, color: cs.primary),
                 title: Text(
-                  'Choose from gallery',
+                  l10n.winesPhotoSourceGallery,
                   style: TextStyle(fontSize: ctx.bodyFont),
                 ),
                 onTap: () => Navigator.pop(ctx, ImageSource.gallery),

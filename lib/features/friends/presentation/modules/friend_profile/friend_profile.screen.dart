@@ -4,6 +4,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/error_view.widget.dart';
 import '../../../../../common/widgets/stats_card.widget.dart';
@@ -21,6 +22,7 @@ class FriendProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final profileAsync = ref.watch(friendProfileProvider(friendId));
     final winesAsync = ref.watch(friendWinesProvider(friendId));
 
@@ -29,7 +31,7 @@ class FriendProfileScreen extends ConsumerWidget {
         child: profileAsync.when(
           data: (profile) {
             if (profile == null) {
-              return const Center(child: Text('Profile not found'));
+              return Center(child: Text(l10n.friendsProfileNotFound));
             }
             return RefreshIndicator(
               onRefresh: () async {
@@ -41,7 +43,7 @@ class FriendProfileScreen extends ConsumerWidget {
           },
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (e, _) => Center(
-            child: ErrorView(title: "Couldn't load profile", error: e),
+            child: ErrorView(title: l10n.friendsProfileErrorLoad, error: e),
           ),
         ),
       ),
@@ -81,6 +83,7 @@ class _Body extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final padH = context.paddingH * 1.3;
     return ListView(
       padding: EdgeInsets.zero,
@@ -94,8 +97,8 @@ class _Body extends StatelessWidget {
         Padding(
           padding: EdgeInsets.symmetric(horizontal: padH),
           child: winesAsync.when(
-            data: (wines) => StatsCard(stats: _statsFor(wines)),
-            loading: () => StatsCard(stats: _statsFor(const [])),
+            data: (wines) => StatsCard(stats: _statsFor(wines, l10n)),
+            loading: () => StatsCard(stats: _statsFor(const [], l10n)),
             error: (_, _) => const SizedBox.shrink(),
           ),
         ),
@@ -115,14 +118,16 @@ class _Body extends StatelessWidget {
           child: FriendTasteMatchSection(
             friendId: profile.id,
             friendDisplayName:
-                profile.displayName ?? profile.username ?? 'Friend',
+                profile.displayName ??
+                profile.username ??
+                l10n.friendsProfileNameFallback,
           ),
         ),
         SizedBox(height: context.xl),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: padH),
           child: Text(
-            'RECENT WINES',
+            l10n.friendsProfileRecentWinesHeader,
             style: TextStyle(
               fontSize: context.captionFont * 0.9,
               fontWeight: FontWeight.w700,
@@ -138,8 +143,11 @@ class _Body extends StatelessWidget {
             padding: EdgeInsets.all(context.l),
             child: const Center(child: CircularProgressIndicator()),
           ),
-          error: (e, _) =>
-              ErrorView(title: "Couldn't load wines", compact: true, error: e),
+          error: (e, _) => ErrorView(
+            title: l10n.friendsProfileWinesErrorLoad,
+            compact: true,
+            error: e,
+          ),
         ),
         SizedBox(height: context.xl * 2),
       ],
@@ -154,7 +162,11 @@ class _HeroHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final displayName = profile.displayName ?? profile.username ?? 'Friend';
+    final l10n = AppLocalizations.of(context);
+    final displayName =
+        profile.displayName ??
+        profile.username ??
+        l10n.friendsProfileNameFallback;
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
       child: Column(
@@ -196,7 +208,7 @@ class _HeroHeader extends StatelessWidget {
   }
 }
 
-List<StatEntry> _statsFor(List<WineEntity> wines) {
+List<StatEntry> _statsFor(List<WineEntity> wines, AppLocalizations l10n) {
   final avg = wines.isEmpty
       ? '—'
       : (wines.map((w) => w.rating).reduce((a, b) => a + b) / wines.length)
@@ -207,10 +219,12 @@ List<StatEntry> _statsFor(List<WineEntity> wines) {
       .toSet()
       .length;
   return [
-    (label: 'Wines', value: wines.length.toString()),
-    (label: 'Avg', value: avg),
+    (label: l10n.friendsProfileStatWines, value: wines.length.toString()),
+    (label: l10n.friendsProfileStatAvg, value: avg),
     (
-      label: countries == 1 ? 'Country' : 'Countries',
+      label: countries == 1
+          ? l10n.friendsProfileStatCountry
+          : l10n.friendsProfileStatCountries,
       value: countries.toString(),
     ),
   ];
@@ -242,6 +256,7 @@ class _EmptyWinesState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final padH = context.paddingH * 1.3;
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: padH),
@@ -265,7 +280,7 @@ class _EmptyWinesState extends StatelessWidget {
             ),
             SizedBox(height: context.s),
             Text(
-              'No wines shared yet',
+              l10n.groupWineCarouselEmptyTitle,
               style: TextStyle(
                 fontSize: context.bodyFont,
                 fontWeight: FontWeight.w600,

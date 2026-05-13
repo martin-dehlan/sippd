@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../common/l10n/generated/app_localizations.dart';
+
 const shareCardWidth = 1080.0;
 const shareCardHeight = 1920.0;
 const shareCardUrl = 'sippd.xyz';
@@ -31,16 +33,21 @@ class ShareCardWordmark extends StatelessWidget {
 class ShareCardFooter extends StatelessWidget {
   final Color textColor;
   final Color dividerColor;
-  final String tagline;
+
+  /// Optional override tagline. When null, falls back to the localized
+  /// "rate yours at [url]" line.
+  final String? tagline;
   const ShareCardFooter({
     super.key,
     required this.textColor,
     required this.dividerColor,
-    this.tagline = 'rate yours at $shareCardUrl',
+    this.tagline,
   });
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final resolvedTagline = tagline ?? l.shareFooterRateYours(shareCardUrl);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -77,7 +84,7 @@ class ShareCardFooter extends StatelessWidget {
               ],
             ),
             Text(
-              tagline,
+              resolvedTagline,
               style: TextStyle(
                 fontSize: 28,
                 color: textColor,

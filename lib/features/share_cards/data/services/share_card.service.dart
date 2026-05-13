@@ -6,6 +6,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../common/services/analytics/analytics.service.dart';
 import '../../../../common/utils/share_origin.dart';
 import '../../../wines/domain/entities/wine.entity.dart';
@@ -38,6 +39,11 @@ class ShareCardService {
     // triggering widget's render box is the right popover anchor on iPad,
     // and BuildContext should not cross async gaps.
     final shareOrigin = shareOriginFor(context);
+    final shareText = AppLocalizations.of(context).shareRatingShareText(
+      wine.name,
+      wine.rating.toStringAsFixed(1),
+      shareCardUrl,
+    );
 
     // Precache the wine photo so the off-screen render captures the
     // actual pixels rather than an empty placeholder.
@@ -54,9 +60,7 @@ class ShareCardService {
 
     final result = await Share.shareXFiles(
       [XFile(file.path, mimeType: 'image/png')],
-      text:
-          'Just rated ${wine.name} ${wine.rating.toStringAsFixed(1)}/10 '
-          'on Sippd · $shareCardUrl',
+      text: shareText,
       sharePositionOrigin: shareOrigin,
     );
 
@@ -84,6 +88,9 @@ class ShareCardService {
     );
 
     final shareOrigin = shareOriginFor(context);
+    final shareText = AppLocalizations.of(
+      context,
+    ).shareCompassShareText(data.archetypeName, shareCardUrl);
 
     final card = CompassShareCard(data: data);
     final file = await _renderToFile(
@@ -95,9 +102,7 @@ class ShareCardService {
 
     final result = await Share.shareXFiles(
       [XFile(file.path, mimeType: 'image/png')],
-      text:
-          'My wine personality: ${data.archetypeName} · '
-          'find yours at $shareCardUrl',
+      text: shareText,
       sharePositionOrigin: shareOrigin,
     );
 
@@ -125,6 +130,14 @@ class ShareCardService {
     );
 
     final shareOrigin = shareOriginFor(context);
+    final l = AppLocalizations.of(context);
+    final topLineText = data.topWineName != null && data.topWineAvg != null
+        ? l.shareTastingShareTextTop(
+            data.topWineName!,
+            data.topWineAvg!.toStringAsFixed(1),
+            shareCardUrl,
+          )
+        : l.shareTastingShareTextTitle(data.tastingTitle, shareCardUrl);
 
     for (final url in [data.topWineImageUrl, data.groupAvatarUrl]) {
       if (url == null || url.trim().isEmpty) continue;
@@ -144,13 +157,9 @@ class ShareCardService {
     );
     if (file == null) return;
 
-    final topLine = data.topWineName != null && data.topWineAvg != null
-        ? '${data.topWineName} took the night at '
-              '${data.topWineAvg!.toStringAsFixed(1)}/10'
-        : data.tastingTitle;
     final result = await Share.shareXFiles(
       [XFile(file.path, mimeType: 'image/png')],
-      text: '$topLine · hosted on Sippd · $shareCardUrl',
+      text: topLineText,
       sharePositionOrigin: shareOrigin,
     );
 
@@ -180,6 +189,10 @@ class ShareCardService {
     );
 
     final shareOrigin = shareOriginFor(context);
+    final l = AppLocalizations.of(context);
+    final fallbackText = l.shareInviteFallbackText(data.displayName, inviteUrl);
+    final imageText = l.shareInviteImageText(inviteUrl);
+    final subject = l.shareInviteSubject;
 
     if (data.avatarUrl != null && data.avatarUrl!.trim().isNotEmpty) {
       try {
@@ -198,14 +211,10 @@ class ShareCardService {
           'sippd_invite_${(data.username ?? 'me').replaceAll(RegExp(r"[^A-Za-z0-9_-]"), "_")}',
     );
 
-    final fallbackText =
-        "${data.displayName} wants to taste with you on Sippd · $inviteUrl";
-    final imageText = "Join me on Sippd 🍷  $inviteUrl";
-
     final result = file == null
         ? await Share.share(
             fallbackText,
-            subject: 'Join me on Sippd',
+            subject: subject,
             sharePositionOrigin: shareOrigin,
           )
         : await Share.shareXFiles(

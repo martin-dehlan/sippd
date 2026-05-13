@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../common/utils/responsive.dart';
 import '../../domain/entities/location.entity.dart';
 import 'location_search.widget.dart';
@@ -43,7 +44,7 @@ Future<LocationEntity?> showLocationSearchSheet({
                 ),
                 SizedBox(height: ctx.m),
                 Text(
-                  'Where did you drink it?',
+                  AppLocalizations.of(ctx).locSheetTitle,
                   style: TextStyle(
                     fontSize: context.bodyFont,
                     fontWeight: FontWeight.w600,

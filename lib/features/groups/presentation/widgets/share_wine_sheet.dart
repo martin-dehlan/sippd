@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../common/utils/responsive.dart';
 import '../../../../common/widgets/inline_error.widget.dart';
 import '../../../auth/controller/auth.provider.dart';
@@ -97,14 +98,18 @@ class _ShareWineSheetState extends ConsumerState<_ShareWineSheet> {
     ref.invalidate(groupWinesProvider(group.id));
     ref.invalidate(groupsContainingWineProvider(widget.wineId));
     if (!mounted) return;
+    final l10n = AppLocalizations.of(context);
     final messenger = ScaffoldMessenger.of(context);
     Navigator.pop(context);
-    messenger.showSnackBar(SnackBar(content: Text('Shared to ${group.name}')));
+    messenger.showSnackBar(
+      SnackBar(content: Text(l10n.groupShareWineSheetSharedSnack(group.name))),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final groupsAsync = ref.watch(groupControllerProvider);
 
     return SafeArea(
@@ -129,7 +134,7 @@ class _ShareWineSheetState extends ConsumerState<_ShareWineSheet> {
             ),
             SizedBox(height: context.m),
             Text(
-              'Share to group',
+              l10n.groupShareWineSheetTitle,
               style: TextStyle(
                 fontSize: context.bodyFont,
                 fontWeight: FontWeight.w600,
@@ -143,7 +148,7 @@ class _ShareWineSheetState extends ConsumerState<_ShareWineSheet> {
                   return Padding(
                     padding: EdgeInsets.symmetric(vertical: context.l),
                     child: Text(
-                      'You are not in any groups yet.',
+                      l10n.groupShareWineSheetEmpty,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: context.captionFont,
@@ -174,7 +179,10 @@ class _ShareWineSheetState extends ConsumerState<_ShareWineSheet> {
               },
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (e, _) => Text(
-                describeAppError(e, fallback: "Couldn't load groups."),
+                describeAppError(
+                  e,
+                  fallback: l10n.groupShareWineSheetErrorLoad,
+                ),
                 style: TextStyle(
                   fontSize: context.captionFont,
                   color: cs.error,
@@ -205,8 +213,11 @@ class _GroupRow extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final membersAsync = ref.watch(groupMembersProvider(group.id));
-    final subtitle = alreadyShared ? 'Already shared' : _subtitle();
+    final subtitle = alreadyShared
+        ? l10n.groupShareWineSheetAlreadyShared
+        : _subtitle(l10n);
 
     return Opacity(
       opacity: alreadyShared ? 0.55 : 1,
@@ -309,18 +320,20 @@ class _GroupRow extends ConsumerWidget {
     );
   }
 
-  String? _subtitle() {
+  String? _subtitle(AppLocalizations l10n) {
     final parts = <String>[];
     if (group.memberCount > 0) {
       parts.add(
-        '${group.memberCount} '
-        '${group.memberCount == 1 ? 'member' : 'members'}',
+        group.memberCount == 1
+            ? l10n.groupShareWineRowMemberOne
+            : l10n.groupShareWineRowMemberMany(group.memberCount),
       );
     }
     if (group.wineCount > 0) {
       parts.add(
-        '${group.wineCount} '
-        '${group.wineCount == 1 ? 'wine' : 'wines'}',
+        group.wineCount == 1
+            ? l10n.groupShareWineRowWineOne
+            : l10n.groupShareWineRowWineMany(group.wineCount),
       );
     }
     return parts.isEmpty ? null : parts.join(' · ');

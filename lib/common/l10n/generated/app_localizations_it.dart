@@ -1,0 +1,3641 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+import 'app_localizations.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for Italian (`it`).
+class AppLocalizationsIt extends AppLocalizations {
+  AppLocalizationsIt([String locale = 'it']) : super(locale);
+
+  @override
+  String get notificationsTitle => 'Notifiche';
+
+  @override
+  String get notificationsLoadError =>
+      'Impossibile caricare le impostazioni delle notifiche';
+
+  @override
+  String get sectionTastings => 'Degustazioni';
+
+  @override
+  String get sectionFriends => 'Amici';
+
+  @override
+  String get sectionGroups => 'Gruppi';
+
+  @override
+  String get tileTastingRemindersLabel => 'Promemoria degustazione';
+
+  @override
+  String get tileTastingRemindersSubtitle =>
+      'Notifica prima dell\'inizio di una degustazione';
+
+  @override
+  String get tileFriendActivityLabel => 'Attività degli amici';
+
+  @override
+  String get tileFriendActivitySubtitle => 'Richieste e conferme';
+
+  @override
+  String get tileGroupActivityLabel => 'Attività del gruppo';
+
+  @override
+  String get tileGroupActivitySubtitle =>
+      'Inviti, iscrizioni e nuove degustazioni';
+
+  @override
+  String get tileGroupWineSharedLabel => 'Nuovo vino condiviso';
+
+  @override
+  String get tileGroupWineSharedSubtitle =>
+      'Quando un amico aggiunge un vino al tuo gruppo';
+
+  @override
+  String get hoursPickerLabel => 'Avvisami';
+
+  @override
+  String get hoursPickerHint =>
+      'Vale per tutte le degustazioni in arrivo — modificabile in ogni momento.';
+
+  @override
+  String hoursPickerOption(int hours) {
+    return '${hours}h';
+  }
+
+  @override
+  String get hoursPickerDebugOption => '30s · debug';
+
+  @override
+  String get profileTileLanguageLabel => 'Lingua';
+
+  @override
+  String get languageSheetTitle => 'Scegli la lingua';
+
+  @override
+  String get languageOptionSystem => 'Lingua del sistema';
+
+  @override
+  String get onbWelcomeTitle => 'La tua memoria\ndel vino.';
+
+  @override
+  String get onbWelcomeBody =>
+      'Valuta i vini che ami. Ricordali per sempre. Degustali con gli amici.';
+
+  @override
+  String get onbWelcomeAlreadyHaveAccount => 'Hai già un account? ';
+
+  @override
+  String get onbWelcomeSignIn => 'Accedi';
+
+  @override
+  String get onbWhyEyebrow => 'Perché Sippd';
+
+  @override
+  String get onbWhyTitle => 'Pensato per chi\nbeve davvero vino.';
+
+  @override
+  String get onbWhyPrinciple1Headline => 'Scatta. Valuta. Ricorda.';
+
+  @override
+  String get onbWhyPrinciple1Line => 'Tre tap e lo ritrovi l\'anno prossimo.';
+
+  @override
+  String get onbWhyPrinciple2Headline => 'Degustazioni con gli amici.';
+
+  @override
+  String get onbWhyPrinciple2Line =>
+      'Assaggi alla cieca, punteggi condivisi. Niente fogli di calcolo.';
+
+  @override
+  String get onbWhyPrinciple3Headline => 'Funziona offline.';
+
+  @override
+  String get onbWhyPrinciple3Line => 'Annota ovunque. Si sincronizza a casa.';
+
+  @override
+  String get onbLevelEyebrow => 'Su di te';
+
+  @override
+  String get onbLevelTitle => 'Quanto sei dentro\nal mondo del vino?';
+
+  @override
+  String get onbLevelSubtitle =>
+      'Nessuna risposta sbagliata. Tariamo i suggerimenti sul tuo passo.';
+
+  @override
+  String get onbLevelBeginnerLabel => 'Principiante';
+
+  @override
+  String get onbLevelBeginnerSubtitle => 'Sto iniziando';
+
+  @override
+  String get onbLevelCuriousLabel => 'Curioso';
+
+  @override
+  String get onbLevelCuriousSubtitle => 'Qualche preferito';
+
+  @override
+  String get onbLevelEnthusiastLabel => 'Appassionato';
+
+  @override
+  String get onbLevelEnthusiastSubtitle => 'So cosa mi piace';
+
+  @override
+  String get onbLevelProLabel => 'Pro';
+
+  @override
+  String get onbLevelProSubtitle => 'Livello sommelier';
+
+  @override
+  String get onbFreqEyebrow => 'Il tuo ritmo';
+
+  @override
+  String get onbFreqTitle => 'Quanto spesso apri\nuna bottiglia?';
+
+  @override
+  String get onbFreqWeekly => 'Ogni settimana';
+
+  @override
+  String get onbFreqMonthly => 'Un paio di volte al mese';
+
+  @override
+  String get onbFreqRare => 'Ogni tanto';
+
+  @override
+  String get onbGoalsEyebrow => 'I tuoi obiettivi';
+
+  @override
+  String get onbGoalsTitle => 'Cosa vuoi\nda Sippd?';
+
+  @override
+  String get onbGoalsSubtitle => 'Scegli uno o più. Puoi cambiare dopo.';
+
+  @override
+  String get onbGoalRemember => 'Ricordare le bottiglie che amo';
+
+  @override
+  String get onbGoalDiscover => 'Scoprire nuovi stili';
+
+  @override
+  String get onbGoalSocial => 'Degustare con gli amici';
+
+  @override
+  String get onbGoalValue => 'Tenere conto di quanto spendo';
+
+  @override
+  String get onbStylesEyebrow => 'I tuoi stili';
+
+  @override
+  String get onbStylesTitle => 'Cosa\nscegli?';
+
+  @override
+  String get onbStylesSubtitle =>
+      'Indica quelli che ti rispecchiano. Terremo d\'occhio le tue scelte.';
+
+  @override
+  String get wineTypeRed => 'Rosso';
+
+  @override
+  String get wineTypeWhite => 'Bianco';
+
+  @override
+  String get wineTypeRose => 'Rosato';
+
+  @override
+  String get wineTypeSparkling => 'Spumante';
+
+  @override
+  String get onbRespEyebrow => 'Una nota da noi';
+
+  @override
+  String get onbRespTitle => 'Bevi meno,\nassapora di più.';
+
+  @override
+  String get onbRespSubtitle =>
+      'Sippd serve a ricordare e valutare vini che hai apprezzato — non a spingerti a bere di più. Niente streak né quote giornaliere. Di proposito.';
+
+  @override
+  String get onbRespHelpBody =>
+      'Se l\'alcol fa male a te o a chi ti sta vicino,\nesiste un aiuto gratuito e riservato.';
+
+  @override
+  String get onbRespHelpCta => 'Trova aiuto';
+
+  @override
+  String get onbNameEyebrow => 'Quasi fatta';
+
+  @override
+  String get onbNameTitle => 'Come dobbiamo\nchiamarti?';
+
+  @override
+  String get onbNameSubtitle =>
+      'Nome, soprannome — come ti senti. Scegli anche un\'icona.';
+
+  @override
+  String get onbNameHint => 'Il tuo nome';
+
+  @override
+  String get onbNameIconLabel => 'Scegli la tua icona';
+
+  @override
+  String get onbNameIconSubtitle => 'Appare come il tuo avatar.';
+
+  @override
+  String get onbNotifEyebrow => 'Resta sul pezzo';
+
+  @override
+  String get onbNotifTitle => 'Non perdere mai più\nuna grande bottiglia.';
+
+  @override
+  String get onbNotifSubtitle =>
+      'Ti avvisiamo quando gli amici avviano una degustazione o ti invitano in un gruppo. Disattivabile in ogni momento.';
+
+  @override
+  String get onbNotifPreview =>
+      'Inviti a degustazioni\nVoti di gruppo\nAttività degli amici';
+
+  @override
+  String get onbNotifTurnOn => 'Attiva le notifiche';
+
+  @override
+  String get onbNotifNotNow => 'Non ora';
+
+  @override
+  String get onbLoaderAlmostThere => 'QUASI FATTA';
+
+  @override
+  String get onbLoaderCrafting => 'Stiamo creando il tuo profilo.';
+
+  @override
+  String get onbLoaderAllSet => 'Tutto pronto.';
+
+  @override
+  String get onbLoaderStepMatching => 'Stiamo abbinando il tuo gusto';
+
+  @override
+  String get onbLoaderStepCurating => 'Stiamo curando i tuoi stili';
+
+  @override
+  String get onbLoaderStepSetting => 'Stiamo preparando il tuo diario';
+
+  @override
+  String get onbLoaderSeeProfile => 'Vedi il tuo profilo';
+
+  @override
+  String get onbLoaderContinue => 'Continua';
+
+  @override
+  String get onbResultsEyebrow => 'IL TUO PROFILO DI GUSTO';
+
+  @override
+  String get onbResultsLevelCard => 'Livello';
+
+  @override
+  String get onbResultsFreqCard => 'Frequenza';
+
+  @override
+  String get onbResultsStylesCard => 'Stili';
+
+  @override
+  String get onbResultsGoalsCard => 'Obiettivi';
+
+  @override
+  String get onbArchSommTitle => 'Sommelier consumato';
+
+  @override
+  String get onbArchSommSubtitle =>
+      'Conosci il tuo terroir. Sippd tiene le ricevute.';
+
+  @override
+  String get onbArchPalateTitle => 'Palato fine';
+
+  @override
+  String get onbArchPalateSubtitle =>
+      'Cacciatore di sfumature. Sippd cattura i dettagli.';
+
+  @override
+  String get onbArchRegularTitle => 'Habitué di cantina';
+
+  @override
+  String get onbArchRegularSubtitle =>
+      'Una bottiglia a settimana, opinioni più nitide ogni mese.';
+
+  @override
+  String get onbArchDevotedTitle => 'Degustatore devoto';
+
+  @override
+  String get onbArchDevotedSubtitle =>
+      'Serio a ogni calice. Sippd tiene le tue note.';
+
+  @override
+  String get onbArchRedTitle => 'Fedele al rosso';
+
+  @override
+  String get onbArchRedSubtitle =>
+      'Un\'uva per calice. Ti aiutiamo ad ampliare.';
+
+  @override
+  String get onbArchBubbleTitle => 'Cacciatore di bollicine';
+
+  @override
+  String get onbArchBubbleSubtitle =>
+      'Bollicine prima di tutto. Sippd segna le migliori.';
+
+  @override
+  String get onbArchOpenTitle => 'Palato aperto';
+
+  @override
+  String get onbArchOpenSubtitle =>
+      'Rosso, bianco, rosato, spumante — tutto vale. Annotali tutti.';
+
+  @override
+  String get onbArchSteadyTitle => 'Degustatore costante';
+
+  @override
+  String get onbArchSteadySubtitle =>
+      'Il vino resta nella rotazione. Sippd tiene il filo.';
+
+  @override
+  String get onbArchNowAndThenTitle => 'Degustatore occasionale';
+
+  @override
+  String get onbArchNowAndThenSubtitle => 'Vino per i momenti che contano.';
+
+  @override
+  String get onbArchOccasionalTitle => 'Calice raro';
+
+  @override
+  String get onbArchOccasionalSubtitle => 'Sorso raro, da ricordare.';
+
+  @override
+  String get onbArchFreshTitle => 'Palato fresco';
+
+  @override
+  String get onbArchFreshSubtitle =>
+      'Strada nuova. Ogni bottiglia conta da qui.';
+
+  @override
+  String get onbArchCuriousTitle => 'Curioso di vino';
+
+  @override
+  String get onbArchCuriousSubtitle =>
+      'Dicci di più e il tuo profilo si affina.';
+
+  @override
+  String get onbCtaGetStarted => 'Inizia';
+
+  @override
+  String get onbCtaIUnderstand => 'Ho capito';
+
+  @override
+  String get onbCtaContinue => 'Continua';
+
+  @override
+  String get onbCtaSignInToSave => 'Accedi per salvare';
+
+  @override
+  String get onbCtaSaveAndContinue => 'Salva e continua';
+
+  @override
+  String onbStepCounter(int current, int total) {
+    return '$current/$total';
+  }
+
+  @override
+  String get tasteEditorLevel => 'Livello';
+
+  @override
+  String get tasteEditorFreq => 'Quanto spesso';
+
+  @override
+  String get tasteEditorStyles => 'Stili preferiti';
+
+  @override
+  String get tasteEditorGoals => 'Cosa cerchi';
+
+  @override
+  String get tasteEditorFreqWeekly => 'Settimanale';
+
+  @override
+  String get tasteEditorFreqMonthly => 'Mensile';
+
+  @override
+  String get tasteEditorFreqRare => 'Raro';
+
+  @override
+  String get tasteEditorGoalRemember => 'Ricordare';
+
+  @override
+  String get tasteEditorGoalDiscover => 'Scoprire';
+
+  @override
+  String get tasteEditorGoalSocial => 'Sociale';
+
+  @override
+  String get tasteEditorGoalValue => 'Valore';
+
+  @override
+  String get authLoginWelcomeBack => 'Bentornato';
+
+  @override
+  String get authLoginCreateAccount => 'Crea il tuo account';
+
+  @override
+  String get authLoginDisplayNameLabel => 'Nome visualizzato';
+
+  @override
+  String get authLoginEmailLabel => 'E-mail';
+
+  @override
+  String get authLoginPasswordLabel => 'Password';
+
+  @override
+  String get authLoginConfirmPasswordLabel => 'Conferma password';
+
+  @override
+  String get authLoginDisplayNameMin => 'Min 2 caratteri';
+
+  @override
+  String get authLoginDisplayNameMax => 'Max 30 caratteri';
+
+  @override
+  String get authLoginEmailInvalid => 'E-mail valida richiesta';
+
+  @override
+  String get authLoginPasswordMin => 'Min 8 caratteri';
+
+  @override
+  String get authLoginPasswordRequired => 'Inserisci la password';
+
+  @override
+  String get authLoginPasswordsDontMatch => 'Le password non coincidono';
+
+  @override
+  String get authLoginForgotPassword => 'Password dimenticata?';
+
+  @override
+  String get authLoginEnterValidEmailFirst =>
+      'Inserisci prima un\'e-mail valida sopra.';
+
+  @override
+  String get authLoginSignUpFailedFallback =>
+      'Impossibile creare l\'account. Riprova.';
+
+  @override
+  String get authLoginSignInFailedFallback =>
+      'Accesso fallito. Controlla i dati.';
+
+  @override
+  String get authLoginCreateAccountButton => 'Crea account';
+
+  @override
+  String get authLoginSignInButton => 'Accedi';
+
+  @override
+  String get authLoginToggleHaveAccount => 'Hai già un account? Accedi';
+
+  @override
+  String get authLoginToggleNoAccount => 'Non hai un account? Registrati';
+
+  @override
+  String get authOrDivider => 'oppure';
+
+  @override
+  String get authGoogleContinue => 'Continua con Google';
+
+  @override
+  String get authGoogleFailed => 'Accesso con Google fallito. Riprova.';
+
+  @override
+  String get authConfTitleReset => 'Link di reset inviato';
+
+  @override
+  String get authConfTitleSignup => 'Controlla la tua casella';
+
+  @override
+  String get authConfIntroReset => 'Abbiamo inviato un link di reset a';
+
+  @override
+  String get authConfIntroSignup => 'Abbiamo inviato un link di conferma a';
+
+  @override
+  String get authConfOutroReset => '.\nTocca per impostare una nuova password.';
+
+  @override
+  String get authConfOutroSignup => '.\nTocca per attivare il tuo account.';
+
+  @override
+  String get authConfOpenMailApp => 'Apri app mail';
+
+  @override
+  String get authConfResendEmail => 'Rinvia e-mail';
+
+  @override
+  String get authConfResendSending => 'Invio…';
+
+  @override
+  String authConfResendIn(int seconds) {
+    return 'Rinvia tra ${seconds}s';
+  }
+
+  @override
+  String get authConfEmailSent => 'E-mail inviata.';
+
+  @override
+  String get authConfResendFailedFallback => 'Invio fallito. Riprova tra poco.';
+
+  @override
+  String get authConfBackToSignIn => 'Torna all\'accesso';
+
+  @override
+  String get authResetTitle => 'Imposta una nuova password';
+
+  @override
+  String get authResetSubtitle => 'Scegli una password che non hai mai usato.';
+
+  @override
+  String get authResetNewPasswordLabel => 'Nuova password';
+
+  @override
+  String get authResetConfirmPasswordLabel => 'Conferma password';
+
+  @override
+  String get authResetPasswordMin => 'Min 6 caratteri';
+
+  @override
+  String get authResetPasswordsDontMatch => 'Le password non coincidono';
+
+  @override
+  String get authResetFailedFallback =>
+      'Impossibile aggiornare la password. Riprova.';
+
+  @override
+  String get authResetUpdateButton => 'Aggiorna password';
+
+  @override
+  String get authResetUpdatedSnack => 'Password aggiornata.';
+
+  @override
+  String get authProfileGuest => 'Ospite';
+
+  @override
+  String get authProfileSectionAccount => 'Account';
+
+  @override
+  String get authProfileSectionSupport => 'Supporto';
+
+  @override
+  String get authProfileSectionLegal => 'Note legali';
+
+  @override
+  String get authProfileEditProfile => 'Modifica profilo';
+
+  @override
+  String get authProfileFriends => 'Amici';
+
+  @override
+  String get authProfileNotifications => 'Notifiche';
+
+  @override
+  String get authProfileCleanupDuplicates => 'Pulisci duplicati';
+
+  @override
+  String get authProfileSubscription => 'Abbonamento';
+
+  @override
+  String get authProfileChangePassword => 'Cambia password';
+
+  @override
+  String get authProfileContactUs => 'Contattaci';
+
+  @override
+  String get authProfileRateSippd => 'Valuta Sippd';
+
+  @override
+  String get authProfilePrivacyPolicy => 'Informativa privacy';
+
+  @override
+  String get authProfileTermsOfService => 'Termini di servizio';
+
+  @override
+  String get authProfileSignOut => 'Esci';
+
+  @override
+  String get authProfileSignIn => 'Accedi';
+
+  @override
+  String get authProfileDeleteAccount => 'Elimina account';
+
+  @override
+  String get authProfileViewFullStats => 'Vedi tutte le stats';
+
+  @override
+  String get authProfileChangePasswordDialogTitle => 'Cambiare password?';
+
+  @override
+  String authProfileChangePasswordDialogBody(String email) {
+    return 'Invieremo un link di reset a $email. Toccalo dalla casella per impostare una nuova password.';
+  }
+
+  @override
+  String get authProfileCancel => 'Annulla';
+
+  @override
+  String get authProfileSendLink => 'Invia link';
+
+  @override
+  String get authProfileSendLinkFailedTitle => 'Impossibile inviare il link';
+
+  @override
+  String get authProfileSendLinkFailedFallback => 'Riprova tra poco.';
+
+  @override
+  String get authProfileOk => 'OK';
+
+  @override
+  String authProfileCouldNotOpen(String url) {
+    return 'Impossibile aprire $url';
+  }
+
+  @override
+  String get authProfileDeleteDialogTitle => 'Eliminare l\'account?';
+
+  @override
+  String get authProfileDeleteDialogBody =>
+      'Questo elimina in modo permanente profilo, vini, valutazioni, degustazioni, gruppi e amici. Non può essere annullato.';
+
+  @override
+  String get authProfileDeleteTypeConfirm => 'Scrivi DELETE per confermare:';
+
+  @override
+  String get authProfileDeleteHint => 'DELETE';
+
+  @override
+  String get authProfileDelete => 'Elimina';
+
+  @override
+  String get authProfileDeleteFailedFallback => 'Eliminazione fallita.';
+
+  @override
+  String get winesListSubtitle => 'La tua classifica vini';
+
+  @override
+  String get winesListSortRating => 'Ordina: voto';
+
+  @override
+  String get winesListSortRecent => 'Ordina: recenti';
+
+  @override
+  String get winesListSortName => 'Ordina: nome';
+
+  @override
+  String get winesListTooltipStats => 'Le tue stats';
+
+  @override
+  String get winesListTooltipAddWine => 'Aggiungi vino';
+
+  @override
+  String get winesListErrorLoad => 'Non sono riuscito a caricare i vini';
+
+  @override
+  String get winesEmptyTitle => 'Ancora nessun vino';
+
+  @override
+  String get winesEmptyFilteredTitle => 'Nessun vino corrisponde al filtro';
+
+  @override
+  String get winesEmptyFilteredBody => 'Prova un altro filtro';
+
+  @override
+  String get winesEmptyAddWineCta => 'Aggiungi vino';
+
+  @override
+  String get winesAddSaveLabel => 'Salva vino';
+
+  @override
+  String get winesAddDiscardTitle => 'Scartare il vino?';
+
+  @override
+  String get winesAddDiscardBody =>
+      'Non hai ancora salvato questo vino. Uscendo ora perderai le modifiche.';
+
+  @override
+  String get winesAddDiscardKeepEditing => 'Continua a modificare';
+
+  @override
+  String get winesAddDiscardConfirm => 'Scarta';
+
+  @override
+  String get winesAddDuplicateTitle => 'Sembra un duplicato';
+
+  @override
+  String winesAddDuplicateBody(String name) {
+    return 'Hai già registrato «$name» con la stessa annata, cantina e uva. Apri la voce esistente o aggiungine comunque una nuova?';
+  }
+
+  @override
+  String get winesAddDuplicateCancel => 'Annulla';
+
+  @override
+  String get winesAddDuplicateAddAnyway => 'Aggiungi comunque';
+
+  @override
+  String get winesAddDuplicateOpenExisting => 'Apri esistente';
+
+  @override
+  String get winesDetailNotFound => 'Vino non trovato';
+
+  @override
+  String get winesDetailErrorLoad => 'Non sono riuscito a caricare il vino';
+
+  @override
+  String get winesDetailMenuCompare => 'Confronta con…';
+
+  @override
+  String get winesDetailMenuShareRating => 'Condividi voto';
+
+  @override
+  String get winesDetailMenuShareToGroup => 'Condividi nel gruppo';
+
+  @override
+  String get winesDetailMenuEdit => 'Modifica vino';
+
+  @override
+  String get winesDetailMenuTastingNotesPro => 'Note di degustazione (Pro)';
+
+  @override
+  String get winesDetailMenuDelete => 'Elimina vino';
+
+  @override
+  String get winesDetailStatRating => 'Voto';
+
+  @override
+  String get winesDetailStatRatingUnit => '/ 10';
+
+  @override
+  String get winesDetailStatPrice => 'Prezzo';
+
+  @override
+  String get winesDetailStatRegion => 'Regione';
+
+  @override
+  String get winesDetailStatCountry => 'Paese';
+
+  @override
+  String get winesDetailSectionNotes => 'NOTE';
+
+  @override
+  String get winesDetailSectionPlace => 'LUOGO';
+
+  @override
+  String get winesDetailPlaceEmpty => 'Nessun luogo';
+
+  @override
+  String get winesDetailDeleteTitle => 'Eliminare il vino?';
+
+  @override
+  String get winesDetailDeleteBody => 'Non si può annullare.';
+
+  @override
+  String get winesDetailDeleteCancel => 'Annulla';
+
+  @override
+  String get winesDetailDeleteConfirm => 'Elimina';
+
+  @override
+  String get winesEditErrorLoad => 'Non sono riuscito a caricare il vino';
+
+  @override
+  String get winesEditErrorMemories => 'Non sono riuscito a caricare i ricordi';
+
+  @override
+  String get winesEditNotFound => 'Vino non trovato';
+
+  @override
+  String get winesCleanupTitle => 'Pulisci duplicati';
+
+  @override
+  String get winesCleanupErrorLoad =>
+      'Non sono riuscito a caricare i duplicati';
+
+  @override
+  String get winesCleanupEmptyTitle => 'Nessun duplicato da pulire';
+
+  @override
+  String get winesCleanupEmptyBody =>
+      'I tuoi vini sono in ordine. Controlliamo automaticamente nomi e cantine quasi identici.';
+
+  @override
+  String winesCleanupMatchPct(int pct) {
+    return '$pct% match';
+  }
+
+  @override
+  String get winesCleanupKeepA => 'Tieni A';
+
+  @override
+  String get winesCleanupKeepB => 'Tieni B';
+
+  @override
+  String get winesCleanupSkippedSnack =>
+      'Saltato per ora — riapparirà al prossimo accesso.';
+
+  @override
+  String get winesCleanupDifferentWines => 'Sono vini diversi';
+
+  @override
+  String winesCleanupMergeTitle(String name) {
+    return 'Unire in «$name»?';
+  }
+
+  @override
+  String winesCleanupMergeBody(String loser, String keeper) {
+    return 'Ogni voto, condivisione di gruppo e statistica che puntava a «$loser» passerà a «$keeper». Non si può annullare.';
+  }
+
+  @override
+  String get winesCleanupMergeCancel => 'Annulla';
+
+  @override
+  String get winesCleanupMergeConfirm => 'Unisci';
+
+  @override
+  String winesCleanupMergeSuccess(String name) {
+    return 'Unito in «$name».';
+  }
+
+  @override
+  String get winesCleanupMergeFailedFallback => 'Unione fallita.';
+
+  @override
+  String get winesCompareHeader => 'CONFRONTA';
+
+  @override
+  String get winesComparePickerSubtitle => 'Scegli il secondo vino.';
+
+  @override
+  String get winesComparePickerEmptyTitle => 'Ancora nessun altro vino';
+
+  @override
+  String get winesComparePickerEmptyBody =>
+      'Aggiungi almeno un altro vino per confrontare.';
+
+  @override
+  String get winesComparePickerErrorFallback =>
+      'Non sono riuscito a caricare i vini.';
+
+  @override
+  String get winesCompareMissingSameWine =>
+      'Scegli un vino diverso da confrontare.';
+
+  @override
+  String get winesCompareMissingDefault =>
+      'Non sono riuscito a caricare entrambi i vini.';
+
+  @override
+  String get winesCompareErrorFallback =>
+      'Non sono riuscito a caricare i vini.';
+
+  @override
+  String get winesCompareSectionAtAGlance => 'A colpo d’occhio';
+
+  @override
+  String get winesCompareSectionTasting => 'Profilo di degustazione';
+
+  @override
+  String get winesCompareSectionTastingSubtitle =>
+      'Corpo, tannino, acidità, dolcezza, legno, finale.';
+
+  @override
+  String get winesCompareSectionNotes => 'Note';
+
+  @override
+  String get winesCompareAttrType => 'TIPO';
+
+  @override
+  String get winesCompareAttrVintage => 'ANNATA';
+
+  @override
+  String get winesCompareAttrGrape => 'UVA';
+
+  @override
+  String get winesCompareAttrOrigin => 'ORIGINE';
+
+  @override
+  String get winesCompareAttrPrice => 'PREZZO';
+
+  @override
+  String get winesCompareNotesEyebrow => 'NOTE';
+
+  @override
+  String winesCompareSlotWineLabel(String slot) {
+    return 'VINO $slot';
+  }
+
+  @override
+  String get winesCompareVs => 'VS';
+
+  @override
+  String get winesCompareTastingLockedBody =>
+      'Vedi corpo, tannino, acidità e altro a confronto.';
+
+  @override
+  String get winesCompareTastingPro => 'PRO';
+
+  @override
+  String get winesCompareTastingUnlockCta => 'Sblocca con Pro';
+
+  @override
+  String get winesCompareTastingEmpty =>
+      'Aggiungi note di degustazione a uno dei due vini per vederle confrontate qui.';
+
+  @override
+  String get winesFormHintName => 'Nome del vino';
+
+  @override
+  String get winesFormSubmitDefault => 'Salva vino';
+
+  @override
+  String get winesFormPhotoLabel => 'Foto';
+
+  @override
+  String get winesFormStatRating => 'Voto';
+
+  @override
+  String get winesFormStatRatingUnit => '/ 10';
+
+  @override
+  String get winesFormStatPrice => 'Prezzo';
+
+  @override
+  String get winesFormStatPriceUnit => 'EUR';
+
+  @override
+  String get winesFormStatRegion => 'Regione';
+
+  @override
+  String get winesFormStatCountry => 'Paese';
+
+  @override
+  String get winesFormChipWinery => 'Cantina';
+
+  @override
+  String get winesFormChipGrape => 'Uva';
+
+  @override
+  String get winesFormChipYear => 'Anno';
+
+  @override
+  String get winesFormChipNotes => 'Note';
+
+  @override
+  String get winesFormChipNotesFilled => 'Note ✓';
+
+  @override
+  String get winesFormPlaceTapToAdd => 'Tocca per aggiungere il luogo';
+
+  @override
+  String get winesFormWineryTitle => 'Cantina';
+
+  @override
+  String get winesFormWineryHint => 'es. Château Margaux';
+
+  @override
+  String get winesFormNotesTitle => 'Note di degustazione';
+
+  @override
+  String get winesFormNotesHint => 'Aromi, corpo, finale…';
+
+  @override
+  String get winesFormTypeRed => 'Rosso';
+
+  @override
+  String get winesFormTypeWhite => 'Bianco';
+
+  @override
+  String get winesFormTypeRose => 'Rosato';
+
+  @override
+  String get winesFormTypeSparkling => 'Spumante';
+
+  @override
+  String get winesMemoriesHeader => 'Ricordi';
+
+  @override
+  String winesMemoriesHeaderWithCount(int count) {
+    return 'Ricordi ($count)';
+  }
+
+  @override
+  String get winesMemoriesAddTile => 'Aggiungi';
+
+  @override
+  String get winesMemoriesRemoveTitle => 'Rimuovere il ricordo?';
+
+  @override
+  String get winesMemoriesRemoveBody => 'Verrà tolta questa foto dal vino.';
+
+  @override
+  String get winesMemoriesRemoveCancel => 'Annulla';
+
+  @override
+  String get winesMemoriesRemoveConfirm => 'Rimuovi';
+
+  @override
+  String get winesPhotoSourceTake => 'Scatta foto';
+
+  @override
+  String get winesPhotoSourceGallery => 'Scegli dalla galleria';
+
+  @override
+  String get winesGrapeSheetTitle => 'Vitigno';
+
+  @override
+  String get winesGrapeSheetHint => 'es. Pinot Noir';
+
+  @override
+  String get winesGrapeSheetUseFreetextPrefix => 'Usa «';
+
+  @override
+  String get winesGrapeSheetUseFreetextSuffix => '» come personalizzato';
+
+  @override
+  String get winesGrapeSheetEmpty => 'Ancora nessuna uva disponibile.';
+
+  @override
+  String get winesGrapeSheetErrorLoad =>
+      'Non sono riuscito a caricare il catalogo uve.';
+
+  @override
+  String get winesGrapeSheetUseTyped => 'Usa quello che ho scritto';
+
+  @override
+  String get winesRegionSheetTitle => 'Regione vinicola';
+
+  @override
+  String winesRegionSheetSubtitle(String country) {
+    return 'Scegli da quale parte di $country viene il vino — o salta se non sei sicuro.';
+  }
+
+  @override
+  String get winesRegionSheetSkip => 'Salta';
+
+  @override
+  String get winesRegionSheetSearchHint => 'Cerca regione…';
+
+  @override
+  String get winesRegionSheetClear => 'Rimuovi regione';
+
+  @override
+  String get winesRegionSheetOther => 'Altra regione…';
+
+  @override
+  String get winesRegionSheetOtherTitle => 'Regione';
+
+  @override
+  String get winesRegionSheetOtherHint => 'es. Côtes Catalanes';
+
+  @override
+  String get winesCountrySheetSearchHint => 'Cerca paese…';
+
+  @override
+  String get winesCountrySheetTopHeader => 'Top paesi vinicoli';
+
+  @override
+  String get winesCountrySheetOtherHeader => 'Altri paesi';
+
+  @override
+  String get winesRatingSheetSaveCta => 'Salva voto';
+
+  @override
+  String get winesRatingSheetCancel => 'Annulla';
+
+  @override
+  String get winesRatingSheetSaveError => 'Non riesco a salvare.';
+
+  @override
+  String get winesRatingHeaderLabel => 'IL TUO VOTO';
+
+  @override
+  String get winesRatingChipTasting => 'Note di degustazione';
+
+  @override
+  String get winesRatingInputLabel => 'Voto';
+
+  @override
+  String get winesRatingInputMin => '0';
+
+  @override
+  String get winesRatingInputMax => '10';
+
+  @override
+  String get winesExpertSheetSaveFirstSnack =>
+      'Salva prima il vino — le note di degustazione si collegano all’ID canonico.';
+
+  @override
+  String get winesExpertSheetTitle => 'Note di degustazione';
+
+  @override
+  String get winesExpertSheetSubtitle => 'Percezioni stile WSET';
+
+  @override
+  String get winesExpertSheetSave => 'Salva';
+
+  @override
+  String get winesExpertAxisBody => 'Corpo';
+
+  @override
+  String get winesExpertAxisTannin => 'Tannino';
+
+  @override
+  String get winesExpertAxisAcidity => 'Acidità';
+
+  @override
+  String get winesExpertAxisSweetness => 'Dolcezza';
+
+  @override
+  String get winesExpertAxisOak => 'Legno';
+
+  @override
+  String get winesExpertAxisFinish => 'Finale';
+
+  @override
+  String get winesExpertAxisAromas => 'Aromi';
+
+  @override
+  String get winesExpertBodyLow => 'leggero';
+
+  @override
+  String get winesExpertBodyHigh => 'pieno';
+
+  @override
+  String get winesExpertTanninLow => 'morbido';
+
+  @override
+  String get winesExpertTanninHigh => 'deciso';
+
+  @override
+  String get winesExpertAcidityLow => 'morbida';
+
+  @override
+  String get winesExpertAcidityHigh => 'fresca';
+
+  @override
+  String get winesExpertSweetnessLow => 'secco';
+
+  @override
+  String get winesExpertSweetnessHigh => 'dolce';
+
+  @override
+  String get winesExpertOakLow => 'senza legno';
+
+  @override
+  String get winesExpertOakHigh => 'intenso';
+
+  @override
+  String get winesExpertFinishShort => 'Corto';
+
+  @override
+  String get winesExpertFinishMedium => 'Medio';
+
+  @override
+  String get winesExpertFinishLong => 'Lungo';
+
+  @override
+  String get winesExpertSummaryHeader => 'NOTE DI DEGUSTAZIONE';
+
+  @override
+  String get winesExpertSummaryAromasHeader => 'AROMI';
+
+  @override
+  String get winesExpertSummaryAxisBody => 'CORPO';
+
+  @override
+  String get winesExpertSummaryAxisTannin => 'TANNINO';
+
+  @override
+  String get winesExpertSummaryAxisAcidity => 'ACIDITÀ';
+
+  @override
+  String get winesExpertSummaryAxisSweetness => 'DOLCEZZA';
+
+  @override
+  String get winesExpertSummaryAxisOak => 'LEGNO';
+
+  @override
+  String get winesExpertSummaryAxisFinish => 'FINALE';
+
+  @override
+  String get winesExpertDescriptorBody1 => 'molto leggero';
+
+  @override
+  String get winesExpertDescriptorBody2 => 'leggero';
+
+  @override
+  String get winesExpertDescriptorBody3 => 'medio';
+
+  @override
+  String get winesExpertDescriptorBody4 => 'pieno';
+
+  @override
+  String get winesExpertDescriptorBody5 => 'pesante';
+
+  @override
+  String get winesExpertDescriptorTannin1 => 'setoso';
+
+  @override
+  String get winesExpertDescriptorTannin2 => 'morbido';
+
+  @override
+  String get winesExpertDescriptorTannin3 => 'medio';
+
+  @override
+  String get winesExpertDescriptorTannin4 => 'deciso';
+
+  @override
+  String get winesExpertDescriptorTannin5 => 'stringente';
+
+  @override
+  String get winesExpertDescriptorAcidity1 => 'piatta';
+
+  @override
+  String get winesExpertDescriptorAcidity2 => 'morbida';
+
+  @override
+  String get winesExpertDescriptorAcidity3 => 'equilibrata';
+
+  @override
+  String get winesExpertDescriptorAcidity4 => 'fresca';
+
+  @override
+  String get winesExpertDescriptorAcidity5 => 'tagliente';
+
+  @override
+  String get winesExpertDescriptorSweetness1 => 'molto secco';
+
+  @override
+  String get winesExpertDescriptorSweetness2 => 'secco';
+
+  @override
+  String get winesExpertDescriptorSweetness3 => 'abboccato';
+
+  @override
+  String get winesExpertDescriptorSweetness4 => 'dolce';
+
+  @override
+  String get winesExpertDescriptorSweetness5 => 'molto dolce';
+
+  @override
+  String get winesExpertDescriptorOak1 => 'senza legno';
+
+  @override
+  String get winesExpertDescriptorOak2 => 'sottile';
+
+  @override
+  String get winesExpertDescriptorOak3 => 'presente';
+
+  @override
+  String get winesExpertDescriptorOak4 => 'marcato';
+
+  @override
+  String get winesExpertDescriptorOak5 => 'intenso';
+
+  @override
+  String get winesExpertDescriptorFinish1 => 'corto';
+
+  @override
+  String get winesExpertDescriptorFinish2 => 'medio';
+
+  @override
+  String get winesExpertDescriptorFinish3 => 'lungo';
+
+  @override
+  String get winesCanonicalPromptTitle => 'Stesso vino?';
+
+  @override
+  String get winesCanonicalPromptBody =>
+      'Assomiglia a un vino già nel catalogo. Collegarli mantiene stats e match precisi.';
+
+  @override
+  String get winesCanonicalPromptInputLabel => 'Quello che stai aggiungendo';
+
+  @override
+  String get winesCanonicalPromptExistingLabel => 'GIÀ IN CATALOGO';
+
+  @override
+  String get winesCanonicalPromptDifferent => 'No, è un vino diverso';
+
+  @override
+  String get winesFriendRatingsHeader => 'AMICI CHE L’HANNO VOTATO';
+
+  @override
+  String get winesFriendRatingsFallback => 'Amico';
+
+  @override
+  String winesFriendRatingsMore(int count) {
+    return '+ $count altri';
+  }
+
+  @override
+  String get winesFriendRatingsUnit => '/ 10';
+
+  @override
+  String get winesTypeFilterAll => 'Tutti';
+
+  @override
+  String get winesTypeFilterRed => 'Rosso';
+
+  @override
+  String get winesTypeFilterWhite => 'Bianco';
+
+  @override
+  String get winesTypeFilterRose => 'Rosato';
+
+  @override
+  String get winesTypeFilterSparkling => 'Spumante';
+
+  @override
+  String get winesStatsHeader => 'STATS';
+
+  @override
+  String get winesStatsSubtitle => 'Il tuo viaggio nel vino, visualizzato';
+
+  @override
+  String get winesStatsPreviewBadge => 'ANTEPRIMA';
+
+  @override
+  String get winesStatsPreviewHint => 'Quello che vedrai dopo qualche voto.';
+
+  @override
+  String get winesStatsEmptyEyebrow => 'INIZIA';
+
+  @override
+  String get winesStatsEmptyTitle => 'Le tue stats partono da un voto';
+
+  @override
+  String get winesStatsEmptyBody =>
+      'Vota il tuo primo vino per dare vita a gusto, regioni e valore qui.';
+
+  @override
+  String get winesStatsEmptyCta => 'Vota un vino';
+
+  @override
+  String get winesStatsHeroLabel => 'LA TUA MEDIA';
+
+  @override
+  String get winesStatsHeroUnit => '/ 10';
+
+  @override
+  String get winesStatsHeroChipPersonal => 'personale';
+
+  @override
+  String get winesStatsHeroChipGroup => 'gruppo';
+
+  @override
+  String get winesStatsHeroChipTasting => 'degustazione';
+
+  @override
+  String get winesStatsSectionTypeBreakdown => 'Ripartizione per tipo';
+
+  @override
+  String get winesStatsSectionTypeBreakdownSubtitle =>
+      'Come si distribuisce il tuo gusto sui quattro stili.';
+
+  @override
+  String get winesStatsSectionTopRated => 'Più votati';
+
+  @override
+  String get winesStatsSectionTopRatedSubtitle => 'Il tuo podio personale.';
+
+  @override
+  String get winesStatsSectionTimeline => 'Timeline';
+
+  @override
+  String get winesStatsSectionTimelineSubtitle =>
+      'Mese per mese, i vini che hanno scritto il tuo anno.';
+
+  @override
+  String get winesStatsSectionPartners => 'Compagni di degustazione';
+
+  @override
+  String get winesStatsSectionPartnersSubtitle => 'Con chi degusti di più.';
+
+  @override
+  String get winesStatsSectionPrices => 'Prezzi e valore';
+
+  @override
+  String get winesStatsSectionPricesSubtitle =>
+      'Somma dei prezzi bottiglia registrati sui vini votati — non spesa reale di consumo.';
+
+  @override
+  String get winesStatsSectionPlaces => 'Dove hai bevuto vino';
+
+  @override
+  String get winesStatsSectionPlacesSubtitle =>
+      'Ogni vino che hai registrato con un luogo.';
+
+  @override
+  String get winesStatsSectionRegions => 'Top regioni';
+
+  @override
+  String get winesStatsSectionRegionsSubtitle =>
+      'Da dove vengono la maggior parte delle tue bottiglie.';
+
+  @override
+  String get winesStatsPartnersErrorTitle =>
+      'Non sono riuscito a caricare i compagni';
+
+  @override
+  String get winesStatsPartnersErrorBody => 'Tira giù o riprova fra poco.';
+
+  @override
+  String get winesStatsPartnersEmptyTitle => 'Degustate insieme';
+
+  @override
+  String get winesStatsPartnersEmptyBody =>
+      'Quando tu e un amico votate lo stesso vino in un gruppo, comparirà qui.';
+
+  @override
+  String get winesStatsPartnersCta => 'Apri gruppi';
+
+  @override
+  String get winesStatsPriceEmptyTitle => 'Aggiungi un prezzo';
+
+  @override
+  String get winesStatsPriceEmptyBody =>
+      'Registra quanto hai pagato per sbloccare spesa, costo medio e best value.';
+
+  @override
+  String get winesStatsPriceEmptyCta => 'Modifica un vino';
+
+  @override
+  String get winesStatsPlacesEmptyTitle => 'Aggiungi un luogo';
+
+  @override
+  String get winesStatsPlacesEmptyBody =>
+      'Metti un pin su un vino per mappare dove bevi — bar, cene, viaggi.';
+
+  @override
+  String get winesStatsPlacesEmptyCta => 'Modifica un vino';
+
+  @override
+  String get winesStatsRegionsEmptyTitle => 'Aggiungi una regione';
+
+  @override
+  String get winesStatsRegionsEmptyBody =>
+      'Tagga i vini con regione o paese per vedere dove pende il tuo gusto.';
+
+  @override
+  String get winesStatsRegionsEmptyCta => 'Modifica un vino';
+
+  @override
+  String get winesStatsPartnersHint =>
+      'Conta vini votati insieme nei gruppi condivisi.';
+
+  @override
+  String get winesStatsPartnersFallback => 'Amico di vino';
+
+  @override
+  String get winesStatsSpendingLabel => 'PORTAFOGLIO VOTATO';
+
+  @override
+  String winesStatsSpendingSummary(int count, String avg) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count vini con prezzo',
+      one: '1 vino con prezzo',
+    );
+    return 'su $_temp0 · media $avg';
+  }
+
+  @override
+  String get winesStatsSpendingMostExpensive => 'Più caro';
+
+  @override
+  String get winesStatsSpendingBestValue => 'Miglior rapporto';
+
+  @override
+  String winesStatsRegionsMore(int count) {
+    return '+ $count altre';
+  }
+
+  @override
+  String get winesStatsProLockTitle => 'Sblocca 3 insight in più';
+
+  @override
+  String get winesStatsProLockBody =>
+      'Vedi da dove arrivano le tue bottiglie, quanto spendi e su quali regioni punti di più.';
+
+  @override
+  String get winesStatsProLockPillPrices => 'Prezzi';
+
+  @override
+  String get winesStatsProLockPillWhere => 'Dove';
+
+  @override
+  String get winesStatsProLockPillRegions => 'Top regioni';
+
+  @override
+  String get winesStatsProLockCta => 'Sblocca con Pro';
+
+  @override
+  String get winesStatsTimelineEarlierOne => '+ 1 mese precedente';
+
+  @override
+  String winesStatsTimelineEarlierMany(int count) {
+    return '+ $count mesi precedenti';
+  }
+
+  @override
+  String winesStatsTimelineWines(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count vini',
+      one: '1 vino',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String winesStatsMapPlacesLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count luoghi',
+      one: '1 luogo',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get winesStatsMapClose => 'Chiudi';
+
+  @override
+  String get winesStatsTypeBreakdownTotalOne => 'vino';
+
+  @override
+  String get winesStatsTypeBreakdownTotalMany => 'vini';
+
+  @override
+  String get winesStatsTypeBreakdownMostDrunk => 'Più bevuto';
+
+  @override
+  String get winesStatsTypeBreakdownTopRated => 'Più votato';
+
+  @override
+  String get tastingCreateHeader => 'NUOVA DEGUSTAZIONE';
+
+  @override
+  String get tastingEditHeader => 'MODIFICA DEGUSTAZIONE';
+
+  @override
+  String get tastingFieldTitleLabel => 'Titolo';
+
+  @override
+  String get tastingFieldDateLabel => 'Data';
+
+  @override
+  String get tastingFieldTimeLabel => 'Ora';
+
+  @override
+  String get tastingFieldPlaceLabel => 'Luogo';
+
+  @override
+  String get tastingFieldDescriptionLabel => 'Descrizione';
+
+  @override
+  String get tastingFieldTapToAdd => 'Tocca per aggiungere';
+
+  @override
+  String get tastingFieldOpenLineupLabel => 'Lineup aperto';
+
+  @override
+  String get tastingFieldOpenLineupHint =>
+      'Aggiungi i vini man mano che arrivano';
+
+  @override
+  String get tastingTitleSheetTitle => 'Titolo della degustazione';
+
+  @override
+  String get tastingTitleSheetHint => 'es. Serata Barolo';
+
+  @override
+  String get tastingDescriptionSheetTitle => 'Descrizione';
+
+  @override
+  String get tastingDescriptionSheetHint => 'Di cosa si tratta?';
+
+  @override
+  String get tastingCreateSubmitCta => 'Crea degustazione';
+
+  @override
+  String get tastingEditSubmitCta => 'Salva modifiche';
+
+  @override
+  String get tastingCreateFailedSnack => 'Impossibile creare la degustazione';
+
+  @override
+  String get tastingUpdateFailedSnack =>
+      'Impossibile aggiornare la degustazione';
+
+  @override
+  String get tastingDetailNotFound => 'Degustazione non trovata';
+
+  @override
+  String get tastingDetailErrorLoad => 'Impossibile caricare la degustazione';
+
+  @override
+  String get tastingDetailMenuAddToCalendar => 'Aggiungi al calendario';
+
+  @override
+  String get tastingDetailMenuShare => 'Condividi';
+
+  @override
+  String get tastingDetailMenuEdit => 'Modifica degustazione';
+
+  @override
+  String get tastingDetailMenuCancel => 'Annulla degustazione';
+
+  @override
+  String get tastingDetailCancelDialogTitle => 'Annullare la degustazione?';
+
+  @override
+  String get tastingDetailCancelDialogBody => 'Verrà rimossa per tutti.';
+
+  @override
+  String get tastingDetailCancelDialogKeep => 'Mantieni';
+
+  @override
+  String get tastingDetailCancelDialogConfirm => 'Annulla';
+
+  @override
+  String get tastingDetailEndDialogTitle => 'Terminare la degustazione?';
+
+  @override
+  String get tastingDetailEndDialogBody =>
+      'Questo blocca il recap. I partecipanti possono ancora aggiungere voti per un po’ dopo.';
+
+  @override
+  String get tastingDetailEndDialogKeep => 'Continua';
+
+  @override
+  String get tastingDetailEndDialogConfirm => 'Termina';
+
+  @override
+  String get tastingCalendarFailedSnack => 'Impossibile aprire il calendario';
+
+  @override
+  String get tastingLifecycleUpcoming => 'IN ARRIVO';
+
+  @override
+  String get tastingLifecycleLive => 'LIVE';
+
+  @override
+  String get tastingLifecycleConcluded => 'CONCLUSA';
+
+  @override
+  String get tastingLifecycleStartCta => 'Avvia degustazione';
+
+  @override
+  String get tastingLifecycleEndCta => 'Termina degustazione';
+
+  @override
+  String get tastingDetailSectionPeople => 'Persone';
+
+  @override
+  String get tastingDetailSectionPlace => 'Luogo';
+
+  @override
+  String get tastingDetailSectionWines => 'VINI';
+
+  @override
+  String get tastingDetailAddWines => 'Aggiungi vini';
+
+  @override
+  String get tastingDetailNoAttendees => 'Nessuno invitato per ora.';
+
+  @override
+  String get tastingDetailUnknownAttendee => 'Sconosciuto';
+
+  @override
+  String get tastingDetailRsvpYour => 'La tua risposta';
+
+  @override
+  String get tastingDetailRsvpGoing => 'Ci sono';
+
+  @override
+  String get tastingDetailRsvpMaybe => 'Forse';
+
+  @override
+  String get tastingDetailRsvpDeclined => 'No';
+
+  @override
+  String tastingDetailAttendeesCountGoing(int count) {
+    return '$count ci sono';
+  }
+
+  @override
+  String tastingDetailAttendeesCountMaybe(int count) {
+    return '$count forse';
+  }
+
+  @override
+  String tastingDetailAttendeesCountDeclined(int count) {
+    return '$count non vengono';
+  }
+
+  @override
+  String tastingDetailAttendeesCountPending(int count) {
+    return '$count in attesa';
+  }
+
+  @override
+  String get tastingDetailAttendeesSheetGoing => 'Ci sono';
+
+  @override
+  String get tastingDetailAttendeesSheetMaybe => 'Forse';
+
+  @override
+  String get tastingDetailAttendeesSheetDeclined => 'Non vengono';
+
+  @override
+  String get tastingDetailAttendeesSheetPending => 'In attesa';
+
+  @override
+  String get tastingEmptyOpenActiveTitle =>
+      'Il lineup si riempie strada facendo';
+
+  @override
+  String get tastingEmptyOpenActiveBody =>
+      'Chi partecipa può aggiungere bottiglie';
+
+  @override
+  String get tastingEmptyDefaultTitle => 'Nessun vino nel lineup';
+
+  @override
+  String get tastingEmptyOpenUpcomingHost =>
+      'I vini si potranno aggiungere quando inizia la degustazione';
+
+  @override
+  String get tastingEmptyOpenUpcomingGuest =>
+      'I vini verranno aggiunti durante la serata';
+
+  @override
+  String get tastingEmptyPlannedHost =>
+      'Tocca «Aggiungi vini» per costruire il lineup';
+
+  @override
+  String get tastingEmptyPlannedGuest => 'L’host non ha ancora aggiunto vini';
+
+  @override
+  String get tastingRecapResultsHeader => 'RISULTATI';
+
+  @override
+  String get tastingRecapShareCta => 'Condividi recap';
+
+  @override
+  String get tastingRecapTopWineEyebrow => 'VINO DELLA SERATA';
+
+  @override
+  String get tastingRecapEmpty =>
+      'Ancora nessuna valutazione per questa degustazione.';
+
+  @override
+  String get tastingRecapRowNoRatings => 'nessuna valutazione';
+
+  @override
+  String get tastingRecapGroupFallback => 'Degustazione di gruppo';
+
+  @override
+  String get tastingPickerSheetTitle => 'Aggiungi vini al lineup';
+
+  @override
+  String get tastingPickerEmpty => 'Non hai ancora vini.';
+
+  @override
+  String get tastingPickerErrorFallback => 'Impossibile caricare i vini.';
+
+  @override
+  String get tastingPickerSubmitDefault => 'Aggiungi vini';
+
+  @override
+  String tastingPickerSubmitWithCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Aggiungi $count vini',
+      one: 'Aggiungi 1 vino',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get tastingPickerAddedChip => 'Aggiunto';
+
+  @override
+  String get groupListHeader => 'GRUPPI';
+
+  @override
+  String get groupListSubtitle => 'Degusta in compagnia';
+
+  @override
+  String get groupListSortRecent => 'Ordina: recenti';
+
+  @override
+  String get groupListSortName => 'Ordina: nome';
+
+  @override
+  String get groupListCreateTooltip => 'Crea gruppo';
+
+  @override
+  String get groupListJoinTitle => 'Unisciti a un gruppo';
+
+  @override
+  String get groupListJoinSubtitle => 'Inserisci un codice di invito';
+
+  @override
+  String get groupListJoinNotFound => 'Gruppo non trovato';
+
+  @override
+  String get groupListErrorLoad => 'Impossibile caricare i gruppi';
+
+  @override
+  String get groupListEmptyTitle => 'Nessun gruppo ancora';
+
+  @override
+  String get groupListEmptyBody =>
+      'Crea o unisciti a uno per condividere i vini';
+
+  @override
+  String get groupListEmptyCta => 'Crea gruppo';
+
+  @override
+  String get groupCreateSourceCamera => 'Fotocamera';
+
+  @override
+  String get groupCreateSourceGallery => 'Galleria';
+
+  @override
+  String get groupCreateSourceRemovePhoto => 'Rimuovi foto';
+
+  @override
+  String get groupCreatePickFailedFallback => 'Selezione fallita.';
+
+  @override
+  String get groupCreateUploadFailedFallback => 'Caricamento foto fallito.';
+
+  @override
+  String get groupCreateFailedFallback =>
+      'Impossibile creare il gruppo. Riprova.';
+
+  @override
+  String groupCreateSaveFailed(String error) {
+    return 'Salvataggio fallito: $error';
+  }
+
+  @override
+  String get groupCreateTitle => 'Nuovo gruppo';
+
+  @override
+  String get groupCreateNameHint => 'Nome del gruppo';
+
+  @override
+  String get groupCreateSubmit => 'Crea';
+
+  @override
+  String get groupJoinTitle => 'Codice di invito';
+
+  @override
+  String get groupJoinHint => 'es. a1b2c3d4';
+
+  @override
+  String get groupJoinSubmit => 'Unisciti';
+
+  @override
+  String get groupDetailNotFound => 'Gruppo non trovato';
+
+  @override
+  String get groupDetailErrorLoad => 'Impossibile caricare il gruppo';
+
+  @override
+  String get groupDetailSectionSharedWines => 'Vini condivisi';
+
+  @override
+  String get groupDetailSectionTastings => 'Degustazioni';
+
+  @override
+  String get groupDetailActionShare => 'Condividi';
+
+  @override
+  String get groupDetailActionPlan => 'Pianifica';
+
+  @override
+  String get groupDetailMenuEdit => 'Modifica gruppo';
+
+  @override
+  String get groupDetailMenuDelete => 'Elimina gruppo';
+
+  @override
+  String get groupDetailMenuLeave => 'Abbandona gruppo';
+
+  @override
+  String get groupDetailLeaveDialogTitle => 'Lasciare il gruppo?';
+
+  @override
+  String get groupDetailLeaveDialogBody =>
+      'Puoi rientrare in seguito con il codice di invito.';
+
+  @override
+  String get groupDetailLeaveDialogCancel => 'Annulla';
+
+  @override
+  String get groupDetailLeaveDialogConfirm => 'Esci';
+
+  @override
+  String get groupDetailDeleteDialogTitle => 'Eliminare il gruppo?';
+
+  @override
+  String get groupDetailDeleteDialogBody =>
+      'Il gruppo e i vini condivisi verranno rimossi per tutti.';
+
+  @override
+  String get groupDetailDeleteDialogCancel => 'Annulla';
+
+  @override
+  String get groupDetailDeleteDialogConfirm => 'Elimina';
+
+  @override
+  String get groupSettingsEditTitle => 'Modifica gruppo';
+
+  @override
+  String get groupSettingsNameLabel => 'Nome';
+
+  @override
+  String get groupSettingsSourceCamera => 'Fotocamera';
+
+  @override
+  String get groupSettingsSourceGallery => 'Galleria';
+
+  @override
+  String get groupSettingsRemovePhoto => 'Rimuovi foto';
+
+  @override
+  String get groupSettingsUploadFailedFallback => 'Caricamento fallito.';
+
+  @override
+  String get groupSettingsDeleteFailedFallback => 'Eliminazione fallita.';
+
+  @override
+  String groupSettingsSaveFailed(String error) {
+    return 'Salvataggio fallito: $error';
+  }
+
+  @override
+  String get groupSettingsSave => 'Salva';
+
+  @override
+  String get groupInviteEyebrow => 'INVITO';
+
+  @override
+  String get groupInviteFriendsEyebrow => 'INVITA AMICI';
+
+  @override
+  String get groupInviteCodeCopied => 'Codice di invito copiato';
+
+  @override
+  String groupInviteShareMessage(String groupName, String url, String code) {
+    return 'Unisciti a «$groupName» su Sippd 🍷\n\n$url\n\nOppure inserisci il codice: $code';
+  }
+
+  @override
+  String groupInviteShareSubject(String groupName) {
+    return 'Unisciti a $groupName su Sippd';
+  }
+
+  @override
+  String get groupInviteActionCopy => 'Copia codice';
+
+  @override
+  String get groupInviteActionShare => 'Condividi link';
+
+  @override
+  String get groupInviteFriendsEmpty => 'Nessun amico disponibile da invitare.';
+
+  @override
+  String get groupInviteFriendsErrorLoad => 'Impossibile caricare gli amici';
+
+  @override
+  String get groupInviteFriendFallback => 'amico';
+
+  @override
+  String get groupInviteUnknownName => 'Sconosciuto';
+
+  @override
+  String groupInviteSentSnack(String name) {
+    return 'Invito inviato a $name';
+  }
+
+  @override
+  String get groupInviteSendFailedFallback => 'Impossibile inviare l\'invito.';
+
+  @override
+  String get groupInvitationsHeader => 'INVITI';
+
+  @override
+  String get groupInvitationsInviterFallback => 'Qualcuno';
+
+  @override
+  String groupInvitationsInvitedBy(String name) {
+    return 'Invitato da $name';
+  }
+
+  @override
+  String get groupInvitationsDecline => 'Rifiuta';
+
+  @override
+  String get groupInvitationsAccept => 'Accetta';
+
+  @override
+  String groupInvitationsJoinedSnack(String name) {
+    return 'Sei entrato in $name';
+  }
+
+  @override
+  String get groupInvitationsAcceptFailed => 'Impossibile accettare l\'invito';
+
+  @override
+  String get groupMembersCountOne => '1 membro';
+
+  @override
+  String groupMembersCountMany(int count) {
+    return '$count membri';
+  }
+
+  @override
+  String get groupMembersUnknown => 'Sconosciuto';
+
+  @override
+  String get groupMembersOwnerBadge => 'PROPRIETARIO';
+
+  @override
+  String get groupWineCarouselDetails => 'Dettagli';
+
+  @override
+  String get groupWineCarouselEmptyTitle => 'Nessun vino condiviso';
+
+  @override
+  String get groupWineCarouselEmptyBody =>
+      'Scegline uno dalla tua collezione per iniziare la lista.';
+
+  @override
+  String get groupWineCarouselEmptyCta => 'Condividi un vino';
+
+  @override
+  String get groupWineTypeRed => 'ROSSO';
+
+  @override
+  String get groupWineTypeWhite => 'BIANCO';
+
+  @override
+  String get groupWineTypeRose => 'ROSATO';
+
+  @override
+  String get groupWineTypeSparkling => 'SPUMANTE';
+
+  @override
+  String get groupWineRatingSaveFirstSnack =>
+      'Salva prima il vino: le note di degustazione si collegano a esso.';
+
+  @override
+  String get groupWineRatingNoCanonical =>
+      'Il vino non ha ancora un\'identità canonica. Riprova.';
+
+  @override
+  String get groupWineRatingNoCanonicalShort =>
+      'Il vino non ha ancora un\'identità canonica.';
+
+  @override
+  String get groupWineRatingNotesHint => 'Aggiungi una nota';
+
+  @override
+  String get groupWineRatingOfflineRetry => 'Offline · Riprova';
+
+  @override
+  String get groupWineRatingSaveFailedRetry => 'Salvataggio fallito · Riprova';
+
+  @override
+  String get groupWineRatingSaved => 'Salvato ✓';
+
+  @override
+  String get groupWineRatingSaveCta => 'Salva valutazione';
+
+  @override
+  String get groupWineRatingRemoveMine => 'Rimuovi la mia valutazione';
+
+  @override
+  String get groupWineRatingUnshareDialogTitle => 'Rimuovere dal gruppo?';
+
+  @override
+  String groupWineRatingUnshareDialogBody(String name) {
+    return '«$name» verrà rimosso da questo gruppo. Verranno cancellate anche le valutazioni dei membri.';
+  }
+
+  @override
+  String get groupWineRatingUnshareCancel => 'Annulla';
+
+  @override
+  String get groupWineRatingUnshareConfirm => 'Rimuovi';
+
+  @override
+  String get groupWineRatingMoreTooltip => 'Altro';
+
+  @override
+  String get groupWineRatingUnshareMenu => 'Rimuovi dal gruppo';
+
+  @override
+  String get groupWineRatingsTitle => 'Valutazioni';
+
+  @override
+  String get groupWineRatingsCountOne => '1 valutazione';
+
+  @override
+  String groupWineRatingsCountMany(int count) {
+    return '$count valutazioni';
+  }
+
+  @override
+  String get groupWineRatingsAvgLabel => 'media';
+
+  @override
+  String get groupWineRatingsBeFirst => 'Sii il primo a valutare';
+
+  @override
+  String get groupWineRatingsSoloMe => 'Sei il primo · invita altri a valutare';
+
+  @override
+  String get groupShareWineTitle => 'Condividi un vino';
+
+  @override
+  String get groupShareWineErrorLoad => 'Impossibile caricare i vini.';
+
+  @override
+  String get groupShareWineEmpty => 'Non hai ancora vini.';
+
+  @override
+  String get groupShareWineSharedChip => 'Condiviso';
+
+  @override
+  String get groupShareWineSheetTitle => 'Condividi con il gruppo';
+
+  @override
+  String get groupShareWineSheetEmpty => 'Non sei ancora in nessun gruppo.';
+
+  @override
+  String get groupShareWineSheetErrorLoad => 'Impossibile caricare i gruppi.';
+
+  @override
+  String get groupShareWineSheetAlreadyShared => 'Già condiviso';
+
+  @override
+  String groupShareWineSheetSharedSnack(String name) {
+    return 'Condiviso con $name';
+  }
+
+  @override
+  String get groupShareWineRowMemberOne => '1 membro';
+
+  @override
+  String groupShareWineRowMemberMany(int count) {
+    return '$count membri';
+  }
+
+  @override
+  String get groupShareWineRowWineOne => '1 vino';
+
+  @override
+  String groupShareWineRowWineMany(int count) {
+    return '$count vini';
+  }
+
+  @override
+  String get groupShareMatchTitle => 'Già in questo gruppo';
+
+  @override
+  String groupShareMatchBody(String name) {
+    return '«$name» sembra un vino che un membro ha già condiviso. È lo stesso vino?';
+  }
+
+  @override
+  String get groupShareMatchNone =>
+      'Nessuno di questi · condividi separatamente';
+
+  @override
+  String get groupShareMatchCancel => 'Annulla';
+
+  @override
+  String groupShareMatchSharedBy(String username) {
+    return 'Condiviso da @$username';
+  }
+
+  @override
+  String get groupFriendActionsInvite => 'Invita in un gruppo';
+
+  @override
+  String groupFriendActionsPickerTitle(String name) {
+    return 'Invita $name a…';
+  }
+
+  @override
+  String get groupFriendActionsPickerEmpty =>
+      'Nessun gruppo per invitare. Creane o unisciti prima a uno.';
+
+  @override
+  String get groupFriendActionsPickerErrorLoad =>
+      'Impossibile caricare i gruppi';
+
+  @override
+  String groupCalendarPastToggle(int count) {
+    return 'Degustazioni passate ($count)';
+  }
+
+  @override
+  String get groupCalendarEmptyTitle => 'Nessuna degustazione';
+
+  @override
+  String get groupCalendarEmptyBody =>
+      'Programmane una per riunire il gruppo attorno a una bottiglia.';
+
+  @override
+  String get groupCalendarEmptyCta => 'Pianifica una degustazione';
+
+  @override
+  String get groupWineDetailSectionRatings => 'VALUTAZIONI DEL GRUPPO';
+
+  @override
+  String get groupWineDetailEmptyRatings => 'Nessuna valutazione del gruppo.';
+
+  @override
+  String get groupWineDetailStatGroupAvg => 'Media gruppo';
+
+  @override
+  String get groupWineDetailStatRatings => 'Valutazioni';
+
+  @override
+  String get groupWineDetailStatNoRatings => 'Nessuna valutazione';
+
+  @override
+  String get groupWineDetailStatRegion => 'Regione';
+
+  @override
+  String get groupWineDetailStatCountry => 'Paese';
+
+  @override
+  String get groupWineDetailStatOrigin => 'Origine';
+
+  @override
+  String get groupWineDetailSharedByEyebrow => 'CONDIVISO DA';
+
+  @override
+  String get groupWineDetailSharerFallback => 'qualcuno';
+
+  @override
+  String get groupWineDetailMemberFallback => 'Membro';
+
+  @override
+  String get groupWineDetailRelJustNow => 'adesso';
+
+  @override
+  String groupWineDetailRelMinutes(int count) {
+    return '${count}m fa';
+  }
+
+  @override
+  String groupWineDetailRelHours(int count) {
+    return '${count}h fa';
+  }
+
+  @override
+  String groupWineDetailRelDays(int count) {
+    return '${count}g fa';
+  }
+
+  @override
+  String groupWineDetailRelWeeks(int count) {
+    return '${count}sett fa';
+  }
+
+  @override
+  String groupWineDetailRelMonths(int count) {
+    return '${count}mesi fa';
+  }
+
+  @override
+  String groupWineDetailRelYears(int count) {
+    return '${count}a fa';
+  }
+
+  @override
+  String get friendsHeader => 'AMICI';
+
+  @override
+  String get friendsSubtitle => 'Degusta con persone che conosci';
+
+  @override
+  String get friendsSearchHint => 'Cerca per username o nome';
+
+  @override
+  String get friendsSearchEmpty => 'Nessun utente trovato';
+
+  @override
+  String get friendsSearchErrorFallback => 'Impossibile caricare la ricerca.';
+
+  @override
+  String get friendsUnknownUser => 'Sconosciuto';
+
+  @override
+  String friendsRequestsHeader(int count) {
+    return 'Richieste ($count)';
+  }
+
+  @override
+  String friendsOutgoingHeader(int count) {
+    return 'In attesa di risposta ($count)';
+  }
+
+  @override
+  String get friendsRequestSentLabel => 'Richiesta inviata';
+
+  @override
+  String get friendsRequestSubtitle => 'vuole essere tuo amico';
+
+  @override
+  String get friendsActionCancel => 'Annulla';
+
+  @override
+  String get friendsActionAdd => 'Aggiungi';
+
+  @override
+  String get friendsCancelDialogFallbackUser => 'questo utente';
+
+  @override
+  String get friendsCancelDialogTitle => 'Annullare la richiesta?';
+
+  @override
+  String friendsCancelDialogBody(String name) {
+    return 'Annullare la richiesta di amicizia a $name?';
+  }
+
+  @override
+  String get friendsCancelDialogKeep => 'Mantieni';
+
+  @override
+  String get friendsCancelDialogConfirm => 'Annulla richiesta';
+
+  @override
+  String get friendsListHeader => 'I tuoi amici';
+
+  @override
+  String get friendsListErrorFallback => 'Impossibile caricare gli amici.';
+
+  @override
+  String get friendsRemoveDialogTitle => 'Rimuovere amico?';
+
+  @override
+  String friendsRemoveDialogBody(String name) {
+    return 'Rimuovere $name dai tuoi amici?';
+  }
+
+  @override
+  String get friendsRemoveDialogConfirm => 'Rimuovi';
+
+  @override
+  String get friendsSendRequestErrorFallback =>
+      'Impossibile inviare la richiesta.';
+
+  @override
+  String get friendsStatusChipFriend => 'Amico';
+
+  @override
+  String get friendsStatusChipPending => 'In attesa';
+
+  @override
+  String get friendsEmptyDefaultName => 'Un amico';
+
+  @override
+  String get friendsEmptyTitle => 'Porta il tuo cerchio di degustazione';
+
+  @override
+  String get friendsEmptyBody =>
+      'Sippd è meglio con gli amici. Manda un invito — arrivano dritti sul tuo profilo.';
+
+  @override
+  String get friendsEmptyInviteCta => 'Invita amici';
+
+  @override
+  String get friendsEmptyFindCta => 'Trova per username';
+
+  @override
+  String get friendsProfileNotFound => 'Profilo non trovato';
+
+  @override
+  String get friendsProfileErrorLoad => 'Impossibile caricare il profilo';
+
+  @override
+  String get friendsProfileNameFallback => 'Amico';
+
+  @override
+  String get friendsProfileRecentWinesHeader => 'VINI RECENTI';
+
+  @override
+  String get friendsProfileWinesErrorLoad => 'Impossibile caricare i vini';
+
+  @override
+  String get friendsProfileStatWines => 'Vini';
+
+  @override
+  String get friendsProfileStatAvg => 'Media';
+
+  @override
+  String get friendsProfileStatCountry => 'Paese';
+
+  @override
+  String get friendsProfileStatCountries => 'Paesi';
+
+  @override
+  String get paywallPitchEyebrow => 'Sippd Pro';
+
+  @override
+  String get paywallPitchHeadline => 'Scopri come\nassaggi davvero.';
+
+  @override
+  String get paywallPitchSubhead =>
+      'Mappa ogni bottiglia, trova amici che bevono come te e scava più a fondo in ogni degustazione.';
+
+  @override
+  String get paywallBenefitFriendsTitle =>
+      'Gruppi illimitati e match con gli amici';
+
+  @override
+  String get paywallBenefitFriendsSubtitle =>
+      'Porta la tua cerchia. Scopri chi beve come te.';
+
+  @override
+  String get paywallBenefitCompassTitle =>
+      'Bussola del gusto e statistiche complete';
+
+  @override
+  String get paywallBenefitCompassSubtitle =>
+      'La tua personalità del vino, mappata.';
+
+  @override
+  String get paywallBenefitNotesTitle => 'Note di degustazione da esperto';
+
+  @override
+  String get paywallBenefitNotesSubtitle => 'Naso · corpo · tannini · finale.';
+
+  @override
+  String get paywallPlanMonthly => 'Mensile';
+
+  @override
+  String get paywallPlanAnnual => 'Annuale';
+
+  @override
+  String get paywallPlanLifetime => 'A vita';
+
+  @override
+  String get paywallPlanSubtitleMonthly => 'Disdici quando vuoi';
+
+  @override
+  String get paywallPlanSubtitleAnnual => 'Più popolare';
+
+  @override
+  String get paywallPlanSubtitleLifetime =>
+      'Offerta di lancio limitata · pagamento unico';
+
+  @override
+  String get paywallPlanBadgeAnnual => 'PIÙ POPOLARE';
+
+  @override
+  String get paywallPlanBadgeLifetime => 'EDIZIONE FONDATORI';
+
+  @override
+  String paywallPlanSavingsVsMonthly(int pct) {
+    return 'Risparmia il $pct% rispetto al mensile';
+  }
+
+  @override
+  String get paywallTrialTodayTitle => 'Oggi';
+
+  @override
+  String get paywallTrialTodaySubtitle => 'Accesso Pro completo sbloccato.';
+
+  @override
+  String get paywallTrialDay5Title => 'Giorno 5';
+
+  @override
+  String get paywallTrialDay5Subtitle => 'Ti avvisiamo prima dell\'addebito.';
+
+  @override
+  String get paywallTrialDay7Title => 'Giorno 7';
+
+  @override
+  String get paywallTrialDay7Subtitle =>
+      'La prova finisce. Disdici quando vuoi.';
+
+  @override
+  String get paywallCtaContinue => 'Continua';
+
+  @override
+  String get paywallCtaSelectPlan => 'Scegli un piano';
+
+  @override
+  String get paywallCtaStartTrial => 'Inizia la prova gratis di 7 giorni';
+
+  @override
+  String get paywallCtaMaybeLater => 'Forse più tardi';
+
+  @override
+  String get paywallCtaRestore => 'Ripristina acquisti';
+
+  @override
+  String get paywallFooterDisclosure =>
+      'Disdici quando vuoi · fatturato da Apple o Google';
+
+  @override
+  String get paywallPlansLoadError => 'Impossibile caricare i piani';
+
+  @override
+  String get paywallPlansEmpty => 'Nessun piano disponibile al momento.';
+
+  @override
+  String get paywallErrorPurchaseFailed => 'Acquisto fallito. Riprova.';
+
+  @override
+  String get paywallErrorRestoreFailed =>
+      'Impossibile ripristinare gli acquisti.';
+
+  @override
+  String get paywallRestoreWelcomeBack => 'Bentornato su Sippd Pro!';
+
+  @override
+  String get paywallRestoreNoneFound => 'Nessun abbonamento attivo trovato.';
+
+  @override
+  String get paywallSubscriptionTitle => 'Abbonamento';
+
+  @override
+  String get paywallSubscriptionBrand => 'Sippd Pro';
+
+  @override
+  String get paywallSubscriptionChipActive => 'ATTIVO';
+
+  @override
+  String get paywallSubscriptionChipTrial => 'PROVA';
+
+  @override
+  String get paywallSubscriptionChipEnding => 'IN SCADENZA';
+
+  @override
+  String get paywallSubscriptionChipLifetime => 'A VITA';
+
+  @override
+  String get paywallSubscriptionChipTest => 'MODALITÀ TEST';
+
+  @override
+  String get paywallSubscriptionPlanTest => 'Modalità test';
+
+  @override
+  String get paywallSubscriptionPlanLifetime => 'A vita';
+
+  @override
+  String get paywallSubscriptionPlanAnnual => 'Annuale';
+
+  @override
+  String get paywallSubscriptionPlanMonthly => 'Mensile';
+
+  @override
+  String get paywallSubscriptionPlanWeekly => 'Settimanale';
+
+  @override
+  String get paywallSubscriptionPlanGeneric => 'Piano Pro';
+
+  @override
+  String get paywallSubscriptionPeriodYear => '/ anno';
+
+  @override
+  String get paywallSubscriptionPeriodMonth => '/ mese';
+
+  @override
+  String get paywallSubscriptionPeriodWeek => '/ settimana';
+
+  @override
+  String get paywallSubscriptionPeriodLifetime => 'una tantum';
+
+  @override
+  String get paywallSubscriptionStoreAppStore => 'App Store';
+
+  @override
+  String get paywallSubscriptionStorePlayStore => 'Play Store';
+
+  @override
+  String get paywallSubscriptionStoreStripe => 'Stripe';
+
+  @override
+  String get paywallSubscriptionStoreAmazon => 'Amazon';
+
+  @override
+  String get paywallSubscriptionStoreMacAppStore => 'Mac App Store';
+
+  @override
+  String get paywallSubscriptionStorePromo => 'Accesso promo';
+
+  @override
+  String paywallSubscriptionBilledVia(String store) {
+    return 'Fatturato tramite $store';
+  }
+
+  @override
+  String get paywallSubscriptionStatusTestNoSub =>
+      'Funzioni Pro sbloccate localmente · nessun abbonamento reale';
+
+  @override
+  String get paywallSubscriptionStatusTestLocal =>
+      'Funzioni Pro sbloccate localmente';
+
+  @override
+  String get paywallSubscriptionStatusLifetime =>
+      'Accesso a vita — tuo per sempre';
+
+  @override
+  String get paywallSubscriptionStatusEndingNoDate => 'Non si rinnoverà';
+
+  @override
+  String paywallSubscriptionStatusEndingWithDate(String date) {
+    return 'Accesso fino al $date · non si rinnoverà';
+  }
+
+  @override
+  String get paywallSubscriptionStatusTrialActive => 'Prova attiva';
+
+  @override
+  String get paywallSubscriptionStatusTrialEndsToday => 'La prova finisce oggi';
+
+  @override
+  String get paywallSubscriptionStatusTrialEndsTomorrow =>
+      'La prova finisce domani';
+
+  @override
+  String paywallSubscriptionStatusTrialEndsInDays(int days) {
+    return 'La prova finisce tra $days giorni';
+  }
+
+  @override
+  String get paywallSubscriptionStatusActive => 'Attivo';
+
+  @override
+  String paywallSubscriptionStatusRenewsOn(String date) {
+    return 'Si rinnova il $date';
+  }
+
+  @override
+  String get paywallSubscriptionSectionIncluded => 'Incluso in Pro';
+
+  @override
+  String get paywallSubscriptionSectionManage => 'Gestisci';
+
+  @override
+  String get paywallSubscriptionRowChangePlan => 'Cambia piano';
+
+  @override
+  String get paywallSubscriptionRowRestore => 'Ripristina acquisti';
+
+  @override
+  String get paywallSubscriptionRowCancel => 'Annulla abbonamento';
+
+  @override
+  String get paywallSubscriptionDisclosure =>
+      'Gli abbonamenti sono fatturati da Apple o Google. Gestiscili nelle impostazioni dello store.';
+
+  @override
+  String get paywallSubscriptionOpenError =>
+      'Impossibile aprire le impostazioni dell\'abbonamento.';
+
+  @override
+  String get paywallMonthShortJan => 'Gen';
+
+  @override
+  String get paywallMonthShortFeb => 'Feb';
+
+  @override
+  String get paywallMonthShortMar => 'Mar';
+
+  @override
+  String get paywallMonthShortApr => 'Apr';
+
+  @override
+  String get paywallMonthShortMay => 'Mag';
+
+  @override
+  String get paywallMonthShortJun => 'Giu';
+
+  @override
+  String get paywallMonthShortJul => 'Lug';
+
+  @override
+  String get paywallMonthShortAug => 'Ago';
+
+  @override
+  String get paywallMonthShortSep => 'Set';
+
+  @override
+  String get paywallMonthShortOct => 'Ott';
+
+  @override
+  String get paywallMonthShortNov => 'Nov';
+
+  @override
+  String get paywallMonthShortDec => 'Dic';
+
+  @override
+  String get tasteTraitBody => 'Corpo';
+
+  @override
+  String get tasteTraitTannin => 'Tannino';
+
+  @override
+  String get tasteTraitAcidity => 'Acidità';
+
+  @override
+  String get tasteTraitSweetness => 'Dolcezza';
+
+  @override
+  String get tasteTraitOak => 'Legno';
+
+  @override
+  String get tasteTraitIntensity => 'Intensità';
+
+  @override
+  String get tasteTraitSweetShort => 'Dolce';
+
+  @override
+  String get tasteTraitBodyLow => 'Leggero, facile da bere';
+
+  @override
+  String get tasteTraitBodyMid => 'Equilibrato';
+
+  @override
+  String get tasteTraitBodyHigh => 'Potente, corposo';
+
+  @override
+  String get tasteTraitTanninLow => 'Morbido, poca presa';
+
+  @override
+  String get tasteTraitTanninMid => 'Presa media';
+
+  @override
+  String get tasteTraitTanninHigh => 'Tannico, strutturato';
+
+  @override
+  String get tasteTraitAcidityLow => 'Morbido, rotondo';
+
+  @override
+  String get tasteTraitAcidityMid => 'Equilibrato';
+
+  @override
+  String get tasteTraitAcidityHigh => 'Fresco, vivace';
+
+  @override
+  String get tasteTraitSweetnessLow => 'Molto secco';
+
+  @override
+  String get tasteTraitSweetnessMid => 'Semisecco';
+
+  @override
+  String get tasteTraitSweetnessHigh => 'Tendenza dolce';
+
+  @override
+  String get tasteTraitOakLow => 'Senza legno, fresco';
+
+  @override
+  String get tasteTraitOakMid => 'Tocco di legno';
+
+  @override
+  String get tasteTraitOakHigh => 'Molto legnoso';
+
+  @override
+  String get tasteTraitIntensityLow => 'Aromi sottili';
+
+  @override
+  String get tasteTraitIntensityMid => 'Espressivo';
+
+  @override
+  String get tasteTraitIntensityHigh => 'Intenso, aromatico';
+
+  @override
+  String tasteDnaBodyLowPct(int pct) {
+    return 'Tendi ai vini leggeri · $pct%';
+  }
+
+  @override
+  String tasteDnaBodyMidPct(int pct) {
+    return 'Corpo equilibrato · $pct%';
+  }
+
+  @override
+  String tasteDnaBodyHighPct(int pct) {
+    return 'Tendi ai vini corposi · $pct%';
+  }
+
+  @override
+  String tasteDnaTanninLowPct(int pct) {
+    return 'Tannini morbidi · $pct%';
+  }
+
+  @override
+  String tasteDnaTanninMidPct(int pct) {
+    return 'Tannino medio · $pct%';
+  }
+
+  @override
+  String tasteDnaTanninHighPct(int pct) {
+    return 'Tannini decisi e strutturati · $pct%';
+  }
+
+  @override
+  String tasteDnaAcidityLowPct(int pct) {
+    return 'Acidità morbida · $pct%';
+  }
+
+  @override
+  String tasteDnaAcidityMidPct(int pct) {
+    return 'Acidità equilibrata · $pct%';
+  }
+
+  @override
+  String tasteDnaAcidityHighPct(int pct) {
+    return 'Amante dell\'acidità · $pct%';
+  }
+
+  @override
+  String tasteDnaSweetnessLowPct(int pct) {
+    return 'Molto secco · $pct%';
+  }
+
+  @override
+  String tasteDnaSweetnessMidPct(int pct) {
+    return 'Tendenza semisecco · $pct%';
+  }
+
+  @override
+  String tasteDnaSweetnessHighPct(int pct) {
+    return 'Tendenza dolce · $pct%';
+  }
+
+  @override
+  String tasteDnaOakLowPct(int pct) {
+    return 'Senza legno / fresco · $pct%';
+  }
+
+  @override
+  String tasteDnaOakMidPct(int pct) {
+    return 'Un po\' di legno · $pct%';
+  }
+
+  @override
+  String tasteDnaOakHighPct(int pct) {
+    return 'Amante del legno · $pct%';
+  }
+
+  @override
+  String tasteDnaIntensityLowPct(int pct) {
+    return 'Aromi sottili · $pct%';
+  }
+
+  @override
+  String tasteDnaIntensityMidPct(int pct) {
+    return 'Espressivo · $pct%';
+  }
+
+  @override
+  String tasteDnaIntensityHighPct(int pct) {
+    return 'Aromi intensi · $pct%';
+  }
+
+  @override
+  String get tasteDnaNotEnoughYet =>
+      'Non ancora abbastanza vini valutati — continua così';
+
+  @override
+  String get tasteArchetypeBoldRedHunter => 'Cacciatore di Rossi Potenti';
+
+  @override
+  String get tasteArchetypeBoldRedHunterTagline =>
+      'I rossi corposi e tannici sono il tuo territorio.';
+
+  @override
+  String get tasteArchetypeElegantBurgundian => 'Borgognotto Elegante';
+
+  @override
+  String get tasteArchetypeElegantBurgundianTagline =>
+      'Rossi più leggeri con acidità vivace guidano il tuo palato.';
+
+  @override
+  String get tasteArchetypeAromaticWhiteLover => 'Amante del Bianco Aromatico';
+
+  @override
+  String get tasteArchetypeAromaticWhiteLoverTagline =>
+      'Bianchi freschi ed espressivi con acidità tagliente.';
+
+  @override
+  String get tasteArchetypeSparklingSociable => 'Bollicine in Compagnia';
+
+  @override
+  String get tasteArchetypeSparklingSociableTagline =>
+      'Bollicine e vini pallidi dominano la tua collezione.';
+
+  @override
+  String get tasteArchetypeClassicStructure => 'Struttura Classica';
+
+  @override
+  String get tasteArchetypeClassicStructureTagline =>
+      'Vini misurati, da abbinamento, con acidità vivace.';
+
+  @override
+  String get tasteArchetypeSunRipenedBold => 'Maturato al Sole';
+
+  @override
+  String get tasteArchetypeSunRipenedBoldTagline =>
+      'Frutto generoso e legno da vigneti baciati dal sole.';
+
+  @override
+  String get tasteArchetypeDessertOffDry => 'Dessert / Semisecco';
+
+  @override
+  String get tasteArchetypeDessertOffDryTagline =>
+      'Ti piacciono le bottiglie con un tocco di dolcezza.';
+
+  @override
+  String get tasteArchetypeNaturalLowIntervention =>
+      'Naturale / Minimo Intervento';
+
+  @override
+  String get tasteArchetypeNaturalLowInterventionTagline =>
+      'Senza legno, più leggeri — il campo della freschezza.';
+
+  @override
+  String get tasteArchetypeCrispMineralFan => 'Fan del Minerale';
+
+  @override
+  String get tasteArchetypeCrispMineralFanTagline =>
+      'Stili tesi, minerali e con acidità alta sono la tua firma.';
+
+  @override
+  String get tasteArchetypeEclecticExplorer => 'Esploratore Eclettico';
+
+  @override
+  String get tasteArchetypeEclecticExplorerTagline =>
+      'Palato ampio — assaggi attraverso tutta la mappa del vino.';
+
+  @override
+  String get tasteArchetypeCuriousNewcomer => 'Nuovo Arrivato Curioso';
+
+  @override
+  String get tasteArchetypeCuriousNewcomerTagline =>
+      'Valuta qualche vino in più e la tua personalità verrà fuori.';
+
+  @override
+  String get tasteCompassModeStyle => 'Stile';
+
+  @override
+  String get tasteCompassModeWorld => 'Mondo';
+
+  @override
+  String get tasteCompassModeGrapes => 'Uve';
+
+  @override
+  String get tasteCompassModeDna => 'DNA';
+
+  @override
+  String get tasteCompassMetricCount => 'quantità';
+
+  @override
+  String get tasteCompassMetricRating => 'voto';
+
+  @override
+  String get tasteCompassContinentEurope => 'Europa';
+
+  @override
+  String get tasteCompassContinentNorthAmerica => 'Nord America';
+
+  @override
+  String get tasteCompassContinentSouthAmerica => 'Sud America';
+
+  @override
+  String get tasteCompassContinentAfrica => 'Africa';
+
+  @override
+  String get tasteCompassContinentAsia => 'Asia';
+
+  @override
+  String get tasteCompassContinentOceania => 'Oceania';
+
+  @override
+  String tasteCompassStyleNoneYet(String label) {
+    return 'Ancora nessun vino $label';
+  }
+
+  @override
+  String tasteCompassStyleSummaryOne(int count, String label, String avg) {
+    return '$count vino $label · $avg★ media';
+  }
+
+  @override
+  String tasteCompassStyleSummaryMany(int count, String label, String avg) {
+    return '$count vini $label · $avg★ media';
+  }
+
+  @override
+  String tasteCompassWorldNoneYet(String label) {
+    return 'Ancora nessuna bottiglia da $label';
+  }
+
+  @override
+  String tasteCompassWorldSummaryOne(String label, String avg) {
+    return '1 bottiglia da $label · $avg★ media';
+  }
+
+  @override
+  String tasteCompassWorldSummaryMany(int count, String label, String avg) {
+    return '$count bottiglie da $label · $avg★ media';
+  }
+
+  @override
+  String get tasteCompassGrapeEmptySlot =>
+      'Posto vuoto — valuta più uve per riempirlo';
+
+  @override
+  String tasteCompassGrapeSummaryOne(String name, String avg) {
+    return '$name · 1 bottiglia · $avg★ media';
+  }
+
+  @override
+  String tasteCompassGrapeSummaryMany(String name, int count, String avg) {
+    return '$name · $count bottiglie · $avg★ media';
+  }
+
+  @override
+  String get tasteCompassTitleDefault => 'Bussola del gusto';
+
+  @override
+  String get tasteCompassEmptyPromptOne =>
+      'Valuta 1 vino in più per sbloccare la bussola.';
+
+  @override
+  String tasteCompassEmptyPromptMany(int count) {
+    return 'Valuta $count vini in più per sbloccare la bussola.';
+  }
+
+  @override
+  String get tasteCompassNotEnoughData =>
+      'Non ancora abbastanza dati per questa modalità.';
+
+  @override
+  String get tasteCompassDnaNeedsGrapes =>
+      'Il DNA ha bisogno di qualche vino con un\'uva riconosciuta. Scegli un\'uva canonica sui tuoi vini per sbloccare questa vista.';
+
+  @override
+  String get tasteCompassEyebrowPersonality => 'LA TUA PERSONALITÀ DEL VINO';
+
+  @override
+  String get tasteCompassTentativeHint =>
+      'Provvisorio — valuta più vini per affinarlo';
+
+  @override
+  String get tasteCompassTopRegions => 'Regioni top';
+
+  @override
+  String get tasteCompassTopCountries => 'Paesi top';
+
+  @override
+  String get tasteCompassFooterWinesOne => '1 vino';
+
+  @override
+  String tasteCompassFooterWinesMany(int count) {
+    return '$count vini';
+  }
+
+  @override
+  String tasteCompassFooterAvg(String avg) {
+    return '$avg ★ media';
+  }
+
+  @override
+  String get tasteHeroEyebrow => 'PERSONALITÀ';
+
+  @override
+  String get tasteHeroPromptCuriousOne =>
+      'Valuta 1 vino in più per scoprire la tua personalità.';
+
+  @override
+  String tasteHeroPromptCuriousMany(int count) {
+    return 'Valuta $count vini in più per scoprire la tua personalità.';
+  }
+
+  @override
+  String get tasteHeroAlmostThere => 'Quasi ci sei';
+
+  @override
+  String get tasteHeroPromptThinDnaOne =>
+      'Tagga un\'uva canonica su 1 vino in più per sbloccare il tuo archetipo.';
+
+  @override
+  String tasteHeroPromptThinDnaMany(int count) {
+    return 'Tagga un\'uva canonica su $count vini in più per sbloccare il tuo archetipo.';
+  }
+
+  @override
+  String tasteHeroMatchExact(int score) {
+    return '$score% match';
+  }
+
+  @override
+  String tasteHeroMatchTentative(int score) {
+    return '~$score% match';
+  }
+
+  @override
+  String get tasteHeroWinesOne => '1 vino';
+
+  @override
+  String tasteHeroWinesMany(int count) {
+    return '$count vini';
+  }
+
+  @override
+  String tasteHeroAvg(String avg) {
+    return '$avg★ media';
+  }
+
+  @override
+  String get tasteHeroShare => 'Condividi';
+
+  @override
+  String get tasteTraitsHeading => 'TRATTI';
+
+  @override
+  String get tasteTraitsProDivider => 'PRO';
+
+  @override
+  String get tasteTraitsUnlockAll => 'Sblocca tutti i tratti con Pro';
+
+  @override
+  String get tasteMatchLabel => 'match di gusto';
+
+  @override
+  String get tasteMatchConfidenceStrong => 'Forte';
+
+  @override
+  String get tasteMatchConfidenceSolid => 'Solido';
+
+  @override
+  String get tasteMatchConfidenceEarly => 'Iniziale';
+
+  @override
+  String tasteMatchSupportingOne(String dnaPart) {
+    return 'Basato su 1 zona condivisa di regione/tipo$dnaPart.';
+  }
+
+  @override
+  String tasteMatchSupportingMany(int overlap, String dnaPart) {
+    return 'Basato su $overlap zone condivise di regione/tipo$dnaPart.';
+  }
+
+  @override
+  String get tasteMatchSupportingDnaPart => ' + sovrapposizione di stile WSET';
+
+  @override
+  String get tasteMatchSignalStrong => 'Segnale forte.';
+
+  @override
+  String get tasteMatchSignalSolid => 'Segnale solido.';
+
+  @override
+  String get tasteMatchSignalEarly =>
+      'Segnale iniziale — continua a valutare per affinarlo.';
+
+  @override
+  String get tasteMatchBreakdownBucket => 'Affinità regione e tipo';
+
+  @override
+  String get tasteMatchBreakdownDna => 'Affinità DNA di stile';
+
+  @override
+  String get tasteMatchEmptyNotEnough =>
+      'Non ci sono ancora abbastanza vini da confrontare — valuta qualche bottiglia in più per sbloccare il match.';
+
+  @override
+  String get tasteMatchEmptyNoOverlap =>
+      'Non avete ancora valutato vini delle stesse regioni o tipi. Il match cresce quando i vostri gusti si sovrappongono.';
+
+  @override
+  String tasteFriendUpsellTitle(String name) {
+    return 'Scopri come assaggia $name';
+  }
+
+  @override
+  String get tasteFriendUpsellBody =>
+      'Confronta i vostri palati, trova vini che piacciono a entrambi e scopri dove i vostri gusti divergono.';
+
+  @override
+  String get tasteFriendUpsellPillMatch => 'Match di gusto';
+
+  @override
+  String get tasteFriendUpsellPillShared => 'Bottiglie condivise';
+
+  @override
+  String get tasteFriendUpsellCta => 'Sblocca Sippd Pro';
+
+  @override
+  String get tasteFriendSharedHeading => 'VINI CHE AVETE VALUTATO ENTRAMBI';
+
+  @override
+  String tasteFriendSharedMore(int count) {
+    return '+ $count altri';
+  }
+
+  @override
+  String get tasteFriendRatingYou => 'tu';
+
+  @override
+  String get tasteFriendRatingThem => 'lui/lei';
+
+  @override
+  String shareRatedOn(String date) {
+    return 'VALUTATO · $date';
+  }
+
+  @override
+  String get shareRatingDenominator => '/ 10';
+
+  @override
+  String shareFooterRateYours(String url) {
+    return 'valuta i tuoi su $url';
+  }
+
+  @override
+  String shareFooterFindYours(String url) {
+    return 'trova il tuo gusto su $url';
+  }
+
+  @override
+  String shareFooterHostYours(String url) {
+    return 'organizza la tua su $url';
+  }
+
+  @override
+  String shareFooterJoinAt(String url) {
+    return 'unisciti su $url';
+  }
+
+  @override
+  String get shareCompassEyebrow => 'PERSONALITÀ DEL VINO';
+
+  @override
+  String get shareCompassWhatDefinesMe => 'CIÒ CHE MI DEFINISCE';
+
+  @override
+  String get shareCompassSampleSizeOne => 'basato su 1 vino';
+
+  @override
+  String shareCompassSampleSizeMany(int count) {
+    return 'basato su $count vini';
+  }
+
+  @override
+  String shareCompassPhrase(String descriptor, String trait) {
+    return '$trait $descriptor';
+  }
+
+  @override
+  String shareCompassShareText(String archetype, String url) {
+    return 'La mia personalità del vino: $archetype · trova la tua su $url';
+  }
+
+  @override
+  String get shareTastingEyebrow => 'DEGUSTAZIONE DI GRUPPO';
+
+  @override
+  String get shareTastingTopWine => 'VINO TOP DELLA SERATA';
+
+  @override
+  String get shareTastingLineup => 'LINEUP';
+
+  @override
+  String shareTastingMore(int count) {
+    return '+ $count altri';
+  }
+
+  @override
+  String get shareTastingAttendeesOne => '1 assaggiatore';
+
+  @override
+  String shareTastingAttendeesMany(int count) {
+    return '$count assaggiatori';
+  }
+
+  @override
+  String shareTastingShareTextTop(String wine, String avg, String url) {
+    return '$wine ha vinto la serata con $avg/10 · organizzata su Sippd · $url';
+  }
+
+  @override
+  String shareTastingShareTextTitle(String title, String url) {
+    return '$title · organizzata su Sippd · $url';
+  }
+
+  @override
+  String shareRatingShareText(String wine, String rating, String url) {
+    return 'Appena valutato $wine con $rating/10 su Sippd · $url';
+  }
+
+  @override
+  String get shareInviteEyebrow => 'UN INVITO';
+
+  @override
+  String get shareInviteHero => 'Assaggiamo\ninsieme.';
+
+  @override
+  String get shareInviteSub => 'Valuta. Ricorda. Condividi.';
+
+  @override
+  String get shareInviteWantsToTaste => 'vuole assaggiare con te';
+
+  @override
+  String shareInviteFallbackText(String name, String url) {
+    return '$name vuole assaggiare con te su Sippd · $url';
+  }
+
+  @override
+  String shareInviteImageText(String url) {
+    return 'Unisciti a me su Sippd 🍷  $url';
+  }
+
+  @override
+  String get shareInviteSubject => 'Unisciti a me su Sippd';
+
+  @override
+  String get shareRatingPromptSavedBadge => 'VINO SALVATO';
+
+  @override
+  String get shareRatingPromptTitle => 'La tua card è pronta';
+
+  @override
+  String get shareRatingPromptBody =>
+      'Mandala agli amici o postala nella tua storia.';
+
+  @override
+  String get shareRatingPromptCta => 'Condividi card';
+
+  @override
+  String get shareRatingPromptPreparing => 'Preparazione…';
+
+  @override
+  String get shareRatingPromptDismiss => 'Non ora';
+
+  @override
+  String get commonRetry => 'Riprova';
+
+  @override
+  String get commonSave => 'Salva';
+
+  @override
+  String get commonClear => 'Cancella';
+
+  @override
+  String get commonGotIt => 'Ok';
+
+  @override
+  String get commonOptional => '(facoltativo)';
+
+  @override
+  String get commonOffline => 'Offline';
+
+  @override
+  String get commonOfflineMessage => 'Sei offline. Riconnettiti e riprova.';
+
+  @override
+  String get commonNetworkErrorMessage =>
+      'Errore di rete. Controlla la connessione.';
+
+  @override
+  String get commonSomethingWentWrong => 'Qualcosa è andato storto.';
+
+  @override
+  String get commonErrorViewOfflineTitle => 'Sei offline';
+
+  @override
+  String get commonErrorViewOfflineSubtitle => 'Riconnettiti per caricarlo.';
+
+  @override
+  String get commonErrorViewGenericTitle => 'Impossibile caricare';
+
+  @override
+  String get commonErrorViewGenericSubtitle =>
+      'Trascina per riprovare o ritenta più tardi.';
+
+  @override
+  String get commonInlineCouldntSaveRetry => 'Salvataggio fallito · Riprova';
+
+  @override
+  String get commonInlineOfflineRetry => 'Offline · Riprova';
+
+  @override
+  String get commonPhotoDialogCameraTitle => 'Accesso fotocamera disattivato';
+
+  @override
+  String get commonPhotoDialogCameraBody =>
+      'Sippd ha bisogno della fotocamera per le foto dei vini. Attivala dalle Impostazioni per continuare.';
+
+  @override
+  String get commonPhotoDialogPhotosTitle => 'Accesso foto disattivato';
+
+  @override
+  String get commonPhotoDialogPhotosBody =>
+      'Sippd ha bisogno dell\'accesso alle foto per allegarle. Attivalo dalle Impostazioni per continuare.';
+
+  @override
+  String get commonPhotoErrorSnack => 'Impossibile caricare la foto. Riprova.';
+
+  @override
+  String get commonPriceSheetTitle => 'Prezzo bottiglia';
+
+  @override
+  String get commonYearPickerTitle => 'Annata';
+
+  @override
+  String get locSheetTitle => 'Dove l\'hai bevuto?';
+
+  @override
+  String get locSearchHint => 'Cerca un luogo...';
+
+  @override
+  String get locNoResults => 'Nessun luogo trovato';
+
+  @override
+  String get locSearchFailed => 'Ricerca fallita';
+
+  @override
+  String get locUseMyLocation => 'Usa la mia posizione attuale';
+
+  @override
+  String get locFindingLocation => 'Sto cercando la tua posizione…';
+
+  @override
+  String get locReadCurrentFailed => 'Impossibile leggere la posizione attuale';
+
+  @override
+  String get locServicesDisabled =>
+      'I servizi di localizzazione sono disattivati';
+
+  @override
+  String get locPermissionDenied => 'Permesso di localizzazione negato';
+
+  @override
+  String get profileEditTitle => 'Modifica profilo';
+
+  @override
+  String get profileEditSectionProfile => 'Profilo';
+
+  @override
+  String get profileEditFieldUsername => 'Username';
+
+  @override
+  String get profileEditFieldDisplayName => 'Nome visualizzato';
+
+  @override
+  String profileEditDisplayNameHintWithUsername(String username) {
+    return 'es. $username';
+  }
+
+  @override
+  String get profileEditDisplayNameHintGeneric => 'Come ti chiamiamo?';
+
+  @override
+  String get profileEditDisplayNameHelper =>
+      'Visibile in gruppi e degustazioni. Lascia vuoto per usare il tuo username.';
+
+  @override
+  String get profileEditSectionTaste => 'Il tuo gusto';
+
+  @override
+  String get profileEditSectionTasteSubtitle =>
+      'Regola cosa Sippd impara di te. Puoi cambiarlo quando vuoi.';
+
+  @override
+  String get profileEditAvatarUpdateFailed =>
+      'Impossibile aggiornare la foto. Riprova.';
+
+  @override
+  String get profileEditUploadFailed => 'Caricamento fallito.';
+
+  @override
+  String get profileEditSaveChangesFailed =>
+      'Impossibile salvare le modifiche. Riprova.';
+
+  @override
+  String get profileAvatarTakePhoto => 'Scatta foto';
+
+  @override
+  String get profileAvatarChooseGallery => 'Scegli dalla galleria';
+
+  @override
+  String get profileAvatarRemove => 'Rimuovi foto';
+
+  @override
+  String get profileUsernameTooShort => 'Almeno 3 caratteri';
+
+  @override
+  String get profileUsernameInvalid => 'Solo lettere, numeri, . e _';
+
+  @override
+  String get profileUsernameTaken => 'Già preso';
+
+  @override
+  String get profileUsernameAvailable => 'Disponibile';
+
+  @override
+  String get profileUsernameChecking => 'Verifica in corso…';
+
+  @override
+  String get profileUsernameHelperIdle =>
+      '3–20 caratteri · lettere, numeri, . e _';
+
+  @override
+  String get profileChooseUsernameTitle => 'Scegli un username';
+
+  @override
+  String get profileChooseUsernameSubtitle =>
+      'Così gli amici ti trovano su Sippd.';
+
+  @override
+  String get profileChooseUsernameHint => 'username';
+
+  @override
+  String get profileChooseUsernameContinue => 'Continua';
+
+  @override
+  String get profileChooseUsernameSaveFailed =>
+      'Impossibile salvare l\'username. Riprova.';
+
+  @override
+  String get errNetworkDefault =>
+      'Nessuna connessione a internet. Utilizzo dei dati in cache.';
+
+  @override
+  String get errOffline => 'Sei offline. Riconnettiti per riprovare.';
+
+  @override
+  String errDatabase(String msg) {
+    return 'Errore nei dati locali: $msg';
+  }
+
+  @override
+  String errValidation(String field, String msg) {
+    return '$field: $msg';
+  }
+
+  @override
+  String errValidationNoField(String msg) {
+    return '$msg';
+  }
+
+  @override
+  String errNotFound(String resource) {
+    return '$resource non trovato.';
+  }
+
+  @override
+  String get errNotFoundDefault => 'Non trovato.';
+
+  @override
+  String get errUnauthorized => 'Accedi per continuare.';
+
+  @override
+  String errServer(int code) {
+    return 'Errore del server ($code). Riprova.';
+  }
+
+  @override
+  String get errServerNoCode => 'Errore del server. Riprova.';
+
+  @override
+  String get errUnknown => 'Qualcosa è andato storto. Riprova.';
+
+  @override
+  String routeNotFound(String uri) {
+    return 'Pagina non trovata: $uri';
+  }
+}

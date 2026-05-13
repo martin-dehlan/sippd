@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../common/utils/responsive.dart';
 import '../../../../core/routes/app.routes.dart';
 import '../../controller/friend_ratings.provider.dart';
@@ -43,6 +44,7 @@ class _Card extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final visible = ratings.take(maxItems).toList(growable: false);
     final remaining = ratings.length - visible.length;
 
@@ -59,7 +61,7 @@ class _Card extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'FRIENDS WHO RATED',
+              l10n.winesFriendRatingsHeader,
               style: TextStyle(
                 fontSize: context.captionFont * 0.9,
                 fontWeight: FontWeight.w700,
@@ -80,7 +82,7 @@ class _Card extends StatelessWidget {
             if (remaining > 0) ...[
               SizedBox(height: context.s),
               Text(
-                '+ $remaining more',
+                l10n.winesFriendRatingsMore(remaining),
                 style: TextStyle(
                   fontSize: context.captionFont,
                   color: cs.outline,
@@ -103,11 +105,12 @@ class _FriendRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final label = (rating.displayName?.trim().isNotEmpty ?? false)
         ? rating.displayName!.trim()
         : (rating.username?.trim().isNotEmpty ?? false)
         ? rating.username!.trim()
-        : 'Friend';
+        : l10n.winesFriendRatingsFallback;
 
     return InkWell(
       onTap: () => context.push(AppRoutes.friendProfilePath(rating.userId)),
@@ -204,7 +207,7 @@ class _RatingValue extends StatelessWidget {
         ),
         SizedBox(width: context.w * 0.008),
         Text(
-          '/ 10',
+          AppLocalizations.of(context).winesFriendRatingsUnit,
           style: TextStyle(
             fontSize: context.captionFont * 0.85,
             color: cs.onSurface.withValues(alpha: 0.6),

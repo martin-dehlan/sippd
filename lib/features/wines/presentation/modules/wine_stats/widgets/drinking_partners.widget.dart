@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../../common/utils/responsive.dart';
 import '../../../../../../common/widgets/skeleton.widget.dart';
 import '../../../../../groups/domain/entities/drinking_partner.entity.dart';
@@ -66,7 +67,7 @@ class _SourceHint extends StatelessWidget {
           SizedBox(width: context.xs * 1.2),
           Expanded(
             child: Text(
-              'Counts wines rated together inside shared groups.',
+              AppLocalizations.of(context).winesStatsPartnersHint,
               style: TextStyle(
                 fontSize: context.captionFont * 0.95,
                 color: cs.onSurfaceVariant,
@@ -94,6 +95,7 @@ class _PartnerRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final isFirst = rank == 1;
     final size = context.w * 0.11;
 
@@ -136,7 +138,7 @@ class _PartnerRow extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    _displayName(partner),
+                    _displayName(partner, l10n.winesStatsPartnersFallback),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
@@ -328,9 +330,9 @@ class _CountPill extends StatelessWidget {
   }
 }
 
-String _displayName(DrinkingPartnerEntity p) {
+String _displayName(DrinkingPartnerEntity p, String fallback) {
   final n = (p.displayName ?? p.username ?? '').trim();
-  return n.isEmpty ? 'Wine friend' : n;
+  return n.isEmpty ? fallback : n;
 }
 
 /// Skeleton state used while the RPC is in flight.

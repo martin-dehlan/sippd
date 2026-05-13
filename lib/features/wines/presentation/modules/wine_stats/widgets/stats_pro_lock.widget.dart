@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../../common/utils/responsive.dart';
 import '../../../../../../core/routes/app.routes.dart';
 import 'package:go_router/go_router.dart';
@@ -15,10 +16,20 @@ class StatsProLock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final pills = [
-      (icon: PhosphorIconsRegular.coins, label: 'Prices'),
-      (icon: PhosphorIconsRegular.mapPin, label: 'Where'),
-      (icon: PhosphorIconsRegular.globeHemisphereWest, label: 'Top regions'),
+      (
+        icon: PhosphorIconsRegular.coins,
+        label: l10n.winesStatsProLockPillPrices,
+      ),
+      (
+        icon: PhosphorIconsRegular.mapPin,
+        label: l10n.winesStatsProLockPillWhere,
+      ),
+      (
+        icon: PhosphorIconsRegular.globeHemisphereWest,
+        label: l10n.winesStatsProLockPillRegions,
+      ),
     ];
 
     return Container(
@@ -51,7 +62,7 @@ class StatsProLock extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Unlock 3 more insights',
+                      l10n.winesStatsProLockTitle,
                       style: TextStyle(
                         fontSize: context.bodyFont * 1.05,
                         fontWeight: FontWeight.w800,
@@ -61,8 +72,7 @@ class StatsProLock extends StatelessWidget {
                     ),
                     SizedBox(height: context.xs * 0.5),
                     Text(
-                      'See where your bottles came from, what you spend, '
-                      'and which regions you back the most.',
+                      l10n.winesStatsProLockBody,
                       style: TextStyle(
                         fontSize: context.captionFont,
                         color: cs.onSurfaceVariant,
@@ -98,7 +108,7 @@ class StatsProLock extends StatelessWidget {
                 ),
               ),
               child: Text(
-                'Unlock with Pro',
+                l10n.winesStatsProLockCta,
                 style: TextStyle(
                   fontSize: context.bodyFont,
                   fontWeight: FontWeight.w700,

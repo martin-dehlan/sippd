@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../wines/domain/entities/wine.entity.dart';
 import '../../../controller/onboarding.provider.dart';
@@ -14,15 +15,16 @@ class ResultsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final answers = ref.watch(onboardingAnswersControllerProvider);
-    final archetype = archetypeFor(answers);
+    final archetype = archetypeFor(answers, l10n);
 
     return ListView(
       padding: EdgeInsets.symmetric(horizontal: context.paddingH),
       children: [
         SizedBox(height: context.m),
         Text(
-          'YOUR TASTE PROFILE',
+          l10n.onbResultsEyebrow,
           style: TextStyle(
             fontSize: context.captionFont * 0.85,
             fontWeight: FontWeight.w700,
@@ -154,11 +156,12 @@ class _LevelCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final levels = TasteLevel.values;
     final currentIndex = levels.indexOf(current);
 
     return _SectionCard(
-      eyebrow: 'Level',
+      eyebrow: l10n.onbResultsLevelCard,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -192,7 +195,7 @@ class _LevelCard extends StatelessWidget {
               final isCurrent = i == currentIndex;
               return Expanded(
                 child: Text(
-                  level.label,
+                  level.label(l10n),
                   textAlign: i == 0
                       ? TextAlign.start
                       : i == levels.length - 1
@@ -226,8 +229,9 @@ class _FrequencyCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     return _SectionCard(
-      eyebrow: 'Frequency',
+      eyebrow: l10n.onbResultsFreqCard,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -238,7 +242,7 @@ class _FrequencyCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  current.label,
+                  current.label(l10n),
                   style: TextStyle(
                     fontSize: context.bodyFont,
                     fontWeight: FontWeight.w600,
@@ -279,8 +283,9 @@ class _StylesCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return _SectionCard(
-      eyebrow: 'Styles',
+      eyebrow: l10n.onbResultsStylesCard,
       child: Wrap(
         spacing: context.w * 0.02,
         runSpacing: context.w * 0.02,
@@ -297,6 +302,7 @@ class _StyleChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final dotSize = context.w * 0.018;
     final color = style.onboardingIconTint;
 
@@ -329,7 +335,7 @@ class _StyleChip extends StatelessWidget {
           ),
           SizedBox(width: context.w * 0.02),
           Text(
-            style.onboardingLabel,
+            style.onboardingLabel(l10n),
             style: TextStyle(
               fontSize: context.captionFont * 0.95,
               fontWeight: FontWeight.w500,
@@ -349,8 +355,9 @@ class _GoalsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     return _SectionCard(
-      eyebrow: 'Goals',
+      eyebrow: l10n.onbResultsGoalsCard,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: goals
@@ -376,7 +383,7 @@ class _GoalsCard extends StatelessWidget {
                     SizedBox(width: context.w * 0.03),
                     Expanded(
                       child: Text(
-                        g.label,
+                        g.label(l10n),
                         style: TextStyle(
                           fontSize: context.bodyFont * 0.95,
                           fontWeight: FontWeight.w500,

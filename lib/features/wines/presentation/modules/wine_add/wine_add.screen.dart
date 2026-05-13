@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../common/utils/name_normalizer.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../core/routes/app.routes.dart';
@@ -51,23 +52,25 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
 
   Future<bool> _confirmDiscard() async {
     if (!_isDirty) return true;
+    final l10n = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) {
         final cs = Theme.of(ctx).colorScheme;
         return AlertDialog(
-          title: const Text('Discard new wine?'),
-          content: const Text(
-            "You haven't saved this wine yet. Leaving now will discard your changes.",
-          ),
+          title: Text(l10n.winesAddDiscardTitle),
+          content: Text(l10n.winesAddDiscardBody),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('Keep editing'),
+              child: Text(l10n.winesAddDiscardKeepEditing),
             ),
             TextButton(
               onPressed: () => Navigator.pop(ctx, true),
-              child: Text('Discard', style: TextStyle(color: cs.error)),
+              child: Text(
+                l10n.winesAddDiscardConfirm,
+                style: TextStyle(color: cs.error),
+              ),
             ),
           ],
         );
@@ -244,31 +247,29 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
   }
 
   Future<_DupeAction> _showDuplicatePrompt(String existingName) async {
+    final l10n = AppLocalizations.of(context);
     final result = await showDialog<_DupeAction>(
       context: context,
       builder: (ctx) {
         final cs = Theme.of(ctx).colorScheme;
         return AlertDialog(
-          title: const Text('Looks like a duplicate'),
-          content: Text(
-            'You already logged "$existingName" with the same vintage, '
-            'winery and grape. Open the existing entry or add a new one anyway?',
-          ),
+          title: Text(l10n.winesAddDuplicateTitle),
+          content: Text(l10n.winesAddDuplicateBody(existingName)),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx, _DupeAction.cancel),
-              child: const Text('Cancel'),
+              child: Text(l10n.winesAddDuplicateCancel),
             ),
             TextButton(
               onPressed: () => Navigator.pop(ctx, _DupeAction.addAnyway),
               child: Text(
-                'Add anyway',
+                l10n.winesAddDuplicateAddAnyway,
                 style: TextStyle(color: cs.onSurfaceVariant),
               ),
             ),
             TextButton(
               onPressed: () => Navigator.pop(ctx, _DupeAction.openExisting),
-              child: const Text('Open existing'),
+              child: Text(l10n.winesAddDuplicateOpenExisting),
             ),
           ],
         );
@@ -279,6 +280,7 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return PopScope(
       canPop: _allowPop || !_isDirty,
       onPopInvokedWithResult: (didPop, _) async {
@@ -295,7 +297,7 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
             children: [
               WineForm(
                 key: _formKey,
-                submitLabel: 'Save wine',
+                submitLabel: l10n.winesAddSaveLabel,
                 showInlineSubmit: false,
                 onChanged: (data) => setState(() => _current = data),
                 onSubmit: (_) => _save(),
@@ -358,6 +360,7 @@ class _SaveWineFab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final height = context.w * 0.16;
     return SizedBox(
       height: height,
@@ -372,7 +375,7 @@ class _SaveWineFab extends StatelessWidget {
         shape: const StadiumBorder(),
         icon: Icon(PhosphorIconsBold.check, size: context.w * 0.05),
         label: Text(
-          'Save wine',
+          l10n.winesAddSaveLabel,
           style: TextStyle(
             fontSize: context.bodyFont * 1.02,
             fontWeight: FontWeight.w700,

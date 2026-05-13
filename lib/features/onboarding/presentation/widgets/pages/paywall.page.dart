@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../paywall/presentation/widgets/paywall_body.widget.dart';
 import '../../../../paywall/presentation/widgets/paywall_pitch.dart';
@@ -20,6 +21,7 @@ class OnboardingPaywallPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return SingleChildScrollView(
       padding: EdgeInsets.fromLTRB(
         context.paddingH,
@@ -30,12 +32,12 @@ class OnboardingPaywallPage extends StatelessWidget {
       child: PaywallBody(
         triggerSource: 'onboarding',
         showHero: true,
-        eyebrow: kProPitchEyebrow,
-        headline: kProPitchHeadline,
-        subhead: kProPitchSubhead,
-        benefits: kProPitchBenefits,
-        primaryLabel: 'Start 7-day free trial',
-        dismissLabel: 'Maybe later',
+        eyebrow: proPitchEyebrow(l10n),
+        headline: proPitchHeadline(l10n),
+        subhead: proPitchSubhead(l10n),
+        benefits: proPitchBenefits(l10n),
+        primaryLabel: l10n.paywallCtaStartTrial,
+        dismissLabel: l10n.paywallCtaMaybeLater,
         onSuccess: onFinish,
         onDismiss: onFinish,
       ),

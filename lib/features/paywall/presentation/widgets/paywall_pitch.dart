@@ -1,33 +1,34 @@
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../../common/l10n/generated/app_localizations.dart';
 import 'paywall_benefit.widget.dart';
 
 /// Single source of truth for the Pro pitch (eyebrow, headline, subhead,
 /// benefits). Shared by the onboarding step, the stand-alone paywall
 /// screen and the contextual paywall sheet so any copy change lands in
-/// one place.
-const String kProPitchEyebrow = 'Sippd Pro';
+/// one place. Localized: callers pass [AppLocalizations] from the build
+/// context; we keep icons as compile-time constants but pull all user-
+/// visible strings from the ARB bundles.
+String proPitchEyebrow(AppLocalizations l) => l.paywallPitchEyebrow;
 
-const String kProPitchHeadline = 'See how you\nreally taste.';
+String proPitchHeadline(AppLocalizations l) => l.paywallPitchHeadline;
 
-const String kProPitchSubhead =
-    'Map every bottle, match with friends who drink like you, '
-    'and dig deeper into every tasting.';
+String proPitchSubhead(AppLocalizations l) => l.paywallPitchSubhead;
 
-const List<PaywallBenefit> kProPitchBenefits = [
+List<PaywallBenefit> proPitchBenefits(AppLocalizations l) => [
   (
     icon: PhosphorIconsRegular.usersThree,
-    title: 'Unlimited groups & friend matching',
-    subtitle: 'Bring your circle. See who drinks like you.',
+    title: l.paywallBenefitFriendsTitle,
+    subtitle: l.paywallBenefitFriendsSubtitle,
   ),
   (
     icon: PhosphorIconsRegular.compass,
-    title: 'Taste compass & deep stats',
-    subtitle: 'Your wine personality, mapped.',
+    title: l.paywallBenefitCompassTitle,
+    subtitle: l.paywallBenefitCompassSubtitle,
   ),
   (
     icon: PhosphorIconsRegular.notepad,
-    title: 'Expert tasting notes',
-    subtitle: 'Nose · body · tannins · finish.',
+    title: l.paywallBenefitNotesTitle,
+    subtitle: l.paywallBenefitNotesSubtitle,
   ),
 ];

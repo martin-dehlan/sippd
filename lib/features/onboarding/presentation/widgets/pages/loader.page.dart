@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../../common/data/avatar_icons.dart';
+import '../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../controller/onboarding.provider.dart';
 
@@ -19,16 +20,18 @@ class LoaderPage extends ConsumerStatefulWidget {
 
 class _LoaderPageState extends ConsumerState<LoaderPage>
     with TickerProviderStateMixin {
-  static const _steps = [
-    'Matching your taste',
-    'Curating your styles',
-    'Setting up your journal',
-  ];
+  static const _stepCount = 3;
   int _step = 0;
   bool _finished = false;
   Timer? _timer;
   late final AnimationController _ringCtrl;
   late final AnimationController _pulseCtrl;
+
+  List<String> _stepsFor(AppLocalizations l) => [
+    l.onbLoaderStepMatching,
+    l.onbLoaderStepCurating,
+    l.onbLoaderStepSetting,
+  ];
 
   @override
   void initState() {
@@ -42,7 +45,7 @@ class _LoaderPageState extends ConsumerState<LoaderPage>
       duration: const Duration(milliseconds: 1100),
     )..repeat(reverse: true);
     _timer = Timer.periodic(const Duration(milliseconds: 1300), (t) {
-      if (_step < _steps.length - 1) {
+      if (_step < _stepCount - 1) {
         setState(() => _step++);
       } else {
         t.cancel();
@@ -50,7 +53,7 @@ class _LoaderPageState extends ConsumerState<LoaderPage>
           if (!mounted) return;
           setState(() {
             _finished = true;
-            _step = _steps.length;
+            _step = _stepCount;
           });
           _pulseCtrl.stop();
           // Do NOT auto-advance — the user taps the button to proceed.
@@ -70,6 +73,8 @@ class _LoaderPageState extends ConsumerState<LoaderPage>
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
+    final steps = _stepsFor(l10n);
     final pickedIconKey = ref.watch(onboardingAnswersControllerProvider).emoji;
     final pickedIcon = avatarIconForKey(pickedIconKey);
     return Padding(
@@ -90,7 +95,7 @@ class _LoaderPageState extends ConsumerState<LoaderPage>
                 ),
                 SizedBox(height: context.xl * 1.2),
                 Text(
-                  'ALMOST THERE',
+                  l10n.onbLoaderAlmostThere,
                   style: TextStyle(
                     fontSize: context.captionFont * 0.82,
                     fontWeight: FontWeight.w700,
@@ -100,7 +105,7 @@ class _LoaderPageState extends ConsumerState<LoaderPage>
                 ),
                 SizedBox(height: context.s),
                 Text(
-                  _finished ? 'All set.' : 'Crafting your profile.',
+                  _finished ? l10n.onbLoaderAllSet : l10n.onbLoaderCrafting,
                   textAlign: TextAlign.center,
                   style: GoogleFonts.playfairDisplay(
                     fontSize: context.titleFont * 0.95,
@@ -112,7 +117,7 @@ class _LoaderPageState extends ConsumerState<LoaderPage>
                 ),
                 SizedBox(height: context.xl),
                 _ChecklistBlock(
-                  steps: _steps,
+                  steps: steps,
                   activeIndex: _step,
                   pulseCtrl: _pulseCtrl,
                   finished: _finished,
@@ -140,7 +145,7 @@ class _LoaderPageState extends ConsumerState<LoaderPage>
                   ),
                 ),
                 child: Text(
-                  _finished ? 'See your profile' : 'Continue',
+                  _finished ? l10n.onbLoaderSeeProfile : l10n.onbLoaderContinue,
                   style: TextStyle(
                     fontSize: context.bodyFont * 1.05,
                     fontWeight: FontWeight.w700,

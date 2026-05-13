@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sippd/common/l10n/generated/app_localizations.dart';
 import 'package:sippd/features/groups/controller/group_ratings.provider.dart';
 import 'package:sippd/features/groups/controller/group_wines_query.provider.dart';
 import 'package:sippd/features/groups/domain/entities/group_wine_rating.entity.dart';
@@ -76,6 +77,8 @@ void main() {
             canonicalWineId: 'cw-1',
             initial: sampleWine(),
           ),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
         ),
       ),
     );
@@ -180,6 +183,8 @@ void main() {
             canonicalWineId: 'cw-1',
             initial: sampleWine(),
           ),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
         ),
       ),
     );
@@ -211,12 +216,14 @@ void main() {
             'cw-1',
           ).overrideWith((ref) async => null),
         ],
-        child: const MaterialApp(
-          home: GroupWineDetailScreen(
+        child: MaterialApp(
+          home: const GroupWineDetailScreen(
             groupId: 'g-1',
             canonicalWineId: 'cw-1',
             initial: null,
           ),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
         ),
       ),
     );

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import '../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/text_input_sheet.dart';
 import '../../../../../core/routes/app.routes.dart';
@@ -34,11 +35,12 @@ class _TastingCreateScreenState extends ConsumerState<TastingCreateScreen> {
       DateTime(_date.year, _date.month, _date.day, _time.hour, _time.minute);
 
   Future<void> _editTitle() async {
+    final l10n = AppLocalizations.of(context);
     final r = await showTextInputSheet(
       context: context,
-      title: 'Tasting title',
+      title: l10n.tastingTitleSheetTitle,
       initial: _title,
-      hint: 'e.g. Barolo night',
+      hint: l10n.tastingTitleSheetHint,
       maxLength: 80,
     );
     if (r == null) return;
@@ -46,11 +48,12 @@ class _TastingCreateScreenState extends ConsumerState<TastingCreateScreen> {
   }
 
   Future<void> _editDescription() async {
+    final l10n = AppLocalizations.of(context);
     final r = await showTextInputSheet(
       context: context,
-      title: 'Description',
+      title: l10n.tastingDescriptionSheetTitle,
       initial: _description,
-      hint: 'What is this about?',
+      hint: l10n.tastingDescriptionSheetHint,
       maxLines: 4,
       maxLength: 1000,
     );
@@ -104,16 +107,20 @@ class _TastingCreateScreenState extends ConsumerState<TastingCreateScreen> {
     if (tasting != null) {
       context.pushReplacement(AppRoutes.tastingDetailPath(tasting.id));
     } else {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Could not create tasting')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context).tastingCreateFailedSnack),
+        ),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     final canSave = _title.trim().isNotEmpty && !_saving;
+    final tapToAdd = l10n.tastingFieldTapToAdd;
 
     return Scaffold(
       body: SafeArea(
@@ -124,7 +131,7 @@ class _TastingCreateScreenState extends ConsumerState<TastingCreateScreen> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
               child: Text(
-                'NEW TASTING',
+                l10n.tastingCreateHeader,
                 style: GoogleFonts.playfairDisplay(
                   fontSize: context.titleFont * 1.1,
                   fontWeight: FontWeight.w800,
@@ -135,43 +142,43 @@ class _TastingCreateScreenState extends ConsumerState<TastingCreateScreen> {
             ),
             SizedBox(height: context.l),
             _Row(
-              label: 'Title',
-              value: _title.isEmpty ? 'Tap to add' : _title,
+              label: l10n.tastingFieldTitleLabel,
+              value: _title.isEmpty ? tapToAdd : _title,
               isEmpty: _title.isEmpty,
               onTap: _editTitle,
             ),
             _Divider(),
             _Row(
-              label: 'Date',
+              label: l10n.tastingFieldDateLabel,
               value: DateFormat.yMMMMEEEEd().format(_date),
               isEmpty: false,
               onTap: _editDate,
             ),
             _Divider(),
             _Row(
-              label: 'Time',
+              label: l10n.tastingFieldTimeLabel,
               value: _time.format(context),
               isEmpty: false,
               onTap: _editTime,
             ),
             _Divider(),
             _Row(
-              label: 'Place',
-              value: _location?.shortDisplay ?? 'Tap to add',
+              label: l10n.tastingFieldPlaceLabel,
+              value: _location?.shortDisplay ?? tapToAdd,
               isEmpty: _location == null,
               onTap: _editPlace,
             ),
             _Divider(),
             _Row(
-              label: 'Description',
-              value: _description ?? 'Tap to add',
+              label: l10n.tastingFieldDescriptionLabel,
+              value: _description ?? tapToAdd,
               isEmpty: _description == null,
               onTap: _editDescription,
             ),
             _Divider(),
             _ToggleRow(
-              label: 'Open lineup',
-              hint: 'Add wines as they arrive',
+              label: l10n.tastingFieldOpenLineupLabel,
+              hint: l10n.tastingFieldOpenLineupHint,
               value: _openLineup,
               onChanged: (v) => setState(() => _openLineup = v),
             ),
@@ -200,7 +207,7 @@ class _TastingCreateScreenState extends ConsumerState<TastingCreateScreen> {
                           ),
                         )
                       : Text(
-                          'Create tasting',
+                          l10n.tastingCreateSubmitCta,
                           style: TextStyle(
                             fontSize: context.bodyFont,
                             fontWeight: FontWeight.w600,

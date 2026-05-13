@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../../common/utils/responsive.dart';
 import '../../../../../../core/routes/app.routes.dart';
 import '../../../../../friends/domain/entities/friend_profile.entity.dart';
@@ -40,6 +41,7 @@ class MembersSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     return SafeArea(
       child: Padding(
         padding: EdgeInsets.symmetric(
@@ -64,8 +66,9 @@ class MembersSheet extends StatelessWidget {
             Row(
               children: [
                 Text(
-                  '${members.length} '
-                  '${members.length == 1 ? 'member' : 'members'}',
+                  members.length == 1
+                      ? l10n.groupMembersCountOne
+                      : l10n.groupMembersCountMany(members.length),
                   style: TextStyle(
                     fontSize: context.bodyFont * 1.1,
                     fontWeight: FontWeight.w700,
@@ -101,7 +104,9 @@ class _MemberRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final name = member.displayName ?? member.username ?? 'Unknown';
+    final l10n = AppLocalizations.of(context);
+    final name =
+        member.displayName ?? member.username ?? l10n.groupMembersUnknown;
     return InkWell(
       onTap: () {
         Navigator.of(context).pop();
@@ -154,7 +159,7 @@ class _MemberRow extends StatelessWidget {
                   borderRadius: BorderRadius.circular(context.w * 0.02),
                 ),
                 child: Text(
-                  'OWNER',
+                  l10n.groupMembersOwnerBadge,
                   style: TextStyle(
                     fontSize: context.captionFont * 0.75,
                     fontWeight: FontWeight.w700,

@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
+import '../../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../../common/utils/responsive.dart';
 import '../../../../../../common/widgets/skeleton.widget.dart';
 import '../../../../controller/wine_stats.provider.dart';
@@ -105,7 +106,7 @@ class RegionSkyline extends StatelessWidget {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: context.xs),
               child: Text(
-                '+ $remaining more',
+                AppLocalizations.of(context).winesStatsRegionsMore(remaining),
                 style: TextStyle(
                   fontSize: context.captionFont * 0.92,
                   color: cs.onSurfaceVariant,

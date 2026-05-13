@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../common/utils/responsive.dart';
 import '../../controller/expert_tasting.provider.dart';
 import '../../domain/entities/expert_tasting.entity.dart';
@@ -49,48 +50,55 @@ class _Body extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
+    final body = _bodyDescriptors(l10n);
+    final tannin = _tanninDescriptors(l10n);
+    final acidity = _acidityDescriptors(l10n);
+    final sweetness = _sweetnessDescriptors(l10n);
+    final oak = _oakDescriptors(l10n);
+    final finish = _finishDescriptors(l10n);
     final axes = <_AxisData>[
       if (tasting.body != null)
         _AxisData(
-          label: 'BODY',
+          label: l10n.winesExpertSummaryAxisBody,
           value: tasting.body!,
           max: 5,
-          descriptor: _bodyDescriptors[tasting.body!.clamp(1, 5)]!,
+          descriptor: body[tasting.body!.clamp(1, 5)]!,
         ),
       if (tasting.tannin != null)
         _AxisData(
-          label: 'TANNIN',
+          label: l10n.winesExpertSummaryAxisTannin,
           value: tasting.tannin!,
           max: 5,
-          descriptor: _tanninDescriptors[tasting.tannin!.clamp(1, 5)]!,
+          descriptor: tannin[tasting.tannin!.clamp(1, 5)]!,
         ),
       if (tasting.acidity != null)
         _AxisData(
-          label: 'ACIDITY',
+          label: l10n.winesExpertSummaryAxisAcidity,
           value: tasting.acidity!,
           max: 5,
-          descriptor: _acidityDescriptors[tasting.acidity!.clamp(1, 5)]!,
+          descriptor: acidity[tasting.acidity!.clamp(1, 5)]!,
         ),
       if (tasting.sweetness != null)
         _AxisData(
-          label: 'SWEETNESS',
+          label: l10n.winesExpertSummaryAxisSweetness,
           value: tasting.sweetness!,
           max: 5,
-          descriptor: _sweetnessDescriptors[tasting.sweetness!.clamp(1, 5)]!,
+          descriptor: sweetness[tasting.sweetness!.clamp(1, 5)]!,
         ),
       if (tasting.oak != null)
         _AxisData(
-          label: 'OAK',
+          label: l10n.winesExpertSummaryAxisOak,
           value: tasting.oak!,
           max: 5,
-          descriptor: _oakDescriptors[tasting.oak!.clamp(1, 5)]!,
+          descriptor: oak[tasting.oak!.clamp(1, 5)]!,
         ),
       if (tasting.finish != null)
         _AxisData(
-          label: 'FINISH',
+          label: l10n.winesExpertSummaryAxisFinish,
           value: tasting.finish!,
           max: 3,
-          descriptor: _finishDescriptors[tasting.finish!.clamp(1, 3)]!,
+          descriptor: finish[tasting.finish!.clamp(1, 3)]!,
         ),
     ];
 
@@ -135,7 +143,7 @@ class _Header extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
-          'TASTING NOTES',
+          AppLocalizations.of(context).winesExpertSummaryHeader,
           style: TextStyle(
             fontSize: context.captionFont * 0.95,
             fontWeight: FontWeight.w700,
@@ -276,7 +284,7 @@ class _AromaLine extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'AROMAS',
+          AppLocalizations.of(context).winesExpertSummaryAromasHeader,
           style: TextStyle(
             fontSize: context.captionFont * 0.78,
             fontWeight: FontWeight.w700,
@@ -326,41 +334,46 @@ class _AxisData {
   final String descriptor;
 }
 
-// Sommelier-style descriptors. Frozen 1..N maps so the cell never
-// renders a raw number — the descriptor *is* the value.
-const _bodyDescriptors = {
-  1: 'very light',
-  2: 'light',
-  3: 'medium',
-  4: 'full',
-  5: 'heavy',
+// Sommelier-style descriptors. Helper functions so the cell never
+// renders a raw number — the descriptor *is* the value. Localized via
+// AppLocalizations so each locale picks the appropriate wine words.
+Map<int, String> _bodyDescriptors(AppLocalizations l) => {
+  1: l.winesExpertDescriptorBody1,
+  2: l.winesExpertDescriptorBody2,
+  3: l.winesExpertDescriptorBody3,
+  4: l.winesExpertDescriptorBody4,
+  5: l.winesExpertDescriptorBody5,
 };
-const _tanninDescriptors = {
-  1: 'silky',
-  2: 'soft',
-  3: 'medium',
-  4: 'firm',
-  5: 'gripping',
+Map<int, String> _tanninDescriptors(AppLocalizations l) => {
+  1: l.winesExpertDescriptorTannin1,
+  2: l.winesExpertDescriptorTannin2,
+  3: l.winesExpertDescriptorTannin3,
+  4: l.winesExpertDescriptorTannin4,
+  5: l.winesExpertDescriptorTannin5,
 };
-const _acidityDescriptors = {
-  1: 'flat',
-  2: 'soft',
-  3: 'balanced',
-  4: 'crisp',
-  5: 'sharp',
+Map<int, String> _acidityDescriptors(AppLocalizations l) => {
+  1: l.winesExpertDescriptorAcidity1,
+  2: l.winesExpertDescriptorAcidity2,
+  3: l.winesExpertDescriptorAcidity3,
+  4: l.winesExpertDescriptorAcidity4,
+  5: l.winesExpertDescriptorAcidity5,
 };
-const _sweetnessDescriptors = {
-  1: 'bone dry',
-  2: 'dry',
-  3: 'off-dry',
-  4: 'sweet',
-  5: 'lush',
+Map<int, String> _sweetnessDescriptors(AppLocalizations l) => {
+  1: l.winesExpertDescriptorSweetness1,
+  2: l.winesExpertDescriptorSweetness2,
+  3: l.winesExpertDescriptorSweetness3,
+  4: l.winesExpertDescriptorSweetness4,
+  5: l.winesExpertDescriptorSweetness5,
 };
-const _oakDescriptors = {
-  1: 'unoaked',
-  2: 'subtle',
-  3: 'present',
-  4: 'oak-forward',
-  5: 'heavy',
+Map<int, String> _oakDescriptors(AppLocalizations l) => {
+  1: l.winesExpertDescriptorOak1,
+  2: l.winesExpertDescriptorOak2,
+  3: l.winesExpertDescriptorOak3,
+  4: l.winesExpertDescriptorOak4,
+  5: l.winesExpertDescriptorOak5,
 };
-const _finishDescriptors = {1: 'short', 2: 'medium', 3: 'long'};
+Map<int, String> _finishDescriptors(AppLocalizations l) => {
+  1: l.winesExpertDescriptorFinish1,
+  2: l.winesExpertDescriptorFinish2,
+  3: l.winesExpertDescriptorFinish3,
+};
