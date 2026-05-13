@@ -23,6 +23,7 @@ import '../../../domain/entities/wine_memory.entity.dart';
 import '../../widgets/expert_tasting_sheet.dart';
 import '../../widgets/expert_tasting_summary.widget.dart';
 import '../../widgets/friend_ratings_strip.widget.dart';
+import '../../widgets/moment_edit_sheet.dart';
 import '../../widgets/wine_detail_blocks.widget.dart';
 import '../wine_compare/wine_compare_flow.dart';
 
@@ -662,24 +663,66 @@ class _MemoriesSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final memoriesAsync = ref.watch(wineMemoriesControllerProvider(wineId));
     final memories = memoriesAsync.valueOrNull ?? const [];
-    if (memories.isEmpty) return const SizedBox.shrink();
-
     final size = context.w * 0.22;
+    final l10n = AppLocalizations.of(context);
+    final cs = Theme.of(context).colorScheme;
+
     return Padding(
       padding: EdgeInsets.only(top: context.m),
-      child: SizedBox(
-        height: size,
-        child: ListView.separated(
-          scrollDirection: Axis.horizontal,
-          padding: EdgeInsets.symmetric(horizontal: context.paddingH),
-          itemCount: memories.length,
-          separatorBuilder: (_, _) => SizedBox(width: context.w * 0.025),
-          itemBuilder: (_, i) => _MemoryThumb(
-            memory: memories[i],
-            size: size,
-            onTap: () => _openViewer(context, memories, i),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: context.paddingH),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    l10n.momentSectionHeader,
+                    style: TextStyle(
+                      fontSize: context.bodyFont,
+                      fontWeight: FontWeight.w700,
+                      color: cs.onSurface,
+                    ),
+                  ),
+                ),
+                TextButton.icon(
+                  onPressed: () =>
+                      showMomentEditSheet(context: context, wineId: wineId),
+                  icon: const Icon(PhosphorIconsRegular.plus, size: 18),
+                  label: Text(l10n.momentSectionAdd),
+                ),
+              ],
+            ),
           ),
-        ),
+          SizedBox(height: context.s),
+          if (memories.isEmpty)
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: context.paddingH),
+              child: Text(
+                l10n.momentSectionEmpty,
+                style: TextStyle(
+                  fontSize: context.captionFont,
+                  color: cs.onSurfaceVariant,
+                ),
+              ),
+            )
+          else
+            SizedBox(
+              height: size,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                padding: EdgeInsets.symmetric(horizontal: context.paddingH),
+                itemCount: memories.length,
+                separatorBuilder: (_, _) => SizedBox(width: context.w * 0.025),
+                itemBuilder: (_, i) => _MemoryThumb(
+                  memory: memories[i],
+                  size: size,
+                  onTap: () => _openViewer(context, memories, i),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
