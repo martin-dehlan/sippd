@@ -197,6 +197,46 @@ final wineMemoryRepositoryProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef WineMemoryRepositoryRef = AutoDisposeProviderRef<WineMemoryRepository>;
+String _$wineMemoryPhotoSupabaseApiHash() =>
+    r'792a925f5a78c70d7af1ab5a063e6953672e91e1';
+
+/// See also [wineMemoryPhotoSupabaseApi].
+@ProviderFor(wineMemoryPhotoSupabaseApi)
+final wineMemoryPhotoSupabaseApiProvider =
+    AutoDisposeProvider<WineMemoryPhotoSupabaseApi?>.internal(
+      wineMemoryPhotoSupabaseApi,
+      name: r'wineMemoryPhotoSupabaseApiProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$wineMemoryPhotoSupabaseApiHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef WineMemoryPhotoSupabaseApiRef =
+    AutoDisposeProviderRef<WineMemoryPhotoSupabaseApi?>;
+String _$wineMemoryPhotoRepositoryHash() =>
+    r'5373f98f122ae7087e71daf5825a66b9044bd5fd';
+
+/// See also [wineMemoryPhotoRepository].
+@ProviderFor(wineMemoryPhotoRepository)
+final wineMemoryPhotoRepositoryProvider =
+    AutoDisposeProvider<WineMemoryPhotoRepository>.internal(
+      wineMemoryPhotoRepository,
+      name: r'wineMemoryPhotoRepositoryProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$wineMemoryPhotoRepositoryHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef WineMemoryPhotoRepositoryRef =
+    AutoDisposeProviderRef<WineMemoryPhotoRepository>;
 String _$canonicalGrapeSupabaseApiHash() =>
     r'47797806b34a2a336ffd753cec4640a2049ac841';
 

@@ -165,6 +165,7 @@ class WineListScreen extends ConsumerWidget {
                         wine: sorted[index],
                         rank: rankById[sorted[index].id] ?? index + 1,
                         compact: true,
+                        circularImage: false,
                         onTap: () => context.push(
                           AppRoutes.wineDetailPath(sorted[index].id),
                         ),

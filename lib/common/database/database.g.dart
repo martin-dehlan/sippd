@@ -1420,12 +1420,124 @@ class $WineMemoriesTableTable extends WineMemoriesTable
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _occurredAtMeta = const VerificationMeta(
+    'occurredAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> occurredAt = GeneratedColumn<DateTime>(
+    'occurred_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _occasionMeta = const VerificationMeta(
+    'occasion',
+  );
+  @override
+  late final GeneratedColumn<String> occasion = GeneratedColumn<String>(
+    'occasion',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _placeNameMeta = const VerificationMeta(
+    'placeName',
+  );
+  @override
+  late final GeneratedColumn<String> placeName = GeneratedColumn<String>(
+    'place_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _placeLatMeta = const VerificationMeta(
+    'placeLat',
+  );
+  @override
+  late final GeneratedColumn<double> placeLat = GeneratedColumn<double>(
+    'place_lat',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _placeLngMeta = const VerificationMeta(
+    'placeLng',
+  );
+  @override
+  late final GeneratedColumn<double> placeLng = GeneratedColumn<double>(
+    'place_lng',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _foodPairedMeta = const VerificationMeta(
+    'foodPaired',
+  );
+  @override
+  late final GeneratedColumn<String> foodPaired = GeneratedColumn<String>(
+    'food_paired',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _companionUserIdsMeta = const VerificationMeta(
+    'companionUserIds',
+  );
+  @override
+  late final GeneratedColumn<String> companionUserIds = GeneratedColumn<String>(
+    'companion_user_ids',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('[]'),
+  );
+  static const VerificationMeta _noteMeta = const VerificationMeta('note');
+  @override
+  late final GeneratedColumn<String> note = GeneratedColumn<String>(
+    'note',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _visibilityMeta = const VerificationMeta(
+    'visibility',
+  );
+  @override
+  late final GeneratedColumn<String> visibility = GeneratedColumn<String>(
+    'visibility',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('friends'),
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
   @override
   late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
     'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
     aliasedName,
     false,
     type: DriftSqlType.dateTime,
@@ -1440,7 +1552,17 @@ class $WineMemoriesTableTable extends WineMemoriesTable
     imageUrl,
     localImagePath,
     caption,
+    occurredAt,
+    occasion,
+    placeName,
+    placeLat,
+    placeLng,
+    foodPaired,
+    companionUserIds,
+    note,
+    visibility,
     createdAt,
+    updatedAt,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1496,10 +1618,73 @@ class $WineMemoriesTableTable extends WineMemoriesTable
         caption.isAcceptableOrUnknown(data['caption']!, _captionMeta),
       );
     }
+    if (data.containsKey('occurred_at')) {
+      context.handle(
+        _occurredAtMeta,
+        occurredAt.isAcceptableOrUnknown(data['occurred_at']!, _occurredAtMeta),
+      );
+    }
+    if (data.containsKey('occasion')) {
+      context.handle(
+        _occasionMeta,
+        occasion.isAcceptableOrUnknown(data['occasion']!, _occasionMeta),
+      );
+    }
+    if (data.containsKey('place_name')) {
+      context.handle(
+        _placeNameMeta,
+        placeName.isAcceptableOrUnknown(data['place_name']!, _placeNameMeta),
+      );
+    }
+    if (data.containsKey('place_lat')) {
+      context.handle(
+        _placeLatMeta,
+        placeLat.isAcceptableOrUnknown(data['place_lat']!, _placeLatMeta),
+      );
+    }
+    if (data.containsKey('place_lng')) {
+      context.handle(
+        _placeLngMeta,
+        placeLng.isAcceptableOrUnknown(data['place_lng']!, _placeLngMeta),
+      );
+    }
+    if (data.containsKey('food_paired')) {
+      context.handle(
+        _foodPairedMeta,
+        foodPaired.isAcceptableOrUnknown(data['food_paired']!, _foodPairedMeta),
+      );
+    }
+    if (data.containsKey('companion_user_ids')) {
+      context.handle(
+        _companionUserIdsMeta,
+        companionUserIds.isAcceptableOrUnknown(
+          data['companion_user_ids']!,
+          _companionUserIdsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('note')) {
+      context.handle(
+        _noteMeta,
+        note.isAcceptableOrUnknown(data['note']!, _noteMeta),
+      );
+    }
+    if (data.containsKey('visibility')) {
+      context.handle(
+        _visibilityMeta,
+        visibility.isAcceptableOrUnknown(data['visibility']!, _visibilityMeta),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
         createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
       );
     }
     return context;
@@ -1535,9 +1720,49 @@ class $WineMemoriesTableTable extends WineMemoriesTable
         DriftSqlType.string,
         data['${effectivePrefix}caption'],
       ),
+      occurredAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}occurred_at'],
+      )!,
+      occasion: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}occasion'],
+      ),
+      placeName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}place_name'],
+      ),
+      placeLat: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}place_lat'],
+      ),
+      placeLng: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}place_lng'],
+      ),
+      foodPaired: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}food_paired'],
+      ),
+      companionUserIds: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}companion_user_ids'],
+      )!,
+      note: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}note'],
+      ),
+      visibility: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}visibility'],
+      )!,
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
       )!,
     );
   }
@@ -1556,7 +1781,21 @@ class WineMemoryTableData extends DataClass
   final String? imageUrl;
   final String? localImagePath;
   final String? caption;
+  final DateTime occurredAt;
+  final String? occasion;
+  final String? placeName;
+  final double? placeLat;
+  final double? placeLng;
+  final String? foodPaired;
+
+  /// JSON-encoded list of friend user UUIDs tagged on this moment.
+  /// Drift can't mirror Postgres uuid[] directly so we serialise as
+  /// text — repo layer encodes/decodes against `List<String>`.
+  final String companionUserIds;
+  final String? note;
+  final String visibility;
   final DateTime createdAt;
+  final DateTime updatedAt;
   const WineMemoryTableData({
     required this.id,
     required this.wineId,
@@ -1564,7 +1803,17 @@ class WineMemoryTableData extends DataClass
     this.imageUrl,
     this.localImagePath,
     this.caption,
+    required this.occurredAt,
+    this.occasion,
+    this.placeName,
+    this.placeLat,
+    this.placeLng,
+    this.foodPaired,
+    required this.companionUserIds,
+    this.note,
+    required this.visibility,
     required this.createdAt,
+    required this.updatedAt,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1581,7 +1830,29 @@ class WineMemoryTableData extends DataClass
     if (!nullToAbsent || caption != null) {
       map['caption'] = Variable<String>(caption);
     }
+    map['occurred_at'] = Variable<DateTime>(occurredAt);
+    if (!nullToAbsent || occasion != null) {
+      map['occasion'] = Variable<String>(occasion);
+    }
+    if (!nullToAbsent || placeName != null) {
+      map['place_name'] = Variable<String>(placeName);
+    }
+    if (!nullToAbsent || placeLat != null) {
+      map['place_lat'] = Variable<double>(placeLat);
+    }
+    if (!nullToAbsent || placeLng != null) {
+      map['place_lng'] = Variable<double>(placeLng);
+    }
+    if (!nullToAbsent || foodPaired != null) {
+      map['food_paired'] = Variable<String>(foodPaired);
+    }
+    map['companion_user_ids'] = Variable<String>(companionUserIds);
+    if (!nullToAbsent || note != null) {
+      map['note'] = Variable<String>(note);
+    }
+    map['visibility'] = Variable<String>(visibility);
     map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
   }
 
@@ -1599,7 +1870,27 @@ class WineMemoryTableData extends DataClass
       caption: caption == null && nullToAbsent
           ? const Value.absent()
           : Value(caption),
+      occurredAt: Value(occurredAt),
+      occasion: occasion == null && nullToAbsent
+          ? const Value.absent()
+          : Value(occasion),
+      placeName: placeName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(placeName),
+      placeLat: placeLat == null && nullToAbsent
+          ? const Value.absent()
+          : Value(placeLat),
+      placeLng: placeLng == null && nullToAbsent
+          ? const Value.absent()
+          : Value(placeLng),
+      foodPaired: foodPaired == null && nullToAbsent
+          ? const Value.absent()
+          : Value(foodPaired),
+      companionUserIds: Value(companionUserIds),
+      note: note == null && nullToAbsent ? const Value.absent() : Value(note),
+      visibility: Value(visibility),
       createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
     );
   }
 
@@ -1615,7 +1906,17 @@ class WineMemoryTableData extends DataClass
       imageUrl: serializer.fromJson<String?>(json['imageUrl']),
       localImagePath: serializer.fromJson<String?>(json['localImagePath']),
       caption: serializer.fromJson<String?>(json['caption']),
+      occurredAt: serializer.fromJson<DateTime>(json['occurredAt']),
+      occasion: serializer.fromJson<String?>(json['occasion']),
+      placeName: serializer.fromJson<String?>(json['placeName']),
+      placeLat: serializer.fromJson<double?>(json['placeLat']),
+      placeLng: serializer.fromJson<double?>(json['placeLng']),
+      foodPaired: serializer.fromJson<String?>(json['foodPaired']),
+      companionUserIds: serializer.fromJson<String>(json['companionUserIds']),
+      note: serializer.fromJson<String?>(json['note']),
+      visibility: serializer.fromJson<String>(json['visibility']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
   }
   @override
@@ -1628,7 +1929,17 @@ class WineMemoryTableData extends DataClass
       'imageUrl': serializer.toJson<String?>(imageUrl),
       'localImagePath': serializer.toJson<String?>(localImagePath),
       'caption': serializer.toJson<String?>(caption),
+      'occurredAt': serializer.toJson<DateTime>(occurredAt),
+      'occasion': serializer.toJson<String?>(occasion),
+      'placeName': serializer.toJson<String?>(placeName),
+      'placeLat': serializer.toJson<double?>(placeLat),
+      'placeLng': serializer.toJson<double?>(placeLng),
+      'foodPaired': serializer.toJson<String?>(foodPaired),
+      'companionUserIds': serializer.toJson<String>(companionUserIds),
+      'note': serializer.toJson<String?>(note),
+      'visibility': serializer.toJson<String>(visibility),
       'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
   }
 
@@ -1639,7 +1950,17 @@ class WineMemoryTableData extends DataClass
     Value<String?> imageUrl = const Value.absent(),
     Value<String?> localImagePath = const Value.absent(),
     Value<String?> caption = const Value.absent(),
+    DateTime? occurredAt,
+    Value<String?> occasion = const Value.absent(),
+    Value<String?> placeName = const Value.absent(),
+    Value<double?> placeLat = const Value.absent(),
+    Value<double?> placeLng = const Value.absent(),
+    Value<String?> foodPaired = const Value.absent(),
+    String? companionUserIds,
+    Value<String?> note = const Value.absent(),
+    String? visibility,
     DateTime? createdAt,
+    DateTime? updatedAt,
   }) => WineMemoryTableData(
     id: id ?? this.id,
     wineId: wineId ?? this.wineId,
@@ -1649,7 +1970,17 @@ class WineMemoryTableData extends DataClass
         ? localImagePath.value
         : this.localImagePath,
     caption: caption.present ? caption.value : this.caption,
+    occurredAt: occurredAt ?? this.occurredAt,
+    occasion: occasion.present ? occasion.value : this.occasion,
+    placeName: placeName.present ? placeName.value : this.placeName,
+    placeLat: placeLat.present ? placeLat.value : this.placeLat,
+    placeLng: placeLng.present ? placeLng.value : this.placeLng,
+    foodPaired: foodPaired.present ? foodPaired.value : this.foodPaired,
+    companionUserIds: companionUserIds ?? this.companionUserIds,
+    note: note.present ? note.value : this.note,
+    visibility: visibility ?? this.visibility,
     createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
   );
   WineMemoryTableData copyWithCompanion(WineMemoriesTableCompanion data) {
     return WineMemoryTableData(
@@ -1661,7 +1992,25 @@ class WineMemoryTableData extends DataClass
           ? data.localImagePath.value
           : this.localImagePath,
       caption: data.caption.present ? data.caption.value : this.caption,
+      occurredAt: data.occurredAt.present
+          ? data.occurredAt.value
+          : this.occurredAt,
+      occasion: data.occasion.present ? data.occasion.value : this.occasion,
+      placeName: data.placeName.present ? data.placeName.value : this.placeName,
+      placeLat: data.placeLat.present ? data.placeLat.value : this.placeLat,
+      placeLng: data.placeLng.present ? data.placeLng.value : this.placeLng,
+      foodPaired: data.foodPaired.present
+          ? data.foodPaired.value
+          : this.foodPaired,
+      companionUserIds: data.companionUserIds.present
+          ? data.companionUserIds.value
+          : this.companionUserIds,
+      note: data.note.present ? data.note.value : this.note,
+      visibility: data.visibility.present
+          ? data.visibility.value
+          : this.visibility,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
   }
 
@@ -1674,7 +2023,17 @@ class WineMemoryTableData extends DataClass
           ..write('imageUrl: $imageUrl, ')
           ..write('localImagePath: $localImagePath, ')
           ..write('caption: $caption, ')
-          ..write('createdAt: $createdAt')
+          ..write('occurredAt: $occurredAt, ')
+          ..write('occasion: $occasion, ')
+          ..write('placeName: $placeName, ')
+          ..write('placeLat: $placeLat, ')
+          ..write('placeLng: $placeLng, ')
+          ..write('foodPaired: $foodPaired, ')
+          ..write('companionUserIds: $companionUserIds, ')
+          ..write('note: $note, ')
+          ..write('visibility: $visibility, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
           ..write(')'))
         .toString();
   }
@@ -1687,7 +2046,17 @@ class WineMemoryTableData extends DataClass
     imageUrl,
     localImagePath,
     caption,
+    occurredAt,
+    occasion,
+    placeName,
+    placeLat,
+    placeLng,
+    foodPaired,
+    companionUserIds,
+    note,
+    visibility,
     createdAt,
+    updatedAt,
   );
   @override
   bool operator ==(Object other) =>
@@ -1699,7 +2068,17 @@ class WineMemoryTableData extends DataClass
           other.imageUrl == this.imageUrl &&
           other.localImagePath == this.localImagePath &&
           other.caption == this.caption &&
-          other.createdAt == this.createdAt);
+          other.occurredAt == this.occurredAt &&
+          other.occasion == this.occasion &&
+          other.placeName == this.placeName &&
+          other.placeLat == this.placeLat &&
+          other.placeLng == this.placeLng &&
+          other.foodPaired == this.foodPaired &&
+          other.companionUserIds == this.companionUserIds &&
+          other.note == this.note &&
+          other.visibility == this.visibility &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
 }
 
 class WineMemoriesTableCompanion extends UpdateCompanion<WineMemoryTableData> {
@@ -1709,7 +2088,17 @@ class WineMemoriesTableCompanion extends UpdateCompanion<WineMemoryTableData> {
   final Value<String?> imageUrl;
   final Value<String?> localImagePath;
   final Value<String?> caption;
+  final Value<DateTime> occurredAt;
+  final Value<String?> occasion;
+  final Value<String?> placeName;
+  final Value<double?> placeLat;
+  final Value<double?> placeLng;
+  final Value<String?> foodPaired;
+  final Value<String> companionUserIds;
+  final Value<String?> note;
+  final Value<String> visibility;
   final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
   final Value<int> rowid;
   const WineMemoriesTableCompanion({
     this.id = const Value.absent(),
@@ -1718,7 +2107,17 @@ class WineMemoriesTableCompanion extends UpdateCompanion<WineMemoryTableData> {
     this.imageUrl = const Value.absent(),
     this.localImagePath = const Value.absent(),
     this.caption = const Value.absent(),
+    this.occurredAt = const Value.absent(),
+    this.occasion = const Value.absent(),
+    this.placeName = const Value.absent(),
+    this.placeLat = const Value.absent(),
+    this.placeLng = const Value.absent(),
+    this.foodPaired = const Value.absent(),
+    this.companionUserIds = const Value.absent(),
+    this.note = const Value.absent(),
+    this.visibility = const Value.absent(),
     this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   WineMemoriesTableCompanion.insert({
@@ -1728,7 +2127,17 @@ class WineMemoriesTableCompanion extends UpdateCompanion<WineMemoryTableData> {
     this.imageUrl = const Value.absent(),
     this.localImagePath = const Value.absent(),
     this.caption = const Value.absent(),
+    this.occurredAt = const Value.absent(),
+    this.occasion = const Value.absent(),
+    this.placeName = const Value.absent(),
+    this.placeLat = const Value.absent(),
+    this.placeLng = const Value.absent(),
+    this.foodPaired = const Value.absent(),
+    this.companionUserIds = const Value.absent(),
+    this.note = const Value.absent(),
+    this.visibility = const Value.absent(),
     this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        wineId = Value(wineId),
@@ -1740,7 +2149,17 @@ class WineMemoriesTableCompanion extends UpdateCompanion<WineMemoryTableData> {
     Expression<String>? imageUrl,
     Expression<String>? localImagePath,
     Expression<String>? caption,
+    Expression<DateTime>? occurredAt,
+    Expression<String>? occasion,
+    Expression<String>? placeName,
+    Expression<double>? placeLat,
+    Expression<double>? placeLng,
+    Expression<String>? foodPaired,
+    Expression<String>? companionUserIds,
+    Expression<String>? note,
+    Expression<String>? visibility,
     Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -1750,7 +2169,17 @@ class WineMemoriesTableCompanion extends UpdateCompanion<WineMemoryTableData> {
       if (imageUrl != null) 'image_url': imageUrl,
       if (localImagePath != null) 'local_image_path': localImagePath,
       if (caption != null) 'caption': caption,
+      if (occurredAt != null) 'occurred_at': occurredAt,
+      if (occasion != null) 'occasion': occasion,
+      if (placeName != null) 'place_name': placeName,
+      if (placeLat != null) 'place_lat': placeLat,
+      if (placeLng != null) 'place_lng': placeLng,
+      if (foodPaired != null) 'food_paired': foodPaired,
+      if (companionUserIds != null) 'companion_user_ids': companionUserIds,
+      if (note != null) 'note': note,
+      if (visibility != null) 'visibility': visibility,
       if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -1762,7 +2191,17 @@ class WineMemoriesTableCompanion extends UpdateCompanion<WineMemoryTableData> {
     Value<String?>? imageUrl,
     Value<String?>? localImagePath,
     Value<String?>? caption,
+    Value<DateTime>? occurredAt,
+    Value<String?>? occasion,
+    Value<String?>? placeName,
+    Value<double?>? placeLat,
+    Value<double?>? placeLng,
+    Value<String?>? foodPaired,
+    Value<String>? companionUserIds,
+    Value<String?>? note,
+    Value<String>? visibility,
     Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
     Value<int>? rowid,
   }) {
     return WineMemoriesTableCompanion(
@@ -1772,7 +2211,17 @@ class WineMemoriesTableCompanion extends UpdateCompanion<WineMemoryTableData> {
       imageUrl: imageUrl ?? this.imageUrl,
       localImagePath: localImagePath ?? this.localImagePath,
       caption: caption ?? this.caption,
+      occurredAt: occurredAt ?? this.occurredAt,
+      occasion: occasion ?? this.occasion,
+      placeName: placeName ?? this.placeName,
+      placeLat: placeLat ?? this.placeLat,
+      placeLng: placeLng ?? this.placeLng,
+      foodPaired: foodPaired ?? this.foodPaired,
+      companionUserIds: companionUserIds ?? this.companionUserIds,
+      note: note ?? this.note,
+      visibility: visibility ?? this.visibility,
       createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -1798,8 +2247,38 @@ class WineMemoriesTableCompanion extends UpdateCompanion<WineMemoryTableData> {
     if (caption.present) {
       map['caption'] = Variable<String>(caption.value);
     }
+    if (occurredAt.present) {
+      map['occurred_at'] = Variable<DateTime>(occurredAt.value);
+    }
+    if (occasion.present) {
+      map['occasion'] = Variable<String>(occasion.value);
+    }
+    if (placeName.present) {
+      map['place_name'] = Variable<String>(placeName.value);
+    }
+    if (placeLat.present) {
+      map['place_lat'] = Variable<double>(placeLat.value);
+    }
+    if (placeLng.present) {
+      map['place_lng'] = Variable<double>(placeLng.value);
+    }
+    if (foodPaired.present) {
+      map['food_paired'] = Variable<String>(foodPaired.value);
+    }
+    if (companionUserIds.present) {
+      map['companion_user_ids'] = Variable<String>(companionUserIds.value);
+    }
+    if (note.present) {
+      map['note'] = Variable<String>(note.value);
+    }
+    if (visibility.present) {
+      map['visibility'] = Variable<String>(visibility.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -1816,6 +2295,387 @@ class WineMemoriesTableCompanion extends UpdateCompanion<WineMemoryTableData> {
           ..write('imageUrl: $imageUrl, ')
           ..write('localImagePath: $localImagePath, ')
           ..write('caption: $caption, ')
+          ..write('occurredAt: $occurredAt, ')
+          ..write('occasion: $occasion, ')
+          ..write('placeName: $placeName, ')
+          ..write('placeLat: $placeLat, ')
+          ..write('placeLng: $placeLng, ')
+          ..write('foodPaired: $foodPaired, ')
+          ..write('companionUserIds: $companionUserIds, ')
+          ..write('note: $note, ')
+          ..write('visibility: $visibility, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $WineMemoryPhotosTableTable extends WineMemoryPhotosTable
+    with TableInfo<$WineMemoryPhotosTableTable, WineMemoryPhotoTableData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $WineMemoryPhotosTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _memoryIdMeta = const VerificationMeta(
+    'memoryId',
+  );
+  @override
+  late final GeneratedColumn<String> memoryId = GeneratedColumn<String>(
+    'memory_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _storagePathMeta = const VerificationMeta(
+    'storagePath',
+  );
+  @override
+  late final GeneratedColumn<String> storagePath = GeneratedColumn<String>(
+    'storage_path',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _positionMeta = const VerificationMeta(
+    'position',
+  );
+  @override
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+    'position',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    memoryId,
+    storagePath,
+    position,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'wine_memory_photos';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<WineMemoryPhotoTableData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('memory_id')) {
+      context.handle(
+        _memoryIdMeta,
+        memoryId.isAcceptableOrUnknown(data['memory_id']!, _memoryIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_memoryIdMeta);
+    }
+    if (data.containsKey('storage_path')) {
+      context.handle(
+        _storagePathMeta,
+        storagePath.isAcceptableOrUnknown(
+          data['storage_path']!,
+          _storagePathMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_storagePathMeta);
+    }
+    if (data.containsKey('position')) {
+      context.handle(
+        _positionMeta,
+        position.isAcceptableOrUnknown(data['position']!, _positionMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  WineMemoryPhotoTableData map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return WineMemoryPhotoTableData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      memoryId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}memory_id'],
+      )!,
+      storagePath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}storage_path'],
+      )!,
+      position: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}position'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $WineMemoryPhotosTableTable createAlias(String alias) {
+    return $WineMemoryPhotosTableTable(attachedDatabase, alias);
+  }
+}
+
+class WineMemoryPhotoTableData extends DataClass
+    implements Insertable<WineMemoryPhotoTableData> {
+  final String id;
+  final String memoryId;
+  final String storagePath;
+  final int position;
+  final DateTime createdAt;
+  const WineMemoryPhotoTableData({
+    required this.id,
+    required this.memoryId,
+    required this.storagePath,
+    required this.position,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['memory_id'] = Variable<String>(memoryId);
+    map['storage_path'] = Variable<String>(storagePath);
+    map['position'] = Variable<int>(position);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  WineMemoryPhotosTableCompanion toCompanion(bool nullToAbsent) {
+    return WineMemoryPhotosTableCompanion(
+      id: Value(id),
+      memoryId: Value(memoryId),
+      storagePath: Value(storagePath),
+      position: Value(position),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory WineMemoryPhotoTableData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return WineMemoryPhotoTableData(
+      id: serializer.fromJson<String>(json['id']),
+      memoryId: serializer.fromJson<String>(json['memoryId']),
+      storagePath: serializer.fromJson<String>(json['storagePath']),
+      position: serializer.fromJson<int>(json['position']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'memoryId': serializer.toJson<String>(memoryId),
+      'storagePath': serializer.toJson<String>(storagePath),
+      'position': serializer.toJson<int>(position),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  WineMemoryPhotoTableData copyWith({
+    String? id,
+    String? memoryId,
+    String? storagePath,
+    int? position,
+    DateTime? createdAt,
+  }) => WineMemoryPhotoTableData(
+    id: id ?? this.id,
+    memoryId: memoryId ?? this.memoryId,
+    storagePath: storagePath ?? this.storagePath,
+    position: position ?? this.position,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  WineMemoryPhotoTableData copyWithCompanion(
+    WineMemoryPhotosTableCompanion data,
+  ) {
+    return WineMemoryPhotoTableData(
+      id: data.id.present ? data.id.value : this.id,
+      memoryId: data.memoryId.present ? data.memoryId.value : this.memoryId,
+      storagePath: data.storagePath.present
+          ? data.storagePath.value
+          : this.storagePath,
+      position: data.position.present ? data.position.value : this.position,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WineMemoryPhotoTableData(')
+          ..write('id: $id, ')
+          ..write('memoryId: $memoryId, ')
+          ..write('storagePath: $storagePath, ')
+          ..write('position: $position, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, memoryId, storagePath, position, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is WineMemoryPhotoTableData &&
+          other.id == this.id &&
+          other.memoryId == this.memoryId &&
+          other.storagePath == this.storagePath &&
+          other.position == this.position &&
+          other.createdAt == this.createdAt);
+}
+
+class WineMemoryPhotosTableCompanion
+    extends UpdateCompanion<WineMemoryPhotoTableData> {
+  final Value<String> id;
+  final Value<String> memoryId;
+  final Value<String> storagePath;
+  final Value<int> position;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const WineMemoryPhotosTableCompanion({
+    this.id = const Value.absent(),
+    this.memoryId = const Value.absent(),
+    this.storagePath = const Value.absent(),
+    this.position = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  WineMemoryPhotosTableCompanion.insert({
+    required String id,
+    required String memoryId,
+    required String storagePath,
+    this.position = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       memoryId = Value(memoryId),
+       storagePath = Value(storagePath);
+  static Insertable<WineMemoryPhotoTableData> custom({
+    Expression<String>? id,
+    Expression<String>? memoryId,
+    Expression<String>? storagePath,
+    Expression<int>? position,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (memoryId != null) 'memory_id': memoryId,
+      if (storagePath != null) 'storage_path': storagePath,
+      if (position != null) 'position': position,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  WineMemoryPhotosTableCompanion copyWith({
+    Value<String>? id,
+    Value<String>? memoryId,
+    Value<String>? storagePath,
+    Value<int>? position,
+    Value<DateTime>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return WineMemoryPhotosTableCompanion(
+      id: id ?? this.id,
+      memoryId: memoryId ?? this.memoryId,
+      storagePath: storagePath ?? this.storagePath,
+      position: position ?? this.position,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (memoryId.present) {
+      map['memory_id'] = Variable<String>(memoryId.value);
+    }
+    if (storagePath.present) {
+      map['storage_path'] = Variable<String>(storagePath.value);
+    }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WineMemoryPhotosTableCompanion(')
+          ..write('id: $id, ')
+          ..write('memoryId: $memoryId, ')
+          ..write('storagePath: $storagePath, ')
+          ..write('position: $position, ')
           ..write('createdAt: $createdAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -4339,6 +5199,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $WinesTableTable winesTable = $WinesTableTable(this);
   late final $WineMemoriesTableTable wineMemoriesTable =
       $WineMemoriesTableTable(this);
+  late final $WineMemoryPhotosTableTable wineMemoryPhotosTable =
+      $WineMemoryPhotosTableTable(this);
   late final $WineAliasesTableTable wineAliasesTable = $WineAliasesTableTable(
     this,
   );
@@ -4353,6 +5215,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $RatingSummaryCacheTableTable(this);
   late final WinesDao winesDao = WinesDao(this as AppDatabase);
   late final WineMemoriesDao wineMemoriesDao = WineMemoriesDao(
+    this as AppDatabase,
+  );
+  late final WineMemoryPhotosDao wineMemoryPhotosDao = WineMemoryPhotosDao(
     this as AppDatabase,
   );
   late final WineAliasesDao wineAliasesDao = WineAliasesDao(
@@ -4376,6 +5241,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   List<DatabaseSchemaEntity> get allSchemaEntities => [
     winesTable,
     wineMemoriesTable,
+    wineMemoryPhotosTable,
     wineAliasesTable,
     notificationPrefsTable,
     canonicalGrapeTable,
@@ -4983,7 +5849,17 @@ typedef $$WineMemoriesTableTableCreateCompanionBuilder =
       Value<String?> imageUrl,
       Value<String?> localImagePath,
       Value<String?> caption,
+      Value<DateTime> occurredAt,
+      Value<String?> occasion,
+      Value<String?> placeName,
+      Value<double?> placeLat,
+      Value<double?> placeLng,
+      Value<String?> foodPaired,
+      Value<String> companionUserIds,
+      Value<String?> note,
+      Value<String> visibility,
       Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
       Value<int> rowid,
     });
 typedef $$WineMemoriesTableTableUpdateCompanionBuilder =
@@ -4994,7 +5870,17 @@ typedef $$WineMemoriesTableTableUpdateCompanionBuilder =
       Value<String?> imageUrl,
       Value<String?> localImagePath,
       Value<String?> caption,
+      Value<DateTime> occurredAt,
+      Value<String?> occasion,
+      Value<String?> placeName,
+      Value<double?> placeLat,
+      Value<double?> placeLng,
+      Value<String?> foodPaired,
+      Value<String> companionUserIds,
+      Value<String?> note,
+      Value<String> visibility,
       Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
       Value<int> rowid,
     });
 
@@ -5037,8 +5923,58 @@ class $$WineMemoriesTableTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<DateTime> get occurredAt => $composableBuilder(
+    column: $table.occurredAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get occasion => $composableBuilder(
+    column: $table.occasion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get placeName => $composableBuilder(
+    column: $table.placeName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get placeLat => $composableBuilder(
+    column: $table.placeLat,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get placeLng => $composableBuilder(
+    column: $table.placeLng,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get foodPaired => $composableBuilder(
+    column: $table.foodPaired,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get companionUserIds => $composableBuilder(
+    column: $table.companionUserIds,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get note => $composableBuilder(
+    column: $table.note,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get visibility => $composableBuilder(
+    column: $table.visibility,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -5082,8 +6018,58 @@ class $$WineMemoriesTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<DateTime> get occurredAt => $composableBuilder(
+    column: $table.occurredAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get occasion => $composableBuilder(
+    column: $table.occasion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get placeName => $composableBuilder(
+    column: $table.placeName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get placeLat => $composableBuilder(
+    column: $table.placeLat,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get placeLng => $composableBuilder(
+    column: $table.placeLng,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get foodPaired => $composableBuilder(
+    column: $table.foodPaired,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get companionUserIds => $composableBuilder(
+    column: $table.companionUserIds,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get note => $composableBuilder(
+    column: $table.note,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get visibility => $composableBuilder(
+    column: $table.visibility,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
     builder: (column) => ColumnOrderings(column),
   );
 }
@@ -5117,8 +6103,46 @@ class $$WineMemoriesTableTableAnnotationComposer
   GeneratedColumn<String> get caption =>
       $composableBuilder(column: $table.caption, builder: (column) => column);
 
+  GeneratedColumn<DateTime> get occurredAt => $composableBuilder(
+    column: $table.occurredAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get occasion =>
+      $composableBuilder(column: $table.occasion, builder: (column) => column);
+
+  GeneratedColumn<String> get placeName =>
+      $composableBuilder(column: $table.placeName, builder: (column) => column);
+
+  GeneratedColumn<double> get placeLat =>
+      $composableBuilder(column: $table.placeLat, builder: (column) => column);
+
+  GeneratedColumn<double> get placeLng =>
+      $composableBuilder(column: $table.placeLng, builder: (column) => column);
+
+  GeneratedColumn<String> get foodPaired => $composableBuilder(
+    column: $table.foodPaired,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get companionUserIds => $composableBuilder(
+    column: $table.companionUserIds,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get note =>
+      $composableBuilder(column: $table.note, builder: (column) => column);
+
+  GeneratedColumn<String> get visibility => $composableBuilder(
+    column: $table.visibility,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
 }
 
 class $$WineMemoriesTableTableTableManager
@@ -5167,7 +6191,17 @@ class $$WineMemoriesTableTableTableManager
                 Value<String?> imageUrl = const Value.absent(),
                 Value<String?> localImagePath = const Value.absent(),
                 Value<String?> caption = const Value.absent(),
+                Value<DateTime> occurredAt = const Value.absent(),
+                Value<String?> occasion = const Value.absent(),
+                Value<String?> placeName = const Value.absent(),
+                Value<double?> placeLat = const Value.absent(),
+                Value<double?> placeLng = const Value.absent(),
+                Value<String?> foodPaired = const Value.absent(),
+                Value<String> companionUserIds = const Value.absent(),
+                Value<String?> note = const Value.absent(),
+                Value<String> visibility = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => WineMemoriesTableCompanion(
                 id: id,
@@ -5176,7 +6210,17 @@ class $$WineMemoriesTableTableTableManager
                 imageUrl: imageUrl,
                 localImagePath: localImagePath,
                 caption: caption,
+                occurredAt: occurredAt,
+                occasion: occasion,
+                placeName: placeName,
+                placeLat: placeLat,
+                placeLng: placeLng,
+                foodPaired: foodPaired,
+                companionUserIds: companionUserIds,
+                note: note,
+                visibility: visibility,
                 createdAt: createdAt,
+                updatedAt: updatedAt,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -5187,7 +6231,17 @@ class $$WineMemoriesTableTableTableManager
                 Value<String?> imageUrl = const Value.absent(),
                 Value<String?> localImagePath = const Value.absent(),
                 Value<String?> caption = const Value.absent(),
+                Value<DateTime> occurredAt = const Value.absent(),
+                Value<String?> occasion = const Value.absent(),
+                Value<String?> placeName = const Value.absent(),
+                Value<double?> placeLat = const Value.absent(),
+                Value<double?> placeLng = const Value.absent(),
+                Value<String?> foodPaired = const Value.absent(),
+                Value<String> companionUserIds = const Value.absent(),
+                Value<String?> note = const Value.absent(),
+                Value<String> visibility = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => WineMemoriesTableCompanion.insert(
                 id: id,
@@ -5196,7 +6250,17 @@ class $$WineMemoriesTableTableTableManager
                 imageUrl: imageUrl,
                 localImagePath: localImagePath,
                 caption: caption,
+                occurredAt: occurredAt,
+                occasion: occasion,
+                placeName: placeName,
+                placeLat: placeLat,
+                placeLng: placeLng,
+                foodPaired: foodPaired,
+                companionUserIds: companionUserIds,
+                note: note,
+                visibility: visibility,
                 createdAt: createdAt,
+                updatedAt: updatedAt,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -5226,6 +6290,227 @@ typedef $$WineMemoriesTableTableProcessedTableManager =
         >,
       ),
       WineMemoryTableData,
+      PrefetchHooks Function()
+    >;
+typedef $$WineMemoryPhotosTableTableCreateCompanionBuilder =
+    WineMemoryPhotosTableCompanion Function({
+      required String id,
+      required String memoryId,
+      required String storagePath,
+      Value<int> position,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+typedef $$WineMemoryPhotosTableTableUpdateCompanionBuilder =
+    WineMemoryPhotosTableCompanion Function({
+      Value<String> id,
+      Value<String> memoryId,
+      Value<String> storagePath,
+      Value<int> position,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+
+class $$WineMemoryPhotosTableTableFilterComposer
+    extends Composer<_$AppDatabase, $WineMemoryPhotosTableTable> {
+  $$WineMemoryPhotosTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get memoryId => $composableBuilder(
+    column: $table.memoryId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get storagePath => $composableBuilder(
+    column: $table.storagePath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get position => $composableBuilder(
+    column: $table.position,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$WineMemoryPhotosTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $WineMemoryPhotosTableTable> {
+  $$WineMemoryPhotosTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get memoryId => $composableBuilder(
+    column: $table.memoryId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get storagePath => $composableBuilder(
+    column: $table.storagePath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get position => $composableBuilder(
+    column: $table.position,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$WineMemoryPhotosTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $WineMemoryPhotosTableTable> {
+  $$WineMemoryPhotosTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get memoryId =>
+      $composableBuilder(column: $table.memoryId, builder: (column) => column);
+
+  GeneratedColumn<String> get storagePath => $composableBuilder(
+    column: $table.storagePath,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get position =>
+      $composableBuilder(column: $table.position, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$WineMemoryPhotosTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $WineMemoryPhotosTableTable,
+          WineMemoryPhotoTableData,
+          $$WineMemoryPhotosTableTableFilterComposer,
+          $$WineMemoryPhotosTableTableOrderingComposer,
+          $$WineMemoryPhotosTableTableAnnotationComposer,
+          $$WineMemoryPhotosTableTableCreateCompanionBuilder,
+          $$WineMemoryPhotosTableTableUpdateCompanionBuilder,
+          (
+            WineMemoryPhotoTableData,
+            BaseReferences<
+              _$AppDatabase,
+              $WineMemoryPhotosTableTable,
+              WineMemoryPhotoTableData
+            >,
+          ),
+          WineMemoryPhotoTableData,
+          PrefetchHooks Function()
+        > {
+  $$WineMemoryPhotosTableTableTableManager(
+    _$AppDatabase db,
+    $WineMemoryPhotosTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$WineMemoryPhotosTableTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$WineMemoryPhotosTableTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$WineMemoryPhotosTableTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> memoryId = const Value.absent(),
+                Value<String> storagePath = const Value.absent(),
+                Value<int> position = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => WineMemoryPhotosTableCompanion(
+                id: id,
+                memoryId: memoryId,
+                storagePath: storagePath,
+                position: position,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String memoryId,
+                required String storagePath,
+                Value<int> position = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => WineMemoryPhotosTableCompanion.insert(
+                id: id,
+                memoryId: memoryId,
+                storagePath: storagePath,
+                position: position,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$WineMemoryPhotosTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $WineMemoryPhotosTableTable,
+      WineMemoryPhotoTableData,
+      $$WineMemoryPhotosTableTableFilterComposer,
+      $$WineMemoryPhotosTableTableOrderingComposer,
+      $$WineMemoryPhotosTableTableAnnotationComposer,
+      $$WineMemoryPhotosTableTableCreateCompanionBuilder,
+      $$WineMemoryPhotosTableTableUpdateCompanionBuilder,
+      (
+        WineMemoryPhotoTableData,
+        BaseReferences<
+          _$AppDatabase,
+          $WineMemoryPhotosTableTable,
+          WineMemoryPhotoTableData
+        >,
+      ),
+      WineMemoryPhotoTableData,
       PrefetchHooks Function()
     >;
 typedef $$WineAliasesTableTableCreateCompanionBuilder =
@@ -6645,6 +7930,8 @@ class $AppDatabaseManager {
       $$WinesTableTableTableManager(_db, _db.winesTable);
   $$WineMemoriesTableTableTableManager get wineMemoriesTable =>
       $$WineMemoriesTableTableTableManager(_db, _db.wineMemoriesTable);
+  $$WineMemoryPhotosTableTableTableManager get wineMemoryPhotosTable =>
+      $$WineMemoryPhotosTableTableTableManager(_db, _db.wineMemoryPhotosTable);
   $$WineAliasesTableTableTableManager get wineAliasesTable =>
       $$WineAliasesTableTableTableManager(_db, _db.wineAliasesTable);
   $$NotificationPrefsTableTableTableManager get notificationPrefsTable =>

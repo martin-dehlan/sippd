@@ -14,6 +14,12 @@ class WineCardWidget extends StatelessWidget {
   final bool compact;
   final double? ratingOverride;
   final bool hideRatingIfEmpty;
+  // Photo shape inside the card. Default `null` defers to the
+  // historical behaviour (compact → circle), so existing call sites
+  // — including the group/tasting pickers that want avatar pins —
+  // don't need to opt in. The home wine list passes false to force
+  // rounded-square photos so they match surrounding card chrome.
+  final bool? circularImage;
 
   const WineCardWidget({
     super.key,
@@ -24,6 +30,7 @@ class WineCardWidget extends StatelessWidget {
     this.compact = false,
     this.ratingOverride,
     this.hideRatingIfEmpty = false,
+    this.circularImage,
   });
 
   @override
@@ -50,7 +57,12 @@ class WineCardWidget extends StatelessWidget {
             ),
             child: Row(
               children: [
-                WineCardImage(wine: wine, rank: rank, compact: compact),
+                WineCardImage(
+                  wine: wine,
+                  rank: rank,
+                  compact: compact,
+                  circular: circularImage,
+                ),
                 Expanded(
                   child: Padding(
                     padding: EdgeInsets.symmetric(
@@ -153,12 +165,17 @@ class WineCardImage extends StatelessWidget {
   final WineEntity wine;
   final int? rank;
   final bool compact;
+  // Explicit shape override. Null defers to compact (true → circle).
+  // The home wine list passes false to force rounded-square; the
+  // group/tasting pickers omit it so they keep the avatar pill look.
+  final bool? circular;
 
   const WineCardImage({
     super.key,
     required this.wine,
     this.rank,
     this.compact = false,
+    this.circular,
   });
 
   @override
@@ -167,7 +184,8 @@ class WineCardImage extends StatelessWidget {
     final hasImage = wine.imageUrl != null;
     final size = context.w * (compact ? 0.15 : 0.2);
     final inset = context.w * 0.025;
-    final radius = size / 2;
+    final isCircular = circular ?? compact;
+    final radius = isCircular ? size / 2 : context.w * 0.025;
     return Padding(
       padding: EdgeInsets.all(inset),
       child: SizedBox(

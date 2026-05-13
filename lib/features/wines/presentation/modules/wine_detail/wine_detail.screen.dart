@@ -24,6 +24,8 @@ import '../../widgets/expert_tasting_sheet.dart';
 import '../../widgets/expert_tasting_summary.widget.dart';
 import '../../widgets/friend_ratings_strip.widget.dart';
 import '../../widgets/wine_detail_blocks.widget.dart';
+import '../moment_capture/moment_capture.screen.dart';
+import '../moment_viewer/moment_viewer.screen.dart';
 import '../wine_compare/wine_compare_flow.dart';
 
 class WineDetailScreen extends ConsumerWidget {
@@ -231,7 +233,7 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
                   ),
                 ),
               ),
-              _MemoriesSection(wineId: widget.wine.id),
+              _MemoriesSection(wine: widget.wine),
               if (widget.wine.canonicalWineId != null) ...[
                 SizedBox(height: context.xl),
                 FriendRatingsStrip(
@@ -272,12 +274,7 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
               SizedBox(height: context.s),
               SizedBox(
                 height: context.h * 0.28,
-                child: _PlaceSection(
-                  location: widget.wine.location,
-                  latitude: widget.wine.latitude,
-                  longitude: widget.wine.longitude,
-                  hasCoords: hasCoords,
-                ),
+                child: _PlaceSection(wine: widget.wine, hasCoords: hasCoords),
               ),
               SizedBox(height: context.xxl * 1.5),
             ],
@@ -551,28 +548,101 @@ class _NotesBlock extends StatelessWidget {
   }
 }
 
-class _PlaceSection extends StatelessWidget {
-  final String? location;
-  final double? latitude;
-  final double? longitude;
+class _PlaceSection extends ConsumerStatefulWidget {
+  final WineEntity wine;
   final bool hasCoords;
 
-  const _PlaceSection({
-    required this.location,
-    required this.latitude,
-    required this.longitude,
-    required this.hasCoords,
-  });
+  const _PlaceSection({required this.wine, required this.hasCoords});
+
+  @override
+  ConsumerState<_PlaceSection> createState() => _PlaceSectionState();
+}
+
+class _PlaceSectionState extends ConsumerState<_PlaceSection>
+    with TickerProviderStateMixin {
+  late final MapController _mapCtrl = MapController();
+  // Track the active mark so its pill reads as selected. -1 = whole
+  // bounds (default). Tapping a pill flies the camera + selects.
+  int _selectedIndex = -1;
+  AnimationController? _flyCtrl;
+
+  @override
+  void dispose() {
+    _flyCtrl?.dispose();
+    _mapCtrl.dispose();
+    super.dispose();
+  }
+
+  /// Smooth camera fly from current center+zoom to the target. Drops
+  /// any in-flight animation so back-to-back pill taps feel snappy.
+  void _flyTo(LatLng target, double zoom) {
+    _flyCtrl?.dispose();
+    final start = _mapCtrl.camera.center;
+    final startZoom = _mapCtrl.camera.zoom;
+    final ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 420),
+    );
+    final latTween = Tween<double>(begin: start.latitude, end: target.latitude);
+    final lngTween = Tween<double>(
+      begin: start.longitude,
+      end: target.longitude,
+    );
+    final zoomTween = Tween<double>(begin: startZoom, end: zoom);
+    final anim = CurvedAnimation(parent: ctrl, curve: Curves.easeOutCubic);
+    anim.addListener(() {
+      _mapCtrl.move(
+        LatLng(latTween.evaluate(anim), lngTween.evaluate(anim)),
+        zoomTween.evaluate(anim),
+      );
+    });
+    _flyCtrl = ctrl;
+    ctrl.forward();
+  }
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
 
-    if (!hasCoords) {
-      return _EmptyPlace(location: location);
+    final memoriesAsync = ref.watch(
+      wineMemoriesControllerProvider(widget.wine.id),
+    );
+    final momentPoints = (memoriesAsync.valueOrNull ?? const [])
+        .where((m) => m.placeLat != null && m.placeLng != null)
+        .toList();
+
+    final winePoint = widget.hasCoords
+        ? LatLng(widget.wine.latitude!, widget.wine.longitude!)
+        : null;
+
+    if (winePoint == null && momentPoints.isEmpty) {
+      return _EmptyPlace(location: widget.wine.location);
     }
 
-    final point = LatLng(latitude!, longitude!);
+    final palette = <Color>[
+      cs.primary,
+      cs.tertiary,
+      const Color(0xFFE3A6BA),
+      const Color(0xFFB7C7DC),
+      const Color(0xFFE8D9A1),
+      cs.secondary,
+    ];
+    final marks = <_PlaceMark>[
+      if (winePoint != null)
+        _PlaceMark(
+          label: widget.wine.location ?? '',
+          point: winePoint,
+          color: palette[0],
+          glyph: PhosphorIconsFill.wine,
+        ),
+      for (var i = 0; i < momentPoints.length; i++)
+        _PlaceMark(
+          label: momentPoints[i].placeName ?? '·',
+          point: LatLng(momentPoints[i].placeLat!, momentPoints[i].placeLng!),
+          color: palette[(i + 1) % palette.length],
+          number: i + 1,
+        ),
+    ];
 
     return Container(
       margin: EdgeInsets.symmetric(horizontal: context.paddingH),
@@ -584,8 +654,17 @@ class _PlaceSection extends StatelessWidget {
       child: Stack(
         children: [
           FlutterMap(
+            mapController: _mapCtrl,
             options: MapOptions(
-              initialCenter: point,
+              initialCameraFit: marks.length == 1
+                  ? null
+                  : CameraFit.bounds(
+                      bounds: LatLngBounds.fromPoints(
+                        marks.map((m) => m.point).toList(),
+                      ),
+                      padding: EdgeInsets.all(context.w * 0.1),
+                    ),
+              initialCenter: marks.first.point,
               initialZoom: 14,
               interactionOptions: const InteractionOptions(
                 flags: InteractiveFlag.none,
@@ -598,114 +677,314 @@ class _PlaceSection extends StatelessWidget {
               ),
               MarkerLayer(
                 markers: [
-                  Marker(
-                    point: point,
-                    width: context.w * 0.1,
-                    height: context.w * 0.1,
-                    child: Icon(
-                      PhosphorIconsFill.mapPin,
-                      size: context.w * 0.1,
-                      color: cs.primary,
+                  for (var i = 0; i < marks.length; i++)
+                    Marker(
+                      point: marks[i].point,
+                      width: context.w * (i == _selectedIndex ? 0.095 : 0.075),
+                      height: context.w * (i == _selectedIndex ? 0.095 : 0.075),
+                      alignment: Alignment.bottomCenter,
+                      child: _MapPin(
+                        mark: marks[i],
+                        selected: i == _selectedIndex,
+                      ),
                     ),
-                  ),
                 ],
               ),
             ],
           ),
-          if (location != null)
-            Positioned(
-              left: context.m,
-              right: context.m,
-              bottom: context.m,
-              child: Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: context.m,
-                  vertical: context.s,
-                ),
-                decoration: BoxDecoration(
-                  color: cs.surface.withValues(alpha: 0.92),
-                  borderRadius: BorderRadius.circular(context.w * 0.02),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      PhosphorIconsRegular.mapPin,
-                      size: context.w * 0.045,
-                      color: cs.primary,
-                    ),
-                    SizedBox(width: context.w * 0.02),
-                    Expanded(
-                      child: Text(
-                        location!,
-                        style: TextStyle(
-                          fontSize: context.bodyFont,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
+          // Bottom pill row — tap a pill to fly the camera to its pin.
+          Positioned(
+            left: context.s,
+            right: context.s,
+            bottom: context.m,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              padding: EdgeInsets.symmetric(horizontal: context.s),
+              child: Row(
+                children: [
+                  for (var i = 0; i < marks.length; i++) ...[
+                    if (i != 0) SizedBox(width: context.xs * 1.5),
+                    _PlacePill(
+                      mark: marks[i],
+                      selected: i == _selectedIndex,
+                      onTap: () {
+                        setState(() => _selectedIndex = i);
+                        _flyTo(marks[i].point, 15);
+                      },
                     ),
                   ],
-                ),
+                ],
               ),
             ),
+          ),
         ],
       ),
     );
   }
 }
 
-class _MemoriesSection extends ConsumerWidget {
-  final String wineId;
-  const _MemoriesSection({required this.wineId});
+class _PlaceMark {
+  final String label;
+  final LatLng point;
+  final Color color;
+  final IconData? glyph;
+  final int? number;
+
+  const _PlaceMark({
+    required this.label,
+    required this.point,
+    required this.color,
+    this.glyph,
+    this.number,
+  });
+}
+
+class _MapPin extends StatelessWidget {
+  final _PlaceMark mark;
+  final bool selected;
+  const _MapPin({required this.mark, this.selected = false});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final memoriesAsync = ref.watch(wineMemoriesControllerProvider(wineId));
-    final memories = memoriesAsync.valueOrNull ?? const [];
-    if (memories.isEmpty) return const SizedBox.shrink();
+  Widget build(BuildContext context) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 220),
+      curve: Curves.easeOut,
+      decoration: BoxDecoration(
+        color: mark.color,
+        shape: BoxShape.circle,
+        border: Border.all(color: Colors.white, width: selected ? 3 : 2),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: selected ? 0.45 : 0.25),
+            blurRadius: selected ? 8 : 4,
+            offset: const Offset(0, 1),
+          ),
+        ],
+      ),
+      alignment: Alignment.center,
+      child: mark.glyph != null
+          ? Icon(
+              mark.glyph,
+              color: Colors.white,
+              size: context.w * (selected ? 0.046 : 0.04),
+            )
+          : Text(
+              '${mark.number}',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: context.w * (selected ? 0.038 : 0.034),
+                fontWeight: FontWeight.w800,
+                height: 1,
+              ),
+            ),
+    );
+  }
+}
 
-    final size = context.w * 0.22;
-    return Padding(
-      padding: EdgeInsets.only(top: context.m),
-      child: SizedBox(
-        height: size,
-        child: ListView.separated(
-          scrollDirection: Axis.horizontal,
-          padding: EdgeInsets.symmetric(horizontal: context.paddingH),
-          itemCount: memories.length,
-          separatorBuilder: (_, _) => SizedBox(width: context.w * 0.025),
-          itemBuilder: (_, i) => _MemoryThumb(
-            memory: memories[i],
-            size: size,
-            onTap: () => _openViewer(context, memories, i),
+class _PlacePill extends StatelessWidget {
+  final _PlaceMark mark;
+  final bool selected;
+  final VoidCallback onTap;
+  const _PlacePill({
+    required this.mark,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final label = mark.label.isEmpty ? '·' : mark.label;
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(context.w * 0.05),
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeOut,
+          padding: EdgeInsets.symmetric(
+            horizontal: context.s,
+            vertical: context.xs,
+          ),
+          decoration: BoxDecoration(
+            color: selected ? mark.color : cs.surface.withValues(alpha: 0.94),
+            borderRadius: BorderRadius.circular(context.w * 0.05),
+            border: Border.all(
+              color: selected ? mark.color : cs.outlineVariant,
+              width: selected ? 1.5 : 0.5,
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: context.w * 0.05,
+                height: context.w * 0.05,
+                decoration: BoxDecoration(
+                  color: selected ? Colors.white : mark.color,
+                  shape: BoxShape.circle,
+                ),
+                alignment: Alignment.center,
+                child: mark.glyph != null
+                    ? Icon(
+                        mark.glyph,
+                        color: selected ? mark.color : Colors.white,
+                        size: context.w * 0.03,
+                      )
+                    : Text(
+                        '${mark.number}',
+                        style: TextStyle(
+                          color: selected ? mark.color : Colors.white,
+                          fontSize: context.w * 0.025,
+                          fontWeight: FontWeight.w800,
+                          height: 1,
+                        ),
+                      ),
+              ),
+              SizedBox(width: context.xs * 1.5),
+              ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: context.w * 0.4),
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: context.captionFont,
+                    fontWeight: FontWeight.w600,
+                    color: selected ? Colors.white : cs.onSurface,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
+}
 
-  void _openViewer(
-    BuildContext context,
-    List<WineMemoryEntity> memories,
-    int initialIndex,
-  ) {
-    Navigator.of(context).push(
-      PageRouteBuilder(
-        opaque: false,
-        barrierColor: Colors.black.withValues(alpha: 0.95),
-        pageBuilder: (_, _, _) =>
-            _MemoryViewer(memories: memories, initialIndex: initialIndex),
+class _MemoriesSection extends ConsumerWidget {
+  final WineEntity wine;
+  const _MemoriesSection({required this.wine});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final wineId = wine.id;
+    final memoriesAsync = ref.watch(wineMemoriesControllerProvider(wineId));
+    final memories = memoriesAsync.valueOrNull ?? const [];
+    final ringSize = context.w * 0.14;
+    final l10n = AppLocalizations.of(context);
+    final cs = Theme.of(context).colorScheme;
+
+    return Padding(
+      padding: EdgeInsets.only(top: context.m),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: context.paddingH),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    l10n.momentSectionHeader,
+                    style: TextStyle(
+                      fontSize: context.bodyFont,
+                      fontWeight: FontWeight.w700,
+                      color: cs.onSurface,
+                    ),
+                  ),
+                ),
+                GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () => pushMomentCapture(
+                    context,
+                    ref,
+                    wineId: wineId,
+                    wineLocationName: wine.location,
+                    wineLocationLat: wine.latitude,
+                    wineLocationLng: wine.longitude,
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: context.s,
+                      vertical: context.xs,
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          PhosphorIconsRegular.plus,
+                          size: context.w * 0.04,
+                          color: cs.primary,
+                        ),
+                        SizedBox(width: context.xs * 1.2),
+                        Text(
+                          l10n.momentSectionAdd,
+                          style: TextStyle(
+                            fontSize: context.captionFont,
+                            fontWeight: FontWeight.w600,
+                            color: cs.primary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (memories.isEmpty)
+            Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: context.paddingH,
+                vertical: context.s,
+              ),
+              child: Text(
+                l10n.momentSectionEmpty,
+                style: TextStyle(
+                  fontSize: context.captionFont,
+                  color: cs.onSurfaceVariant,
+                ),
+              ),
+            )
+          else ...[
+            SizedBox(height: context.s),
+            SizedBox(
+              height: ringSize,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                padding: EdgeInsets.symmetric(horizontal: context.paddingH),
+                itemCount: memories.length,
+                separatorBuilder: (_, _) => SizedBox(width: context.w * 0.025),
+                itemBuilder: (_, i) {
+                  final memory = memories[i];
+                  return _MomentStoryTile(
+                    memory: memory,
+                    size: ringSize,
+                    onTap: () => pushMomentViewer(
+                      context,
+                      wineId: wineId,
+                      moments: memories,
+                      initialIndex: i,
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ],
       ),
     );
   }
 }
 
-class _MemoryThumb extends StatelessWidget {
+class _MomentStoryTile extends StatelessWidget {
   final WineMemoryEntity memory;
   final double size;
   final VoidCallback onTap;
-
-  const _MemoryThumb({
+  const _MomentStoryTile({
     required this.memory,
     required this.size,
     required this.onTap,
@@ -714,23 +993,27 @@ class _MemoryThumb extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final ringColors = [cs.primary, cs.tertiary, cs.primaryContainer];
     return GestureDetector(
       onTap: onTap,
       child: Container(
         width: size,
         height: size,
-        clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(
-          color: cs.surfaceContainer,
-          borderRadius: BorderRadius.circular(context.w * 0.03),
-          border: Border.all(color: cs.outlineVariant, width: 0.5),
+          shape: BoxShape.circle,
+          gradient: SweepGradient(colors: [...ringColors, ringColors.first]),
         ),
-        child: _memoryImage(memory, cs),
+        padding: const EdgeInsets.all(2),
+        child: Container(
+          decoration: BoxDecoration(shape: BoxShape.circle, color: cs.surface),
+          padding: const EdgeInsets.all(2),
+          child: ClipOval(child: _avatarImage(memory, cs)),
+        ),
       ),
     );
   }
 
-  Widget _memoryImage(WineMemoryEntity m, ColorScheme cs) {
+  Widget _avatarImage(WineMemoryEntity m, ColorScheme cs) {
     if (m.localImagePath != null) {
       return Image.file(File(m.localImagePath!), fit: BoxFit.cover);
     }
@@ -742,122 +1025,9 @@ class _MemoryThumb extends StatelessWidget {
             Icon(PhosphorIconsRegular.image, color: cs.outline),
       );
     }
-    return Icon(PhosphorIconsRegular.image, color: cs.outline);
-  }
-}
-
-class _MemoryViewer extends StatefulWidget {
-  final List<WineMemoryEntity> memories;
-  final int initialIndex;
-
-  const _MemoryViewer({required this.memories, required this.initialIndex});
-
-  @override
-  State<_MemoryViewer> createState() => _MemoryViewerState();
-}
-
-class _MemoryViewerState extends State<_MemoryViewer> {
-  late final PageController _controller = PageController(
-    initialPage: widget.initialIndex,
-  );
-  late int _index = widget.initialIndex;
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: SafeArea(
-        child: Stack(
-          children: [
-            PageView.builder(
-              controller: _controller,
-              itemCount: widget.memories.length,
-              onPageChanged: (i) => setState(() => _index = i),
-              itemBuilder: (_, i) {
-                final m = widget.memories[i];
-                return InteractiveViewer(
-                  minScale: 1,
-                  maxScale: 4,
-                  child: Center(child: _viewerImage(m)),
-                );
-              },
-            ),
-            Positioned(
-              top: context.m,
-              right: context.m,
-              child: GestureDetector(
-                onTap: () => Navigator.pop(context),
-                child: Container(
-                  padding: EdgeInsets.all(context.s),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.5),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    PhosphorIconsRegular.x,
-                    color: Colors.white,
-                    size: context.w * 0.06,
-                  ),
-                ),
-              ),
-            ),
-            if (widget.memories.length > 1)
-              Positioned(
-                bottom: context.l,
-                left: 0,
-                right: 0,
-                child: Center(
-                  child: Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: context.m,
-                      vertical: context.xs * 1.4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withValues(alpha: 0.5),
-                      borderRadius: BorderRadius.circular(context.w * 0.05),
-                    ),
-                    child: Text(
-                      '${_index + 1} / ${widget.memories.length}',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: context.captionFont,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _viewerImage(WineMemoryEntity m) {
-    if (m.localImagePath != null) {
-      return Image.file(File(m.localImagePath!), fit: BoxFit.contain);
-    }
-    if (m.imageUrl != null) {
-      return Image.network(
-        m.imageUrl!,
-        fit: BoxFit.contain,
-        errorBuilder: (_, _, _) => const Icon(
-          PhosphorIconsRegular.image,
-          color: Colors.white,
-          size: 80,
-        ),
-      );
-    }
-    return const Icon(
-      PhosphorIconsRegular.image,
-      color: Colors.white,
-      size: 80,
+    return Container(
+      color: cs.surfaceContainer,
+      child: Icon(PhosphorIconsRegular.image, color: cs.outline),
     );
   }
 }

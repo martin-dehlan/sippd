@@ -75,7 +75,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get languageOptionSystem => 'Systemsprache';
 
   @override
-  String get onbWelcomeTitle => 'Dein Wein-\ngedächtnis.';
+  String get onbWelcomeTitle => 'Deine Wein-\nmomente.';
 
   @override
   String get onbWelcomeBody =>
@@ -794,7 +794,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get winesDetailSectionNotes => 'NOTIZEN';
 
   @override
-  String get winesDetailSectionPlace => 'ORT';
+  String get winesDetailSectionPlace => 'ORTE';
 
   @override
   String get winesDetailPlaceEmpty => 'Kein Ort hinterlegt';
@@ -815,8 +815,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get winesEditErrorLoad => 'Wein konnte nicht geladen werden';
 
   @override
-  String get winesEditErrorMemories =>
-      'Erinnerungen konnten nicht geladen werden';
+  String get winesEditErrorMemories => 'Momente konnten nicht geladen werden';
 
   @override
   String get winesEditNotFound => 'Wein nicht gefunden';
@@ -1028,28 +1027,142 @@ class AppLocalizationsDe extends AppLocalizations {
   String get winesFormTypeSparkling => 'Schaumwein';
 
   @override
-  String get winesMemoriesHeader => 'Erinnerungen';
+  String get winesMemoriesHeader => 'Momente';
 
   @override
   String winesMemoriesHeaderWithCount(int count) {
-    return 'Erinnerungen ($count)';
+    return 'Momente ($count)';
   }
 
   @override
   String get winesMemoriesAddTile => 'Hinzufügen';
 
   @override
-  String get winesMemoriesRemoveTitle => 'Erinnerung entfernen?';
+  String get winesMemoriesRemoveTitle => 'Moment entfernen?';
 
   @override
   String get winesMemoriesRemoveBody =>
-      'Damit verschwindet dieses Foto vom Wein.';
+      'Damit verschwindet dieser Moment vom Wein.';
 
   @override
   String get winesMemoriesRemoveCancel => 'Abbrechen';
 
   @override
   String get winesMemoriesRemoveConfirm => 'Entfernen';
+
+  @override
+  String get momentSheetNewTitle => 'Neuer Moment';
+
+  @override
+  String get momentSheetEditTitle => 'Moment bearbeiten';
+
+  @override
+  String get momentFieldPhotos => 'Fotos';
+
+  @override
+  String get momentFieldWhen => 'Wann';
+
+  @override
+  String get momentFieldOccasion => 'Anlass';
+
+  @override
+  String get momentFieldCompanions => 'Mit';
+
+  @override
+  String get momentFieldPlace => 'Wo';
+
+  @override
+  String get momentFieldFood => 'Dazu gegessen';
+
+  @override
+  String get momentFieldNote => 'Notiz';
+
+  @override
+  String get momentFieldVisibility => 'Sichtbarkeit';
+
+  @override
+  String get momentAddPhoto => 'Foto hinzufügen';
+
+  @override
+  String get momentPhotoCap => 'Bis zu 10 Fotos';
+
+  @override
+  String get momentOccasionDinner => 'Dinner';
+
+  @override
+  String get momentOccasionDate => 'Date';
+
+  @override
+  String get momentOccasionCelebration => 'Feier';
+
+  @override
+  String get momentOccasionTasting => 'Tasting';
+
+  @override
+  String get momentOccasionCasual => 'Locker';
+
+  @override
+  String get momentOccasionBirthday => 'Geburtstag';
+
+  @override
+  String get momentCompanionsAddFriend => 'Freund hinzufügen';
+
+  @override
+  String get momentPlaceHint => 'Restaurant oder Ort';
+
+  @override
+  String get momentFoodHint => 'Wozu hast du ihn getrunken?';
+
+  @override
+  String get momentNoteHint => 'Was willst du dir merken?';
+
+  @override
+  String get momentVisibilityFriends => 'Freunde';
+
+  @override
+  String get momentVisibilityPrivate => 'Privat';
+
+  @override
+  String get momentSave => 'Moment speichern';
+
+  @override
+  String get momentSaveError => 'Moment konnte nicht gespeichert werden';
+
+  @override
+  String get momentEdit => 'Bearbeiten';
+
+  @override
+  String get momentDelete => 'Löschen';
+
+  @override
+  String get momentDeleteConfirmTitle => 'Moment löschen?';
+
+  @override
+  String get momentDeleteConfirmBody =>
+      'Dieser Moment und alle Fotos werden dauerhaft gelöscht.';
+
+  @override
+  String get momentUseAsShowcase => 'Als Hauptfoto setzen';
+
+  @override
+  String get momentTastingAdd => 'Tasting-Moment hinzufügen';
+
+  @override
+  String get momentValidationEmpty => 'Füge ein Foto oder eine Notiz hinzu';
+
+  @override
+  String get momentSectionHeader => 'Momente';
+
+  @override
+  String get momentSectionAdd => 'Neu';
+
+  @override
+  String get momentSectionEmpty => 'Noch keine Momente — tippe auf Neu.';
+
+  @override
+  String momentMetaWith(String names) {
+    return 'Mit $names';
+  }
 
   @override
   String get winesPhotoSourceTake => 'Foto aufnehmen';

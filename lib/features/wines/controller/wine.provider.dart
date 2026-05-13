@@ -16,16 +16,19 @@ import '../domain/repositories/canonical_grape.repository.dart';
 import '../domain/repositories/wine.repository.dart';
 import '../domain/repositories/wine_alias.repository.dart';
 import '../domain/repositories/wine_memory.repository.dart';
+import '../domain/repositories/wine_memory_photo.repository.dart';
 import '../data/data_sources/canonical_grape_supabase.api.dart';
 import '../data/data_sources/canonical_wine.api.dart';
 import '../data/data_sources/wine_alias_supabase.api.dart';
 import '../data/data_sources/wine_image.service.dart';
 import '../data/data_sources/wine_memory_supabase.api.dart';
+import '../data/data_sources/wine_memory_photo_supabase.api.dart';
 import '../data/data_sources/wine_supabase.api.dart';
 import '../data/repositories/canonical_grape.repository.impl.dart';
 import '../data/repositories/wine.repository.impl.dart';
 import '../data/repositories/wine_alias.repository.impl.dart';
 import '../data/repositories/wine_memory.repository.impl.dart';
+import '../data/repositories/wine_memory_photo.repository.impl.dart';
 
 part 'wine.provider.g.dart';
 
@@ -130,6 +133,29 @@ WineMemoryRepository wineMemoryRepository(WineMemoryRepositoryRef ref) {
   final api = ref.watch(wineMemorySupabaseApiProvider);
   return WineMemoryRepositoryImpl(
     db.wineMemoriesDao,
+    api,
+    ref.read(analyticsProvider),
+  );
+}
+
+@riverpod
+WineMemoryPhotoSupabaseApi? wineMemoryPhotoSupabaseApi(
+  WineMemoryPhotoSupabaseApiRef ref,
+) {
+  final isAuth = ref.watch(isAuthenticatedProvider);
+  if (!isAuth) return null;
+  final client = ref.read(supabaseClientProvider);
+  return WineMemoryPhotoSupabaseApi(client);
+}
+
+@riverpod
+WineMemoryPhotoRepository wineMemoryPhotoRepository(
+  WineMemoryPhotoRepositoryRef ref,
+) {
+  final db = ref.read(appDatabaseProvider);
+  final api = ref.watch(wineMemoryPhotoSupabaseApiProvider);
+  return WineMemoryPhotoRepositoryImpl(
+    db.wineMemoryPhotosDao,
     api,
     ref.read(analyticsProvider),
   );
