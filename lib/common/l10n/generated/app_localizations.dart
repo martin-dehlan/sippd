@@ -2264,24 +2264,6 @@ abstract class AppLocalizations {
   /// **'With {names}'**
   String momentMetaWith(String names);
 
-  /// No description provided for @momentUseCurrentLocation.
-  ///
-  /// In en, this message translates to:
-  /// **'Use current location'**
-  String get momentUseCurrentLocation;
-
-  /// No description provided for @momentLocationDenied.
-  ///
-  /// In en, this message translates to:
-  /// **'Location access denied'**
-  String get momentLocationDenied;
-
-  /// No description provided for @momentLocationOff.
-  ///
-  /// In en, this message translates to:
-  /// **'Turn on location services'**
-  String get momentLocationOff;
-
   /// No description provided for @winesPhotoSourceTake.
   ///
   /// In en, this message translates to:

@@ -489,9 +489,6 @@
       "names": {"type": "String"}
     }
   },
-  "momentUseCurrentLocation": "Use current location",
-  "momentLocationDenied": "Location access denied",
-  "momentLocationOff": "Turn on location services",
   "winesPhotoSourceTake": "Take photo",
   "winesPhotoSourceGallery": "Choose from gallery",
 

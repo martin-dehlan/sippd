@@ -10,8 +10,8 @@ import '../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/photo_error.dart';
 import '../../../../auth/controller/auth.provider.dart';
-import '../../../../locations/application/location_search.service.dart';
-import '../../../../locations/controller/location.provider.dart';
+import '../../../../locations/domain/entities/location.entity.dart';
+import '../../../../locations/presentation/widgets/location_search.widget.dart';
 import '../../../controller/wine.provider.dart';
 import '../../../domain/entities/wine_memory.entity.dart';
 import '../../../domain/entities/wine_memory_photo.entity.dart';
@@ -133,7 +133,6 @@ class _MomentCaptureScreenState extends ConsumerState<MomentCaptureScreen> {
   final TextEditingController _placeCtrl = TextEditingController();
   int _activeIndex = 0;
   bool _saving = false;
-  bool _resolvingLocation = false;
   late DateTime _occurredAt;
   // Lat/lng paired with the place name. Set either by pre-fill from
   // the wine's own location, by "Use current location" GPS, or by
@@ -270,96 +269,40 @@ class _MomentCaptureScreenState extends ConsumerState<MomentCaptureScreen> {
       isScrollControlled: true,
       backgroundColor: Theme.of(context).colorScheme.surface,
       builder: (ctx) {
-        return StatefulBuilder(
-          builder: (ctx, setSheetState) => Padding(
-            padding: EdgeInsets.only(
-              left: context.paddingH,
-              right: context.paddingH,
-              top: context.l,
-              bottom: MediaQuery.viewInsetsOf(ctx).bottom + context.l,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  l10n.momentFieldPlace,
-                  style: TextStyle(
-                    fontSize: context.bodyFont,
-                    fontWeight: FontWeight.w700,
-                  ),
+        return Padding(
+          padding: EdgeInsets.only(
+            left: context.paddingH,
+            right: context.paddingH,
+            top: context.l,
+            bottom: MediaQuery.viewInsetsOf(ctx).bottom + context.l,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                l10n.momentFieldPlace,
+                style: TextStyle(
+                  fontSize: context.bodyFont,
+                  fontWeight: FontWeight.w700,
                 ),
-                SizedBox(height: context.s),
-                TextField(
-                  controller: _placeCtrl,
-                  autofocus: true,
-                  maxLength: 120,
-                  decoration: InputDecoration(
-                    hintText: l10n.momentPlaceHint,
-                    counterText: '',
-                  ),
-                  // Free-typing breaks the lat/lng pairing — null them out
-                  // so we don't save stale coordinates with a new label.
-                  onChanged: (_) {
-                    if (_placeLat != null || _placeLng != null) {
-                      _placeLat = null;
-                      _placeLng = null;
-                    }
-                  },
-                  onSubmitted: (_) => Navigator.pop(ctx),
-                ),
-                SizedBox(height: context.s),
-                TextButton.icon(
-                  onPressed: _resolvingLocation
-                      ? null
-                      : () async {
-                          setSheetState(() => _resolvingLocation = true);
-                          try {
-                            final svc = ref.read(locationSearchServiceProvider);
-                            final loc = await svc.resolveCurrentLocation();
-                            _placeLat = loc.lat;
-                            _placeLng = loc.lng;
-                            _placeCtrl.text = loc.locationName.isNotEmpty
-                                ? loc.locationName
-                                : (loc.city.isNotEmpty
-                                      ? loc.city
-                                      : (loc.country.isNotEmpty
-                                            ? loc.country
-                                            : ''));
-                          } on LocationUnavailable catch (e) {
-                            if (!ctx.mounted) return;
-                            final msg =
-                                e.reason ==
-                                    LocationUnavailableReason.permissionDenied
-                                ? l10n.momentLocationDenied
-                                : l10n.momentLocationOff;
-                            ScaffoldMessenger.of(
-                              ctx,
-                            ).showSnackBar(SnackBar(content: Text(msg)));
-                          } catch (_) {
-                            // Silent — text input still works.
-                          } finally {
-                            if (ctx.mounted) {
-                              setSheetState(() => _resolvingLocation = false);
-                            }
-                          }
-                        },
-                  icon: _resolvingLocation
-                      ? const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Icon(PhosphorIconsRegular.crosshair, size: 18),
-                  label: Text(l10n.momentUseCurrentLocation),
-                ),
-                SizedBox(height: context.s),
-                FilledButton(
-                  onPressed: () => Navigator.pop(ctx),
-                  child: Text(l10n.winesMemoriesRemoveConfirm),
-                ),
-              ],
-            ),
+              ),
+              SizedBox(height: context.s),
+              // Reuses the shared LocationSearchWidget — debounced
+              // Nominatim typeahead + "Use my location" GPS in one
+              // surface. Closes itself when a result is picked.
+              LocationSearchWidget(
+                initialValue: _placeCtrl.text,
+                onLocationSelected: (loc) {
+                  setState(() {
+                    _placeCtrl.text = loc.shortDisplay;
+                    _placeLat = loc.lat;
+                    _placeLng = loc.lng;
+                  });
+                  Navigator.pop(ctx);
+                },
+              ),
+            ],
           ),
         );
       },

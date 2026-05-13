@@ -1150,15 +1150,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get momentUseCurrentLocation => 'Use current location';
-
-  @override
-  String get momentLocationDenied => 'Location access denied';
-
-  @override
-  String get momentLocationOff => 'Turn on location services';
-
-  @override
   String get winesPhotoSourceTake => 'Take photo';
 
   @override
