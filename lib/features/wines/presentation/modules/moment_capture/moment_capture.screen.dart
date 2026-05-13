@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:uuid/uuid.dart';
 
@@ -13,18 +14,13 @@ import '../../../controller/wine.provider.dart';
 import '../../../domain/entities/wine_memory.entity.dart';
 import '../../../domain/entities/wine_memory_photo.entity.dart';
 
-/// Opens the moment capture flow. Lean photo-first surface modeled on
-/// Instagram Stories: picker fires immediately, full-bleed preview
-/// with a thin caption overlay, single save action. Heavier context
-/// fields (occasion / place / food / companions) move to an edit menu
-/// reachable from the story viewer — capture itself stays minimal.
+/// Opens the moment capture flow. Photo-first, full-bleed canvas with
+/// a single integrated bottom panel: date + place chips, caption, save.
 ///
 /// New-moment flow shows the source picker FIRST (over the calling
-/// screen) and only pushes the capture page once a photo is in hand,
-/// so the user never sees an empty black canvas behind the bottom
-/// sheet. Edit flow skips the picker and goes straight in.
-///
-/// Returns true if at least one moment was saved.
+/// screen) and only pushes the capture page once a photo is in hand
+/// so the user never lands on an empty canvas. Edit flow goes
+/// straight in.
 Future<bool?> pushMomentCapture(
   BuildContext context,
   WidgetRef ref, {
@@ -34,7 +30,6 @@ Future<bool?> pushMomentCapture(
 }) async {
   String? initialUrl;
   if (existing == null && existingPhotos.isEmpty) {
-    // Source picker over the caller, not over an empty capture page.
     final source = await _showSourceSheet(context);
     if (source == null) return false;
     if (!context.mounted) return false;
@@ -118,13 +113,18 @@ class MomentCaptureScreen extends ConsumerStatefulWidget {
 class _MomentCaptureScreenState extends ConsumerState<MomentCaptureScreen> {
   final List<_PhotoSlot> _photos = [];
   final TextEditingController _captionCtrl = TextEditingController();
+  final TextEditingController _placeCtrl = TextEditingController();
   int _activeIndex = 0;
   bool _saving = false;
+  late DateTime _occurredAt;
 
   @override
   void initState() {
     super.initState();
-    _captionCtrl.text = widget.existing?.note ?? '';
+    final e = widget.existing;
+    _captionCtrl.text = e?.note ?? '';
+    _placeCtrl.text = e?.placeName ?? '';
+    _occurredAt = e?.occurredAt ?? DateTime.now();
     _photos.addAll(
       widget.existingPhotos.map(
         (p) => _PhotoSlot(id: p.id, url: p.storagePath),
@@ -140,6 +140,7 @@ class _MomentCaptureScreenState extends ConsumerState<MomentCaptureScreen> {
   @override
   void dispose() {
     _captionCtrl.dispose();
+    _placeCtrl.dispose();
     super.dispose();
   }
 
@@ -171,14 +172,109 @@ class _MomentCaptureScreenState extends ConsumerState<MomentCaptureScreen> {
     }
   }
 
-  void _removeActive() {
+  Future<void> _confirmRemovePhoto() async {
     if (_photos.isEmpty) return;
+    final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.winesMemoriesRemoveTitle),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.winesMemoriesRemoveCancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(
+              l10n.winesMemoriesRemoveConfirm,
+              style: TextStyle(color: cs.error),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (ok != true) return;
     setState(() {
       _photos.removeAt(_activeIndex);
       if (_activeIndex >= _photos.length) {
         _activeIndex = (_photos.length - 1).clamp(0, _photos.length);
       }
     });
+  }
+
+  Future<void> _editDateTime() async {
+    final date = await showDatePicker(
+      context: context,
+      initialDate: _occurredAt,
+      firstDate: DateTime(2000),
+      lastDate: DateTime.now(),
+    );
+    if (date == null || !mounted) return;
+    final time = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.fromDateTime(_occurredAt),
+    );
+    if (time == null || !mounted) return;
+    setState(() {
+      _occurredAt = DateTime(
+        date.year,
+        date.month,
+        date.day,
+        time.hour,
+        time.minute,
+      );
+    });
+  }
+
+  Future<void> _editPlace() async {
+    final l10n = AppLocalizations.of(context);
+    final result = await showModalBottomSheet<String>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      builder: (ctx) {
+        return Padding(
+          padding: EdgeInsets.only(
+            left: context.paddingH,
+            right: context.paddingH,
+            top: context.l,
+            bottom: MediaQuery.viewInsetsOf(ctx).bottom + context.l,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                l10n.momentFieldPlace,
+                style: TextStyle(
+                  fontSize: context.bodyFont,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              SizedBox(height: context.s),
+              TextField(
+                controller: _placeCtrl,
+                autofocus: true,
+                maxLength: 120,
+                decoration: InputDecoration(
+                  hintText: l10n.momentPlaceHint,
+                  counterText: '',
+                ),
+                onSubmitted: (v) => Navigator.pop(ctx, v.trim()),
+              ),
+              SizedBox(height: context.m),
+              FilledButton(
+                onPressed: () => Navigator.pop(ctx, _placeCtrl.text.trim()),
+                child: Text(l10n.winesMemoriesRemoveConfirm),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+    if (result != null && mounted) setState(() {});
   }
 
   Future<void> _save() async {
@@ -192,18 +288,17 @@ class _MomentCaptureScreenState extends ConsumerState<MomentCaptureScreen> {
       final now = DateTime.now();
       final memoryId = widget.existing?.id ?? const Uuid().v4();
       final caption = _captionCtrl.text.trim();
+      final place = _placeCtrl.text.trim();
       final entity = WineMemoryEntity(
         id: memoryId,
         wineId: widget.wineId,
         userId: userId,
-        // Keep legacy single-photo cols mirrored to first photo for
-        // back-compat readers; phase 3 retires them.
         imageUrl: _photos.isNotEmpty ? _photos.first.url : null,
         caption: caption.isEmpty ? null : caption,
         createdAt: widget.existing?.createdAt ?? now,
-        occurredAt: widget.existing?.occurredAt ?? now,
+        occurredAt: _occurredAt,
         occasion: widget.existing?.occasion,
-        placeName: widget.existing?.placeName,
+        placeName: place.isEmpty ? null : place,
         foodPaired: widget.existing?.foodPaired,
         companionUserIds: widget.existing?.companionUserIds ?? const [],
         note: caption.isEmpty ? null : caption,
@@ -237,55 +332,70 @@ class _MomentCaptureScreenState extends ConsumerState<MomentCaptureScreen> {
     final activePhoto = _photos.isEmpty ? null : _photos[_activeIndex];
     final canSave =
         !_saving && (_photos.isNotEmpty || _captionCtrl.text.trim().isNotEmpty);
+
+    final locale = Localizations.localeOf(context).toLanguageTag();
+    final dateLabel = _formatDateLabel(_occurredAt, locale);
+    final placeLabel = _placeCtrl.text.trim().isEmpty
+        ? l10n.momentFieldPlace
+        : _placeCtrl.text.trim();
+    final placeIsEmpty = _placeCtrl.text.trim().isEmpty;
+
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light,
       child: Scaffold(
         backgroundColor: Colors.black,
+        resizeToAvoidBottomInset: true,
         body: SafeArea(
           top: false,
+          bottom: false,
           child: Stack(
             children: [
+              // Photo area
               Positioned.fill(
                 child: GestureDetector(
                   behavior: HitTestBehavior.opaque,
+                  onLongPress: activePhoto == null ? null : _confirmRemovePhoto,
                   onTapUp: (d) {
                     if (_photos.length < 2) return;
                     final w = MediaQuery.of(context).size.width;
-                    if (d.localPosition.dx < w / 2) {
-                      setState(() {
+                    setState(() {
+                      if (d.localPosition.dx < w / 2) {
                         _activeIndex = (_activeIndex - 1).clamp(
                           0,
                           _photos.length - 1,
                         );
-                      });
-                    } else {
-                      setState(() {
+                      } else {
                         _activeIndex = (_activeIndex + 1).clamp(
                           0,
                           _photos.length - 1,
                         );
-                      });
-                    }
+                      }
+                    });
                   },
                   child: Center(
                     child: activePhoto == null
-                        ? _BlackPlaceholder(label: l10n.momentAddPhoto)
+                        ? Icon(
+                            PhosphorIconsThin.image,
+                            color: Colors.white.withValues(alpha: 0.25),
+                            size: context.w * 0.25,
+                          )
                         : Image.network(activePhoto.url, fit: BoxFit.contain),
                   ),
                 ),
               ),
-              // Top progress bar segments (IG-style)
+
+              // Top: progress bar segments only (no chunky chrome).
               if (_photos.length > 1)
                 Positioned(
                   top: MediaQuery.paddingOf(context).top + context.s,
                   left: context.m,
-                  right: context.m,
+                  right: context.w * 0.16,
                   child: Row(
                     children: [
                       for (var i = 0; i < _photos.length; i++) ...[
                         Expanded(
                           child: Container(
-                            height: 3,
+                            height: 2,
                             decoration: BoxDecoration(
                               color: i <= _activeIndex
                                   ? Colors.white
@@ -299,26 +409,19 @@ class _MomentCaptureScreenState extends ConsumerState<MomentCaptureScreen> {
                     ],
                   ),
                 ),
-              // Top-right close
+
+              // Top-right close — flat, no glass pill.
               Positioned(
-                top: MediaQuery.paddingOf(context).top + context.s,
+                top: MediaQuery.paddingOf(context).top + context.xs,
                 right: context.s,
-                child: _Glyph(
-                  icon: PhosphorIconsRegular.x,
-                  onTap: () => Navigator.of(context).pop(false),
+                child: IconButton(
+                  icon: const Icon(PhosphorIconsRegular.x, color: Colors.white),
+                  iconSize: context.w * 0.055,
+                  onPressed: () => Navigator.of(context).pop(false),
                 ),
               ),
-              // Top-left photo remove (only when a photo is active)
-              if (activePhoto != null)
-                Positioned(
-                  top: MediaQuery.paddingOf(context).top + context.s,
-                  left: context.s,
-                  child: _Glyph(
-                    icon: PhosphorIconsRegular.trash,
-                    onTap: _removeActive,
-                  ),
-                ),
-              // Bottom overlay — caption + add-more + save
+
+              // Bottom integrated panel — meta chips, caption, action row.
               Positioned(
                 left: 0,
                 right: 0,
@@ -330,43 +433,101 @@ class _MomentCaptureScreenState extends ConsumerState<MomentCaptureScreen> {
                       end: Alignment.bottomCenter,
                       colors: [
                         Colors.transparent,
-                        Colors.black.withValues(alpha: 0.8),
+                        Colors.black.withValues(alpha: 0.85),
                       ],
                     ),
                   ),
                   padding: EdgeInsets.only(
                     left: context.paddingH,
                     right: context.paddingH,
-                    top: context.l,
-                    bottom: MediaQuery.paddingOf(context).bottom + context.m,
+                    top: context.xl,
+                    bottom: MediaQuery.paddingOf(context).bottom + context.s,
                   ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      _CaptionInput(controller: _captionCtrl),
-                      SizedBox(height: context.m),
                       Row(
                         children: [
-                          _SmallChip(
-                            icon: PhosphorIconsRegular.plus,
-                            label: l10n.momentAddPhoto,
-                            onTap: _photos.length >= 10
-                                ? null
-                                : () => _addPhoto(),
+                          _MetaChip(
+                            icon: PhosphorIconsRegular.clock,
+                            label: dateLabel,
+                            onTap: _editDateTime,
                           ),
+                          SizedBox(width: context.s),
+                          Flexible(
+                            child: _MetaChip(
+                              icon: PhosphorIconsRegular.mapPin,
+                              label: placeLabel,
+                              dimmed: placeIsEmpty,
+                              onTap: _editPlace,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: context.s),
+                      TextField(
+                        controller: _captionCtrl,
+                        maxLines: 3,
+                        minLines: 1,
+                        maxLength: 1000,
+                        textCapitalization: TextCapitalization.sentences,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: context.bodyFont,
+                          height: 1.3,
+                        ),
+                        cursorColor: Colors.white,
+                        decoration: InputDecoration(
+                          counterText: '',
+                          isCollapsed: true,
+                          contentPadding: EdgeInsets.symmetric(
+                            vertical: context.s,
+                          ),
+                          border: InputBorder.none,
+                          hintText: l10n.momentNoteHint,
+                          hintStyle: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.55),
+                            fontSize: context.bodyFont,
+                          ),
+                        ),
+                        onChanged: (_) => setState(() {}),
+                      ),
+                      Container(
+                        height: 1,
+                        margin: EdgeInsets.only(bottom: context.s),
+                        color: Colors.white.withValues(alpha: 0.12),
+                      ),
+                      Row(
+                        children: [
+                          IconButton(
+                            icon: Icon(
+                              PhosphorIconsRegular.plus,
+                              color: _photos.length >= 10
+                                  ? Colors.white24
+                                  : Colors.white,
+                              size: context.w * 0.055,
+                            ),
+                            onPressed: _photos.length >= 10 ? null : _addPhoto,
+                            tooltip: l10n.momentAddPhoto,
+                          ),
+                          if (_photos.length > 1) ...[
+                            SizedBox(width: context.xs),
+                            Text(
+                              '${_activeIndex + 1}/${_photos.length}',
+                              style: TextStyle(
+                                color: Colors.white.withValues(alpha: 0.6),
+                                fontSize: context.captionFont,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
                           const Spacer(),
-                          FilledButton(
-                            onPressed: canSave ? _save : null,
-                            child: _saving
-                                ? SizedBox(
-                                    width: context.w * 0.05,
-                                    height: context.w * 0.05,
-                                    child: const CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                    ),
-                                  )
-                                : Text(l10n.momentSave),
+                          _SaveButton(
+                            label: l10n.momentSave,
+                            saving: _saving,
+                            enabled: canSave,
+                            onTap: _save,
                           ),
                         ],
                       ),
@@ -380,6 +541,13 @@ class _MomentCaptureScreenState extends ConsumerState<MomentCaptureScreen> {
       ),
     );
   }
+
+  String _formatDateLabel(DateTime when, String locale) {
+    // Locale-aware "13. Mai · 13:52" / "May 13 · 1:52 PM" style. Short
+    // enough to live in a chip, no special "Today" label — relies on
+    // recency being obvious from the date itself.
+    return DateFormat.MMMd(locale).add_Hm().format(when);
+  }
 }
 
 class _PhotoSlot {
@@ -388,94 +556,41 @@ class _PhotoSlot {
   _PhotoSlot({required this.id, required this.url});
 }
 
-class _Glyph extends StatelessWidget {
-  final IconData icon;
-  final VoidCallback onTap;
-  const _Glyph({required this.icon, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.all(context.s),
-        decoration: BoxDecoration(
-          color: Colors.black.withValues(alpha: 0.4),
-          shape: BoxShape.circle,
-        ),
-        child: Icon(icon, color: Colors.white, size: context.w * 0.055),
-      ),
-    );
-  }
-}
-
-class _CaptionInput extends StatelessWidget {
-  final TextEditingController controller;
-  const _CaptionInput({required this.controller});
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(context.w * 0.04),
-      ),
-      padding: EdgeInsets.symmetric(horizontal: context.m, vertical: context.s),
-      child: TextField(
-        controller: controller,
-        maxLines: 3,
-        minLines: 1,
-        maxLength: 1000,
-        style: TextStyle(color: Colors.white, fontSize: context.bodyFont),
-        cursorColor: Colors.white,
-        decoration: InputDecoration(
-          counterText: '',
-          border: InputBorder.none,
-          isCollapsed: true,
-          hintText: l10n.momentNoteHint,
-          hintStyle: TextStyle(
-            color: Colors.white.withValues(alpha: 0.6),
-            fontSize: context.bodyFont,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _SmallChip extends StatelessWidget {
+class _MetaChip extends StatelessWidget {
   final IconData icon;
   final String label;
-  final VoidCallback? onTap;
-  const _SmallChip({required this.icon, required this.label, this.onTap});
+  final bool dimmed;
+  final VoidCallback onTap;
+  const _MetaChip({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+    this.dimmed = false,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final color = Colors.white.withValues(alpha: dimmed ? 0.55 : 0.95);
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.symmetric(
-          horizontal: context.m,
-          vertical: context.s,
-        ),
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.12),
-          borderRadius: BorderRadius.circular(context.w * 0.05),
-        ),
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: context.xs * 1.2),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: context.w * 0.04, color: Colors.white),
-            SizedBox(width: context.xs * 1.5),
-            Text(
-              label,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: context.captionFont,
-                fontWeight: FontWeight.w500,
+            Icon(icon, color: color, size: context.w * 0.04),
+            SizedBox(width: context.xs * 1.3),
+            Flexible(
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: color,
+                  fontSize: context.captionFont,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
           ],
@@ -485,18 +600,54 @@ class _SmallChip extends StatelessWidget {
   }
 }
 
-class _BlackPlaceholder extends StatelessWidget {
+class _SaveButton extends StatelessWidget {
   final String label;
-  const _BlackPlaceholder({required this.label});
+  final bool saving;
+  final bool enabled;
+  final VoidCallback onTap;
+  const _SaveButton({
+    required this.label,
+    required this.saving,
+    required this.enabled,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text(
+    final cs = Theme.of(context).colorScheme;
+    return FilledButton.icon(
+      onPressed: enabled ? onTap : null,
+      style: FilledButton.styleFrom(
+        backgroundColor: enabled
+            ? cs.primary
+            : Colors.white.withValues(alpha: 0.18),
+        foregroundColor: enabled
+            ? cs.onPrimary
+            : Colors.white.withValues(alpha: 0.55),
+        padding: EdgeInsets.symmetric(
+          horizontal: context.m,
+          vertical: context.s * 1.1,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(context.w * 0.06),
+        ),
+        elevation: 0,
+      ),
+      icon: saving
+          ? SizedBox(
+              width: context.w * 0.04,
+              height: context.w * 0.04,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: cs.onPrimary,
+              ),
+            )
+          : Icon(PhosphorIconsRegular.check, size: context.w * 0.045),
+      label: Text(
         label,
         style: TextStyle(
-          color: Colors.white.withValues(alpha: 0.5),
-          fontSize: context.bodyFont,
+          fontSize: context.captionFont,
+          fontWeight: FontWeight.w600,
         ),
       ),
     );
