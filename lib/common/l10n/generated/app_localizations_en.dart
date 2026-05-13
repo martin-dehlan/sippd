@@ -73,7 +73,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get languageOptionSystem => 'System default';
 
   @override
-  String get onbWelcomeTitle => 'Your wine\nmemory.';
+  String get onbWelcomeTitle => 'Your wine\nmoments.';
 
   @override
   String get onbWelcomeBody =>
@@ -804,7 +804,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get winesEditErrorLoad => 'Couldn\'t load wine';
 
   @override
-  String get winesEditErrorMemories => 'Couldn\'t load memories';
+  String get winesEditErrorMemories => 'Couldn\'t load moments';
 
   @override
   String get winesEditNotFound => 'Wine not found';
@@ -1012,28 +1012,142 @@ class AppLocalizationsEn extends AppLocalizations {
   String get winesFormTypeSparkling => 'Sparkling';
 
   @override
-  String get winesMemoriesHeader => 'Memories';
+  String get winesMemoriesHeader => 'Moments';
 
   @override
   String winesMemoriesHeaderWithCount(int count) {
-    return 'Memories ($count)';
+    return 'Moments ($count)';
   }
 
   @override
   String get winesMemoriesAddTile => 'Add';
 
   @override
-  String get winesMemoriesRemoveTitle => 'Remove memory?';
+  String get winesMemoriesRemoveTitle => 'Remove moment?';
 
   @override
   String get winesMemoriesRemoveBody =>
-      'This will remove this photo from the wine.';
+      'This will remove this moment from the wine.';
 
   @override
   String get winesMemoriesRemoveCancel => 'Cancel';
 
   @override
   String get winesMemoriesRemoveConfirm => 'Remove';
+
+  @override
+  String get momentSheetNewTitle => 'New moment';
+
+  @override
+  String get momentSheetEditTitle => 'Edit moment';
+
+  @override
+  String get momentFieldPhotos => 'Photos';
+
+  @override
+  String get momentFieldWhen => 'When';
+
+  @override
+  String get momentFieldOccasion => 'Occasion';
+
+  @override
+  String get momentFieldCompanions => 'With';
+
+  @override
+  String get momentFieldPlace => 'Where';
+
+  @override
+  String get momentFieldFood => 'Paired with';
+
+  @override
+  String get momentFieldNote => 'Note';
+
+  @override
+  String get momentFieldVisibility => 'Visibility';
+
+  @override
+  String get momentAddPhoto => 'Add photo';
+
+  @override
+  String get momentPhotoCap => 'Up to 10 photos';
+
+  @override
+  String get momentOccasionDinner => 'Dinner';
+
+  @override
+  String get momentOccasionDate => 'Date';
+
+  @override
+  String get momentOccasionCelebration => 'Celebration';
+
+  @override
+  String get momentOccasionTasting => 'Tasting';
+
+  @override
+  String get momentOccasionCasual => 'Casual';
+
+  @override
+  String get momentOccasionBirthday => 'Birthday';
+
+  @override
+  String get momentCompanionsAddFriend => 'Add friend';
+
+  @override
+  String get momentPlaceHint => 'Restaurant or place';
+
+  @override
+  String get momentFoodHint => 'What did you pair it with?';
+
+  @override
+  String get momentNoteHint => 'Anything to remember?';
+
+  @override
+  String get momentVisibilityFriends => 'Friends';
+
+  @override
+  String get momentVisibilityPrivate => 'Private';
+
+  @override
+  String get momentSave => 'Save moment';
+
+  @override
+  String get momentSaveError => 'Couldn\'t save moment';
+
+  @override
+  String get momentEdit => 'Edit';
+
+  @override
+  String get momentDelete => 'Delete';
+
+  @override
+  String get momentDeleteConfirmTitle => 'Delete moment?';
+
+  @override
+  String get momentDeleteConfirmBody =>
+      'This permanently removes this moment and its photos.';
+
+  @override
+  String get momentUseAsShowcase => 'Use as showcase';
+
+  @override
+  String get momentTastingAdd => 'Add tasting moment';
+
+  @override
+  String get momentValidationEmpty => 'Add a photo or note to save';
+
+  @override
+  String get momentSectionHeader => 'Moments';
+
+  @override
+  String get momentSectionAdd => 'New';
+
+  @override
+  String get momentSectionEmpty => 'No moments yet — tap New to capture one.';
+
+  @override
+  String momentMetaWith(String names) {
+    return 'With $names';
+  }
 
   @override
   String get winesPhotoSourceTake => 'Take photo';

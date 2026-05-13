@@ -227,7 +227,7 @@ abstract class AppLocalizations {
   /// No description provided for @onbWelcomeTitle.
   ///
   /// In en, this message translates to:
-  /// **'Your wine\nmemory.'**
+  /// **'Your wine\nmoments.'**
   String get onbWelcomeTitle;
 
   /// No description provided for @onbWelcomeBody.
@@ -1619,7 +1619,7 @@ abstract class AppLocalizations {
   /// No description provided for @winesEditErrorMemories.
   ///
   /// In en, this message translates to:
-  /// **'Couldn\'t load memories'**
+  /// **'Couldn\'t load moments'**
   String get winesEditErrorMemories;
 
   /// No description provided for @winesEditNotFound.
@@ -2003,13 +2003,13 @@ abstract class AppLocalizations {
   /// No description provided for @winesMemoriesHeader.
   ///
   /// In en, this message translates to:
-  /// **'Memories'**
+  /// **'Moments'**
   String get winesMemoriesHeader;
 
   /// No description provided for @winesMemoriesHeaderWithCount.
   ///
   /// In en, this message translates to:
-  /// **'Memories ({count})'**
+  /// **'Moments ({count})'**
   String winesMemoriesHeaderWithCount(int count);
 
   /// No description provided for @winesMemoriesAddTile.
@@ -2021,13 +2021,13 @@ abstract class AppLocalizations {
   /// No description provided for @winesMemoriesRemoveTitle.
   ///
   /// In en, this message translates to:
-  /// **'Remove memory?'**
+  /// **'Remove moment?'**
   String get winesMemoriesRemoveTitle;
 
   /// No description provided for @winesMemoriesRemoveBody.
   ///
   /// In en, this message translates to:
-  /// **'This will remove this photo from the wine.'**
+  /// **'This will remove this moment from the wine.'**
   String get winesMemoriesRemoveBody;
 
   /// No description provided for @winesMemoriesRemoveCancel.
@@ -2041,6 +2041,228 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Remove'**
   String get winesMemoriesRemoveConfirm;
+
+  /// No description provided for @momentSheetNewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New moment'**
+  String get momentSheetNewTitle;
+
+  /// No description provided for @momentSheetEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit moment'**
+  String get momentSheetEditTitle;
+
+  /// No description provided for @momentFieldPhotos.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos'**
+  String get momentFieldPhotos;
+
+  /// No description provided for @momentFieldWhen.
+  ///
+  /// In en, this message translates to:
+  /// **'When'**
+  String get momentFieldWhen;
+
+  /// No description provided for @momentFieldOccasion.
+  ///
+  /// In en, this message translates to:
+  /// **'Occasion'**
+  String get momentFieldOccasion;
+
+  /// No description provided for @momentFieldCompanions.
+  ///
+  /// In en, this message translates to:
+  /// **'With'**
+  String get momentFieldCompanions;
+
+  /// No description provided for @momentFieldPlace.
+  ///
+  /// In en, this message translates to:
+  /// **'Where'**
+  String get momentFieldPlace;
+
+  /// No description provided for @momentFieldFood.
+  ///
+  /// In en, this message translates to:
+  /// **'Paired with'**
+  String get momentFieldFood;
+
+  /// No description provided for @momentFieldNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Note'**
+  String get momentFieldNote;
+
+  /// No description provided for @momentFieldVisibility.
+  ///
+  /// In en, this message translates to:
+  /// **'Visibility'**
+  String get momentFieldVisibility;
+
+  /// No description provided for @momentAddPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Add photo'**
+  String get momentAddPhoto;
+
+  /// No description provided for @momentPhotoCap.
+  ///
+  /// In en, this message translates to:
+  /// **'Up to 10 photos'**
+  String get momentPhotoCap;
+
+  /// No description provided for @momentOccasionDinner.
+  ///
+  /// In en, this message translates to:
+  /// **'Dinner'**
+  String get momentOccasionDinner;
+
+  /// No description provided for @momentOccasionDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get momentOccasionDate;
+
+  /// No description provided for @momentOccasionCelebration.
+  ///
+  /// In en, this message translates to:
+  /// **'Celebration'**
+  String get momentOccasionCelebration;
+
+  /// No description provided for @momentOccasionTasting.
+  ///
+  /// In en, this message translates to:
+  /// **'Tasting'**
+  String get momentOccasionTasting;
+
+  /// No description provided for @momentOccasionCasual.
+  ///
+  /// In en, this message translates to:
+  /// **'Casual'**
+  String get momentOccasionCasual;
+
+  /// No description provided for @momentOccasionBirthday.
+  ///
+  /// In en, this message translates to:
+  /// **'Birthday'**
+  String get momentOccasionBirthday;
+
+  /// No description provided for @momentCompanionsAddFriend.
+  ///
+  /// In en, this message translates to:
+  /// **'Add friend'**
+  String get momentCompanionsAddFriend;
+
+  /// No description provided for @momentPlaceHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Restaurant or place'**
+  String get momentPlaceHint;
+
+  /// No description provided for @momentFoodHint.
+  ///
+  /// In en, this message translates to:
+  /// **'What did you pair it with?'**
+  String get momentFoodHint;
+
+  /// No description provided for @momentNoteHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Anything to remember?'**
+  String get momentNoteHint;
+
+  /// No description provided for @momentVisibilityFriends.
+  ///
+  /// In en, this message translates to:
+  /// **'Friends'**
+  String get momentVisibilityFriends;
+
+  /// No description provided for @momentVisibilityPrivate.
+  ///
+  /// In en, this message translates to:
+  /// **'Private'**
+  String get momentVisibilityPrivate;
+
+  /// No description provided for @momentSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save moment'**
+  String get momentSave;
+
+  /// No description provided for @momentSaveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save moment'**
+  String get momentSaveError;
+
+  /// No description provided for @momentEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get momentEdit;
+
+  /// No description provided for @momentDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get momentDelete;
+
+  /// No description provided for @momentDeleteConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete moment?'**
+  String get momentDeleteConfirmTitle;
+
+  /// No description provided for @momentDeleteConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This permanently removes this moment and its photos.'**
+  String get momentDeleteConfirmBody;
+
+  /// No description provided for @momentUseAsShowcase.
+  ///
+  /// In en, this message translates to:
+  /// **'Use as showcase'**
+  String get momentUseAsShowcase;
+
+  /// No description provided for @momentTastingAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add tasting moment'**
+  String get momentTastingAdd;
+
+  /// No description provided for @momentValidationEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a photo or note to save'**
+  String get momentValidationEmpty;
+
+  /// No description provided for @momentSectionHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Moments'**
+  String get momentSectionHeader;
+
+  /// No description provided for @momentSectionAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get momentSectionAdd;
+
+  /// No description provided for @momentSectionEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No moments yet — tap New to capture one.'**
+  String get momentSectionEmpty;
+
+  /// No description provided for @momentMetaWith.
+  ///
+  /// In en, this message translates to:
+  /// **'With {names}'**
+  String momentMetaWith(String names);
 
   /// No description provided for @winesPhotoSourceTake.
   ///

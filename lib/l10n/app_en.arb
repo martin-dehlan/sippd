@@ -61,7 +61,7 @@
     "description": "Option that follows the device language"
   },
 
-  "onbWelcomeTitle": "Your wine\nmemory.",
+  "onbWelcomeTitle": "Your wine\nmoments.",
   "onbWelcomeBody": "Rate the wines you love. Remember them forever. Taste alongside friends.",
   "onbWelcomeAlreadyHaveAccount": "Already have an account? ",
   "onbWelcomeSignIn": "Sign in",
@@ -341,7 +341,7 @@
   "winesDetailDeleteConfirm": "Delete",
 
   "winesEditErrorLoad": "Couldn't load wine",
-  "winesEditErrorMemories": "Couldn't load memories",
+  "winesEditErrorMemories": "Couldn't load moments",
   "winesEditNotFound": "Wine not found",
 
   "winesCleanupTitle": "Clean up duplicates",
@@ -435,18 +435,60 @@
   "winesFormTypeRose": "Rosé",
   "winesFormTypeSparkling": "Sparkling",
 
-  "winesMemoriesHeader": "Memories",
-  "winesMemoriesHeaderWithCount": "Memories ({count})",
+  "winesMemoriesHeader": "Moments",
+  "winesMemoriesHeaderWithCount": "Moments ({count})",
   "@winesMemoriesHeaderWithCount": {
     "placeholders": {
       "count": {"type": "int"}
     }
   },
   "winesMemoriesAddTile": "Add",
-  "winesMemoriesRemoveTitle": "Remove memory?",
-  "winesMemoriesRemoveBody": "This will remove this photo from the wine.",
+  "winesMemoriesRemoveTitle": "Remove moment?",
+  "winesMemoriesRemoveBody": "This will remove this moment from the wine.",
   "winesMemoriesRemoveCancel": "Cancel",
   "winesMemoriesRemoveConfirm": "Remove",
+  "momentSheetNewTitle": "New moment",
+  "momentSheetEditTitle": "Edit moment",
+  "momentFieldPhotos": "Photos",
+  "momentFieldWhen": "When",
+  "momentFieldOccasion": "Occasion",
+  "momentFieldCompanions": "With",
+  "momentFieldPlace": "Where",
+  "momentFieldFood": "Paired with",
+  "momentFieldNote": "Note",
+  "momentFieldVisibility": "Visibility",
+  "momentAddPhoto": "Add photo",
+  "momentPhotoCap": "Up to 10 photos",
+  "momentOccasionDinner": "Dinner",
+  "momentOccasionDate": "Date",
+  "momentOccasionCelebration": "Celebration",
+  "momentOccasionTasting": "Tasting",
+  "momentOccasionCasual": "Casual",
+  "momentOccasionBirthday": "Birthday",
+  "momentCompanionsAddFriend": "Add friend",
+  "momentPlaceHint": "Restaurant or place",
+  "momentFoodHint": "What did you pair it with?",
+  "momentNoteHint": "Anything to remember?",
+  "momentVisibilityFriends": "Friends",
+  "momentVisibilityPrivate": "Private",
+  "momentSave": "Save moment",
+  "momentSaveError": "Couldn't save moment",
+  "momentEdit": "Edit",
+  "momentDelete": "Delete",
+  "momentDeleteConfirmTitle": "Delete moment?",
+  "momentDeleteConfirmBody": "This permanently removes this moment and its photos.",
+  "momentUseAsShowcase": "Use as showcase",
+  "momentTastingAdd": "Add tasting moment",
+  "momentValidationEmpty": "Add a photo or note to save",
+  "momentSectionHeader": "Moments",
+  "momentSectionAdd": "New",
+  "momentSectionEmpty": "No moments yet — tap New to capture one.",
+  "momentMetaWith": "With {names}",
+  "@momentMetaWith": {
+    "placeholders": {
+      "names": {"type": "String"}
+    }
+  },
   "winesPhotoSourceTake": "Take photo",
   "winesPhotoSourceGallery": "Choose from gallery",
 
