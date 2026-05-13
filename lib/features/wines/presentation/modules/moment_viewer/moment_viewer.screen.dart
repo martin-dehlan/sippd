@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../../common/l10n/generated/app_localizations.dart';
@@ -317,7 +318,11 @@ class _MomentPage extends StatelessWidget {
         ? null
         : photos[photoIndex];
     return Stack(
+      fit: StackFit.expand,
       children: [
+        // Photo layer — full-bleed via BoxFit.cover so the screen
+        // never has dead black bars. InteractiveViewer keeps pinch-
+        // zoom available if the user wants the full frame.
         Positioned.fill(
           child: GestureDetector(
             behavior: HitTestBehavior.opaque,
@@ -329,33 +334,58 @@ class _MomentPage extends StatelessWidget {
                 onTapRight();
               }
             },
-            child: Center(
-              child: activePhoto == null
-                  ? Icon(
+            child: activePhoto == null
+                ? Center(
+                    child: Icon(
                       PhosphorIconsRegular.image,
-                      color: Colors.white.withValues(alpha: 0.4),
+                      color: Colors.white.withValues(alpha: 0.3),
                       size: 80,
-                    )
-                  : InteractiveViewer(
-                      minScale: 1,
-                      maxScale: 4,
+                    ),
+                  )
+                : InteractiveViewer(
+                    minScale: 1,
+                    maxScale: 4,
+                    child: SizedBox.expand(
                       child: _photoImage(activePhoto.storagePath),
                     ),
+                  ),
+          ),
+        ),
+
+        // Top gradient — keeps the chrome legible over any photo.
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          height: MediaQuery.paddingOf(context).top + context.h * 0.08,
+          child: IgnorePointer(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black.withValues(alpha: 0.55),
+                    Colors.transparent,
+                  ],
+                ),
+              ),
             ),
           ),
         ),
-        // Progress segments for photos in this moment
+
+        // Progress segments (only when more than one photo).
         if (photos.length > 1)
           Positioned(
             top: MediaQuery.paddingOf(context).top + context.s,
             left: context.m,
-            right: context.m,
+            right: context.w * 0.18,
             child: Row(
               children: [
                 for (var i = 0; i < photos.length; i++) ...[
                   Expanded(
                     child: Container(
-                      height: 2.5,
+                      height: 2,
                       decoration: BoxDecoration(
                         color: i <= photoIndex ? Colors.white : Colors.white24,
                         borderRadius: BorderRadius.circular(2),
@@ -367,9 +397,10 @@ class _MomentPage extends StatelessWidget {
               ],
             ),
           ),
-        // Top-right close + menu
+
+        // Top-right close + menu.
         Positioned(
-          top: MediaQuery.paddingOf(context).top + context.s,
+          top: MediaQuery.paddingOf(context).top + context.xs,
           right: context.s,
           child: Row(
             children: [
@@ -379,47 +410,43 @@ class _MomentPage extends StatelessWidget {
             ],
           ),
         ),
-        // Bottom meta overlay
-        if (_hasMeta(moment))
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent,
-                    Colors.black.withValues(alpha: 0.85),
-                  ],
-                ),
+
+        // Bottom meta overlay with subtler gradient and richer panel.
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: 0,
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                stops: const [0, 0.4, 1],
+                colors: [
+                  Colors.transparent,
+                  Colors.black.withValues(alpha: 0.55),
+                  Colors.black.withValues(alpha: 0.9),
+                ],
               ),
-              padding: EdgeInsets.only(
-                left: context.paddingH,
-                right: context.paddingH,
-                top: context.xl,
-                bottom: MediaQuery.paddingOf(context).bottom + context.m,
-              ),
-              child: _MetaLine(moment: moment),
             ),
+            padding: EdgeInsets.only(
+              left: context.paddingH,
+              right: context.paddingH,
+              top: context.xl * 1.4,
+              bottom: MediaQuery.paddingOf(context).bottom + context.m,
+            ),
+            child: _MetaPanel(moment: moment),
           ),
+        ),
       ],
     );
   }
 
-  bool _hasMeta(WineMemoryEntity m) =>
-      (m.note ?? m.caption)?.isNotEmpty == true ||
-      (m.placeName?.isNotEmpty ?? false) ||
-      (m.foodPaired?.isNotEmpty ?? false) ||
-      (m.occasion?.isNotEmpty ?? false);
-
   Widget _photoImage(String path) {
     if (path.startsWith('http')) {
-      return Image.network(path, fit: BoxFit.contain);
+      return Image.network(path, fit: BoxFit.cover);
     }
-    return Image.asset(path, fit: BoxFit.contain);
+    return Image.asset(path, fit: BoxFit.cover);
   }
 }
 
@@ -430,57 +457,122 @@ class _Glyph extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.all(context.s),
-        decoration: BoxDecoration(
-          color: Colors.black.withValues(alpha: 0.4),
-          shape: BoxShape.circle,
-        ),
-        child: Icon(icon, color: Colors.white, size: context.w * 0.055),
-      ),
+    return IconButton(
+      onPressed: onTap,
+      iconSize: context.w * 0.06,
+      padding: EdgeInsets.all(context.xs),
+      constraints: const BoxConstraints(),
+      icon: Icon(icon, color: Colors.white),
     );
   }
 }
 
-class _MetaLine extends StatelessWidget {
+class _MetaPanel extends StatelessWidget {
   final WineMemoryEntity moment;
-  const _MetaLine({required this.moment});
+  const _MetaPanel({required this.moment});
 
   @override
   Widget build(BuildContext context) {
     final caption = (moment.note ?? moment.caption)?.trim();
-    final pieces = <String>[
-      if (moment.placeName?.isNotEmpty ?? false) moment.placeName!,
-      if (moment.foodPaired?.isNotEmpty ?? false) '🍴 ${moment.foodPaired}',
-    ];
-    final meta = pieces.join(' · ');
+    final hasCaption = caption != null && caption.isNotEmpty;
+    final hasPlace = moment.placeName?.isNotEmpty ?? false;
+    final hasFood = moment.foodPaired?.isNotEmpty ?? false;
+    final locale = Localizations.localeOf(context).toLanguageTag();
+    final timestamp = DateFormat.MMMd(
+      locale,
+    ).add_Hm().format(moment.occurredAt ?? moment.createdAt);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (caption != null && caption.isNotEmpty)
+        // Eyebrow: timestamp, all-caps tracked label.
+        Text(
+          timestamp.toUpperCase(),
+          style: TextStyle(
+            color: Colors.white.withValues(alpha: 0.65),
+            fontSize: context.captionFont * 0.85,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 1.4,
+          ),
+        ),
+        if (hasCaption) ...[
+          SizedBox(height: context.xs * 1.2),
           Text(
             caption,
             style: TextStyle(
               color: Colors.white,
-              fontSize: context.bodyFont,
-              fontWeight: FontWeight.w500,
-              height: 1.3,
-            ),
-          ),
-        if (meta.isNotEmpty) ...[
-          SizedBox(height: context.xs),
-          Text(
-            meta,
-            style: TextStyle(
-              color: Colors.white.withValues(alpha: 0.75),
-              fontSize: context.captionFont,
+              fontSize: context.titleFont * 0.7,
+              fontWeight: FontWeight.w700,
+              height: 1.25,
+              letterSpacing: -0.3,
             ),
           ),
         ],
+        if (hasPlace || hasFood) ...[
+          SizedBox(height: context.s),
+          Row(
+            children: [
+              if (hasPlace)
+                _MetaIconRow(
+                  icon: PhosphorIconsRegular.mapPin,
+                  text: moment.placeName!,
+                ),
+              if (hasPlace && hasFood) ...[
+                SizedBox(width: context.m),
+                Container(
+                  width: 3,
+                  height: 3,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.5),
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                SizedBox(width: context.m),
+              ],
+              if (hasFood)
+                Flexible(
+                  child: _MetaIconRow(
+                    icon: PhosphorIconsRegular.forkKnife,
+                    text: moment.foodPaired!,
+                  ),
+                ),
+            ],
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+class _MetaIconRow extends StatelessWidget {
+  final IconData icon;
+  final String text;
+  const _MetaIconRow({required this.icon, required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          icon,
+          size: context.w * 0.038,
+          color: Colors.white.withValues(alpha: 0.75),
+        ),
+        SizedBox(width: context.xs * 1.2),
+        Flexible(
+          child: Text(
+            text,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              color: Colors.white.withValues(alpha: 0.8),
+              fontSize: context.captionFont,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
       ],
     );
   }
