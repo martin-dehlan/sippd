@@ -55,24 +55,60 @@ class MomentViewerScreen extends ConsumerStatefulWidget {
   ConsumerState<MomentViewerScreen> createState() => _MomentViewerScreenState();
 }
 
-class _MomentViewerScreenState extends ConsumerState<MomentViewerScreen> {
+class _MomentViewerScreenState extends ConsumerState<MomentViewerScreen>
+    with SingleTickerProviderStateMixin {
   late final PageController _momentCtrl;
   late int _momentIndex;
   // Per-moment photo cursor so swiping back to a moment resumes where
   // the user left off, IG-style.
   final Map<String, int> _photoCursor = {};
 
+  // IG-stories auto-advance — 5s per photo. Active segment fills
+  // progressively in sync with this controller; completing it
+  // auto-advances to the next photo / moment. Long-press anywhere
+  // pauses; release resumes. Manual tap-nav resets it.
+  static const _kPhotoDuration = Duration(seconds: 5);
+  late final AnimationController _progressCtrl;
+  // Photos for the currently-rendered moment. Captured by the page
+  // builder so completion handlers + reset use the same list the UI
+  // is showing instead of a stale snapshot.
+  List<WineMemoryPhotoEntity> _activePhotos = const [];
+
   @override
   void initState() {
     super.initState();
     _momentIndex = widget.initialIndex;
     _momentCtrl = PageController(initialPage: widget.initialIndex);
+    _progressCtrl = AnimationController(vsync: this, duration: _kPhotoDuration)
+      ..addStatusListener(_onProgressStatus);
   }
 
   @override
   void dispose() {
+    _progressCtrl.removeStatusListener(_onProgressStatus);
+    _progressCtrl.dispose();
     _momentCtrl.dispose();
     super.dispose();
+  }
+
+  void _onProgressStatus(AnimationStatus status) {
+    if (status == AnimationStatus.completed) {
+      _advancePhoto(1, _activePhotos);
+    }
+  }
+
+  void _restartProgress() {
+    _progressCtrl
+      ..stop()
+      ..reset()
+      ..forward();
+  }
+
+  void _pauseProgress() => _progressCtrl.stop(canceled: false);
+  void _resumeProgress() {
+    if (!_progressCtrl.isAnimating && _progressCtrl.value < 1.0) {
+      _progressCtrl.forward();
+    }
   }
 
   void _advancePhoto(int delta, List<WineMemoryPhotoEntity> photos) {
@@ -85,6 +121,9 @@ class _MomentViewerScreenState extends ConsumerState<MomentViewerScreen> {
           duration: const Duration(milliseconds: 220),
           curve: Curves.easeOut,
         );
+      } else {
+        // First photo of first moment — replay the segment.
+        _restartProgress();
       }
       return;
     }
@@ -94,10 +133,14 @@ class _MomentViewerScreenState extends ConsumerState<MomentViewerScreen> {
           duration: const Duration(milliseconds: 220),
           curve: Curves.easeOut,
         );
+      } else {
+        // End of last moment — stop auto-advance, leave segment full.
+        _progressCtrl.value = 1.0;
       }
       return;
     }
     setState(() => _photoCursor[m.id] = next);
+    _restartProgress();
   }
 
   @override
@@ -118,28 +161,52 @@ class _MomentViewerScreenState extends ConsumerState<MomentViewerScreen> {
             child: PageView.builder(
               controller: _momentCtrl,
               itemCount: widget.moments.length,
-              onPageChanged: (i) => setState(() => _momentIndex = i),
+              onPageChanged: (i) {
+                setState(() => _momentIndex = i);
+                _restartProgress();
+              },
               itemBuilder: (_, i) {
                 final moment = widget.moments[i];
                 final photosAsync = ref.watch(_photosFamilyProvider(moment.id));
                 return photosAsync.when(
-                  data: (photos) => _MomentPage(
-                    moment: moment,
-                    photos: _resolvePhotos(moment, photos),
-                    photoIndex: _photoCursor[moment.id] ?? 0,
-                    onTapLeft: () =>
-                        _advancePhoto(-1, _resolvePhotos(moment, photos)),
-                    onTapRight: () =>
-                        _advancePhoto(1, _resolvePhotos(moment, photos)),
-                    onClose: () => Navigator.of(context).pop(),
-                    onMenu: () => _openMenu(moment, photos),
-                  ),
+                  data: (photos) {
+                    final resolved = _resolvePhotos(moment, photos);
+                    // Only the currently-visible page should drive
+                    // the auto-advance timer.
+                    if (i == _momentIndex) {
+                      _activePhotos = resolved;
+                      if (!_progressCtrl.isAnimating &&
+                          _progressCtrl.value == 0) {
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          if (mounted) _progressCtrl.forward();
+                        });
+                      }
+                    }
+                    return _MomentPage(
+                      moment: moment,
+                      photos: resolved,
+                      photoIndex: _photoCursor[moment.id] ?? 0,
+                      progress: _progressCtrl,
+                      onTapLeft: () => _advancePhoto(-1, resolved),
+                      onTapRight: () => _advancePhoto(1, resolved),
+                      onPressStart: _pauseProgress,
+                      onPressEnd: _resumeProgress,
+                      onClose: () => Navigator.of(context).pop(),
+                      onMenu: () {
+                        _pauseProgress();
+                        _openMenu(moment, photos);
+                      },
+                    );
+                  },
                   loading: () => _MomentPage(
                     moment: moment,
                     photos: _legacyOnly(moment),
                     photoIndex: 0,
+                    progress: _progressCtrl,
                     onTapLeft: () {},
                     onTapRight: () {},
+                    onPressStart: _pauseProgress,
+                    onPressEnd: _resumeProgress,
                     onClose: () => Navigator.of(context).pop(),
                     onMenu: () {},
                   ),
@@ -147,8 +214,11 @@ class _MomentViewerScreenState extends ConsumerState<MomentViewerScreen> {
                     moment: moment,
                     photos: _legacyOnly(moment),
                     photoIndex: 0,
+                    progress: _progressCtrl,
                     onTapLeft: () {},
                     onTapRight: () {},
+                    onPressStart: _pauseProgress,
+                    onPressEnd: _resumeProgress,
                     onClose: () => Navigator.of(context).pop(),
                     onMenu: () {},
                   ),
@@ -297,8 +367,11 @@ class _MomentPage extends StatelessWidget {
   final WineMemoryEntity moment;
   final List<WineMemoryPhotoEntity> photos;
   final int photoIndex;
+  final Animation<double> progress;
   final VoidCallback onTapLeft;
   final VoidCallback onTapRight;
+  final VoidCallback onPressStart;
+  final VoidCallback onPressEnd;
   final VoidCallback onClose;
   final VoidCallback onMenu;
 
@@ -306,8 +379,11 @@ class _MomentPage extends StatelessWidget {
     required this.moment,
     required this.photos,
     required this.photoIndex,
+    required this.progress,
     required this.onTapLeft,
     required this.onTapRight,
+    required this.onPressStart,
+    required this.onPressEnd,
     required this.onClose,
     required this.onMenu,
   });
@@ -322,7 +398,8 @@ class _MomentPage extends StatelessWidget {
       children: [
         // Photo layer — full-bleed via BoxFit.cover so the screen
         // never has dead black bars. InteractiveViewer keeps pinch-
-        // zoom available if the user wants the full frame.
+        // zoom available if the user wants the full frame. Long-press
+        // pauses the auto-advance timer (IG-stories pattern).
         Positioned.fill(
           child: GestureDetector(
             behavior: HitTestBehavior.opaque,
@@ -334,6 +411,8 @@ class _MomentPage extends StatelessWidget {
                 onTapRight();
               }
             },
+            onLongPressStart: (_) => onPressStart(),
+            onLongPressEnd: (_) => onPressEnd(),
             child: activePhoto == null
                 ? Center(
                     child: Icon(
@@ -374,27 +453,29 @@ class _MomentPage extends StatelessWidget {
           ),
         ),
 
-        // Progress segments (only when more than one photo).
+        // Progress segments — IG style. Past photos = full, active =
+        // animated fill 0→1 over 5s, future = empty track.
         if (photos.length > 1)
           Positioned(
             top: MediaQuery.paddingOf(context).top + context.s,
             left: context.m,
             right: context.w * 0.18,
-            child: Row(
-              children: [
-                for (var i = 0; i < photos.length; i++) ...[
-                  Expanded(
-                    child: Container(
-                      height: 2,
-                      decoration: BoxDecoration(
-                        color: i <= photoIndex ? Colors.white : Colors.white24,
-                        borderRadius: BorderRadius.circular(2),
+            child: AnimatedBuilder(
+              animation: progress,
+              builder: (_, _) => Row(
+                children: [
+                  for (var i = 0; i < photos.length; i++) ...[
+                    Expanded(
+                      child: _ProgressSegment(
+                        fill: i < photoIndex
+                            ? 1.0
+                            : (i == photoIndex ? progress.value : 0.0),
                       ),
                     ),
-                  ),
-                  if (i != photos.length - 1) const SizedBox(width: 3),
+                    if (i != photos.length - 1) const SizedBox(width: 3),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
 
@@ -447,6 +528,35 @@ class _MomentPage extends StatelessWidget {
       return Image.network(path, fit: BoxFit.cover);
     }
     return Image.asset(path, fit: BoxFit.cover);
+  }
+}
+
+class _ProgressSegment extends StatelessWidget {
+  final double fill;
+  const _ProgressSegment({required this.fill});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 2,
+      decoration: BoxDecoration(
+        color: Colors.white24,
+        borderRadius: BorderRadius.circular(2),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: FractionallySizedBox(
+          widthFactor: fill.clamp(0.0, 1.0),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
 
