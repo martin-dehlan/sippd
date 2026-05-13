@@ -333,7 +333,7 @@
   "winesDetailStatRegion": "Region",
   "winesDetailStatCountry": "Country",
   "winesDetailSectionNotes": "NOTES",
-  "winesDetailSectionPlace": "PLACE",
+  "winesDetailSectionPlace": "PLACES",
   "winesDetailPlaceEmpty": "No place set",
   "winesDetailDeleteTitle": "Delete wine?",
   "winesDetailDeleteBody": "This cannot be undone.",
@@ -489,6 +489,9 @@
       "names": {"type": "String"}
     }
   },
+  "momentUseCurrentLocation": "Use current location",
+  "momentLocationDenied": "Location access denied",
+  "momentLocationOff": "Turn on location services",
   "winesPhotoSourceTake": "Take photo",
   "winesPhotoSourceGallery": "Choose from gallery",
 

@@ -271,7 +271,7 @@
   "winesDetailStatRegion": "Région",
   "winesDetailStatCountry": "Pays",
   "winesDetailSectionNotes": "NOTES",
-  "winesDetailSectionPlace": "LIEU",
+  "winesDetailSectionPlace": "LIEUX",
   "winesDetailPlaceEmpty": "Aucun lieu",
   "winesDetailDeleteTitle": "Supprimer le vin ?",
   "winesDetailDeleteBody": "Ça ne peut pas être annulé.",
@@ -422,6 +422,9 @@
   "momentSectionAdd": "Nouveau",
   "momentSectionEmpty": "Aucun moment encore — touche Nouveau pour en créer un.",
   "momentMetaWith": "Avec {names}",
+  "momentUseCurrentLocation": "Utiliser la position actuelle",
+  "momentLocationDenied": "Accès à la localisation refusé",
+  "momentLocationOff": "Active les services de localisation",
   "winesPhotoSourceTake": "Prendre une photo",
   "winesPhotoSourceGallery": "Choisir dans la galerie",
 

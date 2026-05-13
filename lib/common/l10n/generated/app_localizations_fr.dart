@@ -798,7 +798,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get winesDetailSectionNotes => 'NOTES';
 
   @override
-  String get winesDetailSectionPlace => 'LIEU';
+  String get winesDetailSectionPlace => 'LIEUX';
 
   @override
   String get winesDetailPlaceEmpty => 'Aucun lieu';
@@ -1167,6 +1167,15 @@ class AppLocalizationsFr extends AppLocalizations {
   String momentMetaWith(String names) {
     return 'Avec $names';
   }
+
+  @override
+  String get momentUseCurrentLocation => 'Utiliser la position actuelle';
+
+  @override
+  String get momentLocationDenied => 'Accès à la localisation refusé';
+
+  @override
+  String get momentLocationOff => 'Active les services de localisation';
 
   @override
   String get winesPhotoSourceTake => 'Prendre une photo';

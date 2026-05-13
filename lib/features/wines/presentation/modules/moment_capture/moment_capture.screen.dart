@@ -10,6 +10,8 @@ import '../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/photo_error.dart';
 import '../../../../auth/controller/auth.provider.dart';
+import '../../../../locations/application/location_search.service.dart';
+import '../../../../locations/controller/location.provider.dart';
 import '../../../controller/wine.provider.dart';
 import '../../../domain/entities/wine_memory.entity.dart';
 import '../../../domain/entities/wine_memory_photo.entity.dart';
@@ -27,6 +29,9 @@ Future<bool?> pushMomentCapture(
   required String wineId,
   WineMemoryEntity? existing,
   List<WineMemoryPhotoEntity> existingPhotos = const [],
+  String? wineLocationName,
+  double? wineLocationLat,
+  double? wineLocationLng,
 }) async {
   String? initialUrl;
   if (existing == null && existingPhotos.isEmpty) {
@@ -61,6 +66,9 @@ Future<bool?> pushMomentCapture(
         existing: existing,
         existingPhotos: existingPhotos,
         initialPhotoUrl: initialUrl,
+        wineLocationName: wineLocationName,
+        wineLocationLat: wineLocationLat,
+        wineLocationLng: wineLocationLng,
       ),
     ),
   );
@@ -98,12 +106,21 @@ class MomentCaptureScreen extends ConsumerStatefulWidget {
     this.existing,
     this.existingPhotos = const [],
     this.initialPhotoUrl,
+    this.wineLocationName,
+    this.wineLocationLat,
+    this.wineLocationLng,
   });
 
   final String wineId;
   final WineMemoryEntity? existing;
   final List<WineMemoryPhotoEntity> existingPhotos;
   final String? initialPhotoUrl;
+  // Wine's own location; used to pre-fill the place chip so a new
+  // moment starts at the "initial drink ort". User can override per
+  // moment via the place sheet (text or current GPS).
+  final String? wineLocationName;
+  final double? wineLocationLat;
+  final double? wineLocationLng;
 
   @override
   ConsumerState<MomentCaptureScreen> createState() =>
@@ -116,15 +133,33 @@ class _MomentCaptureScreenState extends ConsumerState<MomentCaptureScreen> {
   final TextEditingController _placeCtrl = TextEditingController();
   int _activeIndex = 0;
   bool _saving = false;
+  bool _resolvingLocation = false;
   late DateTime _occurredAt;
+  // Lat/lng paired with the place name. Set either by pre-fill from
+  // the wine's own location, by "Use current location" GPS, or by
+  // future map picker. Null when the user typed free-text only.
+  double? _placeLat;
+  double? _placeLng;
 
   @override
   void initState() {
     super.initState();
     final e = widget.existing;
     _captionCtrl.text = e?.note ?? '';
-    _placeCtrl.text = e?.placeName ?? '';
     _occurredAt = e?.occurredAt ?? DateTime.now();
+    // Pre-fill place from existing moment first; otherwise fall back
+    // to the wine's own location so new moments default to "where the
+    // bottle was logged" rather than empty.
+    if (e?.placeName != null && e!.placeName!.isNotEmpty) {
+      _placeCtrl.text = e.placeName!;
+      _placeLat = e.placeLat;
+      _placeLng = e.placeLng;
+    } else if (widget.wineLocationName != null &&
+        widget.wineLocationName!.isNotEmpty) {
+      _placeCtrl.text = widget.wineLocationName!;
+      _placeLat = widget.wineLocationLat;
+      _placeLng = widget.wineLocationLng;
+    }
     _photos.addAll(
       widget.existingPhotos.map(
         (p) => _PhotoSlot(id: p.id, url: p.storagePath),
@@ -230,51 +265,106 @@ class _MomentCaptureScreenState extends ConsumerState<MomentCaptureScreen> {
 
   Future<void> _editPlace() async {
     final l10n = AppLocalizations.of(context);
-    final result = await showModalBottomSheet<String>(
+    await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Theme.of(context).colorScheme.surface,
       builder: (ctx) {
-        return Padding(
-          padding: EdgeInsets.only(
-            left: context.paddingH,
-            right: context.paddingH,
-            top: context.l,
-            bottom: MediaQuery.viewInsetsOf(ctx).bottom + context.l,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                l10n.momentFieldPlace,
-                style: TextStyle(
-                  fontSize: context.bodyFont,
-                  fontWeight: FontWeight.w700,
+        return StatefulBuilder(
+          builder: (ctx, setSheetState) => Padding(
+            padding: EdgeInsets.only(
+              left: context.paddingH,
+              right: context.paddingH,
+              top: context.l,
+              bottom: MediaQuery.viewInsetsOf(ctx).bottom + context.l,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  l10n.momentFieldPlace,
+                  style: TextStyle(
+                    fontSize: context.bodyFont,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
-              ),
-              SizedBox(height: context.s),
-              TextField(
-                controller: _placeCtrl,
-                autofocus: true,
-                maxLength: 120,
-                decoration: InputDecoration(
-                  hintText: l10n.momentPlaceHint,
-                  counterText: '',
+                SizedBox(height: context.s),
+                TextField(
+                  controller: _placeCtrl,
+                  autofocus: true,
+                  maxLength: 120,
+                  decoration: InputDecoration(
+                    hintText: l10n.momentPlaceHint,
+                    counterText: '',
+                  ),
+                  // Free-typing breaks the lat/lng pairing — null them out
+                  // so we don't save stale coordinates with a new label.
+                  onChanged: (_) {
+                    if (_placeLat != null || _placeLng != null) {
+                      _placeLat = null;
+                      _placeLng = null;
+                    }
+                  },
+                  onSubmitted: (_) => Navigator.pop(ctx),
                 ),
-                onSubmitted: (v) => Navigator.pop(ctx, v.trim()),
-              ),
-              SizedBox(height: context.m),
-              FilledButton(
-                onPressed: () => Navigator.pop(ctx, _placeCtrl.text.trim()),
-                child: Text(l10n.winesMemoriesRemoveConfirm),
-              ),
-            ],
+                SizedBox(height: context.s),
+                TextButton.icon(
+                  onPressed: _resolvingLocation
+                      ? null
+                      : () async {
+                          setSheetState(() => _resolvingLocation = true);
+                          try {
+                            final svc = ref.read(locationSearchServiceProvider);
+                            final loc = await svc.resolveCurrentLocation();
+                            _placeLat = loc.lat;
+                            _placeLng = loc.lng;
+                            _placeCtrl.text = loc.locationName.isNotEmpty
+                                ? loc.locationName
+                                : (loc.city.isNotEmpty
+                                      ? loc.city
+                                      : (loc.country.isNotEmpty
+                                            ? loc.country
+                                            : ''));
+                          } on LocationUnavailable catch (e) {
+                            if (!ctx.mounted) return;
+                            final msg =
+                                e.reason ==
+                                    LocationUnavailableReason.permissionDenied
+                                ? l10n.momentLocationDenied
+                                : l10n.momentLocationOff;
+                            ScaffoldMessenger.of(
+                              ctx,
+                            ).showSnackBar(SnackBar(content: Text(msg)));
+                          } catch (_) {
+                            // Silent — text input still works.
+                          } finally {
+                            if (ctx.mounted) {
+                              setSheetState(() => _resolvingLocation = false);
+                            }
+                          }
+                        },
+                  icon: _resolvingLocation
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(PhosphorIconsRegular.crosshair, size: 18),
+                  label: Text(l10n.momentUseCurrentLocation),
+                ),
+                SizedBox(height: context.s),
+                FilledButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  child: Text(l10n.winesMemoriesRemoveConfirm),
+                ),
+              ],
+            ),
           ),
         );
       },
     );
-    if (result != null && mounted) setState(() {});
+    if (mounted) setState(() {});
   }
 
   Future<void> _save() async {
@@ -299,6 +389,8 @@ class _MomentCaptureScreenState extends ConsumerState<MomentCaptureScreen> {
         occurredAt: _occurredAt,
         occasion: widget.existing?.occasion,
         placeName: place.isEmpty ? null : place,
+        placeLat: place.isEmpty ? null : _placeLat,
+        placeLng: place.isEmpty ? null : _placeLng,
         foodPaired: widget.existing?.foodPaired,
         companionUserIds: widget.existing?.companionUserIds ?? const [],
         note: caption.isEmpty ? null : caption,

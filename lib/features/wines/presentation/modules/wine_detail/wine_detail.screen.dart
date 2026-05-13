@@ -233,7 +233,7 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
                   ),
                 ),
               ),
-              _MemoriesSection(wineId: widget.wine.id),
+              _MemoriesSection(wine: widget.wine),
               if (widget.wine.canonicalWineId != null) ...[
                 SizedBox(height: context.xl),
                 FriendRatingsStrip(
@@ -274,12 +274,7 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
               SizedBox(height: context.s),
               SizedBox(
                 height: context.h * 0.28,
-                child: _PlaceSection(
-                  location: widget.wine.location,
-                  latitude: widget.wine.latitude,
-                  longitude: widget.wine.longitude,
-                  hasCoords: hasCoords,
-                ),
+                child: _PlaceSection(wine: widget.wine, hasCoords: hasCoords),
               ),
               SizedBox(height: context.xxl * 1.5),
             ],
@@ -553,28 +548,62 @@ class _NotesBlock extends StatelessWidget {
   }
 }
 
-class _PlaceSection extends StatelessWidget {
-  final String? location;
-  final double? latitude;
-  final double? longitude;
+class _PlaceSection extends ConsumerWidget {
+  final WineEntity wine;
   final bool hasCoords;
 
-  const _PlaceSection({
-    required this.location,
-    required this.latitude,
-    required this.longitude,
-    required this.hasCoords,
-  });
+  const _PlaceSection({required this.wine, required this.hasCoords});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
 
-    if (!hasCoords) {
-      return _EmptyPlace(location: location);
+    final memoriesAsync = ref.watch(wineMemoriesControllerProvider(wine.id));
+    final momentPoints = (memoriesAsync.valueOrNull ?? const [])
+        .where((m) => m.placeLat != null && m.placeLng != null)
+        .toList();
+
+    final winePoint = hasCoords
+        ? LatLng(wine.latitude!, wine.longitude!)
+        : null;
+
+    if (winePoint == null && momentPoints.isEmpty) {
+      return _EmptyPlace(location: wine.location);
     }
 
-    final point = LatLng(latitude!, longitude!);
+    final markers = <Marker>[
+      if (winePoint != null)
+        Marker(
+          point: winePoint,
+          width: context.w * 0.1,
+          height: context.w * 0.1,
+          child: Icon(
+            PhosphorIconsFill.mapPin,
+            size: context.w * 0.1,
+            color: cs.primary,
+          ),
+        ),
+      for (final m in momentPoints)
+        Marker(
+          point: LatLng(m.placeLat!, m.placeLng!),
+          width: context.w * 0.08,
+          height: context.w * 0.08,
+          child: Icon(
+            PhosphorIconsFill.mapPin,
+            size: context.w * 0.08,
+            color: cs.tertiary,
+          ),
+        ),
+    ];
+
+    final allPoints = <LatLng>[
+      ?winePoint,
+      for (final m in momentPoints) LatLng(m.placeLat!, m.placeLng!),
+    ];
+
+    final caption =
+        wine.location ??
+        (momentPoints.isNotEmpty ? (momentPoints.first.placeName ?? '') : null);
 
     return Container(
       margin: EdgeInsets.symmetric(horizontal: context.paddingH),
@@ -587,7 +616,13 @@ class _PlaceSection extends StatelessWidget {
         children: [
           FlutterMap(
             options: MapOptions(
-              initialCenter: point,
+              initialCameraFit: allPoints.length == 1
+                  ? null
+                  : CameraFit.bounds(
+                      bounds: LatLngBounds.fromPoints(allPoints),
+                      padding: EdgeInsets.all(context.w * 0.1),
+                    ),
+              initialCenter: allPoints.first,
               initialZoom: 14,
               interactionOptions: const InteractionOptions(
                 flags: InteractiveFlag.none,
@@ -598,23 +633,10 @@ class _PlaceSection extends StatelessWidget {
                 urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                 userAgentPackageName: 'xyz.sippd.app',
               ),
-              MarkerLayer(
-                markers: [
-                  Marker(
-                    point: point,
-                    width: context.w * 0.1,
-                    height: context.w * 0.1,
-                    child: Icon(
-                      PhosphorIconsFill.mapPin,
-                      size: context.w * 0.1,
-                      color: cs.primary,
-                    ),
-                  ),
-                ],
-              ),
+              MarkerLayer(markers: markers),
             ],
           ),
-          if (location != null)
+          if (caption != null && caption.isNotEmpty)
             Positioned(
               left: context.m,
               right: context.m,
@@ -638,7 +660,7 @@ class _PlaceSection extends StatelessWidget {
                     SizedBox(width: context.w * 0.02),
                     Expanded(
                       child: Text(
-                        location!,
+                        caption,
                         style: TextStyle(
                           fontSize: context.bodyFont,
                           fontWeight: FontWeight.w600,
@@ -646,6 +668,27 @@ class _PlaceSection extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
+                    if (momentPoints.isNotEmpty) ...[
+                      SizedBox(width: context.w * 0.02),
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: context.w * 0.02,
+                          vertical: context.xs,
+                        ),
+                        decoration: BoxDecoration(
+                          color: cs.tertiaryContainer,
+                          borderRadius: BorderRadius.circular(context.w * 0.02),
+                        ),
+                        child: Text(
+                          '+${momentPoints.length}',
+                          style: TextStyle(
+                            fontSize: context.captionFont * 0.9,
+                            fontWeight: FontWeight.w700,
+                            color: cs.onTertiaryContainer,
+                          ),
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -657,11 +700,12 @@ class _PlaceSection extends StatelessWidget {
 }
 
 class _MemoriesSection extends ConsumerWidget {
-  final String wineId;
-  const _MemoriesSection({required this.wineId});
+  final WineEntity wine;
+  const _MemoriesSection({required this.wine});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final wineId = wine.id;
     final memoriesAsync = ref.watch(wineMemoriesControllerProvider(wineId));
     final memories = memoriesAsync.valueOrNull ?? const [];
     final ringSize = context.w * 0.14;
@@ -689,7 +733,14 @@ class _MemoriesSection extends ConsumerWidget {
                 ),
                 GestureDetector(
                   behavior: HitTestBehavior.opaque,
-                  onTap: () => pushMomentCapture(context, ref, wineId: wineId),
+                  onTap: () => pushMomentCapture(
+                    context,
+                    ref,
+                    wineId: wineId,
+                    wineLocationName: wine.location,
+                    wineLocationLat: wine.latitude,
+                    wineLocationLng: wine.longitude,
+                  ),
                   child: Padding(
                     padding: EdgeInsets.symmetric(
                       horizontal: context.s,

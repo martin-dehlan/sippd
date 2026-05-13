@@ -1577,7 +1577,7 @@ abstract class AppLocalizations {
   /// No description provided for @winesDetailSectionPlace.
   ///
   /// In en, this message translates to:
-  /// **'PLACE'**
+  /// **'PLACES'**
   String get winesDetailSectionPlace;
 
   /// No description provided for @winesDetailPlaceEmpty.
@@ -2263,6 +2263,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'With {names}'**
   String momentMetaWith(String names);
+
+  /// No description provided for @momentUseCurrentLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Use current location'**
+  String get momentUseCurrentLocation;
+
+  /// No description provided for @momentLocationDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Location access denied'**
+  String get momentLocationDenied;
+
+  /// No description provided for @momentLocationOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on location services'**
+  String get momentLocationOff;
 
   /// No description provided for @winesPhotoSourceTake.
   ///
