@@ -404,6 +404,7 @@
   "momentOccasionCasual": "Locker",
   "momentOccasionBirthday": "Geburtstag",
   "momentCompanionsAddFriend": "Freund hinzufügen",
+  "momentCompanionsEmpty": "Noch keine Freunde zum Taggen.",
   "momentPlaceHint": "Restaurant oder Ort",
   "momentFoodHint": "Wozu hast du ihn getrunken?",
   "momentNoteHint": "Was willst du dir merken?",

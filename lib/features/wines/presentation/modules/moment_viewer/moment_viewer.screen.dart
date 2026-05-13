@@ -6,6 +6,8 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../common/utils/responsive.dart';
+import '../../../../friends/controller/friends.provider.dart';
+import '../../../../friends/presentation/widgets/friend_avatar.widget.dart';
 import '../../../controller/wine.provider.dart';
 import '../../../domain/entities/wine_memory.entity.dart';
 import '../../../domain/entities/wine_memory_photo.entity.dart';
@@ -577,16 +579,17 @@ class _Glyph extends StatelessWidget {
   }
 }
 
-class _MetaPanel extends StatelessWidget {
+class _MetaPanel extends ConsumerWidget {
   final WineMemoryEntity moment;
   const _MetaPanel({required this.moment});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final caption = (moment.note ?? moment.caption)?.trim();
     final hasCaption = caption != null && caption.isNotEmpty;
     final hasPlace = moment.placeName?.isNotEmpty ?? false;
     final hasFood = moment.foodPaired?.isNotEmpty ?? false;
+    final hasCompanions = moment.companionUserIds.isNotEmpty;
     final locale = Localizations.localeOf(context).toLanguageTag();
     final timestamp = DateFormat.MMMd(
       locale,
@@ -618,6 +621,10 @@ class _MetaPanel extends StatelessWidget {
               letterSpacing: -0.3,
             ),
           ),
+        ],
+        if (hasCompanions) ...[
+          SizedBox(height: context.s),
+          _CompanionsStrip(companionIds: moment.companionUserIds),
         ],
         if (hasPlace || hasFood) ...[
           SizedBox(height: context.s),
@@ -683,6 +690,101 @@ class _MetaIconRow extends StatelessWidget {
             ),
           ),
         ),
+      ],
+    );
+  }
+}
+
+/// Avatar stack + "With X & Y" line for tagged companions. Resolves
+/// IDs against the user's friends list at render time — companions
+/// not in the friends list (deleted account, unfriended) fall through
+/// as anonymous initials slots.
+class _CompanionsStrip extends ConsumerWidget {
+  final List<String> companionIds;
+  const _CompanionsStrip({required this.companionIds});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final friendsAsync = ref.watch(friendsListProvider);
+    final friends = friendsAsync.valueOrNull ?? const [];
+    final byId = {for (final f in friends) f.id: f};
+
+    final resolved = companionIds.map((id) => byId[id]).toList();
+    final visible = resolved.take(3).toList();
+    final extra = resolved.length - visible.length;
+    final names = resolved
+        .map((p) => p?.displayName ?? p?.username ?? '·')
+        .where((n) => n != '·')
+        .toList();
+    final nameLine = names.isEmpty
+        ? null
+        : (names.length <= 3
+              ? names.join(', ')
+              : '${names.take(2).join(', ')} +${names.length - 2}');
+
+    final avatarSize = context.w * 0.07;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SizedBox(
+          height: avatarSize,
+          width: avatarSize + (visible.length - 1) * avatarSize * 0.6,
+          child: Stack(
+            children: [
+              for (var i = 0; i < visible.length; i++)
+                Positioned(
+                  left: i * avatarSize * 0.6,
+                  child: Container(
+                    width: avatarSize,
+                    height: avatarSize,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.black,
+                    ),
+                    padding: const EdgeInsets.all(1.5),
+                    child: visible[i] != null
+                        ? FriendAvatar(
+                            profile: visible[i]!,
+                            size: avatarSize - 3,
+                          )
+                        : Container(
+                            decoration: const BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white24,
+                            ),
+                          ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+        SizedBox(width: context.xs * 1.5),
+        Flexible(
+          child: Text(
+            nameLine != null
+                ? l10n.momentMetaWith(nameLine)
+                : l10n.momentMetaWith('${companionIds.length}'),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              color: Colors.white.withValues(alpha: 0.85),
+              fontSize: context.captionFont,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+        if (extra > 0) ...[
+          SizedBox(width: context.xs),
+          Text(
+            '+$extra',
+            style: TextStyle(
+              color: Colors.white.withValues(alpha: 0.6),
+              fontSize: context.captionFont * 0.9,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
       ],
     );
   }

@@ -2156,6 +2156,12 @@ abstract class AppLocalizations {
   /// **'Add friend'**
   String get momentCompanionsAddFriend;
 
+  /// No description provided for @momentCompanionsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No friends to tag yet.'**
+  String get momentCompanionsEmpty;
+
   /// No description provided for @momentPlaceHint.
   ///
   /// In en, this message translates to:

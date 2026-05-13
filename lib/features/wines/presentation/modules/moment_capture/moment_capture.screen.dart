@@ -10,6 +10,7 @@ import '../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/photo_error.dart';
 import '../../../../auth/controller/auth.provider.dart';
+import '../../../../friends/presentation/widgets/friend_multi_picker.widget.dart';
 import '../../../../locations/domain/entities/location.entity.dart';
 import '../../../../locations/presentation/widgets/location_search.widget.dart';
 import '../../../controller/wine.provider.dart';
@@ -139,6 +140,9 @@ class _MomentCaptureScreenState extends ConsumerState<MomentCaptureScreen> {
   // future map picker. Null when the user typed free-text only.
   double? _placeLat;
   double? _placeLng;
+  // Tagged friend IDs. RLS exposes a moment to its tagged companions
+  // regardless of visibility, so this is the share-with-friend lever.
+  final Set<String> _companionIds = {};
 
   @override
   void initState() {
@@ -159,6 +163,7 @@ class _MomentCaptureScreenState extends ConsumerState<MomentCaptureScreen> {
       _placeLat = widget.wineLocationLat;
       _placeLng = widget.wineLocationLng;
     }
+    _companionIds.addAll(e?.companionUserIds ?? const []);
     _photos.addAll(
       widget.existingPhotos.map(
         (p) => _PhotoSlot(id: p.id, url: p.storagePath),
@@ -169,6 +174,19 @@ class _MomentCaptureScreenState extends ConsumerState<MomentCaptureScreen> {
         _PhotoSlot(id: const Uuid().v4(), url: widget.initialPhotoUrl!),
       );
     }
+  }
+
+  Future<void> _editCompanions() async {
+    final result = await showFriendMultiPicker(
+      context: context,
+      initialSelected: _companionIds,
+    );
+    if (result == null || !mounted) return;
+    setState(() {
+      _companionIds
+        ..clear()
+        ..addAll(result);
+    });
   }
 
   @override
@@ -335,7 +353,7 @@ class _MomentCaptureScreenState extends ConsumerState<MomentCaptureScreen> {
         placeLat: place.isEmpty ? null : _placeLat,
         placeLng: place.isEmpty ? null : _placeLng,
         foodPaired: widget.existing?.foodPaired,
-        companionUserIds: widget.existing?.companionUserIds ?? const [],
+        companionUserIds: _companionIds.toList(),
         note: caption.isEmpty ? null : caption,
         visibility: widget.existing?.visibility ?? 'friends',
         updatedAt: now,
@@ -482,23 +500,33 @@ class _MomentCaptureScreenState extends ConsumerState<MomentCaptureScreen> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Row(
-                        children: [
-                          _MetaChip(
-                            icon: PhosphorIconsRegular.clock,
-                            label: dateLabel,
-                            onTap: _editDateTime,
-                          ),
-                          SizedBox(width: context.s),
-                          Flexible(
-                            child: _MetaChip(
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            _MetaChip(
+                              icon: PhosphorIconsRegular.clock,
+                              label: dateLabel,
+                              onTap: _editDateTime,
+                            ),
+                            SizedBox(width: context.s),
+                            _MetaChip(
                               icon: PhosphorIconsRegular.mapPin,
                               label: placeLabel,
                               dimmed: placeIsEmpty,
                               onTap: _editPlace,
                             ),
-                          ),
-                        ],
+                            SizedBox(width: context.s),
+                            _MetaChip(
+                              icon: PhosphorIconsRegular.users,
+                              label: _companionIds.isEmpty
+                                  ? l10n.momentFieldCompanions
+                                  : '${l10n.momentFieldCompanions} · ${_companionIds.length}',
+                              dimmed: _companionIds.isEmpty,
+                              onTap: _editCompanions,
+                            ),
+                          ],
+                        ),
                       ),
                       SizedBox(height: context.s),
                       TextField(

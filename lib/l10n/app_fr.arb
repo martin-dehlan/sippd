@@ -404,6 +404,7 @@
   "momentOccasionCasual": "Décontracté",
   "momentOccasionBirthday": "Anniversaire",
   "momentCompanionsAddFriend": "Ajouter un ami",
+  "momentCompanionsEmpty": "Aucun ami à identifier pour l'instant.",
   "momentPlaceHint": "Restaurant ou lieu",
   "momentFoodHint": "Avec quoi l'as-tu bu ?",
   "momentNoteHint": "Quelque chose à retenir ?",

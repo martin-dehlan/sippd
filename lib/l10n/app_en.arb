@@ -466,6 +466,7 @@
   "momentOccasionCasual": "Casual",
   "momentOccasionBirthday": "Birthday",
   "momentCompanionsAddFriend": "Add friend",
+  "momentCompanionsEmpty": "No friends to tag yet.",
   "momentPlaceHint": "Restaurant or place",
   "momentFoodHint": "What did you pair it with?",
   "momentNoteHint": "Anything to remember?",

@@ -1108,6 +1108,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get momentCompanionsAddFriend => 'Freund hinzufügen';
 
   @override
+  String get momentCompanionsEmpty => 'Noch keine Freunde zum Taggen.';
+
+  @override
   String get momentPlaceHint => 'Restaurant oder Ort';
 
   @override

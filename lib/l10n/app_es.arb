@@ -404,6 +404,7 @@
   "momentOccasionCasual": "Informal",
   "momentOccasionBirthday": "Cumpleaños",
   "momentCompanionsAddFriend": "Añadir amigo",
+  "momentCompanionsEmpty": "Aún no hay amigos para etiquetar.",
   "momentPlaceHint": "Restaurante o lugar",
   "momentFoodHint": "¿Con qué lo tomaste?",
   "momentNoteHint": "¿Algo para recordar?",
