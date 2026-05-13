@@ -23,8 +23,9 @@ import '../../../domain/entities/wine_memory.entity.dart';
 import '../../widgets/expert_tasting_sheet.dart';
 import '../../widgets/expert_tasting_summary.widget.dart';
 import '../../widgets/friend_ratings_strip.widget.dart';
-import '../../widgets/moment_edit_sheet.dart';
 import '../../widgets/wine_detail_blocks.widget.dart';
+import '../moment_capture/moment_capture.screen.dart';
+import '../moment_viewer/moment_viewer.screen.dart';
 import '../wine_compare/wine_compare_flow.dart';
 
 class WineDetailScreen extends ConsumerWidget {
@@ -663,7 +664,7 @@ class _MemoriesSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final memoriesAsync = ref.watch(wineMemoriesControllerProvider(wineId));
     final memories = memoriesAsync.valueOrNull ?? const [];
-    final size = context.w * 0.22;
+    final ringSize = context.w * 0.18;
     final l10n = AppLocalizations.of(context);
     final cs = Theme.of(context).colorScheme;
 
@@ -674,83 +675,58 @@ class _MemoriesSection extends ConsumerWidget {
         children: [
           Padding(
             padding: EdgeInsets.symmetric(horizontal: context.paddingH),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    l10n.momentSectionHeader,
-                    style: TextStyle(
-                      fontSize: context.bodyFont,
-                      fontWeight: FontWeight.w700,
-                      color: cs.onSurface,
-                    ),
-                  ),
-                ),
-                TextButton.icon(
-                  onPressed: () =>
-                      showMomentEditSheet(context: context, wineId: wineId),
-                  icon: const Icon(PhosphorIconsRegular.plus, size: 18),
-                  label: Text(l10n.momentSectionAdd),
-                ),
-              ],
+            child: Text(
+              l10n.momentSectionHeader,
+              style: TextStyle(
+                fontSize: context.bodyFont,
+                fontWeight: FontWeight.w700,
+                color: cs.onSurface,
+              ),
             ),
           ),
           SizedBox(height: context.s),
-          if (memories.isEmpty)
-            Padding(
+          SizedBox(
+            height: ringSize + context.s + 14,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
               padding: EdgeInsets.symmetric(horizontal: context.paddingH),
-              child: Text(
-                l10n.momentSectionEmpty,
-                style: TextStyle(
-                  fontSize: context.captionFont,
-                  color: cs.onSurfaceVariant,
-                ),
-              ),
-            )
-          else
-            SizedBox(
-              height: size,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                padding: EdgeInsets.symmetric(horizontal: context.paddingH),
-                itemCount: memories.length,
-                separatorBuilder: (_, _) => SizedBox(width: context.w * 0.025),
-                itemBuilder: (_, i) => _MemoryThumb(
-                  memory: memories[i],
-                  size: size,
-                  onTap: () => _openViewer(context, memories, i),
-                ),
-              ),
+              itemCount: memories.length + 1,
+              separatorBuilder: (_, _) => SizedBox(width: context.w * 0.035),
+              itemBuilder: (_, i) {
+                if (i == 0) {
+                  return _AddMomentTile(
+                    size: ringSize,
+                    label: l10n.momentSectionAdd,
+                    onTap: () => pushMomentCapture(context, wineId: wineId),
+                  );
+                }
+                final memory = memories[i - 1];
+                return _MomentStoryTile(
+                  memory: memory,
+                  size: ringSize,
+                  onTap: () => pushMomentViewer(
+                    context,
+                    wineId: wineId,
+                    moments: memories,
+                    initialIndex: i - 1,
+                  ),
+                );
+              },
             ),
+          ),
         ],
-      ),
-    );
-  }
-
-  void _openViewer(
-    BuildContext context,
-    List<WineMemoryEntity> memories,
-    int initialIndex,
-  ) {
-    Navigator.of(context).push(
-      PageRouteBuilder(
-        opaque: false,
-        barrierColor: Colors.black.withValues(alpha: 0.95),
-        pageBuilder: (_, _, _) =>
-            _MemoryViewer(memories: memories, initialIndex: initialIndex),
       ),
     );
   }
 }
 
-class _MemoryThumb extends StatelessWidget {
-  final WineMemoryEntity memory;
+class _AddMomentTile extends StatelessWidget {
   final double size;
+  final String label;
   final VoidCallback onTap;
-
-  const _MemoryThumb({
-    required this.memory,
+  const _AddMomentTile({
     required this.size,
+    required this.label,
     required this.onTap,
   });
 
@@ -759,21 +735,103 @@ class _MemoryThumb extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        width: size,
-        height: size,
-        clipBehavior: Clip.antiAlias,
-        decoration: BoxDecoration(
-          color: cs.surfaceContainer,
-          borderRadius: BorderRadius.circular(context.w * 0.03),
-          border: Border.all(color: cs.outlineVariant, width: 0.5),
-        ),
-        child: _memoryImage(memory, cs),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: size,
+            height: size,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: cs.surfaceContainer,
+              border: Border.all(color: cs.outlineVariant, width: 1.5),
+            ),
+            alignment: Alignment.center,
+            child: Icon(
+              PhosphorIconsRegular.plus,
+              color: cs.onSurfaceVariant,
+              size: size * 0.4,
+            ),
+          ),
+          SizedBox(height: context.xs),
+          SizedBox(
+            width: size,
+            child: Text(
+              label,
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: context.captionFont * 0.85,
+                color: cs.onSurfaceVariant,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MomentStoryTile extends StatelessWidget {
+  final WineMemoryEntity memory;
+  final double size;
+  final VoidCallback onTap;
+  const _MomentStoryTile({
+    required this.memory,
+    required this.size,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final ringColors = [cs.primary, cs.tertiary, cs.primaryContainer];
+    final label = memory.placeName ?? _occasionLabel(context, memory) ?? '';
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: size,
+            height: size,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: SweepGradient(
+                colors: [...ringColors, ringColors.first],
+              ),
+            ),
+            padding: const EdgeInsets.all(2),
+            child: Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: cs.surface,
+              ),
+              padding: const EdgeInsets.all(2),
+              child: ClipOval(child: _avatarImage(memory, cs)),
+            ),
+          ),
+          SizedBox(height: context.xs),
+          SizedBox(
+            width: size,
+            child: Text(
+              label.isEmpty ? '·' : label,
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: context.captionFont * 0.85,
+                color: cs.onSurfaceVariant,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _memoryImage(WineMemoryEntity m, ColorScheme cs) {
+  Widget _avatarImage(WineMemoryEntity m, ColorScheme cs) {
     if (m.localImagePath != null) {
       return Image.file(File(m.localImagePath!), fit: BoxFit.cover);
     }
@@ -785,123 +843,31 @@ class _MemoryThumb extends StatelessWidget {
             Icon(PhosphorIconsRegular.image, color: cs.outline),
       );
     }
-    return Icon(PhosphorIconsRegular.image, color: cs.outline);
-  }
-}
-
-class _MemoryViewer extends StatefulWidget {
-  final List<WineMemoryEntity> memories;
-  final int initialIndex;
-
-  const _MemoryViewer({required this.memories, required this.initialIndex});
-
-  @override
-  State<_MemoryViewer> createState() => _MemoryViewerState();
-}
-
-class _MemoryViewerState extends State<_MemoryViewer> {
-  late final PageController _controller = PageController(
-    initialPage: widget.initialIndex,
-  );
-  late int _index = widget.initialIndex;
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: SafeArea(
-        child: Stack(
-          children: [
-            PageView.builder(
-              controller: _controller,
-              itemCount: widget.memories.length,
-              onPageChanged: (i) => setState(() => _index = i),
-              itemBuilder: (_, i) {
-                final m = widget.memories[i];
-                return InteractiveViewer(
-                  minScale: 1,
-                  maxScale: 4,
-                  child: Center(child: _viewerImage(m)),
-                );
-              },
-            ),
-            Positioned(
-              top: context.m,
-              right: context.m,
-              child: GestureDetector(
-                onTap: () => Navigator.pop(context),
-                child: Container(
-                  padding: EdgeInsets.all(context.s),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.5),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    PhosphorIconsRegular.x,
-                    color: Colors.white,
-                    size: context.w * 0.06,
-                  ),
-                ),
-              ),
-            ),
-            if (widget.memories.length > 1)
-              Positioned(
-                bottom: context.l,
-                left: 0,
-                right: 0,
-                child: Center(
-                  child: Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: context.m,
-                      vertical: context.xs * 1.4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withValues(alpha: 0.5),
-                      borderRadius: BorderRadius.circular(context.w * 0.05),
-                    ),
-                    child: Text(
-                      '${_index + 1} / ${widget.memories.length}',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: context.captionFont,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-          ],
-        ),
-      ),
+    return Container(
+      color: cs.surfaceContainer,
+      child: Icon(PhosphorIconsRegular.image, color: cs.outline),
     );
   }
 
-  Widget _viewerImage(WineMemoryEntity m) {
-    if (m.localImagePath != null) {
-      return Image.file(File(m.localImagePath!), fit: BoxFit.contain);
+  String? _occasionLabel(BuildContext ctx, WineMemoryEntity m) {
+    final key = m.occasion;
+    if (key == null) return null;
+    final l10n = AppLocalizations.of(ctx);
+    switch (key) {
+      case 'dinner':
+        return l10n.momentOccasionDinner;
+      case 'date':
+        return l10n.momentOccasionDate;
+      case 'celebration':
+        return l10n.momentOccasionCelebration;
+      case 'tasting':
+        return l10n.momentOccasionTasting;
+      case 'casual':
+        return l10n.momentOccasionCasual;
+      case 'birthday':
+        return l10n.momentOccasionBirthday;
     }
-    if (m.imageUrl != null) {
-      return Image.network(
-        m.imageUrl!,
-        fit: BoxFit.contain,
-        errorBuilder: (_, _, _) => const Icon(
-          PhosphorIconsRegular.image,
-          color: Colors.white,
-          size: 80,
-        ),
-      );
-    }
-    return const Icon(
-      PhosphorIconsRegular.image,
-      color: Colors.white,
-      size: 80,
-    );
+    return null;
   }
 }
 
