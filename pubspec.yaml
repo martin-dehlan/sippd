@@ -50,7 +50,7 @@ dependencies:
   dio: ^5.7.0
 
   # Image
-  image_picker: ^1.1.2
+  image_picker: ^1.2.2
   cached_network_image: ^3.4.1
 
   # Location / Maps
@@ -63,7 +63,7 @@ dependencies:
   flutter_dotenv: ^5.2.1
 
   # Analytics
-  posthog_flutter: ^5.24.0
+  posthog_flutter: ^5.24.2
 
   # Paywall / IAP
   purchases_flutter: ^9.4.0
