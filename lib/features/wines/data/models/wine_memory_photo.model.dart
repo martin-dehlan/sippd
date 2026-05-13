@@ -48,13 +48,14 @@ extension WineMemoryPhotoEntityToModel on WineMemoryPhotoEntity {
     createdAt: createdAt,
   );
 
-  WineMemoryPhotosTableCompanion toCompanion() => WineMemoryPhotosTableCompanion(
-    id: Value(id),
-    memoryId: Value(memoryId),
-    storagePath: Value(storagePath),
-    position: Value(position),
-    createdAt: Value(createdAt),
-  );
+  WineMemoryPhotosTableCompanion toCompanion() =>
+      WineMemoryPhotosTableCompanion(
+        id: Value(id),
+        memoryId: Value(memoryId),
+        storagePath: Value(storagePath),
+        position: Value(position),
+        createdAt: Value(createdAt),
+      );
 }
 
 extension WineMemoryPhotoTableDataToEntity on WineMemoryPhotoTableData {

@@ -34,9 +34,7 @@ class WineMemoryPhotosDao extends DatabaseAccessor<AppDatabase>
   }
 
   Future<void> deletePhoto(String id) {
-    return (delete(
-      wineMemoryPhotosTable,
-    )..where((p) => p.id.equals(id))).go();
+    return (delete(wineMemoryPhotosTable)..where((p) => p.id.equals(id))).go();
   }
 
   Future<void> deleteByMemory(String memoryId) {

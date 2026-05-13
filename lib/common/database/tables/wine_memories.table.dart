@@ -19,11 +19,11 @@ class WineMemoriesTable extends Table {
   RealColumn get placeLat => real().nullable()();
   RealColumn get placeLng => real().nullable()();
   TextColumn get foodPaired => text().nullable()();
+
   /// JSON-encoded list of friend user UUIDs tagged on this moment.
   /// Drift can't mirror Postgres uuid[] directly so we serialise as
   /// text — repo layer encodes/decodes against `List<String>`.
-  TextColumn get companionUserIds =>
-      text().withDefault(const Constant('[]'))();
+  TextColumn get companionUserIds => text().withDefault(const Constant('[]'))();
   TextColumn get note => text().nullable()();
   TextColumn get visibility => text().withDefault(const Constant('friends'))();
 
