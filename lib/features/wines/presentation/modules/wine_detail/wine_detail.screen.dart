@@ -1121,9 +1121,6 @@ enum _BentoPattern {
   /// Hero on the right + 4 small 2×2 cluster on the left.
   heroRight,
 
-  /// Hero in the centre + 2 stacked tiles on each side.
-  heroCenter,
-
   /// Banner hero spanning the full top row + 4 small in a single row
   /// underneath.
   heroBannerTop,
@@ -1180,34 +1177,6 @@ Widget _renderBentoPattern(
           Expanded(flex: 2, child: twoByTwo(1, 2, 3, 4)),
           SizedBox(width: gap),
           Expanded(flex: 2, child: slot(0)),
-        ],
-      );
-    case _BentoPattern.heroCenter:
-      return Row(
-        children: [
-          Expanded(
-            flex: 1,
-            child: Column(
-              children: [
-                Expanded(child: slot(1)),
-                SizedBox(height: gap),
-                Expanded(child: slot(2)),
-              ],
-            ),
-          ),
-          SizedBox(width: gap),
-          Expanded(flex: 2, child: slot(0)),
-          SizedBox(width: gap),
-          Expanded(
-            flex: 1,
-            child: Column(
-              children: [
-                Expanded(child: slot(3)),
-                SizedBox(height: gap),
-                Expanded(child: slot(4)),
-              ],
-            ),
-          ),
         ],
       );
     case _BentoPattern.heroBannerTop:
