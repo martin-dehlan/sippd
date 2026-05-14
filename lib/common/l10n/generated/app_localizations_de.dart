@@ -1128,6 +1128,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get winesSharePickFriendsTitle => 'Teilen mit';
 
   @override
+  String get winesExpertProUnlock => 'Mit Pro freischalten';
+
+  @override
   String get momentPlaceHint => 'Restaurant oder Ort';
 
   @override

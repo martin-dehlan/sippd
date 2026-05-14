@@ -2192,6 +2192,12 @@ abstract class AppLocalizations {
   /// **'Share with'**
   String get winesSharePickFriendsTitle;
 
+  /// No description provided for @winesExpertProUnlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock with Pro'**
+  String get winesExpertProUnlock;
+
   /// No description provided for @momentPlaceHint.
   ///
   /// In en, this message translates to:

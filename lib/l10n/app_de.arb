@@ -410,6 +410,7 @@
   "winesShareSuccess": "Wein mit {name} geteilt",
   "winesShareError": "Teilen fehlgeschlagen — nochmal versuchen",
   "winesSharePickFriendsTitle": "Teilen mit",
+  "winesExpertProUnlock": "Mit Pro freischalten",
   "momentPlaceHint": "Restaurant oder Ort",
   "momentFoodHint": "Wozu hast du ihn getrunken?",
   "momentNoteHint": "Was willst du dir merken?",

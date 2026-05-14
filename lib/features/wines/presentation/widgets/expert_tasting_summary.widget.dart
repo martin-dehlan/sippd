@@ -5,6 +5,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../common/utils/responsive.dart';
+import '../../../paywall/controller/paywall.provider.dart';
 import '../../controller/expert_tasting.provider.dart';
 import '../../domain/entities/expert_tasting.entity.dart';
 
@@ -31,13 +32,201 @@ class ExpertTastingSummary extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final asyncTasting = ref.watch(myExpertTastingProvider(canonicalWineId));
+    final isPro = ref.watch(isProProvider);
     return asyncTasting.when(
       loading: () => const SizedBox.shrink(),
       error: (_, _) => const SizedBox.shrink(),
       data: (t) {
-        if (t == null || t.isEmpty) return const SizedBox.shrink();
-        return _Body(tasting: t, onEdit: onEdit);
+        final hasData = t != null && !t.isEmpty;
+        if (hasData) return _Body(tasting: t, onEdit: onEdit);
+        // Empty + non-Pro: render an upsell preview so the value of
+        // expert tasting is visible at the section level, not hidden
+        // behind a tap.
+        if (!isPro) return _ProLockedPreview(onTap: onEdit);
+        // Empty + Pro: keep current behaviour (render nothing so the
+        // wine detail stays clean for users who haven't filled it out
+        // yet).
+        return const SizedBox.shrink();
       },
+    );
+  }
+}
+
+/// Locked-state preview for non-Pro users. Shows the six WSET axes as
+/// blurred placeholder tracks plus a single primary CTA — turns the
+/// otherwise empty section into a Pro-conversion surface.
+class _ProLockedPreview extends StatelessWidget {
+  const _ProLockedPreview({required this.onTap});
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
+    final axes = <String>[
+      l10n.winesExpertSummaryAxisBody,
+      l10n.winesExpertSummaryAxisTannin,
+      l10n.winesExpertSummaryAxisAcidity,
+      l10n.winesExpertSummaryAxisSweetness,
+      l10n.winesExpertSummaryAxisOak,
+      l10n.winesExpertSummaryAxisFinish,
+    ];
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(context.w * 0.04),
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: context.paddingH * 1.3,
+          vertical: context.s,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                Text(
+                  l10n.winesExpertSummaryHeader,
+                  style: TextStyle(
+                    fontSize: context.captionFont * 0.95,
+                    fontWeight: FontWeight.w700,
+                    color: cs.onSurface.withValues(alpha: 0.72),
+                    letterSpacing: 1.2,
+                  ),
+                ),
+                SizedBox(width: context.s),
+                Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: context.xs * 1.4,
+                    vertical: context.xs * 0.5,
+                  ),
+                  decoration: BoxDecoration(
+                    color: cs.primary,
+                    borderRadius: BorderRadius.circular(context.w * 0.015),
+                  ),
+                  child: Text(
+                    'PRO',
+                    style: TextStyle(
+                      fontSize: context.captionFont * 0.7,
+                      fontWeight: FontWeight.w800,
+                      color: cs.onPrimary,
+                      letterSpacing: 1.4,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: context.m),
+            // Two-column grid of locked axes — same shape as the
+            // filled state so the user immediately reads "this is what
+            // I'd unlock". No descriptor words; just label + blurred
+            // dot track.
+            for (var i = 0; i < axes.length; i += 2)
+              Padding(
+                padding: EdgeInsets.only(bottom: context.m),
+                child: IntrinsicHeight(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(child: _LockedCell(label: axes[i])),
+                      SizedBox(width: context.w * 0.04),
+                      Expanded(
+                        child: i + 1 < axes.length
+                            ? _LockedCell(label: axes[i + 1])
+                            : const SizedBox.shrink(),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            SizedBox(height: context.xs),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    PhosphorIconsRegular.lockKey,
+                    size: context.captionFont,
+                    color: cs.primary,
+                  ),
+                  SizedBox(width: context.xs * 1.2),
+                  Text(
+                    l10n.winesExpertProUnlock,
+                    style: TextStyle(
+                      fontSize: context.captionFont,
+                      fontWeight: FontWeight.w600,
+                      color: cs.primary,
+                      letterSpacing: 0.2,
+                    ),
+                  ),
+                  SizedBox(width: context.xs * 0.6),
+                  Icon(
+                    PhosphorIconsRegular.caretRight,
+                    size: context.captionFont,
+                    color: cs.primary,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _LockedCell extends StatelessWidget {
+  const _LockedCell({required this.label});
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: context.captionFont * 0.78,
+            fontWeight: FontWeight.w700,
+            color: cs.onSurfaceVariant,
+            letterSpacing: 1.4,
+          ),
+        ),
+        SizedBox(height: context.xs * 0.6),
+        // Placeholder bar — same vertical rhythm as the descriptor
+        // line in the filled state.
+        Container(
+          height: context.bodyFont * 1.18,
+          width: context.w * 0.22,
+          decoration: BoxDecoration(
+            color: cs.surfaceContainer,
+            borderRadius: BorderRadius.circular(context.w * 0.012),
+          ),
+        ),
+        SizedBox(height: context.xs * 1.2),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: List.generate(5, (i) {
+            return Padding(
+              padding: EdgeInsets.only(
+                right: i == 4 ? 0 : context.w * 0.012,
+              ),
+              child: Container(
+                width: context.w * 0.018,
+                height: context.w * 0.018,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: cs.outlineVariant.withValues(alpha: 0.4),
+                ),
+              ),
+            );
+          }),
+        ),
+      ],
     );
   }
 }

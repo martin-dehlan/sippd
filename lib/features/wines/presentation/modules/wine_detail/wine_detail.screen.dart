@@ -222,11 +222,11 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
                 grapeFreetext: widget.wine.grapeFreetext,
                 legacyGrape: widget.wine.grape,
               ),
-              SizedBox(height: context.xl),
+              SizedBox(height: context.l),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: context.paddingH),
                 child: SizedBox(
-                  height: context.h * 0.32,
+                  height: context.h * 0.26,
                   child: Row(
                     children: [
                       Expanded(

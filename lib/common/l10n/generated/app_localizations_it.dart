@@ -1120,6 +1120,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get winesSharePickFriendsTitle => 'Condividi con';
 
   @override
+  String get winesExpertProUnlock => 'Sblocca con Pro';
+
+  @override
   String get momentPlaceHint => 'Ristorante o luogo';
 
   @override
