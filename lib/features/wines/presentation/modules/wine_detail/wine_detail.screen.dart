@@ -1182,24 +1182,28 @@ const _kP4b = _Mosaic(
     _MTile(1, 0, 1, 2), // wide bottom-left
   ],
 );
+// 2×2 equal-square quartet — photo position varies per variant so
+// the section stays visually distinct across wines without
+// introducing thin tall rectangles. The first tile in the list is
+// the real photo; the rest are placeholders.
 const _kP4c = _Mosaic(
-  cols: 3,
-  rows: 3,
+  cols: 2,
+  rows: 2,
   tiles: [
-    _MTile(0, 0, 2, 2), // hero TL
-    _MTile(0, 2, 1, 1),
-    _MTile(1, 2, 2, 1), // tall right
-    _MTile(2, 0, 1, 2), // wide bottom-left
+    _MTile(0, 0, 1, 1), // photo TL
+    _MTile(0, 1, 1, 1),
+    _MTile(1, 0, 1, 1),
+    _MTile(1, 1, 1, 1),
   ],
 );
 const _kP4d = _Mosaic(
-  cols: 3,
-  rows: 3,
+  cols: 2,
+  rows: 2,
   tiles: [
-    _MTile(0, 1, 2, 2), // hero TR
-    _MTile(0, 0, 2, 1), // tall left
-    _MTile(2, 0, 1, 1),
-    _MTile(2, 1, 1, 2), // wide bottom-right
+    _MTile(1, 1, 1, 1), // photo BR
+    _MTile(0, 0, 1, 1),
+    _MTile(0, 1, 1, 1),
+    _MTile(1, 0, 1, 1),
   ],
 );
 const _kP4 = [_kP4a, _kP4b, _kP4c, _kP4d];
@@ -1237,8 +1241,8 @@ const _kP5d = _Mosaic(
   rows: 3,
   tiles: [
     _MTile(0, 1, 2, 2), // hero TR
-    _MTile(0, 0, 2, 1), // tall left
-    _MTile(2, 0, 1, 1), _MTile(2, 1, 1, 1), _MTile(2, 2, 1, 1),
+    _MTile(2, 0, 1, 2), // wide bottom-left
+    _MTile(0, 0, 1, 1), _MTile(1, 0, 1, 1), _MTile(2, 2, 1, 1),
   ],
 );
 const _kP5e = _Mosaic(
@@ -1309,15 +1313,15 @@ const _kP9d = _Mosaic(
   ],
 );
 const _kP9e = _Mosaic(
-  cols: 4,
+  cols: 5,
   rows: 3,
   tiles: [
     _MTile(0, 0, 2, 2), // hero TL
-    _MTile(0, 2, 2, 1), // tall right column
-    _MTile(0, 3, 1, 1),
-    _MTile(1, 3, 1, 1),
+    _MTile(0, 2, 1, 2), // wide top
+    _MTile(1, 2, 1, 2), // wide mid
     _MTile(2, 0, 1, 2), // wide bottom-left
-    _MTile(2, 2, 1, 1), _MTile(2, 3, 1, 1),
+    _MTile(0, 4, 1, 1), _MTile(1, 4, 1, 1),
+    _MTile(2, 2, 1, 1), _MTile(2, 3, 1, 1), _MTile(2, 4, 1, 1),
   ],
 );
 const _kP9f = _Mosaic(
