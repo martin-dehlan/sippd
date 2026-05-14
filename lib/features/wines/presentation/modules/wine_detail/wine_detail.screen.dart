@@ -1049,14 +1049,20 @@ class _MomentsBentoState extends ConsumerState<_MomentsBento> {
 
     final count = memories.length;
     final hasOverflow = count > _MomentsBento._kMaxBentoSlots;
-    final bentoSlotCount = hasOverflow
+    // Layout always has at least 5 slots — a 1-moment wine still
+    // reads as a full inviting mosaic with placeholders filling the
+    // remaining tiles. As moments grow (count + 2) the pattern shifts
+    // to a higher-tier layout, up to 12 slots, then "+N" overflow.
+    final layoutCount = hasOverflow
+        ? _MomentsBento._kMaxBentoSlots
+        : (count + 2).clamp(5, _MomentsBento._kMaxBentoSlots);
+    final realInBento = hasOverflow
         ? (_expanded
               ? _MomentsBento._kMaxBentoSlots
               : _MomentsBento._kMaxBentoSlots - 1)
         : count;
-    final overflowStart = bentoSlotCount;
+    final overflowStart = realInBento;
     final overflowCount = count - overflowStart;
-    final layoutCount = hasOverflow ? _MomentsBento._kMaxBentoSlots : count;
 
     Widget tile(int index) => _BentoTile(
       memory: memories[index],
@@ -1069,10 +1075,8 @@ class _MomentsBentoState extends ConsumerState<_MomentsBento> {
     );
 
     Widget slot(int index) {
-      if (index < bentoSlotCount) return tile(index);
-      // Overflow toggle lives on the LAST slot of the chosen pattern
-      // when collapsed; expanded mode promotes the real moment into
-      // that slot and the collapse toggle moves to the trailing grid.
+      if (index < realInBento) return tile(index);
+      // Overflow toggle on the very last slot when collapsed.
       if (hasOverflow &&
           !_expanded &&
           index == _MomentsBento._kMaxBentoSlots - 1) {
@@ -1082,9 +1086,9 @@ class _MomentsBentoState extends ConsumerState<_MomentsBento> {
           onTap: () => setState(() => _expanded = true),
         );
       }
-      // Should not be reached — layoutCount == bentoSlotCount when no
-      // overflow, so every index < layoutCount maps to a real tile.
-      return const SizedBox.shrink();
+      // Every remaining slot below layoutCount becomes an "invite to
+      // capture" placeholder so the section never feels half-built.
+      return _BentoPlaceholder(onTap: widget.onAdd);
     }
 
     final bento = _renderCountPattern(layoutCount, slot, gap);
