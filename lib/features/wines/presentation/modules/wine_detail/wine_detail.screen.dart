@@ -1441,62 +1441,87 @@ class _ExpandedOverflowGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const cols = 4;
     final overflow = memories.sublist(startIndex);
     final gap = context.w * 0.015;
-    // +1 for the trailing collapse-toggle tile.
-    final totalCells = overflow.length + 1;
-    final rows = (totalCells / cols).ceil();
     final cs = Theme.of(context).colorScheme;
+    // Chunk the overflow moments into pages of up to 8 so every page
+    // renders through a chaos collage pattern instead of the previous
+    // uniform 4-col grid. The wine-id + chunk index seeds the variant
+    // pick, so different sections of the overflow look distinct.
+    final chunks = <List<WineMemoryEntity>>[];
+    for (var i = 0; i < overflow.length; i += 8) {
+      final end = (i + 8) > overflow.length ? overflow.length : i + 8;
+      chunks.add(overflow.sublist(i, end));
+    }
 
-    Widget cellFor(int localIndex) {
-      if (localIndex < overflow.length) {
-        final absoluteIndex = startIndex + localIndex;
-        return _BentoTile(
-          memory: overflow[localIndex],
-          onTap: () => onTapMoment(absoluteIndex),
-        );
-      }
-      if (localIndex == overflow.length) {
-        return GestureDetector(
-          onTap: onCollapse,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: cs.surfaceContainer,
-              borderRadius: BorderRadius.circular(context.w * 0.025),
-              border: Border.all(color: cs.outlineVariant, width: 0.5),
-            ),
-            child: Center(
-              child: Icon(
-                PhosphorIconsRegular.caretUp,
-                color: cs.onSurface.withValues(alpha: 0.85),
-                size: context.w * 0.05,
+    Widget renderChunk(int chunkIdx) {
+      final chunk = chunks[chunkIdx];
+      // Tiers below 3 photos have no exact-fill collage (they'd add
+      // placeholders, which would look unfinished here); render those
+      // as a simple row.
+      if (chunk.length < 3) {
+        return Row(
+          children: [
+            for (var c = 0; c < chunk.length; c++) ...[
+              if (c != 0) SizedBox(width: gap),
+              Expanded(
+                child: AspectRatio(
+                  aspectRatio: 1,
+                  child: _BentoTile(
+                    memory: chunk[c],
+                    onTap: () => onTapMoment(startIndex + chunkIdx * 8 + c),
+                  ),
+                ),
               ),
-            ),
-          ),
+              // Pad the right side so single tiles don't stretch
+              // across the full row.
+              if (chunk.length == 1)
+                Expanded(flex: 3, child: const SizedBox.shrink()),
+            ],
+          ],
         );
       }
-      return const SizedBox.shrink();
+      return _renderCountPattern(
+        chunk.length,
+        (slotIndex) => _BentoTile(
+          memory: chunk[slotIndex],
+          onTap: () => onTapMoment(startIndex + chunkIdx * 8 + slotIndex),
+        ),
+        gap,
+        '${memories.first.id}-$chunkIdx',
+      );
     }
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        for (var r = 0; r < rows; r++) ...[
-          if (r != 0) SizedBox(height: gap),
-          Row(
-            children: [
-              for (var c = 0; c < cols; c++) ...[
-                if (c != 0) SizedBox(width: gap),
-                Expanded(
-                  child: AspectRatio(
-                    aspectRatio: 1,
-                    child: cellFor(r * cols + c),
-                  ),
-                ),
-              ],
-            ],
-          ),
+        for (var i = 0; i < chunks.length; i++) ...[
+          if (i != 0) SizedBox(height: gap),
+          renderChunk(i),
         ],
+        SizedBox(height: gap),
+        // Caret-up collapse toggle as a single slim tile across the
+        // full width so it reads as a distinct end-of-section action.
+        AspectRatio(
+          aspectRatio: 6,
+          child: GestureDetector(
+            onTap: onCollapse,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: cs.surfaceContainer,
+                borderRadius: BorderRadius.circular(context.w * 0.025),
+                border: Border.all(color: cs.outlineVariant, width: 0.5),
+              ),
+              child: Center(
+                child: Icon(
+                  PhosphorIconsRegular.caretUp,
+                  color: cs.onSurface.withValues(alpha: 0.85),
+                  size: context.w * 0.05,
+                ),
+              ),
+            ),
+          ),
+        ),
       ],
     );
   }
