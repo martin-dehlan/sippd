@@ -1405,6 +1405,36 @@ class _BentoTile extends StatelessWidget {
   }
 }
 
+class _BentoPlaceholder extends StatelessWidget {
+  final VoidCallback onTap;
+  const _BentoPlaceholder({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return GestureDetector(
+      onTap: onTap,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: cs.surface,
+          borderRadius: BorderRadius.circular(context.w * 0.025),
+          border: Border.all(
+            color: cs.outlineVariant.withValues(alpha: 0.6),
+            width: 0.6,
+          ),
+        ),
+        child: Center(
+          child: Icon(
+            PhosphorIconsRegular.plus,
+            color: cs.onSurface.withValues(alpha: 0.35),
+            size: context.w * 0.05,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _BentoOverflowTile extends StatelessWidget {
   final int count;
   final bool expanded;
