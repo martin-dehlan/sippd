@@ -634,29 +634,41 @@ class _MetaChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = Colors.white.withValues(alpha: dimmed ? 0.55 : 0.95);
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: onTap,
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: context.xs * 1.2),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, color: color, size: context.w * 0.04),
-            SizedBox(width: context.xs * 1.3),
-            Flexible(
-              child: Text(
-                label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  color: color,
-                  fontSize: context.captionFont,
-                  fontWeight: FontWeight.w500,
+    final borderColor = Colors.white.withValues(alpha: dimmed ? 0.14 : 0.28);
+    final radius = BorderRadius.circular(context.w * 0.08);
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: radius,
+        child: Container(
+          padding: EdgeInsets.symmetric(
+            horizontal: context.s * 1.4,
+            vertical: context.xs * 1.4,
+          ),
+          decoration: BoxDecoration(
+            borderRadius: radius,
+            border: Border.all(color: borderColor, width: 0.8),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, color: color, size: context.w * 0.04),
+              SizedBox(width: context.xs * 1.3),
+              Flexible(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: color,
+                    fontSize: context.captionFont,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

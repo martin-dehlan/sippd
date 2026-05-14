@@ -1092,9 +1092,12 @@ class _MomentsBentoState extends ConsumerState<_MomentsBento> {
           onTap: () => setState(() => _expanded = true),
         );
       }
-      // Every remaining slot below layoutCount becomes an "invite to
-      // capture" placeholder so the section never feels half-built.
-      return _BentoPlaceholder(onTap: widget.onAdd);
+      // Only the FIRST empty slot shows the "+" CTA — every other
+      // placeholder renders as a silent ghost tile so the mosaic
+      // doesn't nag the user with repeated plus icons. Tap-to-add
+      // still works on every empty slot.
+      final isFirstEmpty = index == realInBento;
+      return _BentoPlaceholder(onTap: widget.onAdd, showPlus: isFirstEmpty);
     }
 
     final bento = _renderCountPattern(layoutCount, slot, gap, wineId);
@@ -1460,29 +1463,37 @@ class _BentoTile extends StatelessWidget {
 
 class _BentoPlaceholder extends StatelessWidget {
   final VoidCallback onTap;
-  const _BentoPlaceholder({required this.onTap});
+  final bool showPlus;
+  const _BentoPlaceholder({required this.onTap, this.showPlus = true});
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    // Ghost tiles are dimmer than the active "+" tile so the eye
+    // resolves a single CTA, not a wall of plus signs. They stay
+    // tappable so any empty slot is still an add-affordance.
+    final borderAlpha = showPlus ? 0.6 : 0.25;
+    final fillAlpha = showPlus ? 1.0 : 0.55;
     return GestureDetector(
       onTap: onTap,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: cs.surface,
+          color: cs.surface.withValues(alpha: fillAlpha),
           borderRadius: BorderRadius.circular(context.w * 0.025),
           border: Border.all(
-            color: cs.outlineVariant.withValues(alpha: 0.6),
+            color: cs.outlineVariant.withValues(alpha: borderAlpha),
             width: 0.6,
           ),
         ),
-        child: Center(
-          child: Icon(
-            PhosphorIconsRegular.plus,
-            color: cs.onSurface.withValues(alpha: 0.35),
-            size: context.w * 0.05,
-          ),
-        ),
+        child: showPlus
+            ? Center(
+                child: Icon(
+                  PhosphorIconsRegular.plus,
+                  color: cs.onSurface.withValues(alpha: 0.35),
+                  size: context.w * 0.05,
+                ),
+              )
+            : const SizedBox.shrink(),
       ),
     );
   }
