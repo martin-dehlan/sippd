@@ -920,7 +920,6 @@ class _MemoriesSection extends ConsumerWidget {
     final wineId = wine.id;
     final memoriesAsync = ref.watch(wineMemoriesControllerProvider(wineId));
     final memories = memoriesAsync.valueOrNull ?? const [];
-    final tileSize = context.w * 0.14;
     final l10n = AppLocalizations.of(context);
     final cs = Theme.of(context).colorScheme;
     final padH = context.paddingH * 1.3;
@@ -995,10 +994,10 @@ class _MemoriesSection extends ConsumerWidget {
           else
             Padding(
               padding: EdgeInsets.symmetric(horizontal: padH),
-              child: _MomentsMosaic(
+              child: _MomentsBento(
                 memories: memories,
                 wineId: wineId,
-                tileSize: tileSize,
+                onAdd: openCapture,
               ),
             ),
         ],
@@ -1012,102 +1011,169 @@ class _MemoriesSection extends ConsumerWidget {
 /// overflow indicator that opens the viewer at the first hidden
 /// moment. Single-row, bounded vertically, never scrolls — keeps the
 /// section from elbowing the tasting-notes block below.
-class _MomentsMosaic extends StatelessWidget {
-  static const _kMaxVisible = 5;
-
+/// Bento-style moment mosaic. Picks one of N pre-baked layouts based
+/// on a stable hash of the wine id so each wine wears the same pattern
+/// across visits but different wines look distinct. Layouts mix one
+/// large hero tile with smaller siblings — Pinterest/Bento feel, not a
+/// flat grid. Empty slots beyond the available moments render as quiet
+/// placeholders that tap to open capture, so a wine with one moment
+/// still reads as a filled mosaic and invites more.
+class _MomentsBento extends StatelessWidget {
   final List<WineMemoryEntity> memories;
   final String wineId;
-  final double tileSize;
+  final VoidCallback onAdd;
 
-  const _MomentsMosaic({
+  const _MomentsBento({
     required this.memories,
     required this.wineId,
-    required this.tileSize,
+    required this.onAdd,
   });
+
+  static const _patterns = [
+    _BentoPattern.bigLeftTwoStackedRight,
+    _BentoPattern.bigRightTwoStackedLeft,
+    _BentoPattern.twoOverTwo,
+    _BentoPattern.topWideThreeBelow,
+  ];
 
   @override
   Widget build(BuildContext context) {
-    final hasOverflow = memories.length > _kMaxVisible;
-    final visibleCount = hasOverflow ? _kMaxVisible - 1 : memories.length;
-    final overflowCount = memories.length - visibleCount;
+    final pattern = _patterns[wineId.hashCode.abs() % _patterns.length];
+    final viewMoments = memories;
 
-    return SizedBox(
-      height: tileSize,
-      child: Row(
-        children: [
-          for (var i = 0; i < visibleCount; i++) ...[
-            if (i != 0) SizedBox(width: context.w * 0.02),
-            Expanded(
-              child: _MomentMosaicTile(
-                memory: memories[i],
-                size: tileSize,
-                onTap: () => pushMomentViewer(
-                  context,
-                  wineId: wineId,
-                  moments: memories,
-                  initialIndex: i,
-                ),
-              ),
-            ),
-          ],
-          if (hasOverflow) ...[
-            SizedBox(width: context.w * 0.02),
-            Expanded(
-              child: _MomentOverflowTile(
-                count: overflowCount,
-                size: tileSize,
-                onTap: () => pushMomentViewer(
-                  context,
-                  wineId: wineId,
-                  moments: memories,
-                  initialIndex: visibleCount,
-                ),
-              ),
-            ),
-          ],
-          // Pad with phantom slots so existing tiles don't expand to
-          // fill the row when there are fewer than the max — keeps
-          // the squares actually square.
-          for (
-            var i = visibleCount + (hasOverflow ? 1 : 0);
-            i < _kMaxVisible;
-            i++
-          ) ...[
-            if (i != 0) SizedBox(width: context.w * 0.02),
-            const Expanded(child: SizedBox.shrink()),
-          ],
-        ],
-      ),
+    Widget slot(int index) {
+      if (index < memories.length) {
+        return _BentoTile(
+          memory: memories[index],
+          onTap: () => pushMomentViewer(
+            context,
+            wineId: wineId,
+            moments: viewMoments,
+            initialIndex: index,
+          ),
+        );
+      }
+      return _BentoPlaceholder(onTap: onAdd);
+    }
+
+    return AspectRatio(
+      aspectRatio: 1.7,
+      child: _renderBentoPattern(pattern, slot, context),
     );
   }
 }
 
-class _MomentMosaicTile extends StatelessWidget {
+enum _BentoPattern {
+  bigLeftTwoStackedRight,
+  bigRightTwoStackedLeft,
+  twoOverTwo,
+  topWideThreeBelow,
+}
+
+Widget _renderBentoPattern(
+  _BentoPattern pattern,
+  Widget Function(int) slot,
+  BuildContext context,
+) {
+  final gap = context.w * 0.015;
+  switch (pattern) {
+    case _BentoPattern.bigLeftTwoStackedRight:
+      return Row(
+        children: [
+          Expanded(flex: 2, child: slot(0)),
+          SizedBox(width: gap),
+          Expanded(
+            flex: 1,
+            child: Column(
+              children: [
+                Expanded(child: slot(1)),
+                SizedBox(height: gap),
+                Expanded(child: slot(2)),
+              ],
+            ),
+          ),
+        ],
+      );
+    case _BentoPattern.bigRightTwoStackedLeft:
+      return Row(
+        children: [
+          Expanded(
+            flex: 1,
+            child: Column(
+              children: [
+                Expanded(child: slot(1)),
+                SizedBox(height: gap),
+                Expanded(child: slot(2)),
+              ],
+            ),
+          ),
+          SizedBox(width: gap),
+          Expanded(flex: 2, child: slot(0)),
+        ],
+      );
+    case _BentoPattern.twoOverTwo:
+      return Column(
+        children: [
+          Expanded(
+            child: Row(
+              children: [
+                Expanded(child: slot(0)),
+                SizedBox(width: gap),
+                Expanded(child: slot(1)),
+              ],
+            ),
+          ),
+          SizedBox(height: gap),
+          Expanded(
+            child: Row(
+              children: [
+                Expanded(child: slot(2)),
+                SizedBox(width: gap),
+                Expanded(child: slot(3)),
+              ],
+            ),
+          ),
+        ],
+      );
+    case _BentoPattern.topWideThreeBelow:
+      return Column(
+        children: [
+          Expanded(flex: 3, child: slot(0)),
+          SizedBox(height: gap),
+          Expanded(
+            flex: 2,
+            child: Row(
+              children: [
+                Expanded(child: slot(1)),
+                SizedBox(width: gap),
+                Expanded(child: slot(2)),
+                SizedBox(width: gap),
+                Expanded(child: slot(3)),
+              ],
+            ),
+          ),
+        ],
+      );
+  }
+}
+
+class _BentoTile extends StatelessWidget {
   final WineMemoryEntity memory;
-  final double size;
   final VoidCallback onTap;
-  const _MomentMosaicTile({
-    required this.memory,
-    required this.size,
-    required this.onTap,
-  });
+  const _BentoTile({required this.memory, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final radius = BorderRadius.circular(context.w * 0.025);
     return GestureDetector(
       onTap: onTap,
-      child: AspectRatio(
-        aspectRatio: 1,
-        child: Container(
-          clipBehavior: Clip.antiAlias,
-          decoration: BoxDecoration(
-            color: cs.surfaceContainer,
-            borderRadius: radius,
-          ),
-          child: _thumb(memory, cs),
+      child: Container(
+        clipBehavior: Clip.antiAlias,
+        decoration: BoxDecoration(
+          color: cs.surfaceContainer,
+          borderRadius: BorderRadius.circular(context.w * 0.025),
         ),
+        child: _thumb(memory, cs),
       ),
     );
   }
@@ -1124,42 +1190,37 @@ class _MomentMosaicTile extends StatelessWidget {
             Icon(PhosphorIconsRegular.image, color: cs.outline),
       );
     }
-    return Icon(PhosphorIconsRegular.image, color: cs.outline);
+    return Container(
+      color: cs.surfaceContainer,
+      alignment: Alignment.center,
+      child: Icon(PhosphorIconsRegular.image, color: cs.outline),
+    );
   }
 }
 
-class _MomentOverflowTile extends StatelessWidget {
-  final int count;
-  final double size;
+class _BentoPlaceholder extends StatelessWidget {
   final VoidCallback onTap;
-  const _MomentOverflowTile({
-    required this.count,
-    required this.size,
-    required this.onTap,
-  });
+  const _BentoPlaceholder({required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final radius = BorderRadius.circular(context.w * 0.025);
     return GestureDetector(
       onTap: onTap,
-      child: AspectRatio(
-        aspectRatio: 1,
-        child: Container(
-          decoration: BoxDecoration(
-            color: cs.surfaceContainer,
-            borderRadius: radius,
-            border: Border.all(color: cs.outlineVariant, width: 0.5),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: cs.surface,
+          borderRadius: BorderRadius.circular(context.w * 0.025),
+          border: Border.all(
+            color: cs.outlineVariant.withValues(alpha: 0.6),
+            width: 0.6,
           ),
-          alignment: Alignment.center,
-          child: Text(
-            '+$count',
-            style: TextStyle(
-              color: cs.onSurfaceVariant,
-              fontSize: context.bodyFont,
-              fontWeight: FontWeight.w700,
-            ),
+        ),
+        child: Center(
+          child: Icon(
+            PhosphorIconsRegular.plus,
+            color: cs.onSurface.withValues(alpha: 0.35),
+            size: context.w * 0.05,
           ),
         ),
       ),
