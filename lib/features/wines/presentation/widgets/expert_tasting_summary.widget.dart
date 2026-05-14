@@ -52,12 +52,21 @@ class ExpertTastingSummary extends ConsumerWidget {
   }
 }
 
-/// Locked-state preview for non-Pro users. Shows the six WSET axes as
-/// blurred placeholder tracks plus a single primary CTA — turns the
-/// otherwise empty section into a Pro-conversion surface.
-class _ProLockedPreview extends StatelessWidget {
+/// Locked-state for non-Pro users. Collapsed by default — renders a
+/// single-row teaser so the section doesn't dominate the rating-first
+/// stack. Tapping the row expands to the full six-axis blurred
+/// preview + paywall CTA. Two-step funnel: see → curious → expand →
+/// unlock.
+class _ProLockedPreview extends StatefulWidget {
   const _ProLockedPreview({required this.onTap});
   final VoidCallback? onTap;
+
+  @override
+  State<_ProLockedPreview> createState() => _ProLockedPreviewState();
+}
+
+class _ProLockedPreviewState extends State<_ProLockedPreview> {
+  bool _expanded = false;
 
   @override
   Widget build(BuildContext context) {
@@ -72,105 +81,136 @@ class _ProLockedPreview extends StatelessWidget {
       l10n.winesExpertSummaryAxisFinish,
     ];
 
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(context.w * 0.04),
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: context.paddingH * 1.3,
-          vertical: context.s,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
-              children: [
-                Text(
-                  l10n.winesExpertSummaryHeader,
-                  style: TextStyle(
-                    fontSize: context.captionFont * 0.95,
-                    fontWeight: FontWeight.w700,
-                    color: cs.onSurface.withValues(alpha: 0.72),
-                    letterSpacing: 1.2,
-                  ),
-                ),
-                SizedBox(width: context.s),
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: context.xs * 1.4,
-                    vertical: context.xs * 0.5,
-                  ),
-                  decoration: BoxDecoration(
-                    color: cs.primary,
-                    borderRadius: BorderRadius.circular(context.w * 0.015),
-                  ),
-                  child: Text(
-                    'PRO',
-                    style: TextStyle(
-                      fontSize: context.captionFont * 0.7,
-                      fontWeight: FontWeight.w800,
-                      color: cs.onPrimary,
-                      letterSpacing: 1.4,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: context.m),
-            // Two-column grid of locked axes — same shape as the
-            // filled state so the user immediately reads "this is what
-            // I'd unlock". No descriptor words; just label + blurred
-            // dot track.
-            for (var i = 0; i < axes.length; i += 2)
-              Padding(
-                padding: EdgeInsets.only(bottom: context.m),
-                child: IntrinsicHeight(
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(child: _LockedCell(label: axes[i])),
-                      SizedBox(width: context.w * 0.04),
-                      Expanded(
-                        child: i + 1 < axes.length
-                            ? _LockedCell(label: axes[i + 1])
-                            : const SizedBox.shrink(),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            SizedBox(height: context.xs),
-            Align(
-              alignment: Alignment.centerLeft,
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: context.paddingH * 1.3,
+        vertical: context.xs,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Slim collapsible teaser row. Always rendered so the
+          // section header stays consistent with the filled state.
+          InkWell(
+            onTap: () => setState(() => _expanded = !_expanded),
+            borderRadius: BorderRadius.circular(context.w * 0.02),
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: context.s),
               child: Row(
-                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
-                    PhosphorIconsRegular.lockKey,
-                    size: context.captionFont,
-                    color: cs.primary,
-                  ),
-                  SizedBox(width: context.xs * 1.2),
                   Text(
-                    l10n.winesExpertProUnlock,
+                    l10n.winesExpertSummaryHeader,
                     style: TextStyle(
-                      fontSize: context.captionFont,
-                      fontWeight: FontWeight.w600,
-                      color: cs.primary,
-                      letterSpacing: 0.2,
+                      fontSize: context.captionFont * 0.95,
+                      fontWeight: FontWeight.w700,
+                      color: cs.onSurface.withValues(alpha: 0.72),
+                      letterSpacing: 1.2,
                     ),
                   ),
-                  SizedBox(width: context.xs * 0.6),
+                  SizedBox(width: context.s),
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: context.xs * 1.4,
+                      vertical: context.xs * 0.5,
+                    ),
+                    decoration: BoxDecoration(
+                      color: cs.primary,
+                      borderRadius: BorderRadius.circular(context.w * 0.015),
+                    ),
+                    child: Text(
+                      'PRO',
+                      style: TextStyle(
+                        fontSize: context.captionFont * 0.7,
+                        fontWeight: FontWeight.w800,
+                        color: cs.onPrimary,
+                        letterSpacing: 1.4,
+                      ),
+                    ),
+                  ),
+                  const Spacer(),
                   Icon(
-                    PhosphorIconsRegular.caretRight,
-                    size: context.captionFont,
-                    color: cs.primary,
+                    _expanded
+                        ? PhosphorIconsRegular.caretUp
+                        : PhosphorIconsRegular.caretDown,
+                    size: context.captionFont * 1.1,
+                    color: cs.onSurfaceVariant,
                   ),
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+          AnimatedSize(
+            duration: const Duration(milliseconds: 220),
+            curve: Curves.easeOutCubic,
+            alignment: Alignment.topCenter,
+            child: _expanded
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      SizedBox(height: context.s),
+                      for (var i = 0; i < axes.length; i += 2)
+                        Padding(
+                          padding: EdgeInsets.only(bottom: context.m),
+                          child: IntrinsicHeight(
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(child: _LockedCell(label: axes[i])),
+                                SizedBox(width: context.w * 0.04),
+                                Expanded(
+                                  child: i + 1 < axes.length
+                                      ? _LockedCell(label: axes[i + 1])
+                                      : const SizedBox.shrink(),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      SizedBox(height: context.xs),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: InkWell(
+                          onTap: widget.onTap,
+                          borderRadius: BorderRadius.circular(context.w * 0.02),
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                              vertical: context.xs,
+                              horizontal: context.xs,
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  PhosphorIconsRegular.lockKey,
+                                  size: context.captionFont,
+                                  color: cs.primary,
+                                ),
+                                SizedBox(width: context.xs * 1.2),
+                                Text(
+                                  l10n.winesExpertProUnlock,
+                                  style: TextStyle(
+                                    fontSize: context.captionFont,
+                                    fontWeight: FontWeight.w600,
+                                    color: cs.primary,
+                                    letterSpacing: 0.2,
+                                  ),
+                                ),
+                                SizedBox(width: context.xs * 0.6),
+                                Icon(
+                                  PhosphorIconsRegular.caretRight,
+                                  size: context.captionFont,
+                                  color: cs.primary,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                : const SizedBox.shrink(),
+          ),
+        ],
       ),
     );
   }
