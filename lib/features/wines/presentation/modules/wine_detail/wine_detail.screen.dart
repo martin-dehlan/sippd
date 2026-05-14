@@ -1163,116 +1163,70 @@ class _Mosaic {
 // wine-id hash picks the variant so neighbouring wines look
 // visibly different.
 
-// --- 4-slot tier (1..2 moments + placeholders) ---
-const _kP4a = _Mosaic(
-  cols: 4,
-  rows: 2,
-  tiles: [
-    _MTile(0, 0, 2, 2), // hero left
-    _MTile(0, 2, 1, 1), _MTile(0, 3, 1, 1),
-    _MTile(1, 2, 1, 2), // wide bottom-right
-  ],
-);
-const _kP4b = _Mosaic(
-  cols: 4,
-  rows: 2,
-  tiles: [
-    _MTile(0, 2, 2, 2), // hero right
-    _MTile(0, 0, 1, 1), _MTile(0, 1, 1, 1),
-    _MTile(1, 0, 1, 2), // wide bottom-left
-  ],
-);
-// Wide-hero collage on 5×2 — H spans 3 cols × 2 rows, plus 1 wide
-// accent + 2 smalls. Real collage feel for the 1..2 moment case.
-const _kP4c = _Mosaic(
-  cols: 5,
-  rows: 2,
-  tiles: [
-    _MTile(0, 0, 2, 3), // hero 3×2 left
-    _MTile(0, 3, 1, 2), // wide top-right
-    _MTile(1, 3, 1, 1),
-    _MTile(1, 4, 1, 1),
-  ],
-);
-const _kP4d = _Mosaic(
-  cols: 5,
-  rows: 2,
-  tiles: [
-    _MTile(0, 2, 2, 3), // hero 3×2 right
-    _MTile(0, 0, 1, 2), // wide top-left
-    _MTile(1, 0, 1, 1),
-    _MTile(1, 1, 1, 1),
-  ],
-);
-const _kP4 = [_kP4a, _kP4b, _kP4c, _kP4d];
-
-// --- 5-slot tier (3..4 moments + placeholders) ---
+// --- 5-slot tier (1..4 moments + placeholders) ---
+// All variants put the hero on the right and mix 3 distinct tile
+// shapes (hero 3×2 / medium square 2×2 / wide 2×1 / small 1×1) so
+// no two identical tiles ever touch.
+// Hero always 3×2 on the RIGHT. Remaining cells filled with a
+// distinct 2×2 medium-square + wides + a small so no two
+// identical tiles ever touch.
 const _kP5a = _Mosaic(
-  cols: 4,
-  rows: 2,
+  cols: 5,
+  rows: 3,
   tiles: [
-    _MTile(0, 0, 2, 2), // hero left
-    _MTile(0, 2, 1, 1), _MTile(0, 3, 1, 1),
-    _MTile(1, 2, 1, 1), _MTile(1, 3, 1, 1),
+    _MTile(0, 2, 2, 3), // hero top-right
+    _MTile(1, 0, 2, 2), // medium square bottom-left
+    _MTile(0, 0, 1, 2), // wide top-left
+    _MTile(2, 2, 1, 2), // wide bottom-mid
+    _MTile(2, 4, 1, 1),
   ],
 );
 const _kP5b = _Mosaic(
-  cols: 4,
-  rows: 2,
+  cols: 5,
+  rows: 3,
   tiles: [
-    _MTile(0, 2, 2, 2), // hero right
-    _MTile(0, 0, 1, 1), _MTile(0, 1, 1, 1),
-    _MTile(1, 0, 1, 1), _MTile(1, 1, 1, 1),
+    _MTile(1, 2, 2, 3), // hero bottom-right
+    _MTile(0, 0, 2, 2), // medium square top-left
+    _MTile(0, 2, 1, 2), // wide top-mid
+    _MTile(0, 4, 1, 1),
+    _MTile(2, 0, 1, 2), // wide bottom-left
   ],
 );
 const _kP5c = _Mosaic(
-  cols: 3,
+  cols: 5,
   rows: 3,
   tiles: [
-    _MTile(0, 0, 2, 2), // hero TL
-    _MTile(2, 0, 1, 2), // wide bottom
-    _MTile(0, 2, 1, 1), _MTile(1, 2, 1, 1), _MTile(2, 2, 1, 1),
+    _MTile(0, 2, 2, 3), // hero top-right
+    _MTile(0, 0, 2, 2), // medium square top-left
+    _MTile(2, 0, 1, 2), // wide bottom-left
+    _MTile(2, 2, 1, 1),
+    _MTile(2, 3, 1, 2), // wide bottom-right
   ],
 );
 const _kP5d = _Mosaic(
-  cols: 3,
-  rows: 3,
-  tiles: [
-    _MTile(0, 1, 2, 2), // hero TR
-    _MTile(2, 0, 1, 2), // wide bottom-left
-    _MTile(0, 0, 1, 1), _MTile(1, 0, 1, 1), _MTile(2, 2, 1, 1),
-  ],
-);
-const _kP5e = _Mosaic(
-  cols: 3,
-  rows: 3,
-  tiles: [
-    _MTile(0, 0, 1, 2), // wide top
-    _MTile(0, 2, 1, 1),
-    _MTile(1, 0, 1, 1),
-    _MTile(1, 1, 2, 2), // hero BR
-    _MTile(2, 0, 1, 1),
-  ],
-);
-const _kP5f = _Mosaic(
   cols: 5,
-  rows: 2,
+  rows: 3,
   tiles: [
-    _MTile(0, 0, 2, 3), // hero 3×2 left
-    _MTile(0, 3, 1, 1), _MTile(0, 4, 1, 1),
-    _MTile(1, 3, 1, 1), _MTile(1, 4, 1, 1),
+    _MTile(1, 2, 2, 3), // hero bottom-right
+    _MTile(1, 0, 2, 2), // medium square middle-left
+    _MTile(0, 0, 1, 2), // wide top-left
+    _MTile(0, 2, 1, 1),
+    _MTile(0, 3, 1, 2), // wide top-right
   ],
 );
-const _kP5 = [_kP5a, _kP5b, _kP5c, _kP5d, _kP5e, _kP5f];
+const _kP5 = [_kP5a, _kP5b, _kP5c, _kP5d];
 
 // --- 9-slot tier (5..8 real + +overflow) ---
+// All hero-right. In a 9-tile mosaic packed into a 12- or 15-cell
+// grid, small/small adjacencies are unavoidable — those are
+// minimised by interleaving wides where the grid allows.
 const _kP9a = _Mosaic(
   cols: 4,
   rows: 3,
   tiles: [
-    _MTile(0, 0, 2, 2), // hero TL
-    _MTile(0, 2, 1, 1), _MTile(0, 3, 1, 1),
-    _MTile(1, 2, 1, 1), _MTile(1, 3, 1, 1),
+    _MTile(0, 2, 2, 2), // hero top-right
+    _MTile(0, 0, 1, 1), _MTile(0, 1, 1, 1),
+    _MTile(1, 0, 1, 1), _MTile(1, 1, 1, 1),
     _MTile(2, 0, 1, 1), _MTile(2, 1, 1, 1), _MTile(2, 2, 1, 1),
     _MTile(2, 3, 1, 1),
   ],
@@ -1281,76 +1235,46 @@ const _kP9b = _Mosaic(
   cols: 4,
   rows: 3,
   tiles: [
-    _MTile(0, 2, 2, 2), // hero TR
-    _MTile(0, 0, 1, 1), _MTile(0, 1, 1, 1),
-    _MTile(1, 0, 1, 1), _MTile(1, 1, 1, 1),
-    _MTile(2, 0, 1, 1), _MTile(2, 1, 1, 1), _MTile(2, 2, 1, 1),
-    _MTile(2, 3, 1, 1),
-  ],
-);
-const _kP9c = _Mosaic(
-  cols: 4,
-  rows: 3,
-  tiles: [
-    _MTile(1, 0, 2, 2), // hero BL
-    _MTile(0, 0, 1, 1), _MTile(0, 1, 1, 1), _MTile(0, 2, 1, 1),
-    _MTile(0, 3, 1, 1),
-    _MTile(1, 2, 1, 1), _MTile(1, 3, 1, 1),
-    _MTile(2, 2, 1, 1), _MTile(2, 3, 1, 1),
-  ],
-);
-const _kP9d = _Mosaic(
-  cols: 4,
-  rows: 3,
-  tiles: [
-    _MTile(1, 2, 2, 2), // hero BR
+    _MTile(1, 2, 2, 2), // hero bottom-right
     _MTile(0, 0, 1, 1), _MTile(0, 1, 1, 1), _MTile(0, 2, 1, 1),
     _MTile(0, 3, 1, 1),
     _MTile(1, 0, 1, 1), _MTile(1, 1, 1, 1),
     _MTile(2, 0, 1, 1), _MTile(2, 1, 1, 1),
   ],
 );
-const _kP9e = _Mosaic(
+const _kP9c = _Mosaic(
   cols: 5,
   rows: 3,
   tiles: [
-    _MTile(0, 0, 2, 2), // hero TL
-    _MTile(0, 2, 1, 2), // wide top
-    _MTile(1, 2, 1, 2), // wide mid
+    _MTile(0, 2, 2, 3), // hero 3×2 top-right
     _MTile(2, 0, 1, 2), // wide bottom-left
-    _MTile(0, 4, 1, 1), _MTile(1, 4, 1, 1),
+    _MTile(0, 0, 1, 1), _MTile(0, 1, 1, 1),
+    _MTile(1, 0, 1, 1), _MTile(1, 1, 1, 1),
     _MTile(2, 2, 1, 1), _MTile(2, 3, 1, 1), _MTile(2, 4, 1, 1),
   ],
 );
-const _kP9f = _Mosaic(
-  cols: 4,
+const _kP9d = _Mosaic(
+  cols: 5,
   rows: 3,
   tiles: [
-    _MTile(0, 1, 2, 2), // hero centre-top
-    _MTile(0, 0, 1, 1),
-    _MTile(1, 0, 1, 1),
-    _MTile(0, 3, 1, 1), _MTile(1, 3, 1, 1),
-    _MTile(2, 0, 1, 1), _MTile(2, 1, 1, 1), _MTile(2, 2, 1, 1),
-    _MTile(2, 3, 1, 1),
+    _MTile(1, 2, 2, 3), // hero 3×2 bottom-right
+    _MTile(0, 0, 1, 2), // wide top-left
+    _MTile(0, 2, 1, 1), _MTile(0, 3, 1, 1), _MTile(0, 4, 1, 1),
+    _MTile(1, 0, 1, 1), _MTile(1, 1, 1, 1),
+    _MTile(2, 0, 1, 1), _MTile(2, 1, 1, 1),
   ],
 );
-const _kP9 = [_kP9a, _kP9b, _kP9c, _kP9d, _kP9e, _kP9f];
+const _kP9 = [_kP9a, _kP9b, _kP9c, _kP9d];
 
 _Mosaic _pickMosaic(int slotCount, String wineId) {
-  final variants = switch (slotCount) {
-    <= 4 => _kP4,
-    <= 5 => _kP5,
-    _ => _kP9,
-  };
+  final variants = slotCount <= 5 ? _kP5 : _kP9;
   return variants[wineId.hashCode.abs() % variants.length];
 }
 
 /// Map a desired moment count onto the smallest tier that fits.
-/// Floor at 4 slots so even a single moment keeps a small mosaic
-/// (1 real + active "+" + 2 ghost placeholders) — the section
-/// never reads as a sparse 4×2 grid with one lone photo.
+/// Floor at 5 slots — the 5-tile collage is the smallest layout
+/// that still has shape variety (no two identical tiles touch).
 int _slotCountForCount(int count) {
-  if (count <= 2) return 4;
   if (count <= 4) return 5;
   return 9;
 }
@@ -1517,27 +1441,28 @@ class _BentoPlaceholder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    // Ghost tiles are dimmer than the active "+" tile so the eye
-    // resolves a single CTA, not a wall of plus signs. They stay
-    // tappable so any empty slot is still an add-affordance.
-    final borderAlpha = showPlus ? 0.6 : 0.25;
-    final fillAlpha = showPlus ? 1.0 : 0.55;
+    // Stronger contrast against the dark wine-detail background.
+    // Active "+" uses surfaceContainerHigh (lighter than surface);
+    // ghosts use surfaceContainer so they still register as
+    // tiles, not gaps. Border alpha also bumped.
+    final fill = showPlus ? cs.surfaceContainerHigh : cs.surfaceContainer;
+    final borderAlpha = showPlus ? 0.9 : 0.55;
     return GestureDetector(
       onTap: onTap,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: cs.surface.withValues(alpha: fillAlpha),
+          color: fill,
           borderRadius: BorderRadius.circular(context.w * 0.025),
           border: Border.all(
             color: cs.outlineVariant.withValues(alpha: borderAlpha),
-            width: 0.6,
+            width: 0.8,
           ),
         ),
         child: showPlus
             ? Center(
                 child: Icon(
                   PhosphorIconsRegular.plus,
-                  color: cs.onSurface.withValues(alpha: 0.35),
+                  color: cs.onSurface.withValues(alpha: 0.65),
                   size: context.w * 0.05,
                 ),
               )
