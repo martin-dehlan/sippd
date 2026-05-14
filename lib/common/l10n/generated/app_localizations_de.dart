@@ -1180,7 +1180,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get momentSectionAdd => 'Neu';
 
   @override
-  String get momentSectionEmpty => 'Noch keine Momente — tippe auf Neu.';
+  String get momentSectionEmpty => 'Noch keine Momente — tippe auf +.';
 
   @override
   String momentMetaWith(String names) {

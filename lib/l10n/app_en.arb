@@ -494,7 +494,7 @@
   "momentValidationEmpty": "Add a photo or note to save",
   "momentSectionHeader": "Moments",
   "momentSectionAdd": "New",
-  "momentSectionEmpty": "No moments yet — tap New to capture one.",
+  "momentSectionEmpty": "No moments yet — tap +.",
   "momentMetaWith": "With {names}",
   "@momentMetaWith": {
     "placeholders": {

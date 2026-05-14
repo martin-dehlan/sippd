@@ -427,7 +427,7 @@
   "momentValidationEmpty": "Füge ein Foto oder eine Notiz hinzu",
   "momentSectionHeader": "Momente",
   "momentSectionAdd": "Neu",
-  "momentSectionEmpty": "Noch keine Momente — tippe auf Neu.",
+  "momentSectionEmpty": "Noch keine Momente — tippe auf +.",
   "momentMetaWith": "Mit {names}",
   "winesPhotoSourceTake": "Foto aufnehmen",
   "winesPhotoSourceGallery": "Aus Galerie wählen",

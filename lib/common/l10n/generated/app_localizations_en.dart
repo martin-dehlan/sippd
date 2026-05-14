@@ -1165,7 +1165,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get momentSectionAdd => 'New';
 
   @override
-  String get momentSectionEmpty => 'No moments yet — tap New to capture one.';
+  String get momentSectionEmpty => 'No moments yet — tap +.';
 
   @override
   String momentMetaWith(String names) {

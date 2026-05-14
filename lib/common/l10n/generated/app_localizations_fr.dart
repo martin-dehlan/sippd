@@ -1183,8 +1183,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get momentSectionAdd => 'Nouveau';
 
   @override
-  String get momentSectionEmpty =>
-      'Aucun moment encore — touche Nouveau pour en créer un.';
+  String get momentSectionEmpty => 'Aucun moment encore — touche +.';
 
   @override
   String momentMetaWith(String names) {

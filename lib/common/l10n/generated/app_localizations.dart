@@ -2297,7 +2297,7 @@ abstract class AppLocalizations {
   /// No description provided for @momentSectionEmpty.
   ///
   /// In en, this message translates to:
-  /// **'No moments yet — tap New to capture one.'**
+  /// **'No moments yet — tap +.'**
   String get momentSectionEmpty;
 
   /// No description provided for @momentMetaWith.
