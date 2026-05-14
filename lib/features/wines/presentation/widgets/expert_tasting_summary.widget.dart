@@ -212,9 +212,7 @@ class _LockedCell extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: List.generate(5, (i) {
             return Padding(
-              padding: EdgeInsets.only(
-                right: i == 4 ? 0 : context.w * 0.012,
-              ),
+              padding: EdgeInsets.only(right: i == 4 ? 0 : context.w * 0.012),
               child: Container(
                 width: context.w * 0.018,
                 height: context.w * 0.018,
