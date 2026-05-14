@@ -998,26 +998,12 @@ class _MemoriesSection extends ConsumerWidget {
             )
           else ...[
             SizedBox(height: context.s),
-            SizedBox(
-              height: ringSize,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                padding: EdgeInsets.symmetric(horizontal: context.paddingH),
-                itemCount: memories.length,
-                separatorBuilder: (_, _) => SizedBox(width: context.w * 0.025),
-                itemBuilder: (_, i) {
-                  final memory = memories[i];
-                  return _MomentStoryTile(
-                    memory: memory,
-                    size: ringSize,
-                    onTap: () => pushMomentViewer(
-                      context,
-                      wineId: wineId,
-                      moments: memories,
-                      initialIndex: i,
-                    ),
-                  );
-                },
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: context.paddingH),
+              child: _MomentsMosaic(
+                memories: memories,
+                wineId: wineId,
+                tileSize: ringSize,
               ),
             ),
           ],
@@ -1027,11 +1013,86 @@ class _MemoriesSection extends ConsumerWidget {
   }
 }
 
-class _MomentStoryTile extends StatelessWidget {
+/// Lean Instagram-style mosaic — one square thumb per moment. Caps
+/// at 5 visible; if there are more, the 5th tile becomes a "+N"
+/// overflow indicator that opens the viewer at the first hidden
+/// moment. Single-row, bounded vertically, never scrolls — keeps the
+/// section from elbowing the tasting-notes block below.
+class _MomentsMosaic extends StatelessWidget {
+  static const _kMaxVisible = 5;
+
+  final List<WineMemoryEntity> memories;
+  final String wineId;
+  final double tileSize;
+
+  const _MomentsMosaic({
+    required this.memories,
+    required this.wineId,
+    required this.tileSize,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final hasOverflow = memories.length > _kMaxVisible;
+    final visibleCount = hasOverflow ? _kMaxVisible - 1 : memories.length;
+    final overflowCount = memories.length - visibleCount;
+
+    return SizedBox(
+      height: tileSize,
+      child: Row(
+        children: [
+          for (var i = 0; i < visibleCount; i++) ...[
+            if (i != 0) SizedBox(width: context.w * 0.02),
+            Expanded(
+              child: _MomentMosaicTile(
+                memory: memories[i],
+                size: tileSize,
+                onTap: () => pushMomentViewer(
+                  context,
+                  wineId: wineId,
+                  moments: memories,
+                  initialIndex: i,
+                ),
+              ),
+            ),
+          ],
+          if (hasOverflow) ...[
+            SizedBox(width: context.w * 0.02),
+            Expanded(
+              child: _MomentOverflowTile(
+                count: overflowCount,
+                size: tileSize,
+                onTap: () => pushMomentViewer(
+                  context,
+                  wineId: wineId,
+                  moments: memories,
+                  initialIndex: visibleCount,
+                ),
+              ),
+            ),
+          ],
+          // Pad with phantom slots so existing tiles don't expand to
+          // fill the row when there are fewer than the max — keeps
+          // the squares actually square.
+          for (
+            var i = visibleCount + (hasOverflow ? 1 : 0);
+            i < _kMaxVisible;
+            i++
+          ) ...[
+            if (i != 0) SizedBox(width: context.w * 0.02),
+            const Expanded(child: SizedBox.shrink()),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _MomentMosaicTile extends StatelessWidget {
   final WineMemoryEntity memory;
   final double size;
   final VoidCallback onTap;
-  const _MomentStoryTile({
+  const _MomentMosaicTile({
     required this.memory,
     required this.size,
     required this.onTap,
@@ -1040,27 +1101,24 @@ class _MomentStoryTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final ringColors = [cs.primary, cs.tertiary, cs.primaryContainer];
+    final radius = BorderRadius.circular(context.w * 0.025);
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          gradient: SweepGradient(colors: [...ringColors, ringColors.first]),
-        ),
-        padding: const EdgeInsets.all(2),
+      child: AspectRatio(
+        aspectRatio: 1,
         child: Container(
-          decoration: BoxDecoration(shape: BoxShape.circle, color: cs.surface),
-          padding: const EdgeInsets.all(2),
-          child: ClipOval(child: _avatarImage(memory, cs)),
+          clipBehavior: Clip.antiAlias,
+          decoration: BoxDecoration(
+            color: cs.surfaceContainer,
+            borderRadius: radius,
+          ),
+          child: _thumb(memory, cs),
         ),
       ),
     );
   }
 
-  Widget _avatarImage(WineMemoryEntity m, ColorScheme cs) {
+  Widget _thumb(WineMemoryEntity m, ColorScheme cs) {
     if (m.localImagePath != null) {
       return Image.file(File(m.localImagePath!), fit: BoxFit.cover);
     }
@@ -1072,9 +1130,45 @@ class _MomentStoryTile extends StatelessWidget {
             Icon(PhosphorIconsRegular.image, color: cs.outline),
       );
     }
-    return Container(
-      color: cs.surfaceContainer,
-      child: Icon(PhosphorIconsRegular.image, color: cs.outline),
+    return Icon(PhosphorIconsRegular.image, color: cs.outline);
+  }
+}
+
+class _MomentOverflowTile extends StatelessWidget {
+  final int count;
+  final double size;
+  final VoidCallback onTap;
+  const _MomentOverflowTile({
+    required this.count,
+    required this.size,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final radius = BorderRadius.circular(context.w * 0.025);
+    return GestureDetector(
+      onTap: onTap,
+      child: AspectRatio(
+        aspectRatio: 1,
+        child: Container(
+          decoration: BoxDecoration(
+            color: cs.surfaceContainer,
+            borderRadius: radius,
+            border: Border.all(color: cs.outlineVariant, width: 0.5),
+          ),
+          alignment: Alignment.center,
+          child: Text(
+            '+$count',
+            style: TextStyle(
+              color: cs.onSurfaceVariant,
+              fontSize: context.bodyFont,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
