@@ -1128,62 +1128,180 @@ class _MomentsBentoState extends ConsumerState<_MomentsBento> {
   }
 }
 
-/// Square-cell mosaic pattern. Every cell of the grid is a clean
-/// square (container aspect = cols/rows keeps cells equal), the hero
-/// spans a 2×2 block at a chosen position, every other cell holds a
-/// 1×1 tile. No thin rectangles, no extreme aspects — placeholders
-/// and small thumbs are identical in shape.
-class _SquareMosaic {
-  final int cols;
-  final int rows;
-  final int heroCol;
-  final int heroRow;
-  const _SquareMosaic({
-    required this.cols,
-    required this.rows,
-    required this.heroCol,
-    required this.heroRow,
-  });
-
-  /// Slot count = total cells - hero cells (4) + hero itself (1).
-  int get slotCount => cols * rows - 3;
+/// Mosaic tile spec — explicit (row, col, rowSpan, colSpan) placement
+/// on a grid. Used to compose chaos patterns out of mixed shapes
+/// (hero 2×2 / 3×2, wide 2×1, tall 1×2, square 1×1) instead of a
+/// uniform hero-plus-smalls layout. The first tile in a pattern is
+/// always the hero (largest tile).
+class _MTile {
+  final int row;
+  final int col;
+  final int rowSpan;
+  final int colSpan;
+  const _MTile(this.row, this.col, this.rowSpan, this.colSpan);
 }
 
-// Twelve variants — three grid sizes × varying hero positions. The
-// count tier chooses the grid; the wine-id hash chooses the hero
-// position so neighbouring wines look distinct.
-const _kP5 = [
-  _SquareMosaic(cols: 4, rows: 2, heroCol: 0, heroRow: 0), // hero left
-  _SquareMosaic(cols: 4, rows: 2, heroCol: 1, heroRow: 0), // hero centre
-  _SquareMosaic(cols: 4, rows: 2, heroCol: 2, heroRow: 0), // hero right
-];
-const _kP9 = [
-  _SquareMosaic(cols: 4, rows: 3, heroCol: 0, heroRow: 0), // top-left
-  _SquareMosaic(cols: 4, rows: 3, heroCol: 2, heroRow: 0), // top-right
-  _SquareMosaic(cols: 4, rows: 3, heroCol: 0, heroRow: 1), // bottom-left
-  _SquareMosaic(cols: 4, rows: 3, heroCol: 2, heroRow: 1), // bottom-right
-];
-const _kP12 = [
-  _SquareMosaic(cols: 5, rows: 3, heroCol: 0, heroRow: 0),
-  _SquareMosaic(cols: 5, rows: 3, heroCol: 1, heroRow: 0),
-  _SquareMosaic(cols: 5, rows: 3, heroCol: 3, heroRow: 0),
-  _SquareMosaic(cols: 5, rows: 3, heroCol: 0, heroRow: 1),
-  _SquareMosaic(cols: 5, rows: 3, heroCol: 3, heroRow: 1),
-];
+/// Chaos mosaic — variable grid dimensions and tile shapes per
+/// pattern. Cells stay roughly square because container aspect =
+/// cols/rows; accent tiles (2×1 wide, 1×2 tall) deliberately break
+/// the cell-by-cell rhythm of a plain grid. Hero is tile 0.
+class _Mosaic {
+  final int cols;
+  final int rows;
+  final List<_MTile> tiles;
+  const _Mosaic({required this.cols, required this.rows, required this.tiles});
+  int get slotCount => tiles.length;
+}
 
-_SquareMosaic _pickMosaic(int slotCount, String wineId) {
-  final variants = slotCount <= 5 ? _kP5 : (slotCount <= 9 ? _kP9 : _kP12);
+// Twelve chaos variants. Mixed grids (3×3, 4×2, 5×2, 4×3) and tile
+// shapes break the symmetrical hero-plus-ring look. Hero never sits
+// dead centre. Wide and tall accents introduce two non-square
+// rhythms so the pattern never reads as a tidy spreadsheet. The
+// wine-id hash picks the variant so neighbouring wines look
+// visibly different.
+
+// --- 5-slot tier (1..4 moments + placeholders) ---
+const _kP5a = _Mosaic(
+  cols: 4,
+  rows: 2,
+  tiles: [
+    _MTile(0, 0, 2, 2), // hero left
+    _MTile(0, 2, 1, 1), _MTile(0, 3, 1, 1),
+    _MTile(1, 2, 1, 1), _MTile(1, 3, 1, 1),
+  ],
+);
+const _kP5b = _Mosaic(
+  cols: 4,
+  rows: 2,
+  tiles: [
+    _MTile(0, 2, 2, 2), // hero right
+    _MTile(0, 0, 1, 1), _MTile(0, 1, 1, 1),
+    _MTile(1, 0, 1, 1), _MTile(1, 1, 1, 1),
+  ],
+);
+const _kP5c = _Mosaic(
+  cols: 3,
+  rows: 3,
+  tiles: [
+    _MTile(0, 0, 2, 2), // hero TL
+    _MTile(2, 0, 1, 2), // wide bottom
+    _MTile(0, 2, 1, 1), _MTile(1, 2, 1, 1), _MTile(2, 2, 1, 1),
+  ],
+);
+const _kP5d = _Mosaic(
+  cols: 3,
+  rows: 3,
+  tiles: [
+    _MTile(0, 1, 2, 2), // hero TR
+    _MTile(0, 0, 2, 1), // tall left
+    _MTile(2, 0, 1, 1), _MTile(2, 1, 1, 1), _MTile(2, 2, 1, 1),
+  ],
+);
+const _kP5e = _Mosaic(
+  cols: 3,
+  rows: 3,
+  tiles: [
+    _MTile(0, 0, 1, 2), // wide top
+    _MTile(0, 2, 1, 1),
+    _MTile(1, 0, 1, 1),
+    _MTile(1, 1, 2, 2), // hero BR
+    _MTile(2, 0, 1, 1),
+  ],
+);
+const _kP5f = _Mosaic(
+  cols: 5,
+  rows: 2,
+  tiles: [
+    _MTile(0, 0, 2, 3), // hero 3×2 left
+    _MTile(0, 3, 1, 1), _MTile(0, 4, 1, 1),
+    _MTile(1, 3, 1, 1), _MTile(1, 4, 1, 1),
+  ],
+);
+const _kP5 = [_kP5a, _kP5b, _kP5c, _kP5d, _kP5e, _kP5f];
+
+// --- 9-slot tier (5..8 real + +overflow) ---
+const _kP9a = _Mosaic(
+  cols: 4,
+  rows: 3,
+  tiles: [
+    _MTile(0, 0, 2, 2), // hero TL
+    _MTile(0, 2, 1, 1), _MTile(0, 3, 1, 1),
+    _MTile(1, 2, 1, 1), _MTile(1, 3, 1, 1),
+    _MTile(2, 0, 1, 1), _MTile(2, 1, 1, 1), _MTile(2, 2, 1, 1),
+    _MTile(2, 3, 1, 1),
+  ],
+);
+const _kP9b = _Mosaic(
+  cols: 4,
+  rows: 3,
+  tiles: [
+    _MTile(0, 2, 2, 2), // hero TR
+    _MTile(0, 0, 1, 1), _MTile(0, 1, 1, 1),
+    _MTile(1, 0, 1, 1), _MTile(1, 1, 1, 1),
+    _MTile(2, 0, 1, 1), _MTile(2, 1, 1, 1), _MTile(2, 2, 1, 1),
+    _MTile(2, 3, 1, 1),
+  ],
+);
+const _kP9c = _Mosaic(
+  cols: 4,
+  rows: 3,
+  tiles: [
+    _MTile(1, 0, 2, 2), // hero BL
+    _MTile(0, 0, 1, 1), _MTile(0, 1, 1, 1), _MTile(0, 2, 1, 1),
+    _MTile(0, 3, 1, 1),
+    _MTile(1, 2, 1, 1), _MTile(1, 3, 1, 1),
+    _MTile(2, 2, 1, 1), _MTile(2, 3, 1, 1),
+  ],
+);
+const _kP9d = _Mosaic(
+  cols: 4,
+  rows: 3,
+  tiles: [
+    _MTile(1, 2, 2, 2), // hero BR
+    _MTile(0, 0, 1, 1), _MTile(0, 1, 1, 1), _MTile(0, 2, 1, 1),
+    _MTile(0, 3, 1, 1),
+    _MTile(1, 0, 1, 1), _MTile(1, 1, 1, 1),
+    _MTile(2, 0, 1, 1), _MTile(2, 1, 1, 1),
+  ],
+);
+const _kP9e = _Mosaic(
+  cols: 4,
+  rows: 3,
+  tiles: [
+    _MTile(0, 0, 2, 2), // hero TL
+    _MTile(0, 2, 2, 1), // tall right column
+    _MTile(0, 3, 1, 1),
+    _MTile(1, 3, 1, 1),
+    _MTile(2, 0, 1, 2), // wide bottom-left
+    _MTile(2, 2, 1, 1), _MTile(2, 3, 1, 1),
+  ],
+);
+const _kP9f = _Mosaic(
+  cols: 4,
+  rows: 3,
+  tiles: [
+    _MTile(0, 1, 2, 2), // hero centre-top
+    _MTile(0, 0, 1, 1),
+    _MTile(1, 0, 1, 1),
+    _MTile(0, 3, 1, 1), _MTile(1, 3, 1, 1),
+    _MTile(2, 0, 1, 1), _MTile(2, 1, 1, 1), _MTile(2, 2, 1, 1),
+    _MTile(2, 3, 1, 1),
+  ],
+);
+const _kP9 = [_kP9a, _kP9b, _kP9c, _kP9d, _kP9e, _kP9f];
+
+_Mosaic _pickMosaic(int slotCount, String wineId) {
+  final variants = slotCount <= 5 ? _kP5 : _kP9;
   return variants[wineId.hashCode.abs() % variants.length];
 }
 
 /// Map a desired moment count onto the smallest tier that fits.
-/// Capped at P9 (4×3, aspect 4:3) so the moments section never
-/// dominates the wine-detail screen vertically — past 8 moments,
-/// the trailing slot becomes an inline expand toggle that reveals
-/// the rest in a grid below.
+/// Each tier holds variants with the same slot count so the
+/// real/placeholder split stays consistent regardless of which
+/// variant the hash picks.
 int _slotCountForCount(int count) {
-  if (count <= 4) return 5; // P5 (4×2, aspect 2:1) — 1..4 + placeholders
-  return 9; // P9 (4×3, aspect 4:3) — 5..8 real, 9+ via "+N" overflow
+  if (count <= 4) return 5;
+  return 9;
 }
 
 Widget _renderCountPattern(
@@ -1202,42 +1320,16 @@ Widget _renderCountPattern(
         final cellW = c.maxWidth / pattern.cols;
         final cellH = c.maxHeight / pattern.rows;
         final half = gap / 2;
-        final children = <Widget>[];
-
-        // Hero first (slot 0), 2×2 at the chosen anchor.
-        children.add(
-          Positioned(
-            left: pattern.heroCol * cellW + half,
-            top: pattern.heroRow * cellH + half,
-            width: 2 * cellW - gap,
-            height: 2 * cellH - gap,
-            child: slot(0),
-          ),
-        );
-
-        // Walk the remaining cells row-major, skipping hero footprint.
-        var slotIdx = 1;
-        for (var r = 0; r < pattern.rows; r++) {
-          for (var c2 = 0; c2 < pattern.cols; c2++) {
-            final insideHero =
-                r >= pattern.heroRow &&
-                r < pattern.heroRow + 2 &&
-                c2 >= pattern.heroCol &&
-                c2 < pattern.heroCol + 2;
-            if (insideHero) continue;
-            children.add(
-              Positioned(
-                left: c2 * cellW + half,
-                top: r * cellH + half,
-                width: cellW - gap,
-                height: cellH - gap,
-                child: slot(slotIdx),
-              ),
-            );
-            slotIdx++;
-          }
-        }
-
+        final children = <Widget>[
+          for (var i = 0; i < pattern.tiles.length; i++)
+            Positioned(
+              left: pattern.tiles[i].col * cellW + half,
+              top: pattern.tiles[i].row * cellH + half,
+              width: pattern.tiles[i].colSpan * cellW - gap,
+              height: pattern.tiles[i].rowSpan * cellH - gap,
+              child: slot(i),
+            ),
+        ];
         return Stack(children: children);
       },
     ),
