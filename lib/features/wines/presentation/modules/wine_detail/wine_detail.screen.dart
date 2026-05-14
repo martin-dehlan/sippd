@@ -1011,22 +1011,12 @@ class _MemoriesSection extends ConsumerWidget {
 /// overflow indicator that opens the viewer at the first hidden
 /// moment. Single-row, bounded vertically, never scrolls — keeps the
 /// section from elbowing the tasting-notes block below.
-/// Lean bento moment mosaic. Layout:
-///
-///   ┌──────────┬─────┬─────┐
-///   │          │ S1  │ S2  │
-///   │   HERO   ├─────┼─────┤
-///   │          │ S3  │ S4  │
-///   └──────────┴─────┴─────┘
-///
-/// Hero (2×2 of a 4-col × 2-row grid) + a 2×2 cluster of small siblings.
-/// Five slots total. Wine-id hash flips hero left↔right. Aspect 2:1 so
-/// the section stays a wide, shallow band — never dominates vertically
-/// the way a 1:1 block did. Slots beyond memories.length render as
-/// quiet "+ capture" placeholders. If memories > 5, the last slot
-/// becomes a "+N" tile that opens the viewer at the first hidden
-/// moment.
-class _MomentsBento extends StatelessWidget {
+/// Lean bento moment mosaic. Five slots in a 2:1 band. Slot 4 doubles
+/// as a "+N" expand button when memories exceed the visible count;
+/// tapping it reveals the hidden moments inline as a small grid below
+/// the bento (no navigation). Tap again to collapse. Wine-id hash
+/// flips hero left↔right.
+class _MomentsBento extends ConsumerStatefulWidget {
   static const _kSlotCount = 5;
 
   final List<WineMemoryEntity> memories;
@@ -1040,40 +1030,48 @@ class _MomentsBento extends StatelessWidget {
   });
 
   @override
+  ConsumerState<_MomentsBento> createState() => _MomentsBentoState();
+}
+
+class _MomentsBentoState extends ConsumerState<_MomentsBento> {
+  bool _expanded = false;
+
+  @override
   Widget build(BuildContext context) {
+    final memories = widget.memories;
+    final wineId = widget.wineId;
     final mirror = wineId.hashCode.abs() % 2 == 1;
-    final hasOverflow = memories.length > _kSlotCount;
-    final visibleMomentCount = hasOverflow ? _kSlotCount - 1 : memories.length;
+    final hasOverflow = memories.length > _MomentsBento._kSlotCount;
+    final visibleMomentCount = hasOverflow
+        ? _MomentsBento._kSlotCount - 1
+        : memories.length;
     final overflowCount = memories.length - visibleMomentCount;
+    final overflowStart = visibleMomentCount;
+
+    Widget tile(int index) => _BentoTile(
+      memory: memories[index],
+      onTap: () => pushMomentViewer(
+        context,
+        wineId: wineId,
+        moments: memories,
+        initialIndex: index,
+      ),
+    );
 
     Widget slot(int index) {
-      if (index < visibleMomentCount) {
-        final i = index;
-        return _BentoTile(
-          memory: memories[i],
-          onTap: () => pushMomentViewer(
-            context,
-            wineId: wineId,
-            moments: memories,
-            initialIndex: i,
-          ),
-        );
-      }
-      if (hasOverflow && index == _kSlotCount - 1) {
+      if (index < visibleMomentCount) return tile(index);
+      if (hasOverflow && index == _MomentsBento._kSlotCount - 1) {
         return _BentoOverflowTile(
           count: overflowCount,
-          onTap: () => pushMomentViewer(
-            context,
-            wineId: wineId,
-            moments: memories,
-            initialIndex: visibleMomentCount,
-          ),
+          expanded: _expanded,
+          onTap: () => setState(() => _expanded = !_expanded),
         );
       }
-      return _BentoPlaceholder(onTap: onAdd);
+      return _BentoPlaceholder(onTap: widget.onAdd);
     }
 
     final gap = context.w * 0.015;
+
     final smallCluster = Column(
       children: [
         Expanded(
@@ -1098,13 +1096,11 @@ class _MomentsBento extends StatelessWidget {
       ],
     );
 
-    return AspectRatio(
+    final bento = AspectRatio(
       aspectRatio: 2,
       child: Row(
         textDirection: mirror ? TextDirection.rtl : TextDirection.ltr,
         children: [
-          // Hero stays LTR-rendered even when the row is mirrored —
-          // image fit/orientation shouldn't flip with the layout.
           Expanded(
             flex: 1,
             child: Directionality(
@@ -1122,6 +1118,87 @@ class _MomentsBento extends StatelessWidget {
           ),
         ],
       ),
+    );
+
+    return Column(
+      children: [
+        bento,
+        AnimatedSize(
+          duration: const Duration(milliseconds: 220),
+          curve: Curves.easeOutCubic,
+          alignment: Alignment.topCenter,
+          child: (hasOverflow && _expanded)
+              ? Padding(
+                  padding: EdgeInsets.only(top: gap),
+                  child: _ExpandedOverflowGrid(
+                    memories: memories,
+                    startIndex: overflowStart,
+                    onTapMoment: (index) => pushMomentViewer(
+                      context,
+                      wineId: wineId,
+                      moments: memories,
+                      initialIndex: index,
+                    ),
+                  ),
+                )
+              : const SizedBox.shrink(),
+        ),
+      ],
+    );
+  }
+}
+
+/// Grid of the moments hidden behind the bento "+N" tile. Renders as
+/// a fixed-cols flow of small square thumbs; each opens the viewer at
+/// the matching absolute index. Lives below the bento so a tap doesn't
+/// disturb the upper composition.
+class _ExpandedOverflowGrid extends StatelessWidget {
+  final List<WineMemoryEntity> memories;
+  final int startIndex;
+  final ValueChanged<int> onTapMoment;
+
+  const _ExpandedOverflowGrid({
+    required this.memories,
+    required this.startIndex,
+    required this.onTapMoment,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    const cols = 4;
+    final overflow = memories.sublist(startIndex);
+    final gap = context.w * 0.015;
+    final rows = (overflow.length / cols).ceil();
+
+    return Column(
+      children: [
+        for (var r = 0; r < rows; r++) ...[
+          if (r != 0) SizedBox(height: gap),
+          Row(
+            children: [
+              for (var c = 0; c < cols; c++) ...[
+                if (c != 0) SizedBox(width: gap),
+                Expanded(
+                  child: AspectRatio(
+                    aspectRatio: 1,
+                    child: () {
+                      final localIndex = r * cols + c;
+                      if (localIndex >= overflow.length) {
+                        return const SizedBox.shrink();
+                      }
+                      final absoluteIndex = startIndex + localIndex;
+                      return _BentoTile(
+                        memory: overflow[localIndex],
+                        onTap: () => onTapMoment(absoluteIndex),
+                      );
+                    }(),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ],
+      ],
     );
   }
 }
@@ -1199,8 +1276,13 @@ class _BentoPlaceholder extends StatelessWidget {
 
 class _BentoOverflowTile extends StatelessWidget {
   final int count;
+  final bool expanded;
   final VoidCallback onTap;
-  const _BentoOverflowTile({required this.count, required this.onTap});
+  const _BentoOverflowTile({
+    required this.count,
+    required this.expanded,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -1214,14 +1296,25 @@ class _BentoOverflowTile extends StatelessWidget {
           border: Border.all(color: cs.outlineVariant, width: 0.5),
         ),
         child: Center(
-          child: Text(
-            '+$count',
-            style: TextStyle(
-              color: cs.onSurface.withValues(alpha: 0.85),
-              fontSize: context.bodyFont,
-              fontWeight: FontWeight.w700,
-              letterSpacing: -0.2,
-            ),
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 180),
+            child: expanded
+                ? Icon(
+                    PhosphorIconsRegular.caretUp,
+                    key: const ValueKey('collapse'),
+                    color: cs.onSurface.withValues(alpha: 0.85),
+                    size: context.w * 0.06,
+                  )
+                : Text(
+                    '+$count',
+                    key: const ValueKey('overflow'),
+                    style: TextStyle(
+                      color: cs.onSurface.withValues(alpha: 0.85),
+                      fontSize: context.bodyFont,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: -0.2,
+                    ),
+                  ),
           ),
         ),
       ),
