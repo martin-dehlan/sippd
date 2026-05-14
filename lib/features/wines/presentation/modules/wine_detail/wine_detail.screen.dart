@@ -1011,14 +1011,30 @@ class _MemoriesSection extends ConsumerWidget {
 /// overflow indicator that opens the viewer at the first hidden
 /// moment. Single-row, bounded vertically, never scrolls — keeps the
 /// section from elbowing the tasting-notes block below.
-/// Bento-style moment mosaic. Picks one of N pre-baked layouts based
-/// on a stable hash of the wine id so each wine wears the same pattern
-/// across visits but different wines look distinct. Layouts mix one
-/// large hero tile with smaller siblings — Pinterest/Bento feel, not a
-/// flat grid. Empty slots beyond the available moments render as quiet
-/// placeholders that tap to open capture, so a wine with one moment
-/// still reads as a filled mosaic and invites more.
+/// Bento-style moment mosaic, denser than a flat grid. Layout:
+///
+///   ┌──────────────┬───────┐
+///   │              │  S1   │
+///   │     HERO     ├───────┤
+///   │              │  S2   │
+///   ├──────┬───────┴───────┤
+///   │  S3  │  S4   │  S5   │
+///   └──────┴───────┴───────┘
+///
+/// Hero (2×2 of a 3-col grid) + two stacked siblings on the right
+/// + a bottom row of three. Six slots total. The mirror variant flips
+/// hero to the right — pattern is picked from a stable wine-id hash
+/// so each wine wears its own shape across visits without random
+/// shuffle on each render.
+///
+/// Slots beyond the available moments render as quiet placeholders
+/// that tap to open capture, so a wine with just one moment still
+/// reads as a full mosaic and invites the next one. If there are more
+/// moments than slots, the last slot becomes a "+N" tile that opens
+/// the viewer at the first hidden moment.
 class _MomentsBento extends StatelessWidget {
+  static const _kSlotCount = 6;
+
   final List<WineMemoryEntity> memories;
   final String wineId;
   final VoidCallback onAdd;
@@ -1029,131 +1045,93 @@ class _MomentsBento extends StatelessWidget {
     required this.onAdd,
   });
 
-  static const _patterns = [
-    _BentoPattern.bigLeftTwoStackedRight,
-    _BentoPattern.bigRightTwoStackedLeft,
-    _BentoPattern.twoOverTwo,
-    _BentoPattern.topWideThreeBelow,
-  ];
-
   @override
   Widget build(BuildContext context) {
-    final pattern = _patterns[wineId.hashCode.abs() % _patterns.length];
-    final viewMoments = memories;
+    final mirror = wineId.hashCode.abs() % 2 == 1;
+    final hasOverflow = memories.length > _kSlotCount;
+    // Last visible slot is reserved for "+N" if there's overflow; the
+    // remaining visible slots show real moments. The viewer launched
+    // from "+N" jumps to the first hidden moment so the user picks up
+    // where the mosaic stops.
+    final visibleMomentCount = hasOverflow ? _kSlotCount - 1 : memories.length;
+    final overflowCount = memories.length - visibleMomentCount;
 
     Widget slot(int index) {
-      if (index < memories.length) {
+      if (index < visibleMomentCount) {
+        final i = index;
         return _BentoTile(
-          memory: memories[index],
+          memory: memories[i],
           onTap: () => pushMomentViewer(
             context,
             wineId: wineId,
-            moments: viewMoments,
-            initialIndex: index,
+            moments: memories,
+            initialIndex: i,
+          ),
+        );
+      }
+      if (hasOverflow && index == _kSlotCount - 1) {
+        return _BentoOverflowTile(
+          count: overflowCount,
+          onTap: () => pushMomentViewer(
+            context,
+            wineId: wineId,
+            moments: memories,
+            initialIndex: visibleMomentCount,
           ),
         );
       }
       return _BentoPlaceholder(onTap: onAdd);
     }
 
-    return AspectRatio(
-      aspectRatio: 1.7,
-      child: _renderBentoPattern(pattern, slot, context),
+    final gap = context.w * 0.015;
+    // Top row is 2 units tall (hero spans 2 rows of the lower grid),
+    // bottom row is 1 unit tall. Container aspect = 3 cols / 3 rows = 1
+    // — clean square section. Feels mosaic-dense but stays a tidy
+    // single visual block.
+    final topRow = Row(
+      textDirection: mirror ? TextDirection.rtl : TextDirection.ltr,
+      children: [
+        Expanded(
+          flex: 2,
+          child: Directionality(
+            textDirection: TextDirection.ltr,
+            child: slot(0),
+          ),
+        ),
+        SizedBox(width: gap),
+        Expanded(
+          flex: 1,
+          child: Column(
+            children: [
+              Expanded(child: slot(1)),
+              SizedBox(height: gap),
+              Expanded(child: slot(2)),
+            ],
+          ),
+        ),
+      ],
     );
-  }
-}
 
-enum _BentoPattern {
-  bigLeftTwoStackedRight,
-  bigRightTwoStackedLeft,
-  twoOverTwo,
-  topWideThreeBelow,
-}
+    final bottomRow = Row(
+      children: [
+        Expanded(child: slot(3)),
+        SizedBox(width: gap),
+        Expanded(child: slot(4)),
+        SizedBox(width: gap),
+        Expanded(child: slot(5)),
+      ],
+    );
 
-Widget _renderBentoPattern(
-  _BentoPattern pattern,
-  Widget Function(int) slot,
-  BuildContext context,
-) {
-  final gap = context.w * 0.015;
-  switch (pattern) {
-    case _BentoPattern.bigLeftTwoStackedRight:
-      return Row(
+    return AspectRatio(
+      aspectRatio: 1,
+      child: Column(
         children: [
-          Expanded(flex: 2, child: slot(0)),
-          SizedBox(width: gap),
-          Expanded(
-            flex: 1,
-            child: Column(
-              children: [
-                Expanded(child: slot(1)),
-                SizedBox(height: gap),
-                Expanded(child: slot(2)),
-              ],
-            ),
-          ),
-        ],
-      );
-    case _BentoPattern.bigRightTwoStackedLeft:
-      return Row(
-        children: [
-          Expanded(
-            flex: 1,
-            child: Column(
-              children: [
-                Expanded(child: slot(1)),
-                SizedBox(height: gap),
-                Expanded(child: slot(2)),
-              ],
-            ),
-          ),
-          SizedBox(width: gap),
-          Expanded(flex: 2, child: slot(0)),
-        ],
-      );
-    case _BentoPattern.twoOverTwo:
-      return Column(
-        children: [
-          Expanded(
-            child: Row(
-              children: [
-                Expanded(child: slot(0)),
-                SizedBox(width: gap),
-                Expanded(child: slot(1)),
-              ],
-            ),
-          ),
+          Expanded(flex: 2, child: topRow),
           SizedBox(height: gap),
-          Expanded(
-            child: Row(
-              children: [
-                Expanded(child: slot(2)),
-                SizedBox(width: gap),
-                Expanded(child: slot(3)),
-              ],
-            ),
-          ),
+          Expanded(flex: 1, child: bottomRow),
         ],
-      );
-    case _BentoPattern.topWideThreeBelow:
-      return Column(
-        children: [
-          Expanded(flex: 3, child: slot(0)),
-          SizedBox(height: gap),
-          Expanded(
-            flex: 2,
-            child: Row(
-              children: [
-                Expanded(child: slot(1)),
-                SizedBox(width: gap),
-                Expanded(child: slot(2)),
-                SizedBox(width: gap),
-                Expanded(child: slot(3)),
-              ],
-            ),
-          ),
-        ],
-      );
+      ),
+    );
   }
 }
 
@@ -1221,6 +1199,38 @@ class _BentoPlaceholder extends StatelessWidget {
             PhosphorIconsRegular.plus,
             color: cs.onSurface.withValues(alpha: 0.35),
             size: context.w * 0.05,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _BentoOverflowTile extends StatelessWidget {
+  final int count;
+  final VoidCallback onTap;
+  const _BentoOverflowTile({required this.count, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return GestureDetector(
+      onTap: onTap,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: cs.surfaceContainer,
+          borderRadius: BorderRadius.circular(context.w * 0.025),
+          border: Border.all(color: cs.outlineVariant, width: 0.5),
+        ),
+        child: Center(
+          child: Text(
+            '+$count',
+            style: TextStyle(
+              color: cs.onSurface.withValues(alpha: 0.85),
+              fontSize: context.bodyFont,
+              fontWeight: FontWeight.w700,
+              letterSpacing: -0.2,
+            ),
           ),
         ),
       ),
