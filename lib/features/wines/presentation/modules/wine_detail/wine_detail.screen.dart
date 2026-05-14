@@ -1049,13 +1049,12 @@ class _MomentsBentoState extends ConsumerState<_MomentsBento> {
 
     final count = memories.length;
     final hasOverflow = count > _MomentsBento._kMaxBentoSlots;
-    // Layout always has at least 5 slots — a 1-moment wine still
-    // reads as a full inviting mosaic with placeholders filling the
-    // remaining tiles. As moments grow (count + 2) the pattern shifts
-    // to a higher-tier layout, up to 12 slots, then "+N" overflow.
+    // Slot count snaps to the smallest tier (5, 9, 12) that holds the
+    // moments plus a small placeholder buffer, so the section always
+    // reads as a clean mosaic without dangling empty cells.
     final layoutCount = hasOverflow
         ? _MomentsBento._kMaxBentoSlots
-        : (count + 2).clamp(5, _MomentsBento._kMaxBentoSlots);
+        : _slotCountForCount(count);
     final realInBento = hasOverflow
         ? (_expanded
               ? _MomentsBento._kMaxBentoSlots
@@ -1091,7 +1090,7 @@ class _MomentsBentoState extends ConsumerState<_MomentsBento> {
       return _BentoPlaceholder(onTap: widget.onAdd);
     }
 
-    final bento = _renderCountPattern(layoutCount, slot, gap);
+    final bento = _renderCountPattern(layoutCount, slot, gap, wineId);
 
     return Column(
       children: [
@@ -1122,134 +1121,117 @@ class _MomentsBentoState extends ConsumerState<_MomentsBento> {
   }
 }
 
-/// Mosaic patterns defined as lists of normalised rects so any tile
-/// size mix is possible — hero squares, medium rects, wide bands,
-/// small thumbs. Eight patterns, one per supported slot count 5..12.
-class _MosaicPattern {
-  final double aspect;
-  final List<List<double>> rects;
-  const _MosaicPattern(this.aspect, this.rects);
+/// Square-cell mosaic pattern. Every cell of the grid is a clean
+/// square (container aspect = cols/rows keeps cells equal), the hero
+/// spans a 2×2 block at a chosen position, every other cell holds a
+/// 1×1 tile. No thin rectangles, no extreme aspects — placeholders
+/// and small thumbs are identical in shape.
+class _SquareMosaic {
+  final int cols;
+  final int rows;
+  final int heroCol;
+  final int heroRow;
+  const _SquareMosaic({
+    required this.cols,
+    required this.rows,
+    required this.heroCol,
+    required this.heroRow,
+  });
+
+  /// Slot count = total cells - hero cells (4) + hero itself (1).
+  int get slotCount => cols * rows - 3;
 }
 
-const _kMosaicPatterns = <_MosaicPattern>[
-  // 5 slots
-  _MosaicPattern(2, [
-    [0.000, 0.000, 0.500, 1.000],
-    [0.500, 0.000, 0.500, 0.500],
-    [0.500, 0.500, 0.166, 0.500],
-    [0.666, 0.500, 0.167, 0.500],
-    [0.833, 0.500, 0.167, 0.500],
-  ]),
-  // 6 slots
-  _MosaicPattern(2, [
-    [0.000, 0.000, 0.500, 0.666],
-    [0.500, 0.000, 0.500, 0.333],
-    [0.500, 0.333, 0.250, 0.333],
-    [0.750, 0.333, 0.250, 0.333],
-    [0.000, 0.666, 0.500, 0.334],
-    [0.500, 0.666, 0.500, 0.334],
-  ]),
-  // 7 slots
-  _MosaicPattern(1.8, [
-    [0.000, 0.000, 0.500, 0.666],
-    [0.500, 0.000, 0.250, 0.666],
-    [0.750, 0.000, 0.250, 0.333],
-    [0.750, 0.333, 0.250, 0.333],
-    [0.000, 0.666, 0.333, 0.334],
-    [0.333, 0.666, 0.333, 0.334],
-    [0.666, 0.666, 0.334, 0.334],
-  ]),
-  // 8 slots
-  _MosaicPattern(1.8, [
-    [0.000, 0.000, 0.500, 0.500],
-    [0.500, 0.000, 0.250, 0.500],
-    [0.750, 0.000, 0.250, 0.250],
-    [0.750, 0.250, 0.250, 0.250],
-    [0.000, 0.500, 0.250, 0.500],
-    [0.250, 0.500, 0.250, 0.250],
-    [0.500, 0.500, 0.500, 0.250],
-    [0.250, 0.750, 0.750, 0.250],
-  ]),
-  // 9 slots
-  _MosaicPattern(1.6, [
-    [0.000, 0.000, 0.500, 0.500],
-    [0.500, 0.000, 0.500, 0.250],
-    [0.500, 0.250, 0.250, 0.250],
-    [0.750, 0.250, 0.250, 0.250],
-    [0.000, 0.500, 0.250, 0.500],
-    [0.250, 0.500, 0.250, 0.500],
-    [0.500, 0.500, 0.166, 0.500],
-    [0.666, 0.500, 0.167, 0.500],
-    [0.833, 0.500, 0.167, 0.500],
-  ]),
-  // 10 slots
-  _MosaicPattern(1.5, [
-    [0.000, 0.000, 0.500, 0.500],
-    [0.500, 0.000, 0.250, 0.250],
-    [0.750, 0.000, 0.250, 0.250],
-    [0.500, 0.250, 0.500, 0.250],
-    [0.000, 0.500, 0.333, 0.250],
-    [0.333, 0.500, 0.333, 0.250],
-    [0.666, 0.500, 0.334, 0.250],
-    [0.000, 0.750, 0.250, 0.250],
-    [0.250, 0.750, 0.500, 0.250],
-    [0.750, 0.750, 0.250, 0.250],
-  ]),
-  // 11 slots
-  _MosaicPattern(1.5, [
-    [0.000, 0.000, 0.400, 0.500],
-    [0.400, 0.000, 0.300, 0.250],
-    [0.700, 0.000, 0.300, 0.250],
-    [0.400, 0.250, 0.200, 0.250],
-    [0.600, 0.250, 0.200, 0.250],
-    [0.800, 0.250, 0.200, 0.250],
-    [0.000, 0.500, 0.300, 0.500],
-    [0.300, 0.500, 0.200, 0.250],
-    [0.500, 0.500, 0.250, 0.250],
-    [0.750, 0.500, 0.250, 0.500],
-    [0.300, 0.750, 0.450, 0.250],
-  ]),
-  // 12 slots
-  _MosaicPattern(1.4, [
-    [0.000, 0.000, 0.500, 0.500],
-    [0.500, 0.000, 0.500, 0.333],
-    [0.500, 0.333, 0.250, 0.167],
-    [0.750, 0.333, 0.250, 0.167],
-    [0.000, 0.500, 0.250, 0.250],
-    [0.250, 0.500, 0.250, 0.250],
-    [0.500, 0.500, 0.500, 0.250],
-    [0.000, 0.750, 0.250, 0.250],
-    [0.250, 0.750, 0.250, 0.250],
-    [0.500, 0.750, 0.166, 0.250],
-    [0.666, 0.750, 0.167, 0.250],
-    [0.833, 0.750, 0.167, 0.250],
-  ]),
+// Twelve variants — three grid sizes × varying hero positions. The
+// count tier chooses the grid; the wine-id hash chooses the hero
+// position so neighbouring wines look distinct.
+const _kP5 = [
+  _SquareMosaic(cols: 4, rows: 2, heroCol: 0, heroRow: 0), // hero left
+  _SquareMosaic(cols: 4, rows: 2, heroCol: 1, heroRow: 0), // hero centre
+  _SquareMosaic(cols: 4, rows: 2, heroCol: 2, heroRow: 0), // hero right
+];
+const _kP9 = [
+  _SquareMosaic(cols: 4, rows: 3, heroCol: 0, heroRow: 0), // top-left
+  _SquareMosaic(cols: 4, rows: 3, heroCol: 2, heroRow: 0), // top-right
+  _SquareMosaic(cols: 4, rows: 3, heroCol: 0, heroRow: 1), // bottom-left
+  _SquareMosaic(cols: 4, rows: 3, heroCol: 2, heroRow: 1), // bottom-right
+];
+const _kP12 = [
+  _SquareMosaic(cols: 5, rows: 3, heroCol: 0, heroRow: 0),
+  _SquareMosaic(cols: 5, rows: 3, heroCol: 1, heroRow: 0),
+  _SquareMosaic(cols: 5, rows: 3, heroCol: 3, heroRow: 0),
+  _SquareMosaic(cols: 5, rows: 3, heroCol: 0, heroRow: 1),
+  _SquareMosaic(cols: 5, rows: 3, heroCol: 3, heroRow: 1),
 ];
 
-Widget _renderCountPattern(int count, Widget Function(int) slot, double gap) {
+_SquareMosaic _pickMosaic(int slotCount, String wineId) {
+  final variants = slotCount <= 5 ? _kP5 : (slotCount <= 9 ? _kP9 : _kP12);
+  return variants[wineId.hashCode.abs() % variants.length];
+}
+
+/// Map a desired moment count + 2-placeholder buffer onto the
+/// smallest tier that fits (5, 9, or 12 slots).
+int _slotCountForCount(int count) {
+  if (count <= 3) return 5; // P5: 1..3 real + placeholders
+  if (count <= 4) return 5; // P5: 4 real + 1 placeholder
+  if (count <= 7) return 9; // P9: 5..7 real + placeholders
+  if (count <= 9) return 9; // P9: 8..9 real
+  return 12; // P12 for everything ≥10
+}
+
+Widget _renderCountPattern(
+  int count,
+  Widget Function(int) slot,
+  double gap,
+  String wineId,
+) {
   if (count <= 0) return const SizedBox.shrink();
-  final clamped = count.clamp(5, 12);
-  final pattern = _kMosaicPatterns[clamped - 5];
+  final pattern = _pickMosaic(count, wineId);
 
   return AspectRatio(
-    aspectRatio: pattern.aspect,
+    aspectRatio: pattern.cols / pattern.rows,
     child: LayoutBuilder(
       builder: (_, c) {
-        final w = c.maxWidth;
-        final h = c.maxHeight;
+        final cellW = c.maxWidth / pattern.cols;
+        final cellH = c.maxHeight / pattern.rows;
         final half = gap / 2;
-        return Stack(
-          children: [
-            for (var i = 0; i < pattern.rects.length; i++)
-              Positioned(
-                left: pattern.rects[i][0] * w + half,
-                top: pattern.rects[i][1] * h + half,
-                width: (pattern.rects[i][2] * w) - gap,
-                height: (pattern.rects[i][3] * h) - gap,
-                child: slot(i),
-              ),
-          ],
+        final children = <Widget>[];
+
+        // Hero first (slot 0), 2×2 at the chosen anchor.
+        children.add(
+          Positioned(
+            left: pattern.heroCol * cellW + half,
+            top: pattern.heroRow * cellH + half,
+            width: 2 * cellW - gap,
+            height: 2 * cellH - gap,
+            child: slot(0),
+          ),
         );
+
+        // Walk the remaining cells row-major, skipping hero footprint.
+        var slotIdx = 1;
+        for (var r = 0; r < pattern.rows; r++) {
+          for (var c2 = 0; c2 < pattern.cols; c2++) {
+            final insideHero =
+                r >= pattern.heroRow &&
+                r < pattern.heroRow + 2 &&
+                c2 >= pattern.heroCol &&
+                c2 < pattern.heroCol + 2;
+            if (insideHero) continue;
+            children.add(
+              Positioned(
+                left: c2 * cellW + half,
+                top: r * cellH + half,
+                width: cellW - gap,
+                height: cellH - gap,
+                child: slot(slotIdx),
+              ),
+            );
+            slotIdx++;
+          }
+        }
+
+        return Stack(children: children);
       },
     ),
   );
