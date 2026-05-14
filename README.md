@@ -2,7 +2,7 @@
 
 > A quiet wine journal — local-first, offline, no ads, no feed.
 
-**[Google Play](https://play.google.com/store/apps/details?id=xyz.sippd.app)** · TestFlight (iOS — pending Apple review) · **[sippd.xyz](https://sippd.xyz)**
+**[Google Play](https://play.google.com/store/apps/details?id=xyz.sippd.app)** · **[TestFlight (iOS Beta)](https://testflight.apple.com/join/1e9GnmAD)** · **[sippd.xyz](https://sippd.xyz)**
 
 <p align="center">
   <img src="https://sippd.xyz/screenshots/clean/rate.jpeg" width="220" alt="Rate a bottle in seconds" />
