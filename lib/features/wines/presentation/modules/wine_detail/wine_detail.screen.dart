@@ -1011,29 +1011,23 @@ class _MemoriesSection extends ConsumerWidget {
 /// overflow indicator that opens the viewer at the first hidden
 /// moment. Single-row, bounded vertically, never scrolls — keeps the
 /// section from elbowing the tasting-notes block below.
-/// Bento-style moment mosaic, denser than a flat grid. Layout:
+/// Lean bento moment mosaic. Layout:
 ///
-///   ┌──────────────┬───────┐
-///   │              │  S1   │
-///   │     HERO     ├───────┤
-///   │              │  S2   │
-///   ├──────┬───────┴───────┤
-///   │  S3  │  S4   │  S5   │
-///   └──────┴───────┴───────┘
+///   ┌──────────┬─────┬─────┐
+///   │          │ S1  │ S2  │
+///   │   HERO   ├─────┼─────┤
+///   │          │ S3  │ S4  │
+///   └──────────┴─────┴─────┘
 ///
-/// Hero (2×2 of a 3-col grid) + two stacked siblings on the right
-/// + a bottom row of three. Six slots total. The mirror variant flips
-/// hero to the right — pattern is picked from a stable wine-id hash
-/// so each wine wears its own shape across visits without random
-/// shuffle on each render.
-///
-/// Slots beyond the available moments render as quiet placeholders
-/// that tap to open capture, so a wine with just one moment still
-/// reads as a full mosaic and invites the next one. If there are more
-/// moments than slots, the last slot becomes a "+N" tile that opens
-/// the viewer at the first hidden moment.
+/// Hero (2×2 of a 4-col × 2-row grid) + a 2×2 cluster of small siblings.
+/// Five slots total. Wine-id hash flips hero left↔right. Aspect 2:1 so
+/// the section stays a wide, shallow band — never dominates vertically
+/// the way a 1:1 block did. Slots beyond memories.length render as
+/// quiet "+ capture" placeholders. If memories > 5, the last slot
+/// becomes a "+N" tile that opens the viewer at the first hidden
+/// moment.
 class _MomentsBento extends StatelessWidget {
-  static const _kSlotCount = 6;
+  static const _kSlotCount = 5;
 
   final List<WineMemoryEntity> memories;
   final String wineId;
@@ -1049,10 +1043,6 @@ class _MomentsBento extends StatelessWidget {
   Widget build(BuildContext context) {
     final mirror = wineId.hashCode.abs() % 2 == 1;
     final hasOverflow = memories.length > _kSlotCount;
-    // Last visible slot is reserved for "+N" if there's overflow; the
-    // remaining visible slots show real moments. The viewer launched
-    // from "+N" jumps to the first hidden moment so the user picks up
-    // where the mosaic stops.
     final visibleMomentCount = hasOverflow ? _kSlotCount - 1 : memories.length;
     final overflowCount = memories.length - visibleMomentCount;
 
@@ -1084,51 +1074,52 @@ class _MomentsBento extends StatelessWidget {
     }
 
     final gap = context.w * 0.015;
-    // Top row is 2 units tall (hero spans 2 rows of the lower grid),
-    // bottom row is 1 unit tall. Container aspect = 3 cols / 3 rows = 1
-    // — clean square section. Feels mosaic-dense but stays a tidy
-    // single visual block.
-    final topRow = Row(
-      textDirection: mirror ? TextDirection.rtl : TextDirection.ltr,
+    final smallCluster = Column(
       children: [
         Expanded(
-          flex: 2,
-          child: Directionality(
-            textDirection: TextDirection.ltr,
-            child: slot(0),
-          ),
-        ),
-        SizedBox(width: gap),
-        Expanded(
-          flex: 1,
-          child: Column(
+          child: Row(
             children: [
               Expanded(child: slot(1)),
-              SizedBox(height: gap),
+              SizedBox(width: gap),
               Expanded(child: slot(2)),
+            ],
+          ),
+        ),
+        SizedBox(height: gap),
+        Expanded(
+          child: Row(
+            children: [
+              Expanded(child: slot(3)),
+              SizedBox(width: gap),
+              Expanded(child: slot(4)),
             ],
           ),
         ),
       ],
     );
 
-    final bottomRow = Row(
-      children: [
-        Expanded(child: slot(3)),
-        SizedBox(width: gap),
-        Expanded(child: slot(4)),
-        SizedBox(width: gap),
-        Expanded(child: slot(5)),
-      ],
-    );
-
     return AspectRatio(
-      aspectRatio: 1,
-      child: Column(
+      aspectRatio: 2,
+      child: Row(
+        textDirection: mirror ? TextDirection.rtl : TextDirection.ltr,
         children: [
-          Expanded(flex: 2, child: topRow),
-          SizedBox(height: gap),
-          Expanded(flex: 1, child: bottomRow),
+          // Hero stays LTR-rendered even when the row is mirrored —
+          // image fit/orientation shouldn't flip with the layout.
+          Expanded(
+            flex: 1,
+            child: Directionality(
+              textDirection: TextDirection.ltr,
+              child: slot(0),
+            ),
+          ),
+          SizedBox(width: gap),
+          Expanded(
+            flex: 1,
+            child: Directionality(
+              textDirection: TextDirection.ltr,
+              child: smallCluster,
+            ),
+          ),
         ],
       ),
     );
