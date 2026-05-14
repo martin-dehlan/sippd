@@ -1163,7 +1163,48 @@ class _Mosaic {
 // wine-id hash picks the variant so neighbouring wines look
 // visibly different.
 
-// --- 5-slot tier (1..4 moments + placeholders) ---
+// --- 4-slot tier (1..2 moments + placeholders) ---
+const _kP4a = _Mosaic(
+  cols: 4,
+  rows: 2,
+  tiles: [
+    _MTile(0, 0, 2, 2), // hero left
+    _MTile(0, 2, 1, 1), _MTile(0, 3, 1, 1),
+    _MTile(1, 2, 1, 2), // wide bottom-right
+  ],
+);
+const _kP4b = _Mosaic(
+  cols: 4,
+  rows: 2,
+  tiles: [
+    _MTile(0, 2, 2, 2), // hero right
+    _MTile(0, 0, 1, 1), _MTile(0, 1, 1, 1),
+    _MTile(1, 0, 1, 2), // wide bottom-left
+  ],
+);
+const _kP4c = _Mosaic(
+  cols: 3,
+  rows: 3,
+  tiles: [
+    _MTile(0, 0, 2, 2), // hero TL
+    _MTile(0, 2, 1, 1),
+    _MTile(1, 2, 2, 1), // tall right
+    _MTile(2, 0, 1, 2), // wide bottom-left
+  ],
+);
+const _kP4d = _Mosaic(
+  cols: 3,
+  rows: 3,
+  tiles: [
+    _MTile(0, 1, 2, 2), // hero TR
+    _MTile(0, 0, 2, 1), // tall left
+    _MTile(2, 0, 1, 1),
+    _MTile(2, 1, 1, 2), // wide bottom-right
+  ],
+);
+const _kP4 = [_kP4a, _kP4b, _kP4c, _kP4d];
+
+// --- 5-slot tier (3..4 moments + placeholders) ---
 const _kP5a = _Mosaic(
   cols: 4,
   rows: 2,
@@ -1294,15 +1335,20 @@ const _kP9f = _Mosaic(
 const _kP9 = [_kP9a, _kP9b, _kP9c, _kP9d, _kP9e, _kP9f];
 
 _Mosaic _pickMosaic(int slotCount, String wineId) {
-  final variants = slotCount <= 5 ? _kP5 : _kP9;
+  final variants = switch (slotCount) {
+    <= 4 => _kP4,
+    <= 5 => _kP5,
+    _ => _kP9,
+  };
   return variants[wineId.hashCode.abs() % variants.length];
 }
 
 /// Map a desired moment count onto the smallest tier that fits.
-/// Each tier holds variants with the same slot count so the
-/// real/placeholder split stays consistent regardless of which
-/// variant the hash picks.
+/// Floor at 4 slots so even a single moment keeps a small mosaic
+/// (1 real + active "+" + 2 ghost placeholders) — the section
+/// never reads as a sparse 4×2 grid with one lone photo.
 int _slotCountForCount(int count) {
+  if (count <= 2) return 4;
   if (count <= 4) return 5;
   return 9;
 }
