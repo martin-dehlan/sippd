@@ -478,6 +478,8 @@
   "winesShareError": "Couldn't share — try again",
   "winesSharePickFriendsTitle": "Share with",
   "winesExpertProUnlock": "Unlock with Pro",
+  "momentShowcaseApplied": "Set as wine's main photo.",
+  "momentShowcaseError": "Couldn't set as main photo. Try again.",
   "momentPlaceHint": "Restaurant or place",
   "momentFoodHint": "What did you pair it with?",
   "momentNoteHint": "Anything to remember?",

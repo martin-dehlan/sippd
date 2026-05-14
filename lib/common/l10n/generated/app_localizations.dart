@@ -2198,6 +2198,18 @@ abstract class AppLocalizations {
   /// **'Unlock with Pro'**
   String get winesExpertProUnlock;
 
+  /// No description provided for @momentShowcaseApplied.
+  ///
+  /// In en, this message translates to:
+  /// **'Set as wine\'s main photo.'**
+  String get momentShowcaseApplied;
+
+  /// No description provided for @momentShowcaseError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t set as main photo. Try again.'**
+  String get momentShowcaseError;
+
   /// No description provided for @momentPlaceHint.
   ///
   /// In en, this message translates to:

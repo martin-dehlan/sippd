@@ -411,6 +411,8 @@
   "winesShareError": "Teilen fehlgeschlagen — nochmal versuchen",
   "winesSharePickFriendsTitle": "Teilen mit",
   "winesExpertProUnlock": "Mit Pro freischalten",
+  "momentShowcaseApplied": "Als Hauptfoto des Weins gesetzt.",
+  "momentShowcaseError": "Konnte nicht als Hauptfoto gesetzt werden. Versuche es nochmal.",
   "momentPlaceHint": "Restaurant oder Ort",
   "momentFoodHint": "Wozu hast du ihn getrunken?",
   "momentNoteHint": "Was willst du dir merken?",

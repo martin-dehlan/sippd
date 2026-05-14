@@ -1131,6 +1131,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get winesExpertProUnlock => 'Mit Pro freischalten';
 
   @override
+  String get momentShowcaseApplied => 'Als Hauptfoto des Weins gesetzt.';
+
+  @override
+  String get momentShowcaseError =>
+      'Konnte nicht als Hauptfoto gesetzt werden. Versuche es nochmal.';
+
+  @override
   String get momentPlaceHint => 'Restaurant oder Ort';
 
   @override

@@ -317,13 +317,32 @@ class _MomentViewerScreenState extends ConsumerState<MomentViewerScreen>
             ? photos.first.storagePath
             : moment.imageUrl;
         if (url == null) return;
-        final wine = await ref
-            .read(wineRepositoryProvider)
-            .getWineById(widget.wineId);
-        if (wine == null) return;
-        await ref
-            .read(wineControllerProvider.notifier)
-            .updateWine(wine.copyWith(imageUrl: url, localImagePath: null));
+        final messenger = ScaffoldMessenger.of(context);
+        try {
+          final wine = await ref
+              .read(wineRepositoryProvider)
+              .getWineById(widget.wineId);
+          if (wine == null) return;
+          await ref
+              .read(wineControllerProvider.notifier)
+              .updateWine(
+                wine.copyWith(
+                  imageUrl: url,
+                  localImagePath: null,
+                  updatedAt: DateTime.now(),
+                ),
+              );
+          ref.invalidate(wineDetailProvider(widget.wineId));
+          if (!mounted) return;
+          messenger.showSnackBar(
+            SnackBar(content: Text(l10n.momentShowcaseApplied)),
+          );
+        } catch (_) {
+          if (!mounted) return;
+          messenger.showSnackBar(
+            SnackBar(content: Text(l10n.momentShowcaseError)),
+          );
+        }
     }
   }
 

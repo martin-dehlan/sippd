@@ -411,6 +411,8 @@
   "winesShareError": "Échec du partage — réessaie",
   "winesSharePickFriendsTitle": "Partager avec",
   "winesExpertProUnlock": "Débloquer avec Pro",
+  "momentShowcaseApplied": "Définie comme photo principale du vin.",
+  "momentShowcaseError": "Impossible de définir comme photo principale. Réessaie.",
   "momentPlaceHint": "Restaurant ou lieu",
   "momentFoodHint": "Avec quoi l'as-tu bu ?",
   "momentNoteHint": "Quelque chose à retenir ?",

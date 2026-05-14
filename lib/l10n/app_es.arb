@@ -411,6 +411,8 @@
   "winesShareError": "No se pudo compartir — inténtalo otra vez",
   "winesSharePickFriendsTitle": "Compartir con",
   "winesExpertProUnlock": "Desbloquear con Pro",
+  "momentShowcaseApplied": "Establecida como foto principal del vino.",
+  "momentShowcaseError": "No se pudo establecer como foto principal. Inténtalo de nuevo.",
   "momentPlaceHint": "Restaurante o lugar",
   "momentFoodHint": "¿Con qué lo tomaste?",
   "momentNoteHint": "¿Algo para recordar?",

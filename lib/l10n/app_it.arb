@@ -411,6 +411,8 @@
   "winesShareError": "Condivisione non riuscita — riprova",
   "winesSharePickFriendsTitle": "Condividi con",
   "winesExpertProUnlock": "Sblocca con Pro",
+  "momentShowcaseApplied": "Impostata come foto principale del vino.",
+  "momentShowcaseError": "Impossibile impostare come foto principale. Riprova.",
   "momentPlaceHint": "Ristorante o luogo",
   "momentFoodHint": "Con cosa l'hai bevuto?",
   "momentNoteHint": "Qualcosa da ricordare?",
