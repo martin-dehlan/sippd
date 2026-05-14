@@ -1182,28 +1182,26 @@ const _kP4b = _Mosaic(
     _MTile(1, 0, 1, 2), // wide bottom-left
   ],
 );
-// 2×2 equal-square quartet — photo position varies per variant so
-// the section stays visually distinct across wines without
-// introducing thin tall rectangles. The first tile in the list is
-// the real photo; the rest are placeholders.
+// Wide-hero collage on 5×2 — H spans 3 cols × 2 rows, plus 1 wide
+// accent + 2 smalls. Real collage feel for the 1..2 moment case.
 const _kP4c = _Mosaic(
-  cols: 2,
+  cols: 5,
   rows: 2,
   tiles: [
-    _MTile(0, 0, 1, 1), // photo TL
-    _MTile(0, 1, 1, 1),
-    _MTile(1, 0, 1, 1),
-    _MTile(1, 1, 1, 1),
+    _MTile(0, 0, 2, 3), // hero 3×2 left
+    _MTile(0, 3, 1, 2), // wide top-right
+    _MTile(1, 3, 1, 1),
+    _MTile(1, 4, 1, 1),
   ],
 );
 const _kP4d = _Mosaic(
-  cols: 2,
+  cols: 5,
   rows: 2,
   tiles: [
-    _MTile(1, 1, 1, 1), // photo BR
-    _MTile(0, 0, 1, 1),
-    _MTile(0, 1, 1, 1),
+    _MTile(0, 2, 2, 3), // hero 3×2 right
+    _MTile(0, 0, 1, 2), // wide top-left
     _MTile(1, 0, 1, 1),
+    _MTile(1, 1, 1, 1),
   ],
 );
 const _kP4 = [_kP4a, _kP4b, _kP4c, _kP4d];
