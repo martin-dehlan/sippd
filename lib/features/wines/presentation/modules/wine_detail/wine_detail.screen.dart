@@ -238,13 +238,22 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
                   ),
                 ),
               ),
-              _MemoriesSection(wine: widget.wine),
+              // Rating-app priority: rating depth (notes + expert
+              // tasting + friend ratings) sits directly after the
+              // hero so the wine's identity reads first. Moments are
+              // the memory/journal layer — they live below the rating
+              // story, before places.
+              if (widget.wine.notes != null &&
+                  widget.wine.notes!.isNotEmpty) ...[
+                SizedBox(height: context.xl),
+                WineDetailSectionHeader(
+                  label: AppLocalizations.of(context).winesDetailSectionNotes,
+                ),
+                SizedBox(height: context.m),
+                _NotesBlock(notes: widget.wine.notes!),
+              ],
               if (widget.wine.canonicalWineId != null) ...[
                 SizedBox(height: context.xl),
-                FriendRatingsStrip(
-                  canonicalWineId: widget.wine.canonicalWineId!,
-                ),
-                SizedBox(height: context.l),
                 // Read-only display of the user's own expert tasting
                 // dimensions for this wine. Renders nothing when empty,
                 // so non-Pro / unfilled wines stay clean.
@@ -262,16 +271,12 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
                     showExpertTastingSheet(context: context, wine: widget.wine);
                   },
                 ),
-              ],
-              if (widget.wine.notes != null &&
-                  widget.wine.notes!.isNotEmpty) ...[
-                SizedBox(height: context.xl),
-                WineDetailSectionHeader(
-                  label: AppLocalizations.of(context).winesDetailSectionNotes,
+                SizedBox(height: context.l),
+                FriendRatingsStrip(
+                  canonicalWineId: widget.wine.canonicalWineId!,
                 ),
-                SizedBox(height: context.m),
-                _NotesBlock(notes: widget.wine.notes!),
               ],
+              _MemoriesSection(wine: widget.wine),
               SizedBox(height: context.xl),
               WineDetailSectionHeader(
                 label: AppLocalizations.of(context).winesDetailSectionPlace,
@@ -1022,7 +1027,9 @@ class _MemoriesSection extends ConsumerWidget {
 /// reveals the rest in a grid below (no navigation). Tap the trailing
 /// caret-up in the grid to collapse.
 class _MomentsBento extends ConsumerStatefulWidget {
-  static const _kMaxBentoSlots = 12;
+  // Capped at P9 (9 slots) so the section's aspect never exceeds 4:3
+  // — keeps the wine-detail screen from being elbowed by memory tiles.
+  static const _kMaxBentoSlots = 9;
 
   final List<WineMemoryEntity> memories;
   final String wineId;
@@ -1169,14 +1176,14 @@ _SquareMosaic _pickMosaic(int slotCount, String wineId) {
   return variants[wineId.hashCode.abs() % variants.length];
 }
 
-/// Map a desired moment count + 2-placeholder buffer onto the
-/// smallest tier that fits (5, 9, or 12 slots).
+/// Map a desired moment count onto the smallest tier that fits.
+/// Capped at P9 (4×3, aspect 4:3) so the moments section never
+/// dominates the wine-detail screen vertically — past 8 moments,
+/// the trailing slot becomes an inline expand toggle that reveals
+/// the rest in a grid below.
 int _slotCountForCount(int count) {
-  if (count <= 3) return 5; // P5: 1..3 real + placeholders
-  if (count <= 4) return 5; // P5: 4 real + 1 placeholder
-  if (count <= 7) return 9; // P9: 5..7 real + placeholders
-  if (count <= 9) return 9; // P9: 8..9 real
-  return 12; // P12 for everything ≥10
+  if (count <= 4) return 5; // P5 (4×2, aspect 2:1) — 1..4 + placeholders
+  return 9; // P9 (4×3, aspect 4:3) — 5..8 real, 9+ via "+N" overflow
 }
 
 Widget _renderCountPattern(
