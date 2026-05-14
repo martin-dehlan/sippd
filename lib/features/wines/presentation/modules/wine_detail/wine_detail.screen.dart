@@ -1122,169 +1122,137 @@ class _MomentsBentoState extends ConsumerState<_MomentsBento> {
   }
 }
 
-/// 12 content-sized bento layouts. Each fills its container with N
-/// real tiles. Aspect ratios vary between ~1.4 and ~2 so the section
-/// stays a shallow band regardless of how many moments exist.
+/// Mosaic patterns defined as lists of normalised rects so any tile
+/// size mix is possible — hero squares, medium rects, wide bands,
+/// small thumbs. Eight patterns, one per supported slot count 5..12.
+class _MosaicPattern {
+  final double aspect;
+  final List<List<double>> rects;
+  const _MosaicPattern(this.aspect, this.rects);
+}
+
+const _kMosaicPatterns = <_MosaicPattern>[
+  // 5 slots
+  _MosaicPattern(2, [
+    [0.000, 0.000, 0.500, 1.000],
+    [0.500, 0.000, 0.500, 0.500],
+    [0.500, 0.500, 0.166, 0.500],
+    [0.666, 0.500, 0.167, 0.500],
+    [0.833, 0.500, 0.167, 0.500],
+  ]),
+  // 6 slots
+  _MosaicPattern(2, [
+    [0.000, 0.000, 0.500, 0.666],
+    [0.500, 0.000, 0.500, 0.333],
+    [0.500, 0.333, 0.250, 0.333],
+    [0.750, 0.333, 0.250, 0.333],
+    [0.000, 0.666, 0.500, 0.334],
+    [0.500, 0.666, 0.500, 0.334],
+  ]),
+  // 7 slots
+  _MosaicPattern(1.8, [
+    [0.000, 0.000, 0.500, 0.666],
+    [0.500, 0.000, 0.250, 0.666],
+    [0.750, 0.000, 0.250, 0.333],
+    [0.750, 0.333, 0.250, 0.333],
+    [0.000, 0.666, 0.333, 0.334],
+    [0.333, 0.666, 0.333, 0.334],
+    [0.666, 0.666, 0.334, 0.334],
+  ]),
+  // 8 slots
+  _MosaicPattern(1.8, [
+    [0.000, 0.000, 0.500, 0.500],
+    [0.500, 0.000, 0.250, 0.500],
+    [0.750, 0.000, 0.250, 0.250],
+    [0.750, 0.250, 0.250, 0.250],
+    [0.000, 0.500, 0.250, 0.500],
+    [0.250, 0.500, 0.250, 0.250],
+    [0.500, 0.500, 0.500, 0.250],
+    [0.250, 0.750, 0.750, 0.250],
+  ]),
+  // 9 slots
+  _MosaicPattern(1.6, [
+    [0.000, 0.000, 0.500, 0.500],
+    [0.500, 0.000, 0.500, 0.250],
+    [0.500, 0.250, 0.250, 0.250],
+    [0.750, 0.250, 0.250, 0.250],
+    [0.000, 0.500, 0.250, 0.500],
+    [0.250, 0.500, 0.250, 0.500],
+    [0.500, 0.500, 0.166, 0.500],
+    [0.666, 0.500, 0.167, 0.500],
+    [0.833, 0.500, 0.167, 0.500],
+  ]),
+  // 10 slots
+  _MosaicPattern(1.5, [
+    [0.000, 0.000, 0.500, 0.500],
+    [0.500, 0.000, 0.250, 0.250],
+    [0.750, 0.000, 0.250, 0.250],
+    [0.500, 0.250, 0.500, 0.250],
+    [0.000, 0.500, 0.333, 0.250],
+    [0.333, 0.500, 0.333, 0.250],
+    [0.666, 0.500, 0.334, 0.250],
+    [0.000, 0.750, 0.250, 0.250],
+    [0.250, 0.750, 0.500, 0.250],
+    [0.750, 0.750, 0.250, 0.250],
+  ]),
+  // 11 slots
+  _MosaicPattern(1.5, [
+    [0.000, 0.000, 0.400, 0.500],
+    [0.400, 0.000, 0.300, 0.250],
+    [0.700, 0.000, 0.300, 0.250],
+    [0.400, 0.250, 0.200, 0.250],
+    [0.600, 0.250, 0.200, 0.250],
+    [0.800, 0.250, 0.200, 0.250],
+    [0.000, 0.500, 0.300, 0.500],
+    [0.300, 0.500, 0.200, 0.250],
+    [0.500, 0.500, 0.250, 0.250],
+    [0.750, 0.500, 0.250, 0.500],
+    [0.300, 0.750, 0.450, 0.250],
+  ]),
+  // 12 slots
+  _MosaicPattern(1.4, [
+    [0.000, 0.000, 0.500, 0.500],
+    [0.500, 0.000, 0.500, 0.333],
+    [0.500, 0.333, 0.250, 0.167],
+    [0.750, 0.333, 0.250, 0.167],
+    [0.000, 0.500, 0.250, 0.250],
+    [0.250, 0.500, 0.250, 0.250],
+    [0.500, 0.500, 0.500, 0.250],
+    [0.000, 0.750, 0.250, 0.250],
+    [0.250, 0.750, 0.250, 0.250],
+    [0.500, 0.750, 0.166, 0.250],
+    [0.666, 0.750, 0.167, 0.250],
+    [0.833, 0.750, 0.167, 0.250],
+  ]),
+];
+
 Widget _renderCountPattern(int count, Widget Function(int) slot, double gap) {
   if (count <= 0) return const SizedBox.shrink();
+  final clamped = count.clamp(5, 12);
+  final pattern = _kMosaicPatterns[clamped - 5];
 
-  Widget asp(double a, Widget child) =>
-      AspectRatio(aspectRatio: a, child: child);
-
-  Widget row(List<Widget> tiles) {
-    final children = <Widget>[];
-    for (var i = 0; i < tiles.length; i++) {
-      if (i != 0) children.add(SizedBox(width: gap));
-      children.add(Expanded(child: tiles[i]));
-    }
-    return Row(children: children);
-  }
-
-  Widget col(List<Widget> tiles) {
-    final children = <Widget>[];
-    for (var i = 0; i < tiles.length; i++) {
-      if (i != 0) children.add(SizedBox(height: gap));
-      children.add(Expanded(child: tiles[i]));
-    }
-    return Column(children: children);
-  }
-
-  Widget rowFlex(List<int> flexes, List<Widget> tiles) {
-    final children = <Widget>[];
-    for (var i = 0; i < tiles.length; i++) {
-      if (i != 0) children.add(SizedBox(width: gap));
-      children.add(Expanded(flex: flexes[i], child: tiles[i]));
-    }
-    return Row(children: children);
-  }
-
-  switch (count) {
-    case 1:
-      return asp(1.6, slot(0));
-    case 2:
-      return asp(2, row([slot(0), slot(1)]));
-    case 3:
-      // Hero left, 2 stacked right.
-      return asp(
-        2,
-        rowFlex(
-          [2, 1],
-          [
-            slot(0),
-            col([slot(1), slot(2)]),
+  return AspectRatio(
+    aspectRatio: pattern.aspect,
+    child: LayoutBuilder(
+      builder: (_, c) {
+        final w = c.maxWidth;
+        final h = c.maxHeight;
+        final half = gap / 2;
+        return Stack(
+          children: [
+            for (var i = 0; i < pattern.rects.length; i++)
+              Positioned(
+                left: pattern.rects[i][0] * w + half,
+                top: pattern.rects[i][1] * h + half,
+                width: (pattern.rects[i][2] * w) - gap,
+                height: (pattern.rects[i][3] * h) - gap,
+                child: slot(i),
+              ),
           ],
-        ),
-      );
-    case 4:
-      // Hero left, right column = top wide + bottom 2 split.
-      return asp(
-        2,
-        rowFlex(
-          [2, 1],
-          [
-            slot(0),
-            col([
-              slot(1),
-              row([slot(2), slot(3)]),
-            ]),
-          ],
-        ),
-      );
-    case 5:
-      // Classic heroLeft + 2×2 cluster (was the previous default).
-      return asp(
-        2,
-        rowFlex(
-          [2, 2],
-          [
-            slot(0),
-            col([
-              row([slot(1), slot(2)]),
-              row([slot(3), slot(4)]),
-            ]),
-          ],
-        ),
-      );
-    case 6:
-      // 2 rows × 3 cols flat grid.
-      return asp(
-        2,
-        col([
-          row([slot(0), slot(1), slot(2)]),
-          row([slot(3), slot(4), slot(5)]),
-        ]),
-      );
-    case 7:
-      // Banner hero top + 2 rows × 3 cols below.
-      return asp(
-        1.8,
-        col([
-          slot(0),
-          row([slot(1), slot(2), slot(3)]),
-          row([slot(4), slot(5), slot(6)]),
-        ]),
-      );
-    case 8:
-      // 2 rows × 4 cols flat grid.
-      return asp(
-        2,
-        col([
-          row([slot(0), slot(1), slot(2), slot(3)]),
-          row([slot(4), slot(5), slot(6), slot(7)]),
-        ]),
-      );
-    case 9:
-      // 3×3 grid.
-      return asp(
-        1.5,
-        col([
-          row([slot(0), slot(1), slot(2)]),
-          row([slot(3), slot(4), slot(5)]),
-          row([slot(6), slot(7), slot(8)]),
-        ]),
-      );
-    case 10:
-      // Banner top + 3-row × 3-col cluster.
-      return asp(
-        1.6,
-        col([
-          slot(0),
-          row([slot(1), slot(2), slot(3)]),
-          row([slot(4), slot(5), slot(6)]),
-          row([slot(7), slot(8), slot(9)]),
-        ]),
-      );
-    case 11:
-      // 3 rows × 4 cols, asymmetric: hero(2×2) top-left + 3 in top
-      // row right + 4 across bottom.
-      return asp(
-        1.6,
-        col([
-          rowFlex(
-            [2, 1],
-            [
-              slot(0),
-              col([
-                row([slot(1), slot(2)]),
-                row([slot(3), slot(4)]),
-              ]),
-            ],
-          ),
-          row([slot(5), slot(6), slot(7), slot(8), slot(9), slot(10)]),
-        ]),
-      );
-    case 12:
-    default:
-      // Full 3-row × 4-col grid.
-      return asp(
-        1.5,
-        col([
-          row([slot(0), slot(1), slot(2), slot(3)]),
-          row([slot(4), slot(5), slot(6), slot(7)]),
-          row([slot(8), slot(9), slot(10), slot(11)]),
-        ]),
-      );
-  }
+        );
+      },
+    ),
+  );
 }
 
 /// Grid of the moments hidden behind the bento "+N" tile. Each tile
