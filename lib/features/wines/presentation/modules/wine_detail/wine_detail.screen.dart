@@ -920,93 +920,87 @@ class _MemoriesSection extends ConsumerWidget {
     final wineId = wine.id;
     final memoriesAsync = ref.watch(wineMemoriesControllerProvider(wineId));
     final memories = memoriesAsync.valueOrNull ?? const [];
-    final ringSize = context.w * 0.14;
+    final tileSize = context.w * 0.14;
     final l10n = AppLocalizations.of(context);
     final cs = Theme.of(context).colorScheme;
+    final padH = context.paddingH * 1.3;
+
+    void openCapture() => pushMomentCapture(
+      context,
+      ref,
+      wineId: wineId,
+      wineLocationName: wine.location,
+      wineLocationLat: wine.latitude,
+      wineLocationLng: wine.longitude,
+    );
 
     return Padding(
-      padding: EdgeInsets.only(top: context.m),
+      padding: EdgeInsets.only(top: context.xl),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          // Header row matches WineDetailSectionHeader styling (dim
+          // tracked uppercase) so the section sits in the same visual
+          // tier as TASTING-NOTES / ORTE. Add affordance is a quiet
+          // + glyph at the trailing edge — same colour as the label,
+          // not a primary pill.
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: context.paddingH),
+            padding: EdgeInsets.symmetric(horizontal: padH),
             child: Row(
               children: [
                 Expanded(
                   child: Text(
-                    l10n.momentSectionHeader,
+                    l10n.momentSectionHeader.toUpperCase(),
                     style: TextStyle(
-                      fontSize: context.bodyFont,
+                      fontSize: context.captionFont * 0.95,
                       fontWeight: FontWeight.w700,
-                      color: cs.onSurface,
+                      color: cs.onSurface.withValues(alpha: 0.72),
+                      letterSpacing: 1.2,
                     ),
                   ),
                 ),
                 GestureDetector(
                   behavior: HitTestBehavior.opaque,
-                  onTap: () => pushMomentCapture(
-                    context,
-                    ref,
-                    wineId: wineId,
-                    wineLocationName: wine.location,
-                    wineLocationLat: wine.latitude,
-                    wineLocationLng: wine.longitude,
-                  ),
+                  onTap: openCapture,
                   child: Padding(
                     padding: EdgeInsets.symmetric(
-                      horizontal: context.s,
+                      horizontal: context.xs,
                       vertical: context.xs,
                     ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          PhosphorIconsRegular.plus,
-                          size: context.w * 0.04,
-                          color: cs.primary,
-                        ),
-                        SizedBox(width: context.xs * 1.2),
-                        Text(
-                          l10n.momentSectionAdd,
-                          style: TextStyle(
-                            fontSize: context.captionFont,
-                            fontWeight: FontWeight.w600,
-                            color: cs.primary,
-                          ),
-                        ),
-                      ],
+                    child: Icon(
+                      PhosphorIconsRegular.plus,
+                      size: context.w * 0.045,
+                      color: cs.onSurface.withValues(alpha: 0.72),
                     ),
                   ),
                 ),
               ],
             ),
           ),
+          SizedBox(height: context.m),
           if (memories.isEmpty)
             Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: context.paddingH,
-                vertical: context.s,
-              ),
-              child: Text(
-                l10n.momentSectionEmpty,
-                style: TextStyle(
-                  fontSize: context.captionFont,
-                  color: cs.onSurfaceVariant,
+              padding: EdgeInsets.symmetric(horizontal: padH),
+              child: GestureDetector(
+                onTap: openCapture,
+                child: Text(
+                  l10n.momentSectionEmpty,
+                  style: TextStyle(
+                    fontSize: context.captionFont,
+                    color: cs.onSurfaceVariant,
+                  ),
                 ),
               ),
             )
-          else ...[
-            SizedBox(height: context.s),
+          else
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: context.paddingH),
+              padding: EdgeInsets.symmetric(horizontal: padH),
               child: _MomentsMosaic(
                 memories: memories,
                 wineId: wineId,
-                tileSize: ringSize,
+                tileSize: tileSize,
               ),
             ),
-          ],
         ],
       ),
     );
