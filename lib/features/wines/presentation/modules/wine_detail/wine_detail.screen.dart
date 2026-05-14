@@ -1011,13 +1011,18 @@ class _MemoriesSection extends ConsumerWidget {
 /// overflow indicator that opens the viewer at the first hidden
 /// moment. Single-row, bounded vertically, never scrolls — keeps the
 /// section from elbowing the tasting-notes block below.
-/// Lean bento moment mosaic. Five slots in a 2:1 band. Slot 4 doubles
-/// as a "+N" expand button when memories exceed the visible count;
-/// tapping it reveals the hidden moments inline as a small grid below
-/// the bento (no navigation). Tap again to collapse. Wine-id hash
-/// flips hero left↔right.
+/// Content-driven moment mosaic. The pattern is picked from the
+/// moment count (clamped 1..12), not from the wine id — so the layout
+/// genuinely changes as the user adds moments. Each pattern fills the
+/// container completely with that exact tile count: no placeholders,
+/// no empty cells.
+///
+/// When the user has more than 12 moments, the 12-tile pattern is
+/// used and its last tile becomes a "+N" inline expand toggle that
+/// reveals the rest in a grid below (no navigation). Tap the trailing
+/// caret-up in the grid to collapse.
 class _MomentsBento extends ConsumerStatefulWidget {
-  static const _kSlotCount = 5;
+  static const _kMaxBentoSlots = 12;
 
   final List<WineMemoryEntity> memories;
   final String wineId;
@@ -1040,14 +1045,18 @@ class _MomentsBentoState extends ConsumerState<_MomentsBento> {
   Widget build(BuildContext context) {
     final memories = widget.memories;
     final wineId = widget.wineId;
-    final hasOverflow = memories.length > _MomentsBento._kSlotCount;
-    final visibleBentoMoments = hasOverflow
+    final gap = context.w * 0.015;
+
+    final count = memories.length;
+    final hasOverflow = count > _MomentsBento._kMaxBentoSlots;
+    final bentoSlotCount = hasOverflow
         ? (_expanded
-              ? _MomentsBento._kSlotCount
-              : _MomentsBento._kSlotCount - 1)
-        : memories.length;
-    final overflowStart = visibleBentoMoments;
-    final overflowCount = memories.length - overflowStart;
+              ? _MomentsBento._kMaxBentoSlots
+              : _MomentsBento._kMaxBentoSlots - 1)
+        : count;
+    final overflowStart = bentoSlotCount;
+    final overflowCount = count - overflowStart;
+    final layoutCount = hasOverflow ? _MomentsBento._kMaxBentoSlots : count;
 
     Widget tile(int index) => _BentoTile(
       memory: memories[index],
@@ -1060,24 +1069,25 @@ class _MomentsBentoState extends ConsumerState<_MomentsBento> {
     );
 
     Widget slot(int index) {
-      if (index < visibleBentoMoments) return tile(index);
-      if (hasOverflow && !_expanded && index == _MomentsBento._kSlotCount - 1) {
+      if (index < bentoSlotCount) return tile(index);
+      // Overflow toggle lives on the LAST slot of the chosen pattern
+      // when collapsed; expanded mode promotes the real moment into
+      // that slot and the collapse toggle moves to the trailing grid.
+      if (hasOverflow &&
+          !_expanded &&
+          index == _MomentsBento._kMaxBentoSlots - 1) {
         return _BentoOverflowTile(
           count: overflowCount,
           expanded: false,
           onTap: () => setState(() => _expanded = true),
         );
       }
-      return _BentoPlaceholder(onTap: widget.onAdd);
+      // Should not be reached — layoutCount == bentoSlotCount when no
+      // overflow, so every index < layoutCount maps to a real tile.
+      return const SizedBox.shrink();
     }
 
-    final gap = context.w * 0.015;
-    final pattern = _BentoPatternX.forWineId(wineId);
-
-    final bento = AspectRatio(
-      aspectRatio: 2,
-      child: _renderBentoPattern(pattern, slot, gap),
-    );
+    final bento = _renderCountPattern(layoutCount, slot, gap);
 
     return Column(
       children: [
@@ -1108,96 +1118,167 @@ class _MomentsBentoState extends ConsumerState<_MomentsBento> {
   }
 }
 
-/// Pre-baked bento layouts, all hosting exactly 5 slots inside the
-/// 2:1 aspect band. Picked from a stable hash of the wine id so each
-/// wine wears the same shape across visits but different wines look
-/// distinct. Beyond just left/right mirror — these are genuinely
-/// different compositions.
-enum _BentoPattern {
-  /// Hero on the left (2×2 of a 4×2 grid) + 4 small in a 2×2 cluster
-  /// on the right.
-  heroLeft,
+/// 12 content-sized bento layouts. Each fills its container with N
+/// real tiles. Aspect ratios vary between ~1.4 and ~2 so the section
+/// stays a shallow band regardless of how many moments exist.
+Widget _renderCountPattern(int count, Widget Function(int) slot, double gap) {
+  if (count <= 0) return const SizedBox.shrink();
 
-  /// Hero on the right + 4 small 2×2 cluster on the left.
-  heroRight,
+  Widget asp(double a, Widget child) =>
+      AspectRatio(aspectRatio: a, child: child);
 
-  /// Banner hero spanning the full top row + 4 small in a single row
-  /// underneath.
-  heroBannerTop,
-}
-
-extension _BentoPatternX on _BentoPattern {
-  static _BentoPattern forWineId(String wineId) {
-    final values = _BentoPattern.values;
-    return values[wineId.hashCode.abs() % values.length];
+  Widget row(List<Widget> tiles) {
+    final children = <Widget>[];
+    for (var i = 0; i < tiles.length; i++) {
+      if (i != 0) children.add(SizedBox(width: gap));
+      children.add(Expanded(child: tiles[i]));
+    }
+    return Row(children: children);
   }
-}
 
-Widget _renderBentoPattern(
-  _BentoPattern pattern,
-  Widget Function(int) slot,
-  double gap,
-) {
-  Widget twoByTwo(int s1, int s2, int s3, int s4) => Column(
-    children: [
-      Expanded(
-        child: Row(
-          children: [
-            Expanded(child: slot(s1)),
-            SizedBox(width: gap),
-            Expanded(child: slot(s2)),
+  Widget col(List<Widget> tiles) {
+    final children = <Widget>[];
+    for (var i = 0; i < tiles.length; i++) {
+      if (i != 0) children.add(SizedBox(height: gap));
+      children.add(Expanded(child: tiles[i]));
+    }
+    return Column(children: children);
+  }
+
+  Widget rowFlex(List<int> flexes, List<Widget> tiles) {
+    final children = <Widget>[];
+    for (var i = 0; i < tiles.length; i++) {
+      if (i != 0) children.add(SizedBox(width: gap));
+      children.add(Expanded(flex: flexes[i], child: tiles[i]));
+    }
+    return Row(children: children);
+  }
+
+  switch (count) {
+    case 1:
+      return asp(1.6, slot(0));
+    case 2:
+      return asp(2, row([slot(0), slot(1)]));
+    case 3:
+      // Hero left, 2 stacked right.
+      return asp(
+        2,
+        rowFlex(
+          [2, 1],
+          [
+            slot(0),
+            col([slot(1), slot(2)]),
           ],
         ),
-      ),
-      SizedBox(height: gap),
-      Expanded(
-        child: Row(
-          children: [
-            Expanded(child: slot(s3)),
-            SizedBox(width: gap),
-            Expanded(child: slot(s4)),
+      );
+    case 4:
+      // Hero left, right column = top wide + bottom 2 split.
+      return asp(
+        2,
+        rowFlex(
+          [2, 1],
+          [
+            slot(0),
+            col([
+              slot(1),
+              row([slot(2), slot(3)]),
+            ]),
           ],
         ),
-      ),
-    ],
-  );
-
-  switch (pattern) {
-    case _BentoPattern.heroLeft:
-      return Row(
-        children: [
-          Expanded(flex: 2, child: slot(0)),
-          SizedBox(width: gap),
-          Expanded(flex: 2, child: twoByTwo(1, 2, 3, 4)),
-        ],
       );
-    case _BentoPattern.heroRight:
-      return Row(
-        children: [
-          Expanded(flex: 2, child: twoByTwo(1, 2, 3, 4)),
-          SizedBox(width: gap),
-          Expanded(flex: 2, child: slot(0)),
-        ],
+    case 5:
+      // Classic heroLeft + 2×2 cluster (was the previous default).
+      return asp(
+        2,
+        rowFlex(
+          [2, 2],
+          [
+            slot(0),
+            col([
+              row([slot(1), slot(2)]),
+              row([slot(3), slot(4)]),
+            ]),
+          ],
+        ),
       );
-    case _BentoPattern.heroBannerTop:
-      return Column(
-        children: [
-          Expanded(child: slot(0)),
-          SizedBox(height: gap),
-          Expanded(
-            child: Row(
-              children: [
-                Expanded(child: slot(1)),
-                SizedBox(width: gap),
-                Expanded(child: slot(2)),
-                SizedBox(width: gap),
-                Expanded(child: slot(3)),
-                SizedBox(width: gap),
-                Expanded(child: slot(4)),
-              ],
-            ),
+    case 6:
+      // 2 rows × 3 cols flat grid.
+      return asp(
+        2,
+        col([
+          row([slot(0), slot(1), slot(2)]),
+          row([slot(3), slot(4), slot(5)]),
+        ]),
+      );
+    case 7:
+      // Banner hero top + 2 rows × 3 cols below.
+      return asp(
+        1.8,
+        col([
+          slot(0),
+          row([slot(1), slot(2), slot(3)]),
+          row([slot(4), slot(5), slot(6)]),
+        ]),
+      );
+    case 8:
+      // 2 rows × 4 cols flat grid.
+      return asp(
+        2,
+        col([
+          row([slot(0), slot(1), slot(2), slot(3)]),
+          row([slot(4), slot(5), slot(6), slot(7)]),
+        ]),
+      );
+    case 9:
+      // 3×3 grid.
+      return asp(
+        1.5,
+        col([
+          row([slot(0), slot(1), slot(2)]),
+          row([slot(3), slot(4), slot(5)]),
+          row([slot(6), slot(7), slot(8)]),
+        ]),
+      );
+    case 10:
+      // Banner top + 3-row × 3-col cluster.
+      return asp(
+        1.6,
+        col([
+          slot(0),
+          row([slot(1), slot(2), slot(3)]),
+          row([slot(4), slot(5), slot(6)]),
+          row([slot(7), slot(8), slot(9)]),
+        ]),
+      );
+    case 11:
+      // 3 rows × 4 cols, asymmetric: hero(2×2) top-left + 3 in top
+      // row right + 4 across bottom.
+      return asp(
+        1.6,
+        col([
+          rowFlex(
+            [2, 1],
+            [
+              slot(0),
+              col([
+                row([slot(1), slot(2)]),
+                row([slot(3), slot(4)]),
+              ]),
+            ],
           ),
-        ],
+          row([slot(5), slot(6), slot(7), slot(8), slot(9), slot(10)]),
+        ]),
+      );
+    case 12:
+    default:
+      // Full 3-row × 4-col grid.
+      return asp(
+        1.5,
+        col([
+          row([slot(0), slot(1), slot(2), slot(3)]),
+          row([slot(4), slot(5), slot(6), slot(7)]),
+          row([slot(8), slot(9), slot(10), slot(11)]),
+        ]),
       );
   }
 }
@@ -1320,36 +1401,6 @@ class _BentoTile extends StatelessWidget {
       color: cs.surfaceContainer,
       alignment: Alignment.center,
       child: Icon(PhosphorIconsRegular.image, color: cs.outline),
-    );
-  }
-}
-
-class _BentoPlaceholder extends StatelessWidget {
-  final VoidCallback onTap;
-  const _BentoPlaceholder({required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return GestureDetector(
-      onTap: onTap,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: cs.surface,
-          borderRadius: BorderRadius.circular(context.w * 0.025),
-          border: Border.all(
-            color: cs.outlineVariant.withValues(alpha: 0.6),
-            width: 0.6,
-          ),
-        ),
-        child: Center(
-          child: Icon(
-            PhosphorIconsRegular.plus,
-            color: cs.onSurface.withValues(alpha: 0.35),
-            size: context.w * 0.05,
-          ),
-        ),
-      ),
     );
   }
 }
