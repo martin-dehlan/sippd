@@ -1040,12 +1040,7 @@ class _MomentsBentoState extends ConsumerState<_MomentsBento> {
   Widget build(BuildContext context) {
     final memories = widget.memories;
     final wineId = widget.wineId;
-    final mirror = wineId.hashCode.abs() % 2 == 1;
     final hasOverflow = memories.length > _MomentsBento._kSlotCount;
-    // Collapsed overflow → bento shows 4 moments + the "+N" toggle on
-    // slot 4. Expanded overflow → bento promotes the 5th moment into
-    // slot 4 (so the bento itself looks complete) and the toggle moves
-    // to the END of the expanded grid as a caret-up tile.
     final visibleBentoMoments = hasOverflow
         ? (_expanded
               ? _MomentsBento._kSlotCount
@@ -1066,9 +1061,6 @@ class _MomentsBentoState extends ConsumerState<_MomentsBento> {
 
     Widget slot(int index) {
       if (index < visibleBentoMoments) return tile(index);
-      // Slot 4 is the toggle only when collapsed + overflow; when
-      // expanded, this slot is occupied by the 5th moment (handled
-      // above) and the toggle lives at the tail of the grid below.
       if (hasOverflow && !_expanded && index == _MomentsBento._kSlotCount - 1) {
         return _BentoOverflowTile(
           count: overflowCount,
@@ -1080,53 +1072,11 @@ class _MomentsBentoState extends ConsumerState<_MomentsBento> {
     }
 
     final gap = context.w * 0.015;
-
-    final smallCluster = Column(
-      children: [
-        Expanded(
-          child: Row(
-            children: [
-              Expanded(child: slot(1)),
-              SizedBox(width: gap),
-              Expanded(child: slot(2)),
-            ],
-          ),
-        ),
-        SizedBox(height: gap),
-        Expanded(
-          child: Row(
-            children: [
-              Expanded(child: slot(3)),
-              SizedBox(width: gap),
-              Expanded(child: slot(4)),
-            ],
-          ),
-        ),
-      ],
-    );
+    final pattern = _BentoPatternX.forWineId(wineId);
 
     final bento = AspectRatio(
       aspectRatio: 2,
-      child: Row(
-        textDirection: mirror ? TextDirection.rtl : TextDirection.ltr,
-        children: [
-          Expanded(
-            flex: 1,
-            child: Directionality(
-              textDirection: TextDirection.ltr,
-              child: slot(0),
-            ),
-          ),
-          SizedBox(width: gap),
-          Expanded(
-            flex: 1,
-            child: Directionality(
-              textDirection: TextDirection.ltr,
-              child: smallCluster,
-            ),
-          ),
-        ],
-      ),
+      child: _renderBentoPattern(pattern, slot, gap),
     );
 
     return Column(
@@ -1155,6 +1105,131 @@ class _MomentsBentoState extends ConsumerState<_MomentsBento> {
         ),
       ],
     );
+  }
+}
+
+/// Pre-baked bento layouts, all hosting exactly 5 slots inside the
+/// 2:1 aspect band. Picked from a stable hash of the wine id so each
+/// wine wears the same shape across visits but different wines look
+/// distinct. Beyond just left/right mirror — these are genuinely
+/// different compositions.
+enum _BentoPattern {
+  /// Hero on the left (2×2 of a 4×2 grid) + 4 small in a 2×2 cluster
+  /// on the right.
+  heroLeft,
+
+  /// Hero on the right + 4 small 2×2 cluster on the left.
+  heroRight,
+
+  /// Hero in the centre + 2 stacked tiles on each side.
+  heroCenter,
+
+  /// Banner hero spanning the full top row + 4 small in a single row
+  /// underneath.
+  heroBannerTop,
+}
+
+extension _BentoPatternX on _BentoPattern {
+  static _BentoPattern forWineId(String wineId) {
+    final values = _BentoPattern.values;
+    return values[wineId.hashCode.abs() % values.length];
+  }
+}
+
+Widget _renderBentoPattern(
+  _BentoPattern pattern,
+  Widget Function(int) slot,
+  double gap,
+) {
+  Widget twoByTwo(int s1, int s2, int s3, int s4) => Column(
+    children: [
+      Expanded(
+        child: Row(
+          children: [
+            Expanded(child: slot(s1)),
+            SizedBox(width: gap),
+            Expanded(child: slot(s2)),
+          ],
+        ),
+      ),
+      SizedBox(height: gap),
+      Expanded(
+        child: Row(
+          children: [
+            Expanded(child: slot(s3)),
+            SizedBox(width: gap),
+            Expanded(child: slot(s4)),
+          ],
+        ),
+      ),
+    ],
+  );
+
+  switch (pattern) {
+    case _BentoPattern.heroLeft:
+      return Row(
+        children: [
+          Expanded(flex: 2, child: slot(0)),
+          SizedBox(width: gap),
+          Expanded(flex: 2, child: twoByTwo(1, 2, 3, 4)),
+        ],
+      );
+    case _BentoPattern.heroRight:
+      return Row(
+        children: [
+          Expanded(flex: 2, child: twoByTwo(1, 2, 3, 4)),
+          SizedBox(width: gap),
+          Expanded(flex: 2, child: slot(0)),
+        ],
+      );
+    case _BentoPattern.heroCenter:
+      return Row(
+        children: [
+          Expanded(
+            flex: 1,
+            child: Column(
+              children: [
+                Expanded(child: slot(1)),
+                SizedBox(height: gap),
+                Expanded(child: slot(2)),
+              ],
+            ),
+          ),
+          SizedBox(width: gap),
+          Expanded(flex: 2, child: slot(0)),
+          SizedBox(width: gap),
+          Expanded(
+            flex: 1,
+            child: Column(
+              children: [
+                Expanded(child: slot(3)),
+                SizedBox(height: gap),
+                Expanded(child: slot(4)),
+              ],
+            ),
+          ),
+        ],
+      );
+    case _BentoPattern.heroBannerTop:
+      return Column(
+        children: [
+          Expanded(child: slot(0)),
+          SizedBox(height: gap),
+          Expanded(
+            child: Row(
+              children: [
+                Expanded(child: slot(1)),
+                SizedBox(width: gap),
+                Expanded(child: slot(2)),
+                SizedBox(width: gap),
+                Expanded(child: slot(3)),
+                SizedBox(width: gap),
+                Expanded(child: slot(4)),
+              ],
+            ),
+          ),
+        ],
+      );
   }
 }
 
