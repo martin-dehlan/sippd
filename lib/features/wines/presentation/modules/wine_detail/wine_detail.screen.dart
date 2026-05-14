@@ -939,7 +939,7 @@ class _MemoriesSection extends ConsumerWidget {
     );
 
     return Padding(
-      padding: EdgeInsets.only(top: context.xl),
+      padding: EdgeInsets.only(top: context.l),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -1163,7 +1163,55 @@ class _Mosaic {
 // wine-id hash picks the variant so neighbouring wines look
 // visibly different.
 
-// --- 5-slot tier (1..4 moments + placeholders) ---
+// --- 3-tile tier (exact-fill for count = 3) ---
+// Hero is portrait 2×3 right. Three distinct shapes, no two same.
+const _kP3a = _Mosaic(
+  cols: 4,
+  rows: 3,
+  tiles: [
+    _MTile(0, 2, 3, 2), // hero portrait right
+    _MTile(0, 0, 2, 2), // medium square TL
+    _MTile(2, 0, 1, 2), // wide BL
+  ],
+);
+const _kP3b = _Mosaic(
+  cols: 4,
+  rows: 3,
+  tiles: [
+    _MTile(0, 2, 3, 2), // hero portrait right
+    _MTile(0, 0, 1, 2), // wide top-left
+    _MTile(1, 0, 2, 2), // medium square BL
+  ],
+);
+const _kP3 = [_kP3a, _kP3b];
+
+// --- 4-tile tier (exact-fill for count = 4) ---
+// Hero portrait 2×3 right + medium 2×2 + wide + small. Small/small
+// adjacency is unavoidable in this cell count; mitigated by mixing
+// in a wide tile.
+const _kP4a = _Mosaic(
+  cols: 4,
+  rows: 3,
+  tiles: [
+    _MTile(0, 2, 3, 2), // hero portrait right
+    _MTile(0, 0, 2, 2), // medium square TL
+    _MTile(2, 0, 1, 1),
+    _MTile(2, 1, 1, 1),
+  ],
+);
+const _kP4b = _Mosaic(
+  cols: 4,
+  rows: 3,
+  tiles: [
+    _MTile(0, 2, 3, 2), // hero portrait right
+    _MTile(0, 0, 1, 1),
+    _MTile(0, 1, 1, 1),
+    _MTile(1, 0, 2, 2), // medium square BL
+  ],
+);
+const _kP4 = [_kP4a, _kP4b];
+
+// --- 5-slot tier (1..2 moments + placeholders, or 5 exact) ---
 // All variants put the hero on the right and mix 3 distinct tile
 // shapes (hero 3×2 / medium square 2×2 / wide 2×1 / small 1×1) so
 // no two identical tiles ever touch.
@@ -1216,6 +1264,58 @@ const _kP5d = _Mosaic(
 );
 const _kP5 = [_kP5a, _kP5b, _kP5c, _kP5d];
 
+// --- 6-tile tier (exact-fill for count = 6) ---
+const _kP6a = _Mosaic(
+  cols: 5,
+  rows: 3,
+  tiles: [
+    _MTile(0, 2, 2, 3), // hero TR
+    _MTile(0, 0, 2, 2), // medium square TL
+    _MTile(2, 0, 1, 2), // wide BL
+    _MTile(2, 2, 1, 1), _MTile(2, 3, 1, 1), _MTile(2, 4, 1, 1),
+  ],
+);
+const _kP6b = _Mosaic(
+  cols: 5,
+  rows: 3,
+  tiles: [
+    _MTile(1, 2, 2, 3), // hero BR
+    _MTile(1, 0, 2, 2), // medium square BL
+    _MTile(0, 0, 1, 2), // wide TL
+    _MTile(0, 2, 1, 1), _MTile(0, 3, 1, 1), _MTile(0, 4, 1, 1),
+  ],
+);
+const _kP6 = [_kP6a, _kP6b];
+
+// --- 7-tile tier (exact-fill for count = 7) ---
+const _kP7a = _Mosaic(
+  cols: 5,
+  rows: 3,
+  tiles: [
+    _MTile(0, 2, 2, 3), // hero TR
+    _MTile(0, 0, 1, 2), // wide TL
+    _MTile(1, 0, 1, 1), _MTile(1, 1, 1, 1),
+    _MTile(2, 0, 1, 2), // wide BL
+    _MTile(2, 2, 1, 2), // wide BC
+    _MTile(2, 4, 1, 1),
+  ],
+);
+const _kP7 = [_kP7a];
+
+// --- 8-tile tier (exact-fill for count = 8) ---
+const _kP8a = _Mosaic(
+  cols: 5,
+  rows: 3,
+  tiles: [
+    _MTile(0, 2, 2, 3), // hero TR
+    _MTile(0, 0, 1, 2), // wide TL
+    _MTile(1, 0, 1, 1), _MTile(1, 1, 1, 1),
+    _MTile(2, 0, 1, 2), // wide BL
+    _MTile(2, 2, 1, 1), _MTile(2, 3, 1, 1), _MTile(2, 4, 1, 1),
+  ],
+);
+const _kP8 = [_kP8a];
+
 // --- 9-slot tier (5..8 real + +overflow) ---
 // All hero-right. In a 9-tile mosaic packed into a 12- or 15-cell
 // grid, small/small adjacencies are unavoidable — those are
@@ -1267,15 +1367,25 @@ const _kP9d = _Mosaic(
 const _kP9 = [_kP9a, _kP9b, _kP9c, _kP9d];
 
 _Mosaic _pickMosaic(int slotCount, String wineId) {
-  final variants = slotCount <= 5 ? _kP5 : _kP9;
+  final variants = switch (slotCount) {
+    3 => _kP3,
+    4 => _kP4,
+    5 => _kP5,
+    6 => _kP6,
+    7 => _kP7,
+    8 => _kP8,
+    _ => _kP9,
+  };
   return variants[wineId.hashCode.abs() % variants.length];
 }
 
-/// Map a desired moment count onto the smallest tier that fits.
-/// Floor at 5 slots — the 5-tile collage is the smallest layout
-/// that still has shape variety (no two identical tiles touch).
+/// Map a desired moment count onto the slot count.
+/// 1..2 → 5 slots (placeholders fill the collage).
+/// 3..8 → exact fill (no placeholders).
+/// 9+ → 9 slots with overflow tile.
 int _slotCountForCount(int count) {
-  if (count <= 4) return 5;
+  if (count <= 2) return 5;
+  if (count <= 8) return count;
   return 9;
 }
 
