@@ -373,6 +373,36 @@ class _MomentCaptureScreenState extends ConsumerState<MomentCaptureScreen> {
         );
       }
       if (photoEntities.isNotEmpty) await photoRepo.addPhotos(photoEntities);
+
+      // Bidirectional location sync: if this moment has a location and
+      // the parent wine has none yet, copy the moment's place back to
+      // the wine so the wine card surfaces a place too. Only writes
+      // when wine.location is null/empty — never overrides an
+      // explicit wine location.
+      if (place.isNotEmpty &&
+          (widget.wineLocationName == null ||
+              widget.wineLocationName!.trim().isEmpty)) {
+        try {
+          final wines = await ref
+              .read(wineRepositoryProvider)
+              .getWineById(widget.wineId);
+          if (wines != null) {
+            await ref
+                .read(wineControllerProvider.notifier)
+                .updateWine(
+                  wines.copyWith(
+                    location: place,
+                    latitude: _placeLat,
+                    longitude: _placeLng,
+                    updatedAt: DateTime.now(),
+                  ),
+                );
+          }
+        } catch (_) {
+          // Non-fatal — moment save already succeeded.
+        }
+      }
+
       if (mounted) Navigator.of(context).pop(true);
     } catch (_) {
       if (mounted) setState(() => _saving = false);
