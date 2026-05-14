@@ -1042,11 +1042,17 @@ class _MomentsBentoState extends ConsumerState<_MomentsBento> {
     final wineId = widget.wineId;
     final mirror = wineId.hashCode.abs() % 2 == 1;
     final hasOverflow = memories.length > _MomentsBento._kSlotCount;
-    final visibleMomentCount = hasOverflow
-        ? _MomentsBento._kSlotCount - 1
+    // Collapsed overflow → bento shows 4 moments + the "+N" toggle on
+    // slot 4. Expanded overflow → bento promotes the 5th moment into
+    // slot 4 (so the bento itself looks complete) and the toggle moves
+    // to the END of the expanded grid as a caret-up tile.
+    final visibleBentoMoments = hasOverflow
+        ? (_expanded
+              ? _MomentsBento._kSlotCount
+              : _MomentsBento._kSlotCount - 1)
         : memories.length;
-    final overflowCount = memories.length - visibleMomentCount;
-    final overflowStart = visibleMomentCount;
+    final overflowStart = visibleBentoMoments;
+    final overflowCount = memories.length - overflowStart;
 
     Widget tile(int index) => _BentoTile(
       memory: memories[index],
@@ -1059,12 +1065,15 @@ class _MomentsBentoState extends ConsumerState<_MomentsBento> {
     );
 
     Widget slot(int index) {
-      if (index < visibleMomentCount) return tile(index);
-      if (hasOverflow && index == _MomentsBento._kSlotCount - 1) {
+      if (index < visibleBentoMoments) return tile(index);
+      // Slot 4 is the toggle only when collapsed + overflow; when
+      // expanded, this slot is occupied by the 5th moment (handled
+      // above) and the toggle lives at the tail of the grid below.
+      if (hasOverflow && !_expanded && index == _MomentsBento._kSlotCount - 1) {
         return _BentoOverflowTile(
           count: overflowCount,
-          expanded: _expanded,
-          onTap: () => setState(() => _expanded = !_expanded),
+          expanded: false,
+          onTap: () => setState(() => _expanded = true),
         );
       }
       return _BentoPlaceholder(onTap: widget.onAdd);
@@ -1139,6 +1148,7 @@ class _MomentsBentoState extends ConsumerState<_MomentsBento> {
                       moments: memories,
                       initialIndex: index,
                     ),
+                    onCollapse: () => setState(() => _expanded = false),
                   ),
                 )
               : const SizedBox.shrink(),
@@ -1148,19 +1158,22 @@ class _MomentsBentoState extends ConsumerState<_MomentsBento> {
   }
 }
 
-/// Grid of the moments hidden behind the bento "+N" tile. Renders as
-/// a fixed-cols flow of small square thumbs; each opens the viewer at
-/// the matching absolute index. Lives below the bento so a tap doesn't
-/// disturb the upper composition.
+/// Grid of the moments hidden behind the bento "+N" tile. Each tile
+/// opens the viewer at the matching absolute index. The very last
+/// tile in the grid is always the collapse toggle (caret-up) so the
+/// expand/collapse affordance stays at the end of the section
+/// regardless of state.
 class _ExpandedOverflowGrid extends StatelessWidget {
   final List<WineMemoryEntity> memories;
   final int startIndex;
   final ValueChanged<int> onTapMoment;
+  final VoidCallback onCollapse;
 
   const _ExpandedOverflowGrid({
     required this.memories,
     required this.startIndex,
     required this.onTapMoment,
+    required this.onCollapse,
   });
 
   @override
@@ -1168,7 +1181,40 @@ class _ExpandedOverflowGrid extends StatelessWidget {
     const cols = 4;
     final overflow = memories.sublist(startIndex);
     final gap = context.w * 0.015;
-    final rows = (overflow.length / cols).ceil();
+    // +1 for the trailing collapse-toggle tile.
+    final totalCells = overflow.length + 1;
+    final rows = (totalCells / cols).ceil();
+    final cs = Theme.of(context).colorScheme;
+
+    Widget cellFor(int localIndex) {
+      if (localIndex < overflow.length) {
+        final absoluteIndex = startIndex + localIndex;
+        return _BentoTile(
+          memory: overflow[localIndex],
+          onTap: () => onTapMoment(absoluteIndex),
+        );
+      }
+      if (localIndex == overflow.length) {
+        return GestureDetector(
+          onTap: onCollapse,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: cs.surfaceContainer,
+              borderRadius: BorderRadius.circular(context.w * 0.025),
+              border: Border.all(color: cs.outlineVariant, width: 0.5),
+            ),
+            child: Center(
+              child: Icon(
+                PhosphorIconsRegular.caretUp,
+                color: cs.onSurface.withValues(alpha: 0.85),
+                size: context.w * 0.05,
+              ),
+            ),
+          ),
+        );
+      }
+      return const SizedBox.shrink();
+    }
 
     return Column(
       children: [
@@ -1181,17 +1227,7 @@ class _ExpandedOverflowGrid extends StatelessWidget {
                 Expanded(
                   child: AspectRatio(
                     aspectRatio: 1,
-                    child: () {
-                      final localIndex = r * cols + c;
-                      if (localIndex >= overflow.length) {
-                        return const SizedBox.shrink();
-                      }
-                      final absoluteIndex = startIndex + localIndex;
-                      return _BentoTile(
-                        memory: overflow[localIndex],
-                        onTap: () => onTapMoment(absoluteIndex),
-                      );
-                    }(),
+                    child: cellFor(r * cols + c),
                   ),
                 ),
               ],
