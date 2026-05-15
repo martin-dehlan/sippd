@@ -371,26 +371,25 @@ class _Header extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Text(
-          AppLocalizations.of(context).winesExpertSummaryHeader,
-          style: TextStyle(
-            fontSize: context.captionFont * 0.95,
-            fontWeight: FontWeight.w700,
-            color: cs.onSurface.withValues(alpha: 0.72),
-            letterSpacing: 1.2,
+        Expanded(
+          child: Text(
+            AppLocalizations.of(context).winesExpertSummaryHeader,
+            style: TextStyle(
+              fontSize: context.captionFont * 0.95,
+              fontWeight: FontWeight.w700,
+              color: cs.onSurface.withValues(alpha: 0.72),
+              letterSpacing: 1.2,
+            ),
           ),
         ),
-        if (showAffordance) ...[
-          SizedBox(width: context.xs * 1.4),
+        if (showAffordance)
           Icon(
             PhosphorIconsRegular.pencilSimple,
             size: context.captionFont * 1.05,
             color: cs.onSurfaceVariant.withValues(alpha: 0.7),
           ),
-        ],
       ],
     );
   }
@@ -445,11 +444,12 @@ class _AxisCell extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
     final filled = data.value != null && data.descriptor != null;
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           data.label,
+          textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: context.captionFont * 0.78,
             fontWeight: FontWeight.w700,
@@ -463,6 +463,7 @@ class _AxisCell extends StatelessWidget {
         if (filled)
           Text(
             data.descriptor!,
+            textAlign: TextAlign.center,
             style: GoogleFonts.playfairDisplay(
               fontSize: context.bodyFont * 1.18,
               fontWeight: FontWeight.w600,
@@ -479,6 +480,7 @@ class _AxisCell extends StatelessWidget {
           // shouting "add".
           Text(
             '—',
+            textAlign: TextAlign.center,
             style: GoogleFonts.playfairDisplay(
               fontSize: context.bodyFont * 1.18,
               fontWeight: FontWeight.w600,
