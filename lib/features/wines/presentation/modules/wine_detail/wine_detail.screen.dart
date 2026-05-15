@@ -665,10 +665,7 @@ class _StatItem extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(context.w * 0.02),
       child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: context.xs,
-          vertical: context.xs * 0.5,
-        ),
+        padding: EdgeInsets.symmetric(horizontal: context.xs),
         child: column,
       ),
     );
