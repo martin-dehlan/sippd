@@ -285,48 +285,52 @@ class _Body extends StatelessWidget {
     final oak = _oakDescriptors(l10n);
     final finish = _finishDescriptors(l10n);
     final axes = <_AxisData>[
-      if (tasting.body != null)
-        _AxisData(
-          label: l10n.winesExpertSummaryAxisBody,
-          value: tasting.body!,
-          max: 5,
-          descriptor: body[tasting.body!.clamp(1, 5)]!,
-        ),
-      if (tasting.tannin != null)
-        _AxisData(
-          label: l10n.winesExpertSummaryAxisTannin,
-          value: tasting.tannin!,
-          max: 5,
-          descriptor: tannin[tasting.tannin!.clamp(1, 5)]!,
-        ),
-      if (tasting.acidity != null)
-        _AxisData(
-          label: l10n.winesExpertSummaryAxisAcidity,
-          value: tasting.acidity!,
-          max: 5,
-          descriptor: acidity[tasting.acidity!.clamp(1, 5)]!,
-        ),
-      if (tasting.sweetness != null)
-        _AxisData(
-          label: l10n.winesExpertSummaryAxisSweetness,
-          value: tasting.sweetness!,
-          max: 5,
-          descriptor: sweetness[tasting.sweetness!.clamp(1, 5)]!,
-        ),
-      if (tasting.oak != null)
-        _AxisData(
-          label: l10n.winesExpertSummaryAxisOak,
-          value: tasting.oak!,
-          max: 5,
-          descriptor: oak[tasting.oak!.clamp(1, 5)]!,
-        ),
-      if (tasting.finish != null)
-        _AxisData(
-          label: l10n.winesExpertSummaryAxisFinish,
-          value: tasting.finish!,
-          max: 3,
-          descriptor: finish[tasting.finish!.clamp(1, 3)]!,
-        ),
+      _AxisData(
+        label: l10n.winesExpertSummaryAxisBody,
+        value: tasting.body,
+        max: 5,
+        descriptor: tasting.body != null
+            ? body[tasting.body!.clamp(1, 5)]
+            : null,
+      ),
+      _AxisData(
+        label: l10n.winesExpertSummaryAxisTannin,
+        value: tasting.tannin,
+        max: 5,
+        descriptor: tasting.tannin != null
+            ? tannin[tasting.tannin!.clamp(1, 5)]
+            : null,
+      ),
+      _AxisData(
+        label: l10n.winesExpertSummaryAxisAcidity,
+        value: tasting.acidity,
+        max: 5,
+        descriptor: tasting.acidity != null
+            ? acidity[tasting.acidity!.clamp(1, 5)]
+            : null,
+      ),
+      _AxisData(
+        label: l10n.winesExpertSummaryAxisSweetness,
+        value: tasting.sweetness,
+        max: 5,
+        descriptor: tasting.sweetness != null
+            ? sweetness[tasting.sweetness!.clamp(1, 5)]
+            : null,
+      ),
+      _AxisData(
+        label: l10n.winesExpertSummaryAxisOak,
+        value: tasting.oak,
+        max: 5,
+        descriptor: tasting.oak != null ? oak[tasting.oak!.clamp(1, 5)] : null,
+      ),
+      _AxisData(
+        label: l10n.winesExpertSummaryAxisFinish,
+        value: tasting.finish,
+        max: 3,
+        descriptor: tasting.finish != null
+            ? finish[tasting.finish!.clamp(1, 3)]
+            : null,
+      ),
     ];
 
     return InkWell(
@@ -342,7 +346,7 @@ class _Body extends StatelessWidget {
           children: [
             _Header(showAffordance: onEdit != null),
             SizedBox(height: context.m),
-            if (axes.isNotEmpty) _AxesGrid(axes: axes),
+            _AxesGrid(axes: axes),
             if (tasting.aromaTags.isNotEmpty) ...[
               SizedBox(height: context.m),
               Container(
@@ -439,6 +443,7 @@ class _AxisCell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final filled = data.value != null && data.descriptor != null;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -448,22 +453,41 @@ class _AxisCell extends StatelessWidget {
           style: TextStyle(
             fontSize: context.captionFont * 0.78,
             fontWeight: FontWeight.w700,
-            color: cs.onSurfaceVariant,
+            color: filled
+                ? cs.onSurfaceVariant
+                : cs.onSurfaceVariant.withValues(alpha: 0.55),
             letterSpacing: 1.4,
           ),
         ),
         SizedBox(height: context.xs * 0.6),
-        Text(
-          data.descriptor,
-          style: GoogleFonts.playfairDisplay(
-            fontSize: context.bodyFont * 1.18,
-            fontWeight: FontWeight.w600,
-            fontStyle: FontStyle.italic,
-            color: cs.onSurface,
-            letterSpacing: -0.2,
-            height: 1.1,
+        if (filled)
+          Text(
+            data.descriptor!,
+            style: GoogleFonts.playfairDisplay(
+              fontSize: context.bodyFont * 1.18,
+              fontWeight: FontWeight.w600,
+              fontStyle: FontStyle.italic,
+              color: cs.onSurface,
+              letterSpacing: -0.2,
+              height: 1.1,
+            ),
+          )
+        else
+          // Placeholder row keeps the descriptor line's vertical
+          // rhythm so axes stay aligned even when some cells are
+          // empty. A faint en-dash reads as "not set yet" without
+          // shouting "add".
+          Text(
+            '—',
+            style: GoogleFonts.playfairDisplay(
+              fontSize: context.bodyFont * 1.18,
+              fontWeight: FontWeight.w600,
+              fontStyle: FontStyle.italic,
+              color: cs.onSurface.withValues(alpha: 0.25),
+              letterSpacing: -0.2,
+              height: 1.1,
+            ),
           ),
-        ),
         SizedBox(height: context.xs * 1.2),
         _DotTrack(value: data.value, max: data.max),
       ],
@@ -473,7 +497,7 @@ class _AxisCell extends StatelessWidget {
 
 class _DotTrack extends StatelessWidget {
   const _DotTrack({required this.value, required this.max});
-  final int value;
+  final int? value;
   final int max;
 
   @override
@@ -483,7 +507,7 @@ class _DotTrack extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: List.generate(max, (i) {
-        final filled = i < value;
+        final filled = value != null && i < value!;
         return Padding(
           padding: EdgeInsets.only(right: i == max - 1 ? 0 : context.w * 0.012),
           child: Container(
@@ -557,10 +581,14 @@ class _AxisData {
     required this.descriptor,
   });
 
+  /// Null value renders as an unfilled placeholder cell — same axis
+  /// label and dot-track shape, but no descriptor and no lit dots.
+  /// Lets the summary surface ALL six WSET axes even when the user
+  /// only filled in a couple.
   final String label;
-  final int value;
+  final int? value;
   final int max;
-  final String descriptor;
+  final String? descriptor;
 }
 
 // Sommelier-style descriptors. Helper functions so the cell never
