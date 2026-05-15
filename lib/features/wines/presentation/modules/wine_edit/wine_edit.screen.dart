@@ -9,6 +9,7 @@ import '../../../../../common/widgets/error_view.widget.dart';
 import '../../../../locations/domain/entities/location.entity.dart';
 import '../../../controller/wine.provider.dart';
 import '../../../domain/entities/wine.entity.dart';
+import '../../../domain/repositories/wine.repository.dart';
 import '../../widgets/wine_form.widget.dart';
 
 class WineEditScreen extends ConsumerStatefulWidget {
@@ -21,11 +22,22 @@ class WineEditScreen extends ConsumerStatefulWidget {
 }
 
 class _WineEditScreenState extends ConsumerState<WineEditScreen> {
+  // Capture the repo handle while ref is still safe to use; calling
+  // ref.read inside dispose() throws "Cannot use ref after the widget
+  // was disposed" on Riverpod 2.x.
+  WineRepository? _flushRepo;
+
+  @override
+  void initState() {
+    super.initState();
+    _flushRepo = ref.read(wineRepositoryProvider);
+  }
+
   @override
   void dispose() {
     // Force-flush any debounced remote sync so the latest autosave state
     // reaches Supabase even if the user navigates away mid-debounce.
-    ref.read(wineRepositoryProvider).flushPendingSync(widget.wineId);
+    _flushRepo?.flushPendingSync(widget.wineId);
     super.dispose();
   }
 
