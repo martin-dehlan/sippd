@@ -367,6 +367,7 @@ class _Header extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
@@ -378,13 +379,14 @@ class _Header extends StatelessWidget {
             letterSpacing: 1.2,
           ),
         ),
-        const Spacer(),
-        if (showAffordance)
+        if (showAffordance) ...[
+          SizedBox(width: context.xs * 1.4),
           Icon(
-            PhosphorIconsRegular.caretRight,
+            PhosphorIconsRegular.pencilSimple,
             size: context.captionFont * 1.05,
-            color: cs.onSurfaceVariant.withValues(alpha: 0.5),
+            color: cs.onSurfaceVariant.withValues(alpha: 0.7),
           ),
+        ],
       ],
     );
   }
