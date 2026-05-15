@@ -397,6 +397,7 @@ class _MomentCaptureScreenState extends ConsumerState<MomentCaptureScreen> {
                     updatedAt: DateTime.now(),
                   ),
                 );
+            ref.invalidate(wineDetailProvider(widget.wineId));
           }
         } catch (_) {
           // Non-fatal — moment save already succeeded.

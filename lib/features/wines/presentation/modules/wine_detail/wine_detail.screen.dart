@@ -479,6 +479,7 @@ class _StatsColumn extends ConsumerWidget {
         .updateWine(
           wine.copyWith(rating: result.rating, updatedAt: DateTime.now()),
         );
+    ref.invalidate(wineDetailProvider(wine.id));
   }
 
   Future<void> _editPrice(BuildContext context, WidgetRef ref) async {
@@ -493,6 +494,7 @@ class _StatsColumn extends ConsumerWidget {
     await ref
         .read(wineControllerProvider.notifier)
         .updateWine(wine.copyWith(price: parsed, updatedAt: DateTime.now()));
+    ref.invalidate(wineDetailProvider(wine.id));
   }
 
   void _editOrigin(BuildContext context, WidgetRef ref) {
@@ -510,6 +512,7 @@ class _StatsColumn extends ConsumerWidget {
                 updatedAt: DateTime.now(),
               ),
             );
+        ref.invalidate(wineDetailProvider(wine.id));
         if (c != null && hasRegionsFor(c) && context.mounted) {
           Future.microtask(() {
             if (!context.mounted) return;
@@ -523,6 +526,7 @@ class _StatsColumn extends ConsumerWidget {
                     .updateWine(
                       wine.copyWith(region: r, updatedAt: DateTime.now()),
                     );
+                ref.invalidate(wineDetailProvider(wine.id));
               },
             );
           });
@@ -740,6 +744,7 @@ class _PlaceSectionHeader extends ConsumerWidget {
             updatedAt: DateTime.now(),
           ),
         );
+    ref.invalidate(wineDetailProvider(wine.id));
   }
 
   @override
