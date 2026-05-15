@@ -388,7 +388,7 @@ class _Header extends StatelessWidget {
           Icon(
             PhosphorIconsRegular.pencilSimple,
             size: context.captionFont * 1.05,
-            color: cs.onSurfaceVariant.withValues(alpha: 0.7),
+            color: cs.onSurface.withValues(alpha: 0.72),
           ),
       ],
     );
