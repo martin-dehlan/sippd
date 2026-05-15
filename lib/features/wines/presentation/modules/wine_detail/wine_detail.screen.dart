@@ -21,8 +21,6 @@ import '../../../../friends/presentation/widgets/friend_multi_picker.widget.dart
 import '../../../../groups/presentation/widgets/share_wine_sheet.dart';
 import '../../../../paywall/controller/paywall.provider.dart';
 import '../../../../profile/controller/profile.provider.dart';
-import '../../../../locations/domain/entities/location.entity.dart';
-import '../../../../locations/presentation/widgets/location_search_sheet.dart';
 import '../../../../share_cards/controller/share_card.provider.dart';
 import '../../../controller/wine.provider.dart';
 import '../../../domain/entities/wine.entity.dart';
@@ -291,7 +289,9 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
               ],
               _MemoriesSection(wine: widget.wine),
               SizedBox(height: context.xl),
-              _PlaceSectionHeader(wine: widget.wine, isOwner: widget.isOwner),
+              WineDetailSectionHeader(
+                label: AppLocalizations.of(context).winesDetailSectionPlace,
+              ),
               SizedBox(height: context.s),
               SizedBox(
                 height: context.h * 0.28,
@@ -707,82 +707,6 @@ class _NotesBlock extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-/// Place section header — matches the MOMENTE row layout (label left,
-/// pencil affordance right when the viewer owns the wine). Tapping the
-/// pencil opens the same location picker the form uses and writes the
-/// result back to the wine.
-class _PlaceSectionHeader extends ConsumerWidget {
-  final WineEntity wine;
-  final bool isOwner;
-  const _PlaceSectionHeader({required this.wine, required this.isOwner});
-
-  Future<void> _editPlace(BuildContext context, WidgetRef ref) async {
-    final initial = (wine.latitude != null || wine.longitude != null)
-        ? LocationEntity(
-            lat: wine.latitude,
-            lng: wine.longitude,
-            locationName: wine.location ?? '',
-          )
-        : null;
-    final result = await showLocationSearchSheet(
-      context: context,
-      initial: initial,
-    );
-    if (result == null) return;
-    await ref
-        .read(wineControllerProvider.notifier)
-        .updateWine(
-          wine.copyWith(
-            location: result.shortDisplay,
-            latitude: result.lat,
-            longitude: result.lng,
-            updatedAt: DateTime.now(),
-          ),
-        );
-    ref.invalidate(wineDetailProvider(wine.id));
-  }
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final cs = Theme.of(context).colorScheme;
-    final l10n = AppLocalizations.of(context);
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              l10n.winesDetailSectionPlace.toUpperCase(),
-              style: TextStyle(
-                fontSize: context.captionFont * 0.95,
-                fontWeight: FontWeight.w700,
-                color: cs.onSurface.withValues(alpha: 0.72),
-                letterSpacing: 1.2,
-              ),
-            ),
-          ),
-          if (isOwner)
-            GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: () => _editPlace(context, ref),
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: context.xs,
-                  vertical: context.xs,
-                ),
-                child: Icon(
-                  PhosphorIconsRegular.pencilSimple,
-                  size: context.w * 0.045,
-                  color: cs.onSurface.withValues(alpha: 0.72),
-                ),
-              ),
-            ),
-        ],
       ),
     );
   }
