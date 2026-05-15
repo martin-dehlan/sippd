@@ -197,6 +197,178 @@ final wineMemoryRepositoryProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef WineMemoryRepositoryRef = AutoDisposeProviderRef<WineMemoryRepository>;
+String _$sharedMomentsHash() => r'540a0d7e5b990aae5674d46758c46636c2fb3075';
+
+/// Copied from Dart SDK
+class _SystemHash {
+  _SystemHash._();
+
+  static int combine(int hash, int value) {
+    // ignore: parameter_assignments
+    hash = 0x1fffffff & (hash + value);
+    // ignore: parameter_assignments
+    hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
+    return hash ^ (hash >> 6);
+  }
+
+  static int finish(int hash) {
+    // ignore: parameter_assignments
+    hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
+    // ignore: parameter_assignments
+    hash = hash ^ (hash >> 11);
+    return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
+  }
+}
+
+/// Moments where the current user and [otherUserId] share involvement
+/// (owner + tagged-companion in either direction). Server-only — no
+/// Drift cache because moments owned by another user aren't ours to
+/// mirror locally.
+///
+/// Copied from [sharedMoments].
+@ProviderFor(sharedMoments)
+const sharedMomentsProvider = SharedMomentsFamily();
+
+/// Moments where the current user and [otherUserId] share involvement
+/// (owner + tagged-companion in either direction). Server-only — no
+/// Drift cache because moments owned by another user aren't ours to
+/// mirror locally.
+///
+/// Copied from [sharedMoments].
+class SharedMomentsFamily extends Family<AsyncValue<List<WineMemoryEntity>>> {
+  /// Moments where the current user and [otherUserId] share involvement
+  /// (owner + tagged-companion in either direction). Server-only — no
+  /// Drift cache because moments owned by another user aren't ours to
+  /// mirror locally.
+  ///
+  /// Copied from [sharedMoments].
+  const SharedMomentsFamily();
+
+  /// Moments where the current user and [otherUserId] share involvement
+  /// (owner + tagged-companion in either direction). Server-only — no
+  /// Drift cache because moments owned by another user aren't ours to
+  /// mirror locally.
+  ///
+  /// Copied from [sharedMoments].
+  SharedMomentsProvider call(String otherUserId) {
+    return SharedMomentsProvider(otherUserId);
+  }
+
+  @override
+  SharedMomentsProvider getProviderOverride(
+    covariant SharedMomentsProvider provider,
+  ) {
+    return call(provider.otherUserId);
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'sharedMomentsProvider';
+}
+
+/// Moments where the current user and [otherUserId] share involvement
+/// (owner + tagged-companion in either direction). Server-only — no
+/// Drift cache because moments owned by another user aren't ours to
+/// mirror locally.
+///
+/// Copied from [sharedMoments].
+class SharedMomentsProvider
+    extends AutoDisposeFutureProvider<List<WineMemoryEntity>> {
+  /// Moments where the current user and [otherUserId] share involvement
+  /// (owner + tagged-companion in either direction). Server-only — no
+  /// Drift cache because moments owned by another user aren't ours to
+  /// mirror locally.
+  ///
+  /// Copied from [sharedMoments].
+  SharedMomentsProvider(String otherUserId)
+    : this._internal(
+        (ref) => sharedMoments(ref as SharedMomentsRef, otherUserId),
+        from: sharedMomentsProvider,
+        name: r'sharedMomentsProvider',
+        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+            ? null
+            : _$sharedMomentsHash,
+        dependencies: SharedMomentsFamily._dependencies,
+        allTransitiveDependencies:
+            SharedMomentsFamily._allTransitiveDependencies,
+        otherUserId: otherUserId,
+      );
+
+  SharedMomentsProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.otherUserId,
+  }) : super.internal();
+
+  final String otherUserId;
+
+  @override
+  Override overrideWith(
+    FutureOr<List<WineMemoryEntity>> Function(SharedMomentsRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: SharedMomentsProvider._internal(
+        (ref) => create(ref as SharedMomentsRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        otherUserId: otherUserId,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<List<WineMemoryEntity>> createElement() {
+    return _SharedMomentsProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is SharedMomentsProvider && other.otherUserId == otherUserId;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, otherUserId.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin SharedMomentsRef on AutoDisposeFutureProviderRef<List<WineMemoryEntity>> {
+  /// The parameter `otherUserId` of this provider.
+  String get otherUserId;
+}
+
+class _SharedMomentsProviderElement
+    extends AutoDisposeFutureProviderElement<List<WineMemoryEntity>>
+    with SharedMomentsRef {
+  _SharedMomentsProviderElement(super.provider);
+
+  @override
+  String get otherUserId => (origin as SharedMomentsProvider).otherUserId;
+}
+
 String _$wineMemoryPhotoSupabaseApiHash() =>
     r'792a925f5a78c70d7af1ab5a063e6953672e91e1';
 
@@ -324,27 +496,6 @@ typedef CanonicalGrapesAllRef =
     AutoDisposeFutureProviderRef<List<CanonicalGrapeEntity>>;
 String _$canonicalGrapesSearchHash() =>
     r'546f041de1dfd811dc7e79a6893f49aaa84324c2';
-
-/// Copied from Dart SDK
-class _SystemHash {
-  _SystemHash._();
-
-  static int combine(int hash, int value) {
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + value);
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
-    return hash ^ (hash >> 6);
-  }
-
-  static int finish(int hash) {
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
-    // ignore: parameter_assignments
-    hash = hash ^ (hash >> 11);
-    return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
-  }
-}
 
 /// Search results for the typeahead. Empty query returns the full list.
 ///

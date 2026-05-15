@@ -10,6 +10,7 @@ import '../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/photo_error.dart';
 import '../../../../auth/controller/auth.provider.dart';
+import '../../../../friends/presentation/widgets/friend_multi_picker.widget.dart';
 import '../../../../locations/domain/entities/location.entity.dart';
 import '../../../../locations/presentation/widgets/location_search.widget.dart';
 import '../../../controller/wine.provider.dart';
@@ -139,6 +140,9 @@ class _MomentCaptureScreenState extends ConsumerState<MomentCaptureScreen> {
   // future map picker. Null when the user typed free-text only.
   double? _placeLat;
   double? _placeLng;
+  // Tagged friend IDs. RLS exposes a moment to its tagged companions
+  // regardless of visibility, so this is the share-with-friend lever.
+  final Set<String> _companionIds = {};
 
   @override
   void initState() {
@@ -159,6 +163,7 @@ class _MomentCaptureScreenState extends ConsumerState<MomentCaptureScreen> {
       _placeLat = widget.wineLocationLat;
       _placeLng = widget.wineLocationLng;
     }
+    _companionIds.addAll(e?.companionUserIds ?? const []);
     _photos.addAll(
       widget.existingPhotos.map(
         (p) => _PhotoSlot(id: p.id, url: p.storagePath),
@@ -169,6 +174,19 @@ class _MomentCaptureScreenState extends ConsumerState<MomentCaptureScreen> {
         _PhotoSlot(id: const Uuid().v4(), url: widget.initialPhotoUrl!),
       );
     }
+  }
+
+  Future<void> _editCompanions() async {
+    final result = await showFriendMultiPicker(
+      context: context,
+      initialSelected: _companionIds,
+    );
+    if (result == null || !mounted) return;
+    setState(() {
+      _companionIds
+        ..clear()
+        ..addAll(result);
+    });
   }
 
   @override
@@ -335,7 +353,7 @@ class _MomentCaptureScreenState extends ConsumerState<MomentCaptureScreen> {
         placeLat: place.isEmpty ? null : _placeLat,
         placeLng: place.isEmpty ? null : _placeLng,
         foodPaired: widget.existing?.foodPaired,
-        companionUserIds: widget.existing?.companionUserIds ?? const [],
+        companionUserIds: _companionIds.toList(),
         note: caption.isEmpty ? null : caption,
         visibility: widget.existing?.visibility ?? 'friends',
         updatedAt: now,
@@ -355,6 +373,37 @@ class _MomentCaptureScreenState extends ConsumerState<MomentCaptureScreen> {
         );
       }
       if (photoEntities.isNotEmpty) await photoRepo.addPhotos(photoEntities);
+
+      // Bidirectional location sync: if this moment has a location and
+      // the parent wine has none yet, copy the moment's place back to
+      // the wine so the wine card surfaces a place too. Only writes
+      // when wine.location is null/empty — never overrides an
+      // explicit wine location.
+      if (place.isNotEmpty &&
+          (widget.wineLocationName == null ||
+              widget.wineLocationName!.trim().isEmpty)) {
+        try {
+          final wines = await ref
+              .read(wineRepositoryProvider)
+              .getWineById(widget.wineId);
+          if (wines != null) {
+            await ref
+                .read(wineControllerProvider.notifier)
+                .updateWine(
+                  wines.copyWith(
+                    location: place,
+                    latitude: _placeLat,
+                    longitude: _placeLng,
+                    updatedAt: DateTime.now(),
+                  ),
+                );
+            ref.invalidate(wineDetailProvider(widget.wineId));
+          }
+        } catch (_) {
+          // Non-fatal — moment save already succeeded.
+        }
+      }
+
       if (mounted) Navigator.of(context).pop(true);
     } catch (_) {
       if (mounted) setState(() => _saving = false);
@@ -482,23 +531,33 @@ class _MomentCaptureScreenState extends ConsumerState<MomentCaptureScreen> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Row(
-                        children: [
-                          _MetaChip(
-                            icon: PhosphorIconsRegular.clock,
-                            label: dateLabel,
-                            onTap: _editDateTime,
-                          ),
-                          SizedBox(width: context.s),
-                          Flexible(
-                            child: _MetaChip(
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            _MetaChip(
+                              icon: PhosphorIconsRegular.clock,
+                              label: dateLabel,
+                              onTap: _editDateTime,
+                            ),
+                            SizedBox(width: context.s),
+                            _MetaChip(
                               icon: PhosphorIconsRegular.mapPin,
                               label: placeLabel,
                               dimmed: placeIsEmpty,
                               onTap: _editPlace,
                             ),
-                          ),
-                        ],
+                            SizedBox(width: context.s),
+                            _MetaChip(
+                              icon: PhosphorIconsRegular.users,
+                              label: _companionIds.isEmpty
+                                  ? l10n.momentFieldCompanions
+                                  : '${l10n.momentFieldCompanions} · ${_companionIds.length}',
+                              dimmed: _companionIds.isEmpty,
+                              onTap: _editCompanions,
+                            ),
+                          ],
+                        ),
                       ),
                       SizedBox(height: context.s),
                       TextField(
@@ -606,29 +665,41 @@ class _MetaChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = Colors.white.withValues(alpha: dimmed ? 0.55 : 0.95);
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: onTap,
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: context.xs * 1.2),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, color: color, size: context.w * 0.04),
-            SizedBox(width: context.xs * 1.3),
-            Flexible(
-              child: Text(
-                label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  color: color,
-                  fontSize: context.captionFont,
-                  fontWeight: FontWeight.w500,
+    final borderColor = Colors.white.withValues(alpha: dimmed ? 0.14 : 0.28);
+    final radius = BorderRadius.circular(context.w * 0.08);
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: radius,
+        child: Container(
+          padding: EdgeInsets.symmetric(
+            horizontal: context.s * 1.4,
+            vertical: context.xs * 1.4,
+          ),
+          decoration: BoxDecoration(
+            borderRadius: radius,
+            border: Border.all(color: borderColor, width: 0.8),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, color: color, size: context.w * 0.04),
+              SizedBox(width: context.xs * 1.3),
+              Flexible(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: color,
+                    fontSize: context.captionFont,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

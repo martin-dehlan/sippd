@@ -24,7 +24,6 @@ import '../../domain/entities/wine.entity.dart';
 import 'grape_picker_sheet.dart';
 import 'wine_rating_sheet.dart';
 import 'wine_country_picker.widget.dart';
-import 'wine_memories_editor.widget.dart';
 import 'wine_photo_picker.widget.dart';
 import 'wine_region_picker.widget.dart';
 
@@ -50,7 +49,6 @@ class WineFormData {
   final String? notes;
   final String? imageUrl;
   final String? localImagePath;
-  final List<MemoryDraft> memories;
 
   /// Pro expert tasting dimensions the user typed inside the rating
   /// sheet during *initial* wine creation. Null for edits and for
@@ -75,7 +73,6 @@ class WineFormData {
     this.notes,
     this.imageUrl,
     this.localImagePath,
-    this.memories = const [],
     this.pendingExpertTasting,
   });
 }
@@ -138,7 +135,6 @@ class WineFormState extends ConsumerState<WineForm>
 
   String? _imageUrl;
   String? _localImagePath;
-  List<MemoryDraft> _memories = const [];
   // Expert tasting typed during initial wine creation, persisted by the
   // host screen after canonical id resolves. Survives sheet re-opens.
   ExpertTastingEntity? _pendingExpertTasting;
@@ -176,7 +172,6 @@ class WineFormState extends ConsumerState<WineForm>
       _notes = init.notes;
       _imageUrl = init.imageUrl;
       _localImagePath = init.localImagePath;
-      _memories = init.memories;
     }
   }
 
@@ -223,7 +218,6 @@ class WineFormState extends ConsumerState<WineForm>
     notes: _notes,
     imageUrl: _imageUrl,
     localImagePath: _localImagePath,
-    memories: _memories,
     pendingExpertTasting: _pendingExpertTasting,
   );
 
@@ -502,18 +496,25 @@ class WineFormState extends ConsumerState<WineForm>
           onWineryTap: _editWinery,
         ),
         SizedBox(height: context.l),
-        WineMemoriesEditor(
-          memories: _memories,
-          onChanged: (next) {
-            setState(() => _memories = next);
-            _scheduleAutoSave();
-          },
-        ),
-        SizedBox(height: context.l),
         SizedBox(
           height: context.h * 0.24,
           child: WineFormPlaceMap(location: _location, onTap: _editPlace),
         ),
+        if (_location == null) ...[
+          SizedBox(height: context.s),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: context.paddingH),
+            child: Text(
+              l10n.winesFormPlaceMomentHint,
+              style: TextStyle(
+                fontSize: context.captionFont * 0.95,
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurfaceVariant.withValues(alpha: 0.85),
+              ),
+            ),
+          ),
+        ],
         if (!widget.autoSave && widget.showInlineSubmit) ...[
           SizedBox(height: context.l),
           Padding(

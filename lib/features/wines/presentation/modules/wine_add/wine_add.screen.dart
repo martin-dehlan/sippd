@@ -16,7 +16,6 @@ import '../../../controller/wine.provider.dart';
 import '../../../data/data_sources/expert_tasting.api.dart';
 import '../../../domain/entities/canonical_wine_candidate.entity.dart';
 import '../../../domain/entities/wine.entity.dart';
-import '../../../domain/entities/wine_memory.entity.dart';
 import '../../widgets/canonical_wine_prompt_sheet.dart';
 import '../../widgets/wine_form.widget.dart';
 
@@ -46,8 +45,7 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
         d.location != null ||
         (d.notes?.isNotEmpty ?? false) ||
         d.imageUrl != null ||
-        d.localImagePath != null ||
-        d.memories.isNotEmpty;
+        d.localImagePath != null;
   }
 
   Future<bool> _confirmDiscard() async {
@@ -220,19 +218,6 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
       }
     }
 
-    final repo = ref.read(wineMemoryRepositoryProvider);
-    for (final m in data.memories) {
-      await repo.addMemory(
-        WineMemoryEntity(
-          id: m.id,
-          wineId: wineId,
-          userId: userId,
-          imageUrl: m.imageUrl,
-          localImagePath: m.localImagePath,
-          createdAt: DateTime.now(),
-        ),
-      );
-    }
     if (!mounted) return;
     // Nudge to share before bouncing back to the list. Sheet always
     // dismisses (share, "Maybe later", or drag) so the post-save pop

@@ -952,6 +952,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get winesFormPhotoLabel => 'Photo';
 
   @override
+  String get winesFormPlaceMomentHint =>
+      'Tip: the place auto-fills from the first moment you add with a location.';
+
+  @override
   String get winesFormStatRating => 'Rating';
 
   @override
@@ -1093,6 +1097,35 @@ class AppLocalizationsEn extends AppLocalizations {
   String get momentCompanionsAddFriend => 'Add friend';
 
   @override
+  String get momentCompanionsEmpty => 'No friends to tag yet.';
+
+  @override
+  String get friendsProfileSharedMoments => 'Shared moments';
+
+  @override
+  String get winesShareToFriend => 'Share with friend';
+
+  @override
+  String winesShareSuccess(String name) {
+    return 'Wine shared with $name';
+  }
+
+  @override
+  String get winesShareError => 'Couldn\'t share — try again';
+
+  @override
+  String get winesSharePickFriendsTitle => 'Share with';
+
+  @override
+  String get winesExpertProUnlock => 'Unlock with Pro';
+
+  @override
+  String get momentShowcaseApplied => 'Set as wine\'s main photo.';
+
+  @override
+  String get momentShowcaseError => 'Couldn\'t set as main photo. Try again.';
+
+  @override
   String get momentPlaceHint => 'Restaurant or place';
 
   @override
@@ -1142,7 +1175,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get momentSectionAdd => 'New';
 
   @override
-  String get momentSectionEmpty => 'No moments yet — tap New to capture one.';
+  String get momentSectionEmpty => 'No moments yet — tap +.';
 
   @override
   String momentMetaWith(String names) {

@@ -414,6 +414,7 @@
   "winesFormHintName": "Wine name",
   "winesFormSubmitDefault": "Save wine",
   "winesFormPhotoLabel": "Photo",
+  "winesFormPlaceMomentHint": "Tip: the place auto-fills from the first moment you add with a location.",
   "winesFormStatRating": "Rating",
   "winesFormStatRatingUnit": "/ 10",
   "winesFormStatPrice": "Price",
@@ -466,6 +467,20 @@
   "momentOccasionCasual": "Casual",
   "momentOccasionBirthday": "Birthday",
   "momentCompanionsAddFriend": "Add friend",
+  "momentCompanionsEmpty": "No friends to tag yet.",
+  "friendsProfileSharedMoments": "Shared moments",
+  "winesShareToFriend": "Share with friend",
+  "winesShareSuccess": "Wine shared with {name}",
+  "@winesShareSuccess": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "winesShareError": "Couldn't share — try again",
+  "winesSharePickFriendsTitle": "Share with",
+  "winesExpertProUnlock": "Unlock with Pro",
+  "momentShowcaseApplied": "Set as wine's main photo.",
+  "momentShowcaseError": "Couldn't set as main photo. Try again.",
   "momentPlaceHint": "Restaurant or place",
   "momentFoodHint": "What did you pair it with?",
   "momentNoteHint": "Anything to remember?",
@@ -482,7 +497,7 @@
   "momentValidationEmpty": "Add a photo or note to save",
   "momentSectionHeader": "Moments",
   "momentSectionAdd": "New",
-  "momentSectionEmpty": "No moments yet — tap New to capture one.",
+  "momentSectionEmpty": "No moments yet — tap +.",
   "momentMetaWith": "With {names}",
   "@momentMetaWith": {
     "placeholders": {

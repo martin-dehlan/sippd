@@ -960,6 +960,10 @@ class AppLocalizationsIt extends AppLocalizations {
   String get winesFormPhotoLabel => 'Foto';
 
   @override
+  String get winesFormPlaceMomentHint =>
+      'Suggerimento: il luogo si compila automaticamente con il primo momento che aggiungi con una posizione.';
+
+  @override
   String get winesFormStatRating => 'Voto';
 
   @override
@@ -1100,6 +1104,37 @@ class AppLocalizationsIt extends AppLocalizations {
   String get momentCompanionsAddFriend => 'Aggiungi amico';
 
   @override
+  String get momentCompanionsEmpty => 'Nessun amico da taggare ancora.';
+
+  @override
+  String get friendsProfileSharedMoments => 'Momenti condivisi';
+
+  @override
+  String get winesShareToFriend => 'Condividi con un amico';
+
+  @override
+  String winesShareSuccess(String name) {
+    return 'Vino condiviso con $name';
+  }
+
+  @override
+  String get winesShareError => 'Condivisione non riuscita — riprova';
+
+  @override
+  String get winesSharePickFriendsTitle => 'Condividi con';
+
+  @override
+  String get winesExpertProUnlock => 'Sblocca con Pro';
+
+  @override
+  String get momentShowcaseApplied =>
+      'Impostata come foto principale del vino.';
+
+  @override
+  String get momentShowcaseError =>
+      'Impossibile impostare come foto principale. Riprova.';
+
+  @override
   String get momentPlaceHint => 'Ristorante o luogo';
 
   @override
@@ -1150,8 +1185,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get momentSectionAdd => 'Nuovo';
 
   @override
-  String get momentSectionEmpty =>
-      'Nessun momento ancora — tocca Nuovo per crearne uno.';
+  String get momentSectionEmpty => 'Nessun momento ancora — tocca +.';
 
   @override
   String momentMetaWith(String names) {

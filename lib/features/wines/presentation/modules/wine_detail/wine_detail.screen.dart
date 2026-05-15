@@ -11,8 +11,13 @@ import '../../../../../common/utils/price_format.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/error_view.widget.dart';
 import '../../../../../common/widgets/overflow_menu.widget.dart';
+import '../../../../../common/data/wine_regions.dart';
+import '../../../../../common/widgets/price_input_sheet.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../../auth/controller/auth.provider.dart';
+import '../../../../friends/controller/friends.provider.dart';
+import '../../../../friends/domain/entities/friend_profile.entity.dart';
+import '../../../../friends/presentation/widgets/friend_multi_picker.widget.dart';
 import '../../../../groups/presentation/widgets/share_wine_sheet.dart';
 import '../../../../paywall/controller/paywall.provider.dart';
 import '../../../../profile/controller/profile.provider.dart';
@@ -23,7 +28,10 @@ import '../../../domain/entities/wine_memory.entity.dart';
 import '../../widgets/expert_tasting_sheet.dart';
 import '../../widgets/expert_tasting_summary.widget.dart';
 import '../../widgets/friend_ratings_strip.widget.dart';
+import '../../widgets/wine_country_picker.widget.dart';
 import '../../widgets/wine_detail_blocks.widget.dart';
+import '../../widgets/wine_rating_sheet.dart';
+import '../../widgets/wine_region_picker.widget.dart';
 import '../moment_capture/moment_capture.screen.dart';
 import '../moment_viewer/moment_viewer.screen.dart';
 import '../wine_compare/wine_compare_flow.dart';
@@ -169,6 +177,8 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
                                 context: context,
                                 wineId: widget.wine.id,
                               ),
+                              onShareToFriend: () =>
+                                  _shareToFriend(context, ref),
                               onShareImage: () {
                                 final username = ref
                                     .read(currentProfileProvider)
@@ -217,29 +227,44 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
                 grapeFreetext: widget.wine.grapeFreetext,
                 legacyGrape: widget.wine.grape,
               ),
-              SizedBox(height: context.xl),
+              SizedBox(height: context.l),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: context.paddingH),
                 child: SizedBox(
-                  height: context.h * 0.32,
+                  height: context.h * 0.26,
                   child: Row(
                     children: [
                       Expanded(
                         flex: 5,
                         child: WineDetailImage(wine: widget.wine),
                       ),
-                      Expanded(flex: 4, child: _StatsColumn(wine: widget.wine)),
+                      Expanded(
+                        flex: 4,
+                        child: _StatsColumn(
+                          wine: widget.wine,
+                          isOwner: widget.isOwner,
+                        ),
+                      ),
                     ],
                   ),
                 ),
               ),
-              _MemoriesSection(wine: widget.wine),
+              // Rating-app priority: rating depth (notes + expert
+              // tasting + friend ratings) sits directly after the
+              // hero so the wine's identity reads first. Moments are
+              // the memory/journal layer — they live below the rating
+              // story, before places.
+              if (widget.wine.notes != null &&
+                  widget.wine.notes!.isNotEmpty) ...[
+                SizedBox(height: context.xl),
+                WineDetailSectionHeader(
+                  label: AppLocalizations.of(context).winesDetailSectionNotes,
+                ),
+                SizedBox(height: context.m),
+                _NotesBlock(notes: widget.wine.notes!),
+              ],
               if (widget.wine.canonicalWineId != null) ...[
                 SizedBox(height: context.xl),
-                FriendRatingsStrip(
-                  canonicalWineId: widget.wine.canonicalWineId!,
-                ),
-                SizedBox(height: context.l),
                 // Read-only display of the user's own expert tasting
                 // dimensions for this wine. Renders nothing when empty,
                 // so non-Pro / unfilled wines stay clean.
@@ -257,16 +282,12 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
                     showExpertTastingSheet(context: context, wine: widget.wine);
                   },
                 ),
-              ],
-              if (widget.wine.notes != null &&
-                  widget.wine.notes!.isNotEmpty) ...[
-                SizedBox(height: context.xl),
-                WineDetailSectionHeader(
-                  label: AppLocalizations.of(context).winesDetailSectionNotes,
+                SizedBox(height: context.l),
+                FriendRatingsStrip(
+                  canonicalWineId: widget.wine.canonicalWineId!,
                 ),
-                SizedBox(height: context.m),
-                _NotesBlock(notes: widget.wine.notes!),
               ],
+              _MemoriesSection(wine: widget.wine),
               SizedBox(height: context.xl),
               WineDetailSectionHeader(
                 label: AppLocalizations.of(context).winesDetailSectionPlace,
@@ -282,6 +303,41 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
         ),
       ),
     );
+  }
+
+  Future<void> _shareToFriend(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context);
+    final selected = await showFriendMultiPicker(
+      context: context,
+      initialSelected: const {},
+      title: l10n.winesSharePickFriendsTitle,
+    );
+    if (selected == null || selected.isEmpty || !context.mounted) return;
+
+    final friends =
+        ref.read(friendsListProvider).valueOrNull ??
+        const <FriendProfileEntity>[];
+    final byId = {for (final f in friends) f.id: f};
+    final repo = ref.read(wineRepositoryProvider);
+    final messenger = ScaffoldMessenger.of(context);
+    final sharedNames = <String>[];
+    for (final friendId in selected) {
+      try {
+        await repo.shareToFriend(friendId: friendId, wineId: widget.wine.id);
+        final f = byId[friendId];
+        sharedNames.add(
+          f?.displayName ?? f?.username ?? friendId.substring(0, 6),
+        );
+      } catch (_) {
+        messenger.showSnackBar(SnackBar(content: Text(l10n.winesShareError)));
+        return;
+      }
+    }
+    if (sharedNames.isNotEmpty) {
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.winesShareSuccess(sharedNames.join(', ')))),
+      );
+    }
   }
 
   Future<void> _confirmDelete(BuildContext context) async {
@@ -336,6 +392,7 @@ class _FloatingBackButton extends StatelessWidget {
 class _WineOverflowMenu extends StatelessWidget {
   final VoidCallback onCompare;
   final VoidCallback onShareToGroup;
+  final VoidCallback onShareToFriend;
   final VoidCallback onShareImage;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
@@ -344,6 +401,7 @@ class _WineOverflowMenu extends StatelessWidget {
   const _WineOverflowMenu({
     required this.onCompare,
     required this.onShareToGroup,
+    required this.onShareToFriend,
     required this.onShareImage,
     required this.onEdit,
     required this.onDelete,
@@ -372,6 +430,11 @@ class _WineOverflowMenu extends StatelessWidget {
             label: l10n.winesDetailMenuShareToGroup,
             onTap: onShareToGroup,
           ),
+          OverflowMenuItem(
+            icon: PhosphorIconsRegular.userPlus,
+            label: l10n.winesShareToFriend,
+            onTap: onShareToFriend,
+          ),
         ],
         [
           OverflowMenuItem(
@@ -397,12 +460,83 @@ class _WineOverflowMenu extends StatelessWidget {
   }
 }
 
-class _StatsColumn extends StatelessWidget {
+class _StatsColumn extends ConsumerWidget {
   final WineEntity wine;
-  const _StatsColumn({required this.wine});
+  final bool isOwner;
+  const _StatsColumn({required this.wine, required this.isOwner});
+
+  Future<void> _editRating(BuildContext context, WidgetRef ref) async {
+    final result = await showWineRatingSheet(
+      context: context,
+      initial: wine.rating,
+      ratingContext: 'personal',
+      wine: wine,
+      wineType: wine.type,
+    );
+    if (result == null) return;
+    await ref
+        .read(wineControllerProvider.notifier)
+        .updateWine(
+          wine.copyWith(rating: result.rating, updatedAt: DateTime.now()),
+        );
+    ref.invalidate(wineDetailProvider(wine.id));
+  }
+
+  Future<void> _editPrice(BuildContext context, WidgetRef ref) async {
+    final result = await showPriceInputSheet(
+      context: context,
+      initial: wine.price,
+    );
+    if (result == null) return;
+    final parsed = result.isEmpty
+        ? null
+        : double.tryParse(result.replaceAll(',', '.'));
+    await ref
+        .read(wineControllerProvider.notifier)
+        .updateWine(wine.copyWith(price: parsed, updatedAt: DateTime.now()));
+    ref.invalidate(wineDetailProvider(wine.id));
+  }
+
+  void _editOrigin(BuildContext context, WidgetRef ref) {
+    showWineCountryPicker(
+      context: context,
+      selected: wine.country,
+      onChanged: (c) async {
+        final countryChanged = c != wine.country;
+        await ref
+            .read(wineControllerProvider.notifier)
+            .updateWine(
+              wine.copyWith(
+                country: c,
+                region: countryChanged ? null : wine.region,
+                updatedAt: DateTime.now(),
+              ),
+            );
+        ref.invalidate(wineDetailProvider(wine.id));
+        if (c != null && hasRegionsFor(c) && context.mounted) {
+          Future.microtask(() {
+            if (!context.mounted) return;
+            showWineRegionPicker(
+              context: context,
+              country: c,
+              selected: countryChanged ? null : wine.region,
+              onChanged: (r) async {
+                await ref
+                    .read(wineControllerProvider.notifier)
+                    .updateWine(
+                      wine.copyWith(region: r, updatedAt: DateTime.now()),
+                    );
+                ref.invalidate(wineDetailProvider(wine.id));
+              },
+            );
+          });
+        }
+      },
+    );
+  }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     return Padding(
       padding: EdgeInsets.only(left: context.w * 0.02),
@@ -414,6 +548,7 @@ class _StatsColumn extends StatelessWidget {
             label: l10n.winesDetailStatRating,
             value: wine.rating.toStringAsFixed(1),
             unit: l10n.winesDetailStatRatingUnit,
+            onTap: isOwner ? () => _editRating(context, ref) : null,
           ),
           SizedBox(height: context.l),
           if (wine.price != null) ...[
@@ -421,6 +556,15 @@ class _StatsColumn extends StatelessWidget {
               label: l10n.winesDetailStatPrice,
               value: formatPrice(wine.price!),
               unit: wine.currency,
+              onTap: isOwner ? () => _editPrice(context, ref) : null,
+            ),
+            SizedBox(height: context.l),
+          ] else if (isOwner) ...[
+            _StatItem(
+              label: l10n.winesDetailStatPrice,
+              value: '—',
+              isText: true,
+              onTap: () => _editPrice(context, ref),
             ),
             SizedBox(height: context.l),
           ],
@@ -429,12 +573,21 @@ class _StatsColumn extends StatelessWidget {
               label: l10n.winesDetailStatRegion,
               value: wine.region!,
               isText: true,
+              onTap: isOwner ? () => _editOrigin(context, ref) : null,
             )
           else if (wine.country != null)
             _StatItem(
               label: l10n.winesDetailStatCountry,
               value: wine.country!,
               isText: true,
+              onTap: isOwner ? () => _editOrigin(context, ref) : null,
+            )
+          else if (isOwner)
+            _StatItem(
+              label: l10n.winesDetailStatCountry,
+              value: '—',
+              isText: true,
+              onTap: () => _editOrigin(context, ref),
             ),
         ],
       ),
@@ -447,18 +600,20 @@ class _StatItem extends StatelessWidget {
   final String value;
   final String? unit;
   final bool isText;
+  final VoidCallback? onTap;
 
   const _StatItem({
     required this.label,
     required this.value,
     this.unit,
     this.isText = false,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    return Column(
+    final column = Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         Text(
@@ -508,6 +663,15 @@ class _StatItem extends StatelessWidget {
             ],
           ),
       ],
+    );
+    if (onTap == null) return column;
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(context.w * 0.02),
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: context.xs),
+        child: column,
+      ),
     );
   }
 }
@@ -873,147 +1037,630 @@ class _MemoriesSection extends ConsumerWidget {
     final wineId = wine.id;
     final memoriesAsync = ref.watch(wineMemoriesControllerProvider(wineId));
     final memories = memoriesAsync.valueOrNull ?? const [];
-    final ringSize = context.w * 0.14;
     final l10n = AppLocalizations.of(context);
     final cs = Theme.of(context).colorScheme;
+    final padH = context.paddingH * 1.3;
+
+    void openCapture() => pushMomentCapture(
+      context,
+      ref,
+      wineId: wineId,
+      wineLocationName: wine.location,
+      wineLocationLat: wine.latitude,
+      wineLocationLng: wine.longitude,
+    );
 
     return Padding(
-      padding: EdgeInsets.only(top: context.m),
+      padding: EdgeInsets.only(top: context.l),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          // Header row matches WineDetailSectionHeader styling (dim
+          // tracked uppercase) so the section sits in the same visual
+          // tier as TASTING-NOTES / ORTE. Add affordance is a quiet
+          // + glyph at the trailing edge — same colour as the label,
+          // not a primary pill.
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: context.paddingH),
+            padding: EdgeInsets.symmetric(horizontal: padH),
             child: Row(
               children: [
                 Expanded(
                   child: Text(
-                    l10n.momentSectionHeader,
+                    l10n.momentSectionHeader.toUpperCase(),
                     style: TextStyle(
-                      fontSize: context.bodyFont,
+                      fontSize: context.captionFont * 0.95,
                       fontWeight: FontWeight.w700,
-                      color: cs.onSurface,
+                      color: cs.onSurface.withValues(alpha: 0.72),
+                      letterSpacing: 1.2,
                     ),
                   ),
                 ),
                 GestureDetector(
                   behavior: HitTestBehavior.opaque,
-                  onTap: () => pushMomentCapture(
-                    context,
-                    ref,
-                    wineId: wineId,
-                    wineLocationName: wine.location,
-                    wineLocationLat: wine.latitude,
-                    wineLocationLng: wine.longitude,
-                  ),
+                  onTap: openCapture,
                   child: Padding(
                     padding: EdgeInsets.symmetric(
-                      horizontal: context.s,
+                      horizontal: context.xs,
                       vertical: context.xs,
                     ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          PhosphorIconsRegular.plus,
-                          size: context.w * 0.04,
-                          color: cs.primary,
-                        ),
-                        SizedBox(width: context.xs * 1.2),
-                        Text(
-                          l10n.momentSectionAdd,
-                          style: TextStyle(
-                            fontSize: context.captionFont,
-                            fontWeight: FontWeight.w600,
-                            color: cs.primary,
-                          ),
-                        ),
-                      ],
+                    child: Icon(
+                      PhosphorIconsRegular.plus,
+                      size: context.w * 0.045,
+                      color: cs.onSurface.withValues(alpha: 0.72),
                     ),
                   ),
                 ),
               ],
             ),
           ),
+          SizedBox(height: context.m),
           if (memories.isEmpty)
             Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: context.paddingH,
-                vertical: context.s,
-              ),
-              child: Text(
-                l10n.momentSectionEmpty,
-                style: TextStyle(
-                  fontSize: context.captionFont,
-                  color: cs.onSurfaceVariant,
+              padding: EdgeInsets.symmetric(horizontal: padH),
+              child: GestureDetector(
+                onTap: openCapture,
+                child: Text(
+                  l10n.momentSectionEmpty,
+                  style: TextStyle(
+                    fontSize: context.captionFont,
+                    color: cs.onSurfaceVariant,
+                  ),
                 ),
               ),
             )
-          else ...[
-            SizedBox(height: context.s),
-            SizedBox(
-              height: ringSize,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                padding: EdgeInsets.symmetric(horizontal: context.paddingH),
-                itemCount: memories.length,
-                separatorBuilder: (_, _) => SizedBox(width: context.w * 0.025),
-                itemBuilder: (_, i) {
-                  final memory = memories[i];
-                  return _MomentStoryTile(
-                    memory: memory,
-                    size: ringSize,
-                    onTap: () => pushMomentViewer(
-                      context,
-                      wineId: wineId,
-                      moments: memories,
-                      initialIndex: i,
-                    ),
-                  );
-                },
+          else
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: padH),
+              child: _MomentsBento(
+                memories: memories,
+                wineId: wineId,
+                onAdd: openCapture,
               ),
             ),
-          ],
         ],
       ),
     );
   }
 }
 
-class _MomentStoryTile extends StatelessWidget {
-  final WineMemoryEntity memory;
-  final double size;
-  final VoidCallback onTap;
-  const _MomentStoryTile({
-    required this.memory,
-    required this.size,
-    required this.onTap,
+/// Lean Instagram-style mosaic — one square thumb per moment. Caps
+/// at 5 visible; if there are more, the 5th tile becomes a "+N"
+/// overflow indicator that opens the viewer at the first hidden
+/// moment. Single-row, bounded vertically, never scrolls — keeps the
+/// section from elbowing the tasting-notes block below.
+/// Content-driven moment mosaic. The pattern is picked from the
+/// moment count (clamped 1..12), not from the wine id — so the layout
+/// genuinely changes as the user adds moments. Each pattern fills the
+/// container completely with that exact tile count: no placeholders,
+/// no empty cells.
+///
+/// When the user has more than 12 moments, the 12-tile pattern is
+/// used and its last tile becomes a "+N" inline expand toggle that
+/// reveals the rest in a grid below (no navigation). Tap the trailing
+/// caret-up in the grid to collapse.
+class _MomentsBento extends ConsumerStatefulWidget {
+  // Capped at P9 (9 slots) so the section's aspect never exceeds 4:3
+  // — keeps the wine-detail screen from being elbowed by memory tiles.
+  static const _kMaxBentoSlots = 9;
+
+  final List<WineMemoryEntity> memories;
+  final String wineId;
+  final VoidCallback onAdd;
+
+  const _MomentsBento({
+    required this.memories,
+    required this.wineId,
+    required this.onAdd,
+  });
+
+  @override
+  ConsumerState<_MomentsBento> createState() => _MomentsBentoState();
+}
+
+class _MomentsBentoState extends ConsumerState<_MomentsBento> {
+  bool _expanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final memories = widget.memories;
+    final wineId = widget.wineId;
+    final gap = context.w * 0.015;
+
+    final count = memories.length;
+    final hasOverflow = count > _MomentsBento._kMaxBentoSlots;
+    // Slot count snaps to the smallest tier (5, 9, 12) that holds the
+    // moments plus a small placeholder buffer, so the section always
+    // reads as a clean mosaic without dangling empty cells.
+    final layoutCount = hasOverflow
+        ? _MomentsBento._kMaxBentoSlots
+        : _slotCountForCount(count);
+    final realInBento = hasOverflow
+        ? (_expanded
+              ? _MomentsBento._kMaxBentoSlots
+              : _MomentsBento._kMaxBentoSlots - 1)
+        : count;
+    final overflowStart = realInBento;
+    final overflowCount = count - overflowStart;
+
+    Widget tile(int index) => _BentoTile(
+      memory: memories[index],
+      onTap: () => pushMomentViewer(
+        context,
+        wineId: wineId,
+        moments: memories,
+        initialIndex: index,
+      ),
+    );
+
+    Widget slot(int index) {
+      if (index < realInBento) return tile(index);
+      // Overflow toggle on the very last slot when collapsed.
+      if (hasOverflow &&
+          !_expanded &&
+          index == _MomentsBento._kMaxBentoSlots - 1) {
+        return _BentoOverflowTile(
+          count: overflowCount,
+          expanded: false,
+          onTap: () => setState(() => _expanded = true),
+        );
+      }
+      // Only the FIRST empty slot shows the "+" CTA — every other
+      // placeholder renders as a silent ghost tile so the mosaic
+      // doesn't nag the user with repeated plus icons. Tap-to-add
+      // still works on every empty slot.
+      final isFirstEmpty = index == realInBento;
+      return _BentoPlaceholder(onTap: widget.onAdd, showPlus: isFirstEmpty);
+    }
+
+    final bento = _renderCountPattern(layoutCount, slot, gap, wineId);
+
+    return Column(
+      children: [
+        bento,
+        AnimatedSize(
+          duration: const Duration(milliseconds: 220),
+          curve: Curves.easeOutCubic,
+          alignment: Alignment.topCenter,
+          child: (hasOverflow && _expanded)
+              ? Padding(
+                  padding: EdgeInsets.only(top: gap),
+                  child: _ExpandedOverflowGrid(
+                    memories: memories,
+                    startIndex: overflowStart,
+                    onTapMoment: (index) => pushMomentViewer(
+                      context,
+                      wineId: wineId,
+                      moments: memories,
+                      initialIndex: index,
+                    ),
+                    onCollapse: () => setState(() => _expanded = false),
+                  ),
+                )
+              : const SizedBox.shrink(),
+        ),
+      ],
+    );
+  }
+}
+
+/// Mosaic tile spec — explicit (row, col, rowSpan, colSpan) placement
+/// on a grid. Used to compose chaos patterns out of mixed shapes
+/// (hero 2×2 / 3×2, wide 2×1, tall 1×2, square 1×1) instead of a
+/// uniform hero-plus-smalls layout. The first tile in a pattern is
+/// always the hero (largest tile).
+class _MTile {
+  final int row;
+  final int col;
+  final int rowSpan;
+  final int colSpan;
+  const _MTile(this.row, this.col, this.rowSpan, this.colSpan);
+}
+
+/// Chaos mosaic — variable grid dimensions and tile shapes per
+/// pattern. Cells stay roughly square because container aspect =
+/// cols/rows; accent tiles (2×1 wide, 1×2 tall) deliberately break
+/// the cell-by-cell rhythm of a plain grid. Hero is tile 0.
+class _Mosaic {
+  final int cols;
+  final int rows;
+  final List<_MTile> tiles;
+  const _Mosaic({required this.cols, required this.rows, required this.tiles});
+  int get slotCount => tiles.length;
+}
+
+// Twelve chaos variants. Mixed grids (3×3, 4×2, 5×2, 4×3) and tile
+// shapes break the symmetrical hero-plus-ring look. Hero never sits
+// dead centre. Wide and tall accents introduce two non-square
+// rhythms so the pattern never reads as a tidy spreadsheet. The
+// wine-id hash picks the variant so neighbouring wines look
+// visibly different.
+
+// --- 3-tile tier (exact-fill for count = 3) ---
+// Hero is portrait 2×3 right. Three distinct shapes, no two same.
+const _kP3a = _Mosaic(
+  cols: 4,
+  rows: 3,
+  tiles: [
+    _MTile(0, 2, 3, 2), // hero portrait right
+    _MTile(0, 0, 2, 2), // medium square TL
+    _MTile(2, 0, 1, 2), // wide BL
+  ],
+);
+const _kP3b = _Mosaic(
+  cols: 4,
+  rows: 3,
+  tiles: [
+    _MTile(0, 2, 3, 2), // hero portrait right
+    _MTile(0, 0, 1, 2), // wide top-left
+    _MTile(1, 0, 2, 2), // medium square BL
+  ],
+);
+const _kP3 = [_kP3a, _kP3b];
+
+// --- 4-tile tier (exact-fill for count = 4) ---
+// Hero portrait 2×3 right + medium 2×2 + wide + small. Small/small
+// adjacency is unavoidable in this cell count; mitigated by mixing
+// in a wide tile.
+const _kP4a = _Mosaic(
+  cols: 4,
+  rows: 3,
+  tiles: [
+    _MTile(0, 2, 3, 2), // hero portrait right
+    _MTile(0, 0, 2, 2), // medium square TL
+    _MTile(2, 0, 1, 1),
+    _MTile(2, 1, 1, 1),
+  ],
+);
+const _kP4b = _Mosaic(
+  cols: 4,
+  rows: 3,
+  tiles: [
+    _MTile(0, 2, 3, 2), // hero portrait right
+    _MTile(0, 0, 1, 1),
+    _MTile(0, 1, 1, 1),
+    _MTile(1, 0, 2, 2), // medium square BL
+  ],
+);
+const _kP4 = [_kP4a, _kP4b];
+
+// --- 5-slot tier (1..2 moments + placeholders, or 5 exact) ---
+// All variants put the hero on the right and mix 3 distinct tile
+// shapes (hero 3×2 / medium square 2×2 / wide 2×1 / small 1×1) so
+// no two identical tiles ever touch.
+// Hero always 3×2 on the RIGHT. Remaining cells filled with a
+// distinct 2×2 medium-square + wides + a small so no two
+// identical tiles ever touch.
+const _kP5a = _Mosaic(
+  cols: 5,
+  rows: 3,
+  tiles: [
+    _MTile(0, 2, 2, 3), // hero top-right
+    _MTile(1, 0, 2, 2), // medium square bottom-left
+    _MTile(0, 0, 1, 2), // wide top-left
+    _MTile(2, 2, 1, 2), // wide bottom-mid
+    _MTile(2, 4, 1, 1),
+  ],
+);
+const _kP5b = _Mosaic(
+  cols: 5,
+  rows: 3,
+  tiles: [
+    _MTile(1, 2, 2, 3), // hero bottom-right
+    _MTile(0, 0, 2, 2), // medium square top-left
+    _MTile(0, 2, 1, 2), // wide top-mid
+    _MTile(0, 4, 1, 1),
+    _MTile(2, 0, 1, 2), // wide bottom-left
+  ],
+);
+const _kP5c = _Mosaic(
+  cols: 5,
+  rows: 3,
+  tiles: [
+    _MTile(0, 2, 2, 3), // hero top-right
+    _MTile(0, 0, 2, 2), // medium square top-left
+    _MTile(2, 0, 1, 2), // wide bottom-left
+    _MTile(2, 2, 1, 1),
+    _MTile(2, 3, 1, 2), // wide bottom-right
+  ],
+);
+const _kP5d = _Mosaic(
+  cols: 5,
+  rows: 3,
+  tiles: [
+    _MTile(1, 2, 2, 3), // hero bottom-right
+    _MTile(1, 0, 2, 2), // medium square middle-left
+    _MTile(0, 0, 1, 2), // wide top-left
+    _MTile(0, 2, 1, 1),
+    _MTile(0, 3, 1, 2), // wide top-right
+  ],
+);
+const _kP5 = [_kP5a, _kP5b, _kP5c, _kP5d];
+
+// --- 6-tile tier (exact-fill for count = 6) ---
+const _kP6a = _Mosaic(
+  cols: 5,
+  rows: 3,
+  tiles: [
+    _MTile(0, 2, 2, 3), // hero TR
+    _MTile(0, 0, 2, 2), // medium square TL
+    _MTile(2, 0, 1, 2), // wide BL
+    _MTile(2, 2, 1, 1), _MTile(2, 3, 1, 1), _MTile(2, 4, 1, 1),
+  ],
+);
+const _kP6b = _Mosaic(
+  cols: 5,
+  rows: 3,
+  tiles: [
+    _MTile(1, 2, 2, 3), // hero BR
+    _MTile(1, 0, 2, 2), // medium square BL
+    _MTile(0, 0, 1, 2), // wide TL
+    _MTile(0, 2, 1, 1), _MTile(0, 3, 1, 1), _MTile(0, 4, 1, 1),
+  ],
+);
+const _kP6 = [_kP6a, _kP6b];
+
+// --- 7-tile tier (exact-fill for count = 7) ---
+const _kP7a = _Mosaic(
+  cols: 5,
+  rows: 3,
+  tiles: [
+    _MTile(0, 2, 2, 3), // hero TR
+    _MTile(0, 0, 1, 2), // wide TL
+    _MTile(1, 0, 1, 1), _MTile(1, 1, 1, 1),
+    _MTile(2, 0, 1, 2), // wide BL
+    _MTile(2, 2, 1, 2), // wide BC
+    _MTile(2, 4, 1, 1),
+  ],
+);
+const _kP7 = [_kP7a];
+
+// --- 8-tile tier (exact-fill for count = 8) ---
+const _kP8a = _Mosaic(
+  cols: 5,
+  rows: 3,
+  tiles: [
+    _MTile(0, 2, 2, 3), // hero TR
+    _MTile(0, 0, 1, 2), // wide TL
+    _MTile(1, 0, 1, 1), _MTile(1, 1, 1, 1),
+    _MTile(2, 0, 1, 2), // wide BL
+    _MTile(2, 2, 1, 1), _MTile(2, 3, 1, 1), _MTile(2, 4, 1, 1),
+  ],
+);
+const _kP8 = [_kP8a];
+
+// --- 9-slot tier (5..8 real + +overflow) ---
+// All hero-right. In a 9-tile mosaic packed into a 12- or 15-cell
+// grid, small/small adjacencies are unavoidable — those are
+// minimised by interleaving wides where the grid allows.
+const _kP9a = _Mosaic(
+  cols: 4,
+  rows: 3,
+  tiles: [
+    _MTile(0, 2, 2, 2), // hero top-right
+    _MTile(0, 0, 1, 1), _MTile(0, 1, 1, 1),
+    _MTile(1, 0, 1, 1), _MTile(1, 1, 1, 1),
+    _MTile(2, 0, 1, 1), _MTile(2, 1, 1, 1), _MTile(2, 2, 1, 1),
+    _MTile(2, 3, 1, 1),
+  ],
+);
+const _kP9b = _Mosaic(
+  cols: 4,
+  rows: 3,
+  tiles: [
+    _MTile(1, 2, 2, 2), // hero bottom-right
+    _MTile(0, 0, 1, 1), _MTile(0, 1, 1, 1), _MTile(0, 2, 1, 1),
+    _MTile(0, 3, 1, 1),
+    _MTile(1, 0, 1, 1), _MTile(1, 1, 1, 1),
+    _MTile(2, 0, 1, 1), _MTile(2, 1, 1, 1),
+  ],
+);
+const _kP9c = _Mosaic(
+  cols: 5,
+  rows: 3,
+  tiles: [
+    _MTile(0, 2, 2, 3), // hero 3×2 top-right
+    _MTile(2, 0, 1, 2), // wide bottom-left
+    _MTile(0, 0, 1, 1), _MTile(0, 1, 1, 1),
+    _MTile(1, 0, 1, 1), _MTile(1, 1, 1, 1),
+    _MTile(2, 2, 1, 1), _MTile(2, 3, 1, 1), _MTile(2, 4, 1, 1),
+  ],
+);
+const _kP9d = _Mosaic(
+  cols: 5,
+  rows: 3,
+  tiles: [
+    _MTile(1, 2, 2, 3), // hero 3×2 bottom-right
+    _MTile(0, 0, 1, 2), // wide top-left
+    _MTile(0, 2, 1, 1), _MTile(0, 3, 1, 1), _MTile(0, 4, 1, 1),
+    _MTile(1, 0, 1, 1), _MTile(1, 1, 1, 1),
+    _MTile(2, 0, 1, 1), _MTile(2, 1, 1, 1),
+  ],
+);
+const _kP9 = [_kP9a, _kP9b, _kP9c, _kP9d];
+
+_Mosaic _pickMosaic(int slotCount, String wineId) {
+  final variants = switch (slotCount) {
+    3 => _kP3,
+    4 => _kP4,
+    5 => _kP5,
+    6 => _kP6,
+    7 => _kP7,
+    8 => _kP8,
+    _ => _kP9,
+  };
+  return variants[wineId.hashCode.abs() % variants.length];
+}
+
+/// Map a desired moment count onto the slot count.
+/// 1..2 → 5 slots (placeholders fill the collage).
+/// 3..8 → exact fill (no placeholders).
+/// 9+ → 9 slots with overflow tile.
+int _slotCountForCount(int count) {
+  if (count <= 2) return 5;
+  if (count <= 8) return count;
+  return 9;
+}
+
+Widget _renderCountPattern(
+  int count,
+  Widget Function(int) slot,
+  double gap,
+  String wineId,
+) {
+  if (count <= 0) return const SizedBox.shrink();
+  final pattern = _pickMosaic(count, wineId);
+
+  return AspectRatio(
+    aspectRatio: pattern.cols / pattern.rows,
+    child: LayoutBuilder(
+      builder: (_, c) {
+        final cellW = c.maxWidth / pattern.cols;
+        final cellH = c.maxHeight / pattern.rows;
+        final half = gap / 2;
+        final children = <Widget>[
+          for (var i = 0; i < pattern.tiles.length; i++)
+            Positioned(
+              left: pattern.tiles[i].col * cellW + half,
+              top: pattern.tiles[i].row * cellH + half,
+              width: pattern.tiles[i].colSpan * cellW - gap,
+              height: pattern.tiles[i].rowSpan * cellH - gap,
+              child: slot(i),
+            ),
+        ];
+        return Stack(children: children);
+      },
+    ),
+  );
+}
+
+/// Grid of the moments hidden behind the bento "+N" tile. Each tile
+/// opens the viewer at the matching absolute index. The very last
+/// tile in the grid is always the collapse toggle (caret-up) so the
+/// expand/collapse affordance stays at the end of the section
+/// regardless of state.
+class _ExpandedOverflowGrid extends StatelessWidget {
+  final List<WineMemoryEntity> memories;
+  final int startIndex;
+  final ValueChanged<int> onTapMoment;
+  final VoidCallback onCollapse;
+
+  const _ExpandedOverflowGrid({
+    required this.memories,
+    required this.startIndex,
+    required this.onTapMoment,
+    required this.onCollapse,
   });
 
   @override
   Widget build(BuildContext context) {
+    final overflow = memories.sublist(startIndex);
+    final gap = context.w * 0.015;
     final cs = Theme.of(context).colorScheme;
-    final ringColors = [cs.primary, cs.tertiary, cs.primaryContainer];
+    // Chunk the overflow moments into pages of up to 8 so every page
+    // renders through a chaos collage pattern instead of the previous
+    // uniform 4-col grid. The wine-id + chunk index seeds the variant
+    // pick, so different sections of the overflow look distinct.
+    final chunks = <List<WineMemoryEntity>>[];
+    for (var i = 0; i < overflow.length; i += 8) {
+      final end = (i + 8) > overflow.length ? overflow.length : i + 8;
+      chunks.add(overflow.sublist(i, end));
+    }
+
+    Widget renderChunk(int chunkIdx) {
+      final chunk = chunks[chunkIdx];
+      // Tiers below 3 photos have no exact-fill collage (they'd add
+      // placeholders, which would look unfinished here); render those
+      // as a simple row.
+      if (chunk.length < 3) {
+        return Row(
+          children: [
+            for (var c = 0; c < chunk.length; c++) ...[
+              if (c != 0) SizedBox(width: gap),
+              Expanded(
+                child: AspectRatio(
+                  aspectRatio: 1,
+                  child: _BentoTile(
+                    memory: chunk[c],
+                    onTap: () => onTapMoment(startIndex + chunkIdx * 8 + c),
+                  ),
+                ),
+              ),
+              // Pad the right side so single tiles don't stretch
+              // across the full row.
+              if (chunk.length == 1)
+                Expanded(flex: 3, child: const SizedBox.shrink()),
+            ],
+          ],
+        );
+      }
+      return _renderCountPattern(
+        chunk.length,
+        (slotIndex) => _BentoTile(
+          memory: chunk[slotIndex],
+          onTap: () => onTapMoment(startIndex + chunkIdx * 8 + slotIndex),
+        ),
+        gap,
+        '${memories.first.id}-$chunkIdx',
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (var i = 0; i < chunks.length; i++) ...[
+          if (i != 0) SizedBox(height: gap),
+          renderChunk(i),
+        ],
+        SizedBox(height: gap),
+        // Caret-up collapse toggle as a single slim tile across the
+        // full width so it reads as a distinct end-of-section action.
+        AspectRatio(
+          aspectRatio: 6,
+          child: GestureDetector(
+            onTap: onCollapse,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: cs.surfaceContainer,
+                borderRadius: BorderRadius.circular(context.w * 0.025),
+                border: Border.all(color: cs.outlineVariant, width: 0.5),
+              ),
+              child: Center(
+                child: Icon(
+                  PhosphorIconsRegular.caretUp,
+                  color: cs.onSurface.withValues(alpha: 0.85),
+                  size: context.w * 0.05,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _BentoTile extends StatelessWidget {
+  final WineMemoryEntity memory;
+  final VoidCallback onTap;
+  const _BentoTile({required this.memory, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: size,
-        height: size,
+        clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          gradient: SweepGradient(colors: [...ringColors, ringColors.first]),
+          color: cs.surfaceContainer,
+          borderRadius: BorderRadius.circular(context.w * 0.025),
         ),
-        padding: const EdgeInsets.all(2),
-        child: Container(
-          decoration: BoxDecoration(shape: BoxShape.circle, color: cs.surface),
-          padding: const EdgeInsets.all(2),
-          child: ClipOval(child: _avatarImage(memory, cs)),
-        ),
+        child: _thumb(memory, cs),
       ),
     );
   }
 
-  Widget _avatarImage(WineMemoryEntity m, ColorScheme cs) {
+  Widget _thumb(WineMemoryEntity m, ColorScheme cs) {
     if (m.localImagePath != null) {
       return Image.file(File(m.localImagePath!), fit: BoxFit.cover);
     }
@@ -1027,7 +1674,95 @@ class _MomentStoryTile extends StatelessWidget {
     }
     return Container(
       color: cs.surfaceContainer,
+      alignment: Alignment.center,
       child: Icon(PhosphorIconsRegular.image, color: cs.outline),
+    );
+  }
+}
+
+class _BentoPlaceholder extends StatelessWidget {
+  final VoidCallback onTap;
+  final bool showPlus;
+  const _BentoPlaceholder({required this.onTap, this.showPlus = true});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    // Stronger contrast against the dark wine-detail background.
+    // Active "+" uses surfaceContainerHigh (lighter than surface);
+    // ghosts use surfaceContainer so they still register as
+    // tiles, not gaps. Border alpha also bumped.
+    final fill = showPlus ? cs.surfaceContainerHigh : cs.surfaceContainer;
+    final borderAlpha = showPlus ? 0.9 : 0.55;
+    return GestureDetector(
+      onTap: onTap,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: fill,
+          borderRadius: BorderRadius.circular(context.w * 0.025),
+          border: Border.all(
+            color: cs.outlineVariant.withValues(alpha: borderAlpha),
+            width: 0.8,
+          ),
+        ),
+        child: showPlus
+            ? Center(
+                child: Icon(
+                  PhosphorIconsRegular.plus,
+                  color: cs.onSurface.withValues(alpha: 0.65),
+                  size: context.w * 0.05,
+                ),
+              )
+            : const SizedBox.shrink(),
+      ),
+    );
+  }
+}
+
+class _BentoOverflowTile extends StatelessWidget {
+  final int count;
+  final bool expanded;
+  final VoidCallback onTap;
+  const _BentoOverflowTile({
+    required this.count,
+    required this.expanded,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return GestureDetector(
+      onTap: onTap,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: cs.surfaceContainer,
+          borderRadius: BorderRadius.circular(context.w * 0.025),
+          border: Border.all(color: cs.outlineVariant, width: 0.5),
+        ),
+        child: Center(
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 180),
+            child: expanded
+                ? Icon(
+                    PhosphorIconsRegular.caretUp,
+                    key: const ValueKey('collapse'),
+                    color: cs.onSurface.withValues(alpha: 0.85),
+                    size: context.w * 0.06,
+                  )
+                : Text(
+                    '+$count',
+                    key: const ValueKey('overflow'),
+                    style: TextStyle(
+                      color: cs.onSurface.withValues(alpha: 0.85),
+                      fontSize: context.bodyFont,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: -0.2,
+                    ),
+                  ),
+          ),
+        ),
+      ),
     );
   }
 }

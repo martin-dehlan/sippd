@@ -1880,6 +1880,12 @@ abstract class AppLocalizations {
   /// **'Photo'**
   String get winesFormPhotoLabel;
 
+  /// No description provided for @winesFormPlaceMomentHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tip: the place auto-fills from the first moment you add with a location.'**
+  String get winesFormPlaceMomentHint;
+
   /// No description provided for @winesFormStatRating.
   ///
   /// In en, this message translates to:
@@ -2156,6 +2162,60 @@ abstract class AppLocalizations {
   /// **'Add friend'**
   String get momentCompanionsAddFriend;
 
+  /// No description provided for @momentCompanionsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No friends to tag yet.'**
+  String get momentCompanionsEmpty;
+
+  /// No description provided for @friendsProfileSharedMoments.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared moments'**
+  String get friendsProfileSharedMoments;
+
+  /// No description provided for @winesShareToFriend.
+  ///
+  /// In en, this message translates to:
+  /// **'Share with friend'**
+  String get winesShareToFriend;
+
+  /// No description provided for @winesShareSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Wine shared with {name}'**
+  String winesShareSuccess(String name);
+
+  /// No description provided for @winesShareError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t share — try again'**
+  String get winesShareError;
+
+  /// No description provided for @winesSharePickFriendsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Share with'**
+  String get winesSharePickFriendsTitle;
+
+  /// No description provided for @winesExpertProUnlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock with Pro'**
+  String get winesExpertProUnlock;
+
+  /// No description provided for @momentShowcaseApplied.
+  ///
+  /// In en, this message translates to:
+  /// **'Set as wine\'s main photo.'**
+  String get momentShowcaseApplied;
+
+  /// No description provided for @momentShowcaseError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t set as main photo. Try again.'**
+  String get momentShowcaseError;
+
   /// No description provided for @momentPlaceHint.
   ///
   /// In en, this message translates to:
@@ -2255,7 +2315,7 @@ abstract class AppLocalizations {
   /// No description provided for @momentSectionEmpty.
   ///
   /// In en, this message translates to:
-  /// **'No moments yet — tap New to capture one.'**
+  /// **'No moments yet — tap +.'**
   String get momentSectionEmpty;
 
   /// No description provided for @momentMetaWith.

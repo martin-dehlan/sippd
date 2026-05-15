@@ -967,6 +967,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get winesFormPhotoLabel => 'Foto';
 
   @override
+  String get winesFormPlaceMomentHint =>
+      'Tipp: Der Ort wird automatisch gesetzt, wenn du einen Moment mit Ort hinzufügst.';
+
+  @override
   String get winesFormStatRating => 'Bewertung';
 
   @override
@@ -1108,6 +1112,36 @@ class AppLocalizationsDe extends AppLocalizations {
   String get momentCompanionsAddFriend => 'Freund hinzufügen';
 
   @override
+  String get momentCompanionsEmpty => 'Noch keine Freunde zum Taggen.';
+
+  @override
+  String get friendsProfileSharedMoments => 'Gemeinsame Momente';
+
+  @override
+  String get winesShareToFriend => 'Mit Freund teilen';
+
+  @override
+  String winesShareSuccess(String name) {
+    return 'Wein mit $name geteilt';
+  }
+
+  @override
+  String get winesShareError => 'Teilen fehlgeschlagen — nochmal versuchen';
+
+  @override
+  String get winesSharePickFriendsTitle => 'Teilen mit';
+
+  @override
+  String get winesExpertProUnlock => 'Mit Pro freischalten';
+
+  @override
+  String get momentShowcaseApplied => 'Als Hauptfoto des Weins gesetzt.';
+
+  @override
+  String get momentShowcaseError =>
+      'Konnte nicht als Hauptfoto gesetzt werden. Versuche es nochmal.';
+
+  @override
   String get momentPlaceHint => 'Restaurant oder Ort';
 
   @override
@@ -1157,7 +1191,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get momentSectionAdd => 'Neu';
 
   @override
-  String get momentSectionEmpty => 'Noch keine Momente — tippe auf Neu.';
+  String get momentSectionEmpty => 'Noch keine Momente — tippe auf +.';
 
   @override
   String momentMetaWith(String names) {

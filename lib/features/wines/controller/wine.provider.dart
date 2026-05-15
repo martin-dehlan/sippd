@@ -138,6 +138,18 @@ WineMemoryRepository wineMemoryRepository(WineMemoryRepositoryRef ref) {
   );
 }
 
+/// Moments where the current user and [otherUserId] share involvement
+/// (owner + tagged-companion in either direction). Server-only — no
+/// Drift cache because moments owned by another user aren't ours to
+/// mirror locally.
+@riverpod
+Future<List<WineMemoryEntity>> sharedMoments(
+  SharedMomentsRef ref,
+  String otherUserId,
+) {
+  return ref.read(wineMemoryRepositoryProvider).getShared(otherUserId);
+}
+
 @riverpod
 WineMemoryPhotoSupabaseApi? wineMemoryPhotoSupabaseApi(
   WineMemoryPhotoSupabaseApiRef ref,

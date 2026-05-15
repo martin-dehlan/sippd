@@ -11,7 +11,10 @@ import '../../../../../common/widgets/stats_card.widget.dart';
 import '../../../../groups/presentation/widgets/friend_actions_sheet.widget.dart';
 import '../../../../taste_match/presentation/widgets/friend_taste_match_section.widget.dart';
 import '../../../../taste_match/presentation/widgets/wine_personality_hero.widget.dart';
+import '../../../../wines/controller/wine.provider.dart';
 import '../../../../wines/domain/entities/wine.entity.dart';
+import '../../../../wines/domain/entities/wine_memory.entity.dart';
+import '../../../../wines/presentation/modules/moment_viewer/moment_viewer.screen.dart';
 import '../../../controller/friends.provider.dart';
 import '../../../domain/entities/friend_profile.entity.dart';
 import '../../widgets/friend_avatar.widget.dart';
@@ -123,6 +126,8 @@ class _Body extends StatelessWidget {
                 l10n.friendsProfileNameFallback,
           ),
         ),
+        SizedBox(height: context.l),
+        _SharedMomentsSection(friendId: profile.id),
         SizedBox(height: context.xl),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: padH),
@@ -431,6 +436,126 @@ class _TypePlaceholder extends StatelessWidget {
         PhosphorIconsRegular.wine,
         size: size * 0.45,
         color: typeColor,
+      ),
+    );
+  }
+}
+
+/// "Eure gemeinsamen Momente" — moments where the viewer and the
+/// friend are both involved (one owns, the other is tagged). Renders
+/// as a horizontal story-ring strip; tap a ring to open the IG-style
+/// viewer with the shared list.
+class _SharedMomentsSection extends ConsumerWidget {
+  final String friendId;
+  const _SharedMomentsSection({required this.friendId});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final padH = context.paddingH * 1.3;
+    final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
+    final ringSize = context.w * 0.14;
+
+    final momentsAsync = ref.watch(sharedMomentsProvider(friendId));
+    final moments = momentsAsync.valueOrNull ?? const [];
+    if (moments.isEmpty) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: padH),
+          child: Text(
+            l10n.friendsProfileSharedMoments,
+            style: TextStyle(
+              fontSize: context.bodyFont,
+              fontWeight: FontWeight.w700,
+              color: cs.onSurface,
+            ),
+          ),
+        ),
+        SizedBox(height: context.s),
+        SizedBox(
+          height: ringSize,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            padding: EdgeInsets.symmetric(horizontal: padH),
+            itemCount: moments.length,
+            separatorBuilder: (_, _) => SizedBox(width: context.w * 0.025),
+            itemBuilder: (_, i) => _SharedMomentTile(
+              moment: moments[i],
+              size: ringSize,
+              onTap: () => pushMomentViewer(
+                context,
+                // Wine context isn't relevant when launching from a
+                // friend profile — the viewer only uses wineId for
+                // showcase-swap and edit, neither of which apply to
+                // moments owned by the friend. Pass first moment's id
+                // as a stable sentinel.
+                wineId: moments[i].wineId,
+                moments: moments,
+                initialIndex: i,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _SharedMomentTile extends StatelessWidget {
+  final WineMemoryEntity moment;
+  final double size;
+  final VoidCallback onTap;
+  const _SharedMomentTile({
+    required this.moment,
+    required this.size,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final image = moment.imageUrl;
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: SweepGradient(
+            colors: [cs.primary, cs.tertiary, cs.primary],
+          ),
+        ),
+        padding: const EdgeInsets.all(2),
+        child: Container(
+          decoration: BoxDecoration(shape: BoxShape.circle, color: cs.surface),
+          padding: const EdgeInsets.all(2),
+          child: ClipOval(
+            child: image != null && image.isNotEmpty
+                ? CachedNetworkImage(
+                    imageUrl: image,
+                    fit: BoxFit.cover,
+                    placeholder: (_, _) =>
+                        Container(color: cs.surfaceContainer),
+                    errorWidget: (_, _, _) => Container(
+                      color: cs.surfaceContainer,
+                      alignment: Alignment.center,
+                      child: Icon(
+                        PhosphorIconsRegular.image,
+                        color: cs.outline,
+                      ),
+                    ),
+                  )
+                : Container(
+                    color: cs.surfaceContainer,
+                    alignment: Alignment.center,
+                    child: Icon(PhosphorIconsRegular.image, color: cs.outline),
+                  ),
+          ),
+        ),
       ),
     );
   }
