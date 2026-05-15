@@ -952,6 +952,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get winesFormPhotoLabel => 'Photo';
 
   @override
+  String get winesFormPlaceMomentHint =>
+      'Tip: the place auto-fills from the first moment you add with a location.';
+
+  @override
   String get winesFormStatRating => 'Rating';
 
   @override

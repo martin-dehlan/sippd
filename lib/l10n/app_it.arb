@@ -352,6 +352,7 @@
   "winesFormHintName": "Nome del vino",
   "winesFormSubmitDefault": "Salva vino",
   "winesFormPhotoLabel": "Foto",
+  "winesFormPlaceMomentHint": "Suggerimento: il luogo si compila automaticamente con il primo momento che aggiungi con una posizione.",
   "winesFormStatRating": "Voto",
   "winesFormStatRatingUnit": "/ 10",
   "winesFormStatPrice": "Prezzo",

@@ -352,6 +352,7 @@
   "winesFormHintName": "Weinname",
   "winesFormSubmitDefault": "Wein speichern",
   "winesFormPhotoLabel": "Foto",
+  "winesFormPlaceMomentHint": "Tipp: Der Ort wird automatisch gesetzt, wenn du einen Moment mit Ort hinzufügst.",
   "winesFormStatRating": "Bewertung",
   "winesFormStatRatingUnit": "/ 10",
   "winesFormStatPrice": "Preis",

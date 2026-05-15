@@ -11,6 +11,8 @@ import '../../../../../common/utils/price_format.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/error_view.widget.dart';
 import '../../../../../common/widgets/overflow_menu.widget.dart';
+import '../../../../../common/data/wine_regions.dart';
+import '../../../../../common/widgets/price_input_sheet.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../../auth/controller/auth.provider.dart';
 import '../../../../friends/controller/friends.provider.dart';
@@ -19,6 +21,8 @@ import '../../../../friends/presentation/widgets/friend_multi_picker.widget.dart
 import '../../../../groups/presentation/widgets/share_wine_sheet.dart';
 import '../../../../paywall/controller/paywall.provider.dart';
 import '../../../../profile/controller/profile.provider.dart';
+import '../../../../locations/domain/entities/location.entity.dart';
+import '../../../../locations/presentation/widgets/location_search_sheet.dart';
 import '../../../../share_cards/controller/share_card.provider.dart';
 import '../../../controller/wine.provider.dart';
 import '../../../domain/entities/wine.entity.dart';
@@ -26,7 +30,10 @@ import '../../../domain/entities/wine_memory.entity.dart';
 import '../../widgets/expert_tasting_sheet.dart';
 import '../../widgets/expert_tasting_summary.widget.dart';
 import '../../widgets/friend_ratings_strip.widget.dart';
+import '../../widgets/wine_country_picker.widget.dart';
 import '../../widgets/wine_detail_blocks.widget.dart';
+import '../../widgets/wine_rating_sheet.dart';
+import '../../widgets/wine_region_picker.widget.dart';
 import '../moment_capture/moment_capture.screen.dart';
 import '../moment_viewer/moment_viewer.screen.dart';
 import '../wine_compare/wine_compare_flow.dart';
@@ -233,7 +240,13 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
                         flex: 5,
                         child: WineDetailImage(wine: widget.wine),
                       ),
-                      Expanded(flex: 4, child: _StatsColumn(wine: widget.wine)),
+                      Expanded(
+                        flex: 4,
+                        child: _StatsColumn(
+                          wine: widget.wine,
+                          isOwner: widget.isOwner,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -278,9 +291,7 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
               ],
               _MemoriesSection(wine: widget.wine),
               SizedBox(height: context.xl),
-              WineDetailSectionHeader(
-                label: AppLocalizations.of(context).winesDetailSectionPlace,
-              ),
+              _PlaceSectionHeader(wine: widget.wine, isOwner: widget.isOwner),
               SizedBox(height: context.s),
               SizedBox(
                 height: context.h * 0.28,
@@ -449,12 +460,79 @@ class _WineOverflowMenu extends StatelessWidget {
   }
 }
 
-class _StatsColumn extends StatelessWidget {
+class _StatsColumn extends ConsumerWidget {
   final WineEntity wine;
-  const _StatsColumn({required this.wine});
+  final bool isOwner;
+  const _StatsColumn({required this.wine, required this.isOwner});
+
+  Future<void> _editRating(BuildContext context, WidgetRef ref) async {
+    final result = await showWineRatingSheet(
+      context: context,
+      initial: wine.rating,
+      ratingContext: 'personal',
+      wine: wine,
+      wineType: wine.type,
+    );
+    if (result == null) return;
+    await ref
+        .read(wineControllerProvider.notifier)
+        .updateWine(
+          wine.copyWith(rating: result.rating, updatedAt: DateTime.now()),
+        );
+  }
+
+  Future<void> _editPrice(BuildContext context, WidgetRef ref) async {
+    final result = await showPriceInputSheet(
+      context: context,
+      initial: wine.price,
+    );
+    if (result == null) return;
+    final parsed = result.isEmpty
+        ? null
+        : double.tryParse(result.replaceAll(',', '.'));
+    await ref
+        .read(wineControllerProvider.notifier)
+        .updateWine(wine.copyWith(price: parsed, updatedAt: DateTime.now()));
+  }
+
+  void _editOrigin(BuildContext context, WidgetRef ref) {
+    showWineCountryPicker(
+      context: context,
+      selected: wine.country,
+      onChanged: (c) async {
+        final countryChanged = c != wine.country;
+        await ref
+            .read(wineControllerProvider.notifier)
+            .updateWine(
+              wine.copyWith(
+                country: c,
+                region: countryChanged ? null : wine.region,
+                updatedAt: DateTime.now(),
+              ),
+            );
+        if (c != null && hasRegionsFor(c) && context.mounted) {
+          Future.microtask(() {
+            if (!context.mounted) return;
+            showWineRegionPicker(
+              context: context,
+              country: c,
+              selected: countryChanged ? null : wine.region,
+              onChanged: (r) async {
+                await ref
+                    .read(wineControllerProvider.notifier)
+                    .updateWine(
+                      wine.copyWith(region: r, updatedAt: DateTime.now()),
+                    );
+              },
+            );
+          });
+        }
+      },
+    );
+  }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     return Padding(
       padding: EdgeInsets.only(left: context.w * 0.02),
@@ -466,6 +544,7 @@ class _StatsColumn extends StatelessWidget {
             label: l10n.winesDetailStatRating,
             value: wine.rating.toStringAsFixed(1),
             unit: l10n.winesDetailStatRatingUnit,
+            onTap: isOwner ? () => _editRating(context, ref) : null,
           ),
           SizedBox(height: context.l),
           if (wine.price != null) ...[
@@ -473,6 +552,15 @@ class _StatsColumn extends StatelessWidget {
               label: l10n.winesDetailStatPrice,
               value: formatPrice(wine.price!),
               unit: wine.currency,
+              onTap: isOwner ? () => _editPrice(context, ref) : null,
+            ),
+            SizedBox(height: context.l),
+          ] else if (isOwner) ...[
+            _StatItem(
+              label: l10n.winesDetailStatPrice,
+              value: '—',
+              isText: true,
+              onTap: () => _editPrice(context, ref),
             ),
             SizedBox(height: context.l),
           ],
@@ -481,12 +569,21 @@ class _StatsColumn extends StatelessWidget {
               label: l10n.winesDetailStatRegion,
               value: wine.region!,
               isText: true,
+              onTap: isOwner ? () => _editOrigin(context, ref) : null,
             )
           else if (wine.country != null)
             _StatItem(
               label: l10n.winesDetailStatCountry,
               value: wine.country!,
               isText: true,
+              onTap: isOwner ? () => _editOrigin(context, ref) : null,
+            )
+          else if (isOwner)
+            _StatItem(
+              label: l10n.winesDetailStatCountry,
+              value: '—',
+              isText: true,
+              onTap: () => _editOrigin(context, ref),
             ),
         ],
       ),
@@ -499,18 +596,20 @@ class _StatItem extends StatelessWidget {
   final String value;
   final String? unit;
   final bool isText;
+  final VoidCallback? onTap;
 
   const _StatItem({
     required this.label,
     required this.value,
     this.unit,
     this.isText = false,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    return Column(
+    final column = Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         Text(
@@ -561,6 +660,18 @@ class _StatItem extends StatelessWidget {
           ),
       ],
     );
+    if (onTap == null) return column;
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(context.w * 0.02),
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: context.xs,
+          vertical: context.xs * 0.5,
+        ),
+        child: column,
+      ),
+    );
   }
 }
 
@@ -595,6 +706,81 @@ class _NotesBlock extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Place section header — matches the MOMENTE row layout (label left,
+/// pencil affordance right when the viewer owns the wine). Tapping the
+/// pencil opens the same location picker the form uses and writes the
+/// result back to the wine.
+class _PlaceSectionHeader extends ConsumerWidget {
+  final WineEntity wine;
+  final bool isOwner;
+  const _PlaceSectionHeader({required this.wine, required this.isOwner});
+
+  Future<void> _editPlace(BuildContext context, WidgetRef ref) async {
+    final initial = (wine.latitude != null || wine.longitude != null)
+        ? LocationEntity(
+            lat: wine.latitude,
+            lng: wine.longitude,
+            locationName: wine.location ?? '',
+          )
+        : null;
+    final result = await showLocationSearchSheet(
+      context: context,
+      initial: initial,
+    );
+    if (result == null) return;
+    await ref
+        .read(wineControllerProvider.notifier)
+        .updateWine(
+          wine.copyWith(
+            location: result.shortDisplay,
+            latitude: result.lat,
+            longitude: result.lng,
+            updatedAt: DateTime.now(),
+          ),
+        );
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              l10n.winesDetailSectionPlace.toUpperCase(),
+              style: TextStyle(
+                fontSize: context.captionFont * 0.95,
+                fontWeight: FontWeight.w700,
+                color: cs.onSurface.withValues(alpha: 0.72),
+                letterSpacing: 1.2,
+              ),
+            ),
+          ),
+          if (isOwner)
+            GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () => _editPlace(context, ref),
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: context.xs,
+                  vertical: context.xs,
+                ),
+                child: Icon(
+                  PhosphorIconsRegular.pencilSimple,
+                  size: context.w * 0.045,
+                  color: cs.onSurface.withValues(alpha: 0.72),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

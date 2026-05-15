@@ -414,6 +414,7 @@
   "winesFormHintName": "Wine name",
   "winesFormSubmitDefault": "Save wine",
   "winesFormPhotoLabel": "Photo",
+  "winesFormPlaceMomentHint": "Tip: the place auto-fills from the first moment you add with a location.",
   "winesFormStatRating": "Rating",
   "winesFormStatRatingUnit": "/ 10",
   "winesFormStatPrice": "Price",

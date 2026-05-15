@@ -960,6 +960,10 @@ class AppLocalizationsIt extends AppLocalizations {
   String get winesFormPhotoLabel => 'Foto';
 
   @override
+  String get winesFormPlaceMomentHint =>
+      'Suggerimento: il luogo si compila automaticamente con il primo momento che aggiungi con una posizione.';
+
+  @override
   String get winesFormStatRating => 'Voto';
 
   @override

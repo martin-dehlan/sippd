@@ -500,6 +500,21 @@ class WineFormState extends ConsumerState<WineForm>
           height: context.h * 0.24,
           child: WineFormPlaceMap(location: _location, onTap: _editPlace),
         ),
+        if (_location == null) ...[
+          SizedBox(height: context.s),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: context.paddingH),
+            child: Text(
+              l10n.winesFormPlaceMomentHint,
+              style: TextStyle(
+                fontSize: context.captionFont * 0.95,
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurfaceVariant.withValues(alpha: 0.85),
+              ),
+            ),
+          ),
+        ],
         if (!widget.autoSave && widget.showInlineSubmit) ...[
           SizedBox(height: context.l),
           Padding(

@@ -352,6 +352,7 @@
   "winesFormHintName": "Nombre del vino",
   "winesFormSubmitDefault": "Guardar vino",
   "winesFormPhotoLabel": "Foto",
+  "winesFormPlaceMomentHint": "Consejo: el lugar se autocompleta con el primer momento que añadas con ubicación.",
   "winesFormStatRating": "Nota",
   "winesFormStatRatingUnit": "/ 10",
   "winesFormStatPrice": "Precio",

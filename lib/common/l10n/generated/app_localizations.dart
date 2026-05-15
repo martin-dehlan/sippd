@@ -1880,6 +1880,12 @@ abstract class AppLocalizations {
   /// **'Photo'**
   String get winesFormPhotoLabel;
 
+  /// No description provided for @winesFormPlaceMomentHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tip: the place auto-fills from the first moment you add with a location.'**
+  String get winesFormPlaceMomentHint;
+
   /// No description provided for @winesFormStatRating.
   ///
   /// In en, this message translates to:

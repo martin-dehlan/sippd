@@ -352,6 +352,7 @@
   "winesFormHintName": "Nom du vin",
   "winesFormSubmitDefault": "Enregistrer le vin",
   "winesFormPhotoLabel": "Photo",
+  "winesFormPlaceMomentHint": "Astuce : le lieu se remplit automatiquement avec le premier moment que tu ajoutes avec une localisation.",
   "winesFormStatRating": "Note",
   "winesFormStatRatingUnit": "/ 10",
   "winesFormStatPrice": "Prix",
