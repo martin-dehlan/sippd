@@ -54,7 +54,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -62,29 +62,109 @@ class AppDatabase extends _$AppDatabase {
       await m.createAll();
     },
     onUpgrade: (Migrator m, int from, int to) async {
-      if (from < 2) {
-        await m.createTable(ratingSummaryCacheTable);
-      }
-      if (from < 3) {
-        // Wine Moments phase 1 — extend wine_memories with moment
-        // context fields and add wine_memory_photos sibling table.
-        await m.addColumn(wineMemoriesTable, wineMemoriesTable.occurredAt);
-        await m.addColumn(wineMemoriesTable, wineMemoriesTable.occasion);
-        await m.addColumn(wineMemoriesTable, wineMemoriesTable.placeName);
-        await m.addColumn(wineMemoriesTable, wineMemoriesTable.placeLat);
-        await m.addColumn(wineMemoriesTable, wineMemoriesTable.placeLng);
-        await m.addColumn(wineMemoriesTable, wineMemoriesTable.foodPaired);
-        await m.addColumn(
-          wineMemoriesTable,
-          wineMemoriesTable.companionUserIds,
-        );
-        await m.addColumn(wineMemoriesTable, wineMemoriesTable.note);
-        await m.addColumn(wineMemoriesTable, wineMemoriesTable.visibility);
-        await m.addColumn(wineMemoriesTable, wineMemoriesTable.updatedAt);
-        await m.createTable(wineMemoryPhotosTable);
+      // v3 (shipped in 0.1.12..0.1.18) tried `addColumn(occurredAt)` and
+      // `addColumn(updatedAt)` whose default is `currentDateAndTime`.
+      // SQLite forbids non-constant DEFAULTs in ALTER TABLE ADD COLUMN, so
+      // the whole migration aborted mid-flight on every existing install,
+      // leaving DB in a half-applied state (rating_summary_cache created,
+      // user_version still 1). Subsequent opens looped on the same failure
+      // → DAOs unusable → wines/grapes/add-wine all broken.
+      //
+      // v4 replaces the migration with an idempotent path: every step
+      // PRAGMA-checks first, and the two timestamp columns use a constant
+      // DEFAULT 0 plus a backfill to `now`. Runs for any from < 4 so users
+      // stuck on partial-v3 recover, and fresh-but-healthy v3 users no-op.
+      if (from < 4) {
+        await _migrateToV4();
       }
     },
   );
+
+  Future<void> _migrateToV4() async {
+    // From v1 — defensive in case the broken v3 upgrade created it already.
+    if (!await _tableExists('rating_summary_cache')) {
+      await customStatement(
+        'CREATE TABLE rating_summary_cache ('
+        'user_id TEXT NOT NULL PRIMARY KEY, '
+        'payload TEXT NOT NULL, '
+        'fetched_at INTEGER NOT NULL)',
+      );
+    }
+
+    // wine_memories expansion — split timestamp columns (non-constant
+    // default) from the rest (safe addColumn).
+    await _addColumnSafe(
+      'wine_memories',
+      'occurred_at',
+      'INTEGER NOT NULL DEFAULT 0',
+    );
+    await customStatement(
+      "UPDATE wine_memories SET occurred_at = "
+      "CAST(strftime('%s','now') AS INTEGER) WHERE occurred_at = 0",
+    );
+    await _addColumnSafe(
+      'wine_memories',
+      'updated_at',
+      'INTEGER NOT NULL DEFAULT 0',
+    );
+    await customStatement(
+      "UPDATE wine_memories SET updated_at = "
+      "CAST(strftime('%s','now') AS INTEGER) WHERE updated_at = 0",
+    );
+
+    // Remaining columns are nullable or have constant defaults.
+    await _addColumnSafe('wine_memories', 'occasion', 'TEXT');
+    await _addColumnSafe('wine_memories', 'place_name', 'TEXT');
+    await _addColumnSafe('wine_memories', 'place_lat', 'REAL');
+    await _addColumnSafe('wine_memories', 'place_lng', 'REAL');
+    await _addColumnSafe('wine_memories', 'food_paired', 'TEXT');
+    await _addColumnSafe(
+      'wine_memories',
+      'companion_user_ids',
+      "TEXT NOT NULL DEFAULT '[]'",
+    );
+    await _addColumnSafe('wine_memories', 'note', 'TEXT');
+    await _addColumnSafe(
+      'wine_memories',
+      'visibility',
+      "TEXT NOT NULL DEFAULT 'friends'",
+    );
+
+    if (!await _tableExists('wine_memory_photos')) {
+      await customStatement(
+        'CREATE TABLE wine_memory_photos ('
+        'id TEXT NOT NULL PRIMARY KEY, '
+        'memory_id TEXT NOT NULL, '
+        'storage_path TEXT NOT NULL, '
+        'position INTEGER NOT NULL DEFAULT 0, '
+        'created_at INTEGER NOT NULL DEFAULT (CAST(strftime(\'%s\',\'now\') AS INTEGER)))',
+      );
+    }
+  }
+
+  Future<bool> _tableExists(String name) async {
+    final rows = await customSelect(
+      "SELECT name FROM sqlite_master WHERE type='table' AND name = ?",
+      variables: [Variable<String>(name)],
+    ).get();
+    return rows.isNotEmpty;
+  }
+
+  Future<bool> _columnExists(String table, String column) async {
+    final rows = await customSelect('PRAGMA table_info($table)').get();
+    return rows.any((r) => r.read<String>('name') == column);
+  }
+
+  Future<void> _addColumnSafe(
+    String table,
+    String column,
+    String typeAndConstraints,
+  ) async {
+    if (await _columnExists(table, column)) return;
+    await customStatement(
+      'ALTER TABLE $table ADD COLUMN $column $typeAndConstraints',
+    );
+  }
 
   static QueryExecutor _openConnection() {
     return driftDatabase(name: 'sippd_database');
