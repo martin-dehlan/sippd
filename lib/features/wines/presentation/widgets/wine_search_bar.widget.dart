@@ -18,7 +18,9 @@ class _WineSearchBarState extends ConsumerState<WineSearchBar> {
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController(text: ref.read(wineSearchQueryProvider));
+    _controller = TextEditingController(
+      text: ref.read(wineSearchQueryProvider),
+    );
   }
 
   @override
@@ -46,8 +48,7 @@ class _WineSearchBarState extends ConsumerState<WineSearchBar> {
         cursorColor: cs.onSurface,
         textAlign: TextAlign.start,
         style: TextStyle(fontSize: context.bodyFont, color: cs.onSurface),
-        onChanged: (q) =>
-            ref.read(wineSearchQueryProvider.notifier).set(q),
+        onChanged: (q) => ref.read(wineSearchQueryProvider.notifier).set(q),
         decoration: InputDecoration(
           hintText: 'Search your wines…',
           hintStyle: TextStyle(
