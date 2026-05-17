@@ -444,3 +444,25 @@ class WineSort extends _$WineSort {
     state = next;
   }
 }
+
+// ========================================
+// SEARCH STATE (transient — not persisted)
+// ========================================
+
+@riverpod
+class WineSearchQuery extends _$WineSearchQuery {
+  @override
+  String build() => '';
+
+  void set(String query) => state = query;
+  void clear() => state = '';
+}
+
+@riverpod
+class WineSearchBarVisible extends _$WineSearchBarVisible {
+  @override
+  bool build() => false;
+
+  void show() => state = true;
+  void hide() => state = false;
+}

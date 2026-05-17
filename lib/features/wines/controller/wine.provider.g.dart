@@ -1322,5 +1322,38 @@ final wineSortProvider =
     );
 
 typedef _$WineSort = AutoDisposeNotifier<WineSortMode>;
+String _$wineSearchQueryHash() => r'4f54a80845186957e8274ef477a55243fadbf2bb';
+
+/// See also [WineSearchQuery].
+@ProviderFor(WineSearchQuery)
+final wineSearchQueryProvider =
+    AutoDisposeNotifierProvider<WineSearchQuery, String>.internal(
+      WineSearchQuery.new,
+      name: r'wineSearchQueryProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$wineSearchQueryHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+typedef _$WineSearchQuery = AutoDisposeNotifier<String>;
+String _$wineSearchBarVisibleHash() =>
+    r'23e6b28d3fc773891737ffd5265780b071f3dbe8';
+
+/// See also [WineSearchBarVisible].
+@ProviderFor(WineSearchBarVisible)
+final wineSearchBarVisibleProvider =
+    AutoDisposeNotifierProvider<WineSearchBarVisible, bool>.internal(
+      WineSearchBarVisible.new,
+      name: r'wineSearchBarVisibleProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$wineSearchBarVisibleHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+typedef _$WineSearchBarVisible = AutoDisposeNotifier<bool>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
