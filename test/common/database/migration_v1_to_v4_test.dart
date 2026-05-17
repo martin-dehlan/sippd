@@ -14,58 +14,64 @@ import 'package:sippd/common/database/database.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  test('v1 → v4 migration backfills timestamps on pre-existing memories',
-      () async {
-    final db = AppDatabase.forTesting(
-      NativeDatabase.memory(setup: (raw) {
-        _seedV1Schema(raw);
-        raw.execute(
-          "INSERT INTO wine_memories (id, wine_id, user_id, caption, created_at) "
-          "VALUES ('m1', 'w1', 'u1', 'old', "
-          "CAST(strftime('%s','now') AS INTEGER) * 1000)",
-        );
-        raw.execute('PRAGMA user_version = 1');
-      }),
-    );
-    addTearDown(db.close);
+  test(
+    'v1 → v4 migration backfills timestamps on pre-existing memories',
+    () async {
+      final db = AppDatabase.forTesting(
+        NativeDatabase.memory(
+          setup: (raw) {
+            _seedV1Schema(raw);
+            raw.execute(
+              "INSERT INTO wine_memories (id, wine_id, user_id, caption, created_at) "
+              "VALUES ('m1', 'w1', 'u1', 'old', "
+              "CAST(strftime('%s','now') AS INTEGER) * 1000)",
+            );
+            raw.execute('PRAGMA user_version = 1');
+          },
+        ),
+      );
+      addTearDown(db.close);
 
-    // Trigger onUpgrade(1, 4) by hitting any DAO.
-    final memories = await db.wineMemoriesDao.getByWine('w1');
-    expect(memories, hasLength(1));
-    expect(memories.first.id, 'm1');
+      // Trigger onUpgrade(1, 4) by hitting any DAO.
+      final memories = await db.wineMemoriesDao.getByWine('w1');
+      expect(memories, hasLength(1));
+      expect(memories.first.id, 'm1');
 
-    // Backfilled timestamps land within the last minute.
-    final now = DateTime.now();
-    expect(
-      now.difference(memories.first.occurredAt).inMinutes,
-      lessThan(1),
-      reason: 'occurred_at must be backfilled to now() during migration',
-    );
-    expect(
-      now.difference(memories.first.updatedAt).inMinutes,
-      lessThan(1),
-      reason: 'updated_at must be backfilled to now() during migration',
-    );
-    // Constant-default columns get their declared default.
-    expect(memories.first.visibility, 'friends');
-    expect(memories.first.companionUserIds, '[]');
-  });
+      // Backfilled timestamps land within the last minute.
+      final now = DateTime.now();
+      expect(
+        now.difference(memories.first.occurredAt).inMinutes,
+        lessThan(1),
+        reason: 'occurred_at must be backfilled to now() during migration',
+      );
+      expect(
+        now.difference(memories.first.updatedAt).inMinutes,
+        lessThan(1),
+        reason: 'updated_at must be backfilled to now() during migration',
+      );
+      // Constant-default columns get their declared default.
+      expect(memories.first.visibility, 'friends');
+      expect(memories.first.companionUserIds, '[]');
+    },
+  );
 
   test('partial-v3 stuck state recovers to v4', () async {
     // Simulates a device that hit the original v3 migration mid-way:
     // rating_summary_cache was created before addColumn(occurredAt)
     // threw, so the table exists but user_version was never bumped.
     final db = AppDatabase.forTesting(
-      NativeDatabase.memory(setup: (raw) {
-        _seedV1Schema(raw);
-        raw.execute(
-          'CREATE TABLE rating_summary_cache ('
-          'user_id TEXT NOT NULL PRIMARY KEY, '
-          'payload TEXT NOT NULL, '
-          'fetched_at INTEGER NOT NULL)',
-        );
-        raw.execute('PRAGMA user_version = 1');
-      }),
+      NativeDatabase.memory(
+        setup: (raw) {
+          _seedV1Schema(raw);
+          raw.execute(
+            'CREATE TABLE rating_summary_cache ('
+            'user_id TEXT NOT NULL PRIMARY KEY, '
+            'payload TEXT NOT NULL, '
+            'fetched_at INTEGER NOT NULL)',
+          );
+          raw.execute('PRAGMA user_version = 1');
+        },
+      ),
     );
     addTearDown(db.close);
 
