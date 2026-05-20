@@ -2,6 +2,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../common/database/database.dart';
 import '../../../common/services/analytics/analytics.provider.dart';
 import '../../../common/services/connectivity/connectivity.provider.dart';
+import '../../../common/services/review/review.provider.dart';
 import '../data/services/outbox_flusher.service.dart';
 import '../../auth/controller/auth.provider.dart';
 import '../../onboarding/controller/onboarding.provider.dart';
@@ -136,6 +137,18 @@ WineMemoryRepository wineMemoryRepository(WineMemoryRepositoryRef ref) {
     api,
     ref.read(analyticsProvider),
   );
+}
+
+/// Moments where the current user and [otherUserId] share involvement
+/// (owner + tagged-companion in either direction). Server-only — no
+/// Drift cache because moments owned by another user aren't ours to
+/// mirror locally.
+@riverpod
+Future<List<WineMemoryEntity>> sharedMoments(
+  SharedMomentsRef ref,
+  String otherUserId,
+) {
+  return ref.read(wineMemoryRepositoryProvider).getShared(otherUserId);
 }
 
 @riverpod
@@ -277,6 +290,7 @@ class WineController extends _$WineController {
   Future<void> addWine(WineEntity wine) async {
     await ref.read(wineRepositoryProvider).addWine(wine);
     _invalidateTasteAggregates();
+    await ref.read(reviewPromptControllerProvider.notifier).recordWineCreated();
     ref
         .read(analyticsProvider)
         .capture(
@@ -431,4 +445,26 @@ class WineSort extends _$WineSort {
     await prefs.setString(_wineSortModeKey, next.name);
     state = next;
   }
+}
+
+// ========================================
+// SEARCH STATE (transient — not persisted)
+// ========================================
+
+@riverpod
+class WineSearchQuery extends _$WineSearchQuery {
+  @override
+  String build() => '';
+
+  void set(String query) => state = query;
+  void clear() => state = '';
+}
+
+@riverpod
+class WineSearchBarVisible extends _$WineSearchBarVisible {
+  @override
+  bool build() => false;
+
+  void show() => state = true;
+  void hide() => state = false;
 }

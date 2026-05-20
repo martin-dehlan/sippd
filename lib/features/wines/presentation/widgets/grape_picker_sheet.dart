@@ -331,6 +331,9 @@ class _GrapeTile extends StatelessWidget {
     }
   }
 
+  String _capitalize(String s) =>
+      s.isEmpty ? s : '${s[0].toUpperCase()}${s.substring(1)}';
+
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
@@ -353,13 +356,34 @@ class _GrapeTile extends StatelessWidget {
             ),
             SizedBox(width: context.s * 1.5),
             Expanded(
-              child: Text(
-                grape.name,
-                style: TextStyle(
-                  fontSize: context.bodyFont,
-                  fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
-                  color: cs.onSurface,
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    grape.name,
+                    style: TextStyle(
+                      fontSize: context.bodyFont,
+                      fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+                      color: cs.onSurface,
+                    ),
+                  ),
+                  if (grape.aliases.isNotEmpty) ...[
+                    SizedBox(height: context.xs * 0.5),
+                    Text(
+                      grape.aliases
+                          .take(3)
+                          .map((a) => _capitalize(a))
+                          .join(' · '),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: context.captionFont * 0.9,
+                        color: cs.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ],
               ),
             ),
             if (selected)

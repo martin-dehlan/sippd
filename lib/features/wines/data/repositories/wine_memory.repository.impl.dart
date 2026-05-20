@@ -72,4 +72,16 @@ class WineMemoryRepositoryImpl implements WineMemoryRepository {
       _analytics?.syncFailed('memory_fetch', error: e);
     }
   }
+
+  @override
+  Future<List<WineMemoryEntity>> getShared(String otherUserId) async {
+    if (_api == null) return const [];
+    try {
+      final models = await _api.fetchShared(otherUserId);
+      return models.map((m) => m.toEntity()).toList();
+    } catch (e) {
+      _analytics?.syncFailed('memory_shared_fetch', error: e);
+      return const [];
+    }
+  }
 }

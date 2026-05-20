@@ -1,8 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sippd/common/services/analytics/analytics.provider.dart';
 import 'package:sippd/features/auth/controller/auth.provider.dart';
+import 'package:sippd/features/onboarding/controller/onboarding.provider.dart';
 import 'package:sippd/features/wines/controller/wine.provider.dart';
 import 'package:sippd/features/wines/domain/entities/wine.entity.dart';
 
@@ -15,11 +17,15 @@ void main() {
   late MockWineRepository repo;
   late MockWineMemoryRepository memoryRepo;
   late MockAnalyticsService analytics;
+  late SharedPreferences prefs;
 
-  setUp(() {
+  setUp(() async {
     repo = MockWineRepository();
     memoryRepo = MockWineMemoryRepository();
     analytics = MockAnalyticsService();
+
+    SharedPreferences.setMockInitialValues({});
+    prefs = await SharedPreferences.getInstance();
 
     when(
       () => analytics.capture(any(), properties: any(named: 'properties')),
@@ -36,6 +42,7 @@ void main() {
         wineRepositoryProvider.overrideWithValue(repo),
         wineMemoryRepositoryProvider.overrideWithValue(memoryRepo),
         analyticsProvider.overrideWithValue(analytics),
+        sharedPreferencesProvider.overrideWithValue(prefs),
       ],
     );
   }

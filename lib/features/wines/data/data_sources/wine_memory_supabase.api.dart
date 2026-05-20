@@ -27,4 +27,16 @@ class WineMemorySupabaseApi {
   Future<void> deleteByWine(String wineId) async {
     await _client.from('wine_memories').delete().eq('wine_id', wineId);
   }
+
+  /// Moments where the caller and the other user are both involved
+  /// (one owns, the other is tagged). Returns most-recent first.
+  /// Backed by the `get_shared_moments` RPC so the friendship-aware
+  /// filter stays on the server.
+  Future<List<WineMemoryModel>> fetchShared(String otherUserId) async {
+    final data = await _client.rpc<List<dynamic>>(
+      'get_shared_moments',
+      params: {'p_other_user_id': otherUserId},
+    );
+    return data.map((row) => WineMemoryModel.fromJson(row)).toList();
+  }
 }

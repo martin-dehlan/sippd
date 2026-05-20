@@ -961,6 +961,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get winesFormPhotoLabel => 'Foto';
 
   @override
+  String get winesFormPlaceMomentHint =>
+      'Consejo: el lugar se autocompleta con el primer momento que añadas con ubicación.';
+
+  @override
   String get winesFormStatRating => 'Nota';
 
   @override
@@ -1101,6 +1105,37 @@ class AppLocalizationsEs extends AppLocalizations {
   String get momentCompanionsAddFriend => 'Añadir amigo';
 
   @override
+  String get momentCompanionsEmpty => 'Aún no hay amigos para etiquetar.';
+
+  @override
+  String get friendsProfileSharedMoments => 'Momentos compartidos';
+
+  @override
+  String get winesShareToFriend => 'Compartir con amigo';
+
+  @override
+  String winesShareSuccess(String name) {
+    return 'Vino compartido con $name';
+  }
+
+  @override
+  String get winesShareError => 'No se pudo compartir — inténtalo otra vez';
+
+  @override
+  String get winesSharePickFriendsTitle => 'Compartir con';
+
+  @override
+  String get winesExpertProUnlock => 'Desbloquear con Pro';
+
+  @override
+  String get momentShowcaseApplied =>
+      'Establecida como foto principal del vino.';
+
+  @override
+  String get momentShowcaseError =>
+      'No se pudo establecer como foto principal. Inténtalo de nuevo.';
+
+  @override
   String get momentPlaceHint => 'Restaurante o lugar';
 
   @override
@@ -1150,8 +1185,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get momentSectionAdd => 'Nuevo';
 
   @override
-  String get momentSectionEmpty =>
-      'Aún no hay momentos — toca Nuevo para capturar uno.';
+  String get momentSectionEmpty => 'Aún no hay momentos — toca +.';
 
   @override
   String momentMetaWith(String names) {
@@ -3527,6 +3561,19 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get shareRatingPromptDismiss => 'Ahora no';
+
+  @override
+  String get reviewPromptTitle => '¿Te gusta Sippd?';
+
+  @override
+  String get reviewPromptBody =>
+      'Ya has valorado varios vinos. Una breve reseña ayuda a otros amantes del vino a descubrir Sippd.';
+
+  @override
+  String get reviewPromptCtaPositive => 'Me encanta';
+
+  @override
+  String get reviewPromptCtaNegative => 'Todavía no';
 
   @override
   String get commonRetry => 'Reintentar';

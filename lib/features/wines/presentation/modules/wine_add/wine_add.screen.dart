@@ -5,8 +5,10 @@ import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../../common/l10n/generated/app_localizations.dart';
+import '../../../../../common/services/review/review.provider.dart';
 import '../../../../../common/utils/name_normalizer.dart';
 import '../../../../../common/utils/responsive.dart';
+import '../../../../../common/widgets/review_prompt.widget.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../../auth/controller/auth.provider.dart';
 import '../../../../locations/domain/entities/location.entity.dart';
@@ -16,7 +18,6 @@ import '../../../controller/wine.provider.dart';
 import '../../../data/data_sources/expert_tasting.api.dart';
 import '../../../domain/entities/canonical_wine_candidate.entity.dart';
 import '../../../domain/entities/wine.entity.dart';
-import '../../../domain/entities/wine_memory.entity.dart';
 import '../../widgets/canonical_wine_prompt_sheet.dart';
 import '../../widgets/wine_form.widget.dart';
 
@@ -46,8 +47,7 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
         d.location != null ||
         (d.notes?.isNotEmpty ?? false) ||
         d.imageUrl != null ||
-        d.localImagePath != null ||
-        d.memories.isNotEmpty;
+        d.localImagePath != null;
   }
 
   Future<bool> _confirmDiscard() async {
@@ -220,19 +220,6 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
       }
     }
 
-    final repo = ref.read(wineMemoryRepositoryProvider);
-    for (final m in data.memories) {
-      await repo.addMemory(
-        WineMemoryEntity(
-          id: m.id,
-          wineId: wineId,
-          userId: userId,
-          imageUrl: m.imageUrl,
-          localImagePath: m.localImagePath,
-          createdAt: DateTime.now(),
-        ),
-      );
-    }
     if (!mounted) return;
     // Nudge to share before bouncing back to the list. Sheet always
     // dismisses (share, "Maybe later", or drag) so the post-save pop
@@ -243,6 +230,15 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
       wine: wine,
       triggerSource: 'wine_add_post_save',
     );
+    // After the share nudge clears, surface the one-time review soft ask
+    // for users who've created enough wines to have an opinion.
+    if (mounted) {
+      final reviewCtrl = ref.read(reviewPromptControllerProvider.notifier);
+      if (reviewCtrl.shouldPrompt()) {
+        await reviewCtrl.markSurfaced();
+        if (mounted) await showReviewPromptSheet(context: context);
+      }
+    }
     if (mounted) context.pop();
   }
 
