@@ -961,8 +961,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get winesFormPhotoLabel => 'Foto';
 
   @override
-  String get winesFormPlaceMomentHint =>
-      'Consejo: el lugar se autocompleta con el primer momento que añadas con ubicación.';
+  String get winesFormPlaceSectionHeader => 'Primer Sipp';
 
   @override
   String get winesFormStatRating => 'Nota';
@@ -998,7 +997,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get winesFormChipNotesFilled => 'Notas ✓';
 
   @override
-  String get winesFormPlaceTapToAdd => 'Toca para añadir lugar';
+  String get winesFormPlaceTapToAdd => '¿Dónde te la tomaste?';
 
   @override
   String get winesFormWineryTitle => 'Bodega';
@@ -1579,11 +1578,11 @@ class AppLocalizationsEs extends AppLocalizations {
       'Suma de precios de botella en tus vinos valorados — no el gasto real de consumo.';
 
   @override
-  String get winesStatsSectionPlaces => 'Dónde has bebido vino';
+  String get winesStatsSectionPlaces => 'Dónde conociste tus vinos';
 
   @override
   String get winesStatsSectionPlacesSubtitle =>
-      'Cada vino que registraste con un lugar.';
+      'Un pin por vino, tu primer Sipp.';
 
   @override
   String get winesStatsSectionRegions => 'Regiones top';

@@ -57,6 +57,11 @@ class _PriceInputSheetState extends State<_PriceInputSheet> {
     _controller = TextEditingController(
       text: widget.initial != null ? formatPrice(widget.initial!) : '',
     );
+    // Collapse the cursor at end of text so iOS autofocus doesn't
+    // paint a "select-all" rectangle behind the hint placeholder.
+    _controller.selection = TextSelection.collapsed(
+      offset: _controller.text.length,
+    );
     _focusNode = FocusNode();
     _controller.addListener(_onChanged);
   }
@@ -215,69 +220,74 @@ class _AmountDisplay extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
     final amountSize = context.displayFont;
 
+    // Selection rendering disabled — keeps an autofocused empty field
+    // from painting iOS's grey "select-all" rectangle behind the hint.
+    // Cursor still shows because it's separately controlled.
+    final textField = TextSelectionTheme(
+      data: const TextSelectionThemeData(
+        selectionColor: Colors.transparent,
+        selectionHandleColor: Colors.transparent,
+      ),
+      child: TextField(
+        controller: controller,
+        focusNode: focusNode,
+        autofocus: true,
+        textAlign: TextAlign.left,
+        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        cursorColor: cs.primary,
+        cursorWidth: 1.5,
+        cursorRadius: const Radius.circular(1),
+        enableInteractiveSelection: false,
+        inputFormatters: [
+          LengthLimitingTextInputFormatter(8),
+          _DecimalInputFormatter(),
+        ],
+        style: TextStyle(
+          fontSize: amountSize,
+          fontWeight: FontWeight.bold,
+          height: 1,
+          letterSpacing: -1,
+          color: cs.onSurface,
+          fontFeatures: tabularFigures,
+        ),
+        decoration: InputDecoration(
+          isCollapsed: true,
+          hintText: '0',
+          hintStyle: TextStyle(
+            fontSize: amountSize,
+            fontWeight: FontWeight.bold,
+            height: 1,
+            letterSpacing: -1,
+            color: cs.outline.withValues(alpha: 0.45),
+          ),
+          border: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          focusedBorder: InputBorder.none,
+          counterText: '',
+          contentPadding: EdgeInsets.zero,
+        ),
+      ),
+    );
+
     return GestureDetector(
       onTap: () => focusNode.requestFocus(),
       behavior: HitTestBehavior.opaque,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.baseline,
+        textBaseline: TextBaseline.alphabetic,
         children: [
-          Padding(
-            padding: EdgeInsets.only(top: amountSize * 0.18),
-            child: Text(
-              symbol,
-              style: TextStyle(
-                fontSize: amountSize * 0.55,
-                fontWeight: FontWeight.w500,
-                color: hasValue ? cs.onSurfaceVariant : cs.outline,
-              ),
+          Text(
+            symbol,
+            style: TextStyle(
+              fontSize: amountSize * 0.5,
+              fontWeight: FontWeight.w500,
+              color: hasValue ? cs.onSurfaceVariant : cs.outline,
+              letterSpacing: -0.5,
             ),
           ),
           SizedBox(width: context.w * 0.02),
-          IntrinsicWidth(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(minWidth: context.w * 0.18),
-              child: TextField(
-                controller: controller,
-                focusNode: focusNode,
-                autofocus: true,
-                textAlign: TextAlign.center,
-                keyboardType: const TextInputType.numberWithOptions(
-                  decimal: true,
-                ),
-                cursorColor: cs.primary,
-                cursorWidth: 2,
-                inputFormatters: [
-                  LengthLimitingTextInputFormatter(8),
-                  _DecimalInputFormatter(),
-                ],
-                style: TextStyle(
-                  fontSize: amountSize,
-                  fontWeight: FontWeight.bold,
-                  height: 1,
-                  letterSpacing: -1,
-                  color: cs.onSurface,
-                  fontFeatures: tabularFigures,
-                ),
-                decoration: InputDecoration(
-                  isCollapsed: true,
-                  hintText: '0',
-                  hintStyle: TextStyle(
-                    fontSize: amountSize,
-                    fontWeight: FontWeight.bold,
-                    height: 1,
-                    letterSpacing: -1,
-                    color: cs.outline.withValues(alpha: 0.5),
-                  ),
-                  border: InputBorder.none,
-                  enabledBorder: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  counterText: '',
-                  contentPadding: EdgeInsets.zero,
-                ),
-              ),
-            ),
-          ),
+          IntrinsicWidth(child: textField),
         ],
       ),
     );

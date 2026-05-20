@@ -1880,11 +1880,11 @@ abstract class AppLocalizations {
   /// **'Photo'**
   String get winesFormPhotoLabel;
 
-  /// No description provided for @winesFormPlaceMomentHint.
+  /// No description provided for @winesFormPlaceSectionHeader.
   ///
   /// In en, this message translates to:
-  /// **'Tip: the place auto-fills from the first moment you add with a location.'**
-  String get winesFormPlaceMomentHint;
+  /// **'First Sipp'**
+  String get winesFormPlaceSectionHeader;
 
   /// No description provided for @winesFormStatRating.
   ///
@@ -1955,7 +1955,7 @@ abstract class AppLocalizations {
   /// No description provided for @winesFormPlaceTapToAdd.
   ///
   /// In en, this message translates to:
-  /// **'Tap to add place'**
+  /// **'Where\'d you have it?'**
   String get winesFormPlaceTapToAdd;
 
   /// No description provided for @winesFormWineryTitle.
@@ -3077,13 +3077,13 @@ abstract class AppLocalizations {
   /// No description provided for @winesStatsSectionPlaces.
   ///
   /// In en, this message translates to:
-  /// **'Where you’ve drunk wine'**
+  /// **'Where you met your wines'**
   String get winesStatsSectionPlaces;
 
   /// No description provided for @winesStatsSectionPlacesSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Every wine you logged with a place.'**
+  /// **'One pin per wine, your first Sipp.'**
   String get winesStatsSectionPlacesSubtitle;
 
   /// No description provided for @winesStatsSectionRegions.

@@ -967,8 +967,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get winesFormPhotoLabel => 'Foto';
 
   @override
-  String get winesFormPlaceMomentHint =>
-      'Tipp: Der Ort wird automatisch gesetzt, wenn du einen Moment mit Ort hinzufügst.';
+  String get winesFormPlaceSectionHeader => 'Erster Sipp';
 
   @override
   String get winesFormStatRating => 'Bewertung';
@@ -1004,7 +1003,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get winesFormChipNotesFilled => 'Notizen ✓';
 
   @override
-  String get winesFormPlaceTapToAdd => 'Tippen, um Ort hinzuzufügen';
+  String get winesFormPlaceTapToAdd => 'Wo warst du?';
 
   @override
   String get winesFormWineryTitle => 'Weingut';
@@ -1587,11 +1586,11 @@ class AppLocalizationsDe extends AppLocalizations {
       'Summe der hinterlegten Flaschenpreise deiner bewerteten Weine — nicht der tatsächliche Konsum.';
 
   @override
-  String get winesStatsSectionPlaces => 'Wo du Wein getrunken hast';
+  String get winesStatsSectionPlaces => 'Wo du deine Weine kennengelernt hast';
 
   @override
   String get winesStatsSectionPlacesSubtitle =>
-      'Jeder Wein, den du mit einem Ort erfasst hast.';
+      'Ein Pin pro Wein, dein erster Sipp.';
 
   @override
   String get winesStatsSectionRegions => 'Top-Regionen';

@@ -18,8 +18,12 @@ import '../../../controller/wine.provider.dart';
 import '../../../data/data_sources/expert_tasting.api.dart';
 import '../../../domain/entities/canonical_wine_candidate.entity.dart';
 import '../../../domain/entities/wine.entity.dart';
+import '../../../domain/entities/wine_memory.entity.dart';
+import '../../../domain/entities/wine_memory_photo.entity.dart';
 import '../../widgets/canonical_wine_prompt_sheet.dart';
+import '../../widgets/moments_bento.widget.dart';
 import '../../widgets/wine_form.widget.dart';
+import '../moment_capture/moment_capture.screen.dart';
 
 class WineAddScreen extends ConsumerStatefulWidget {
   const WineAddScreen({super.key});
@@ -32,22 +36,72 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
   final GlobalKey<WineFormState> _formKey = GlobalKey<WineFormState>();
   WineFormData? _current;
   bool _allowPop = false;
+  // Drafted moments captured before the wine is saved. Persisted in
+  // `_save` after the wine row + canonical resolution land. Photos are
+  // uploaded to storage immediately on pick (orphaned on full cancel
+  // — covered by the post-launch storage sweep).
+  final List<MemoryDraft> _drafts = [];
 
   bool get _isDirty {
     final d = _current;
-    if (d == null) return false;
-    return d.name.isNotEmpty ||
-        d.rating != 5.0 ||
-        d.type != WineType.red ||
-        d.price != null ||
-        d.vintage != null ||
-        (d.grape?.isNotEmpty ?? false) ||
-        (d.winery?.isNotEmpty ?? false) ||
-        (d.country?.isNotEmpty ?? false) ||
-        d.location != null ||
-        (d.notes?.isNotEmpty ?? false) ||
-        d.imageUrl != null ||
-        d.localImagePath != null;
+    final hasFormData =
+        d != null &&
+        (d.name.isNotEmpty ||
+            d.rating != 5.0 ||
+            d.type != WineType.red ||
+            d.price != null ||
+            d.vintage != null ||
+            (d.grape?.isNotEmpty ?? false) ||
+            (d.winery?.isNotEmpty ?? false) ||
+            (d.country?.isNotEmpty ?? false) ||
+            d.location != null ||
+            (d.notes?.isNotEmpty ?? false) ||
+            d.imageUrl != null ||
+            d.localImagePath != null);
+    return hasFormData || _drafts.isNotEmpty;
+  }
+
+  /// Renders a [MemoryDraft] into a stand-in [WineMemoryEntity] purely
+  /// for bento tile display (the bento itself doesn't care about the
+  /// difference). Persistence still goes through the real entity built
+  /// inside [_save] when the wineId exists.
+  WineMemoryEntity _draftAsEntity(MemoryDraft d) => WineMemoryEntity(
+    id: d.id,
+    wineId: '',
+    userId: '',
+    imageUrl: d.primaryPhotoUrl,
+    caption: d.caption,
+    createdAt: d.occurredAt,
+    occurredAt: d.occurredAt,
+    placeName: d.placeName,
+    placeLat: d.placeLat,
+    placeLng: d.placeLng,
+    companionUserIds: d.companionUserIds,
+    note: d.note,
+    visibility: d.visibility,
+  );
+
+  Future<void> _addMomentDraft() async {
+    final draft = await pushMomentCaptureDraft(
+      context,
+      ref,
+      wineLocationName: _current?.location?.shortDisplay,
+      wineLocationLat: _current?.location?.lat,
+      wineLocationLng: _current?.location?.lng,
+    );
+    if (draft == null || !mounted) return;
+    setState(() => _drafts.add(draft));
+  }
+
+  Future<void> _editMomentDraft(int index) async {
+    final existing = _drafts[index];
+    final updated = await pushMomentCaptureDraft(
+      context,
+      ref,
+      existing: existing,
+    );
+    if (updated == null || !mounted) return;
+    setState(() => _drafts[index] = updated);
   }
 
   Future<bool> _confirmDiscard() async {
@@ -220,11 +274,60 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
       }
     }
 
+    // Persist any moments the user drafted before saving. Each draft
+    // becomes one WineMemoryEntity + N WineMemoryPhotoEntity rows
+    // under the freshly-created wineId. Failures here are non-fatal:
+    // the wine is already saved; orphaned drafts are easier to lose
+    // than to wedge the save flow.
+    if (_drafts.isNotEmpty) {
+      try {
+        final memoryRepo = ref.read(wineMemoryRepositoryProvider);
+        final photoRepo = ref.read(wineMemoryPhotoRepositoryProvider);
+        for (final d in _drafts) {
+          final now = DateTime.now();
+          await memoryRepo.addMemory(
+            WineMemoryEntity(
+              id: d.id,
+              wineId: wineId,
+              userId: userId,
+              imageUrl: d.primaryPhotoUrl,
+              caption: d.caption,
+              createdAt: now,
+              occurredAt: d.occurredAt,
+              occasion: d.occasion,
+              placeName: d.placeName,
+              placeLat: d.placeLat,
+              placeLng: d.placeLng,
+              foodPaired: d.foodPaired,
+              companionUserIds: d.companionUserIds,
+              note: d.note,
+              visibility: d.visibility,
+              updatedAt: now,
+            ),
+          );
+          if (d.photoUrls.isNotEmpty) {
+            await photoRepo.addPhotos([
+              for (var i = 0; i < d.photoUrls.length; i++)
+                WineMemoryPhotoEntity(
+                  id: const Uuid().v4(),
+                  memoryId: d.id,
+                  storagePath: d.photoUrls[i],
+                  position: i,
+                  createdAt: now,
+                ),
+            ]);
+          }
+        }
+      } catch (_) {
+        // Swallow — wine save already succeeded.
+      }
+    }
+
     if (!mounted) return;
+    setState(() => _allowPop = true);
     // Nudge to share before bouncing back to the list. Sheet always
     // dismisses (share, "Maybe later", or drag) so the post-save pop
     // still runs whatever the user chose.
-    setState(() => _allowPop = true);
     await showWineSharePromptSheet(
       context: context,
       wine: wine,
@@ -297,6 +400,11 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
                 showInlineSubmit: false,
                 onChanged: (data) => setState(() => _current = data),
                 onSubmit: (_) => _save(),
+                momentsHook: _MomentsAddHook(
+                  drafts: _drafts.map(_draftAsEntity).toList(),
+                  onAdd: _addMomentDraft,
+                  onEdit: _editMomentDraft,
+                ),
               ),
               Positioned(
                 right: context.paddingH,
@@ -343,6 +451,78 @@ class _FloatingBackButton extends StatelessWidget {
         onPressed: onPressed,
         child: Icon(PhosphorIconsRegular.arrowLeft, size: context.w * 0.06),
       ),
+    );
+  }
+}
+
+/// Mirrors the wine_detail moments section visually — uppercase MOMENTS
+/// header + bento mosaic. Receives the drafted-but-not-yet-saved
+/// moments so the user sees them as real tiles while filling in the
+/// rest of the wine. Tap a placeholder → [onAdd] (new draft); tap a
+/// real tile → [onEdit] (re-open in moment_capture).
+class _MomentsAddHook extends StatelessWidget {
+  final List<WineMemoryEntity> drafts;
+  final VoidCallback onAdd;
+  final ValueChanged<int> onEdit;
+
+  const _MomentsAddHook({
+    required this.drafts,
+    required this.onAdd,
+    required this.onEdit,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: context.paddingH),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  l10n.momentSectionHeader.toUpperCase(),
+                  style: TextStyle(
+                    fontSize: context.captionFont * 0.95,
+                    fontWeight: FontWeight.w700,
+                    color: cs.onSurface.withValues(alpha: 0.72),
+                    letterSpacing: 1.2,
+                  ),
+                ),
+              ),
+              GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: onAdd,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: context.xs,
+                    vertical: context.xs,
+                  ),
+                  child: Icon(
+                    PhosphorIconsRegular.plus,
+                    size: context.w * 0.045,
+                    color: cs.onSurface.withValues(alpha: 0.72),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(height: context.m),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: context.paddingH),
+          child: MomentsBento(
+            memories: drafts,
+            wineId: '',
+            viewerEnabled: false,
+            onAdd: onAdd,
+            onMemoryTap: onEdit,
+          ),
+        ),
+      ],
     );
   }
 }

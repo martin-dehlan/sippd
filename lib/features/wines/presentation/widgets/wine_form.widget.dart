@@ -91,6 +91,12 @@ class WineForm extends ConsumerStatefulWidget {
   /// drive submission through a [GlobalKey] and call [WineFormState.submit].
   final bool showInlineSubmit;
 
+  /// Optional below-place section. wine_add slots a MomentsBento here so
+  /// the user can kick off a moment from the same form (the bento's
+  /// onAdd saves the wine first, then pushes moment_capture with the
+  /// freshly-created wineId).
+  final Widget? momentsHook;
+
   const WineForm({
     super.key,
     this.initial,
@@ -100,6 +106,7 @@ class WineForm extends ConsumerStatefulWidget {
     this.autoSave = false,
     this.showInlineSubmit = true,
     this.wine,
+    this.momentsHook,
   });
 
   @override
@@ -495,26 +502,30 @@ class WineFormState extends ConsumerState<WineForm>
           onNotesTap: _editNotes,
           onWineryTap: _editWinery,
         ),
+        if (widget.momentsHook != null) ...[
+          SizedBox(height: context.l),
+          widget.momentsHook!,
+        ],
         SizedBox(height: context.l),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: context.paddingH),
+          child: Text(
+            l10n.winesFormPlaceSectionHeader.toUpperCase(),
+            style: TextStyle(
+              fontSize: context.captionFont * 0.95,
+              fontWeight: FontWeight.w700,
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.72),
+              letterSpacing: 1.2,
+            ),
+          ),
+        ),
+        SizedBox(height: context.m),
         SizedBox(
           height: context.h * 0.24,
           child: WineFormPlaceMap(location: _location, onTap: _editPlace),
         ),
-        if (_location == null) ...[
-          SizedBox(height: context.s),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: context.paddingH),
-            child: Text(
-              l10n.winesFormPlaceMomentHint,
-              style: TextStyle(
-                fontSize: context.captionFont * 0.95,
-                color: Theme.of(
-                  context,
-                ).colorScheme.onSurfaceVariant.withValues(alpha: 0.85),
-              ),
-            ),
-          ),
-        ],
         if (!widget.autoSave && widget.showInlineSubmit) ...[
           SizedBox(height: context.l),
           Padding(

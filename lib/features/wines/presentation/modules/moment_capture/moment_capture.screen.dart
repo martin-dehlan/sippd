@@ -17,6 +17,98 @@ import '../../../controller/wine.provider.dart';
 import '../../../domain/entities/wine_memory.entity.dart';
 import '../../../domain/entities/wine_memory_photo.entity.dart';
 
+/// In-memory draft of a wine moment captured *before* its parent wine
+/// exists. Used by wine_add — user can add moments while filling in
+/// the wine, drafts survive in form state, and the host screen
+/// persists them after the wine row is created.
+class MemoryDraft {
+  final String id;
+  final List<String> photoUrls;
+  final String? caption;
+  final DateTime occurredAt;
+  final String? occasion;
+  final String? placeName;
+  final double? placeLat;
+  final double? placeLng;
+  final String? foodPaired;
+  final List<String> companionUserIds;
+  final String? note;
+  final String visibility;
+
+  MemoryDraft({
+    required this.id,
+    this.photoUrls = const [],
+    this.caption,
+    DateTime? occurredAt,
+    this.occasion,
+    this.placeName,
+    this.placeLat,
+    this.placeLng,
+    this.foodPaired,
+    this.companionUserIds = const [],
+    this.note,
+    this.visibility = 'friends',
+  }) : occurredAt = occurredAt ?? DateTime.now();
+
+  /// First uploaded photo URL — used as the legacy `imageUrl` mirror
+  /// on the persisted [WineMemoryEntity] and as the thumb URL when
+  /// rendering the draft in a [MomentsBento] tile.
+  String? get primaryPhotoUrl => photoUrls.isEmpty ? null : photoUrls.first;
+}
+
+/// Draft variant of [pushMomentCapture] for use during wine_add where
+/// no `wineId` exists yet. Returns the built [MemoryDraft] back to the
+/// caller — the caller is responsible for turning it into a
+/// [WineMemoryEntity] + photo rows once the wine has been saved.
+/// Photos are uploaded to storage immediately (so cancelled drafts may
+/// leak orphaned files — covered by the post-launch orphan sweep).
+Future<MemoryDraft?> pushMomentCaptureDraft(
+  BuildContext context,
+  WidgetRef ref, {
+  MemoryDraft? existing,
+  String? wineLocationName,
+  double? wineLocationLat,
+  double? wineLocationLng,
+}) async {
+  String? initialUrl;
+  if (existing == null) {
+    final source = await _showSourceSheet(context);
+    if (source == null || !context.mounted) return null;
+    try {
+      final picker = ImagePicker();
+      final picked = await picker.pickImage(
+        source: source,
+        maxWidth: 1600,
+        maxHeight: 1600,
+        imageQuality: 85,
+        requestFullMetadata: false,
+      );
+      if (picked == null) return null;
+      final userId = ref.read(currentUserIdProvider);
+      final svc = ref.read(wineImageServiceProvider);
+      if (userId == null || svc == null) return null;
+      initialUrl = await svc.uploadImage(userId: userId, filePath: picked.path);
+    } catch (e) {
+      if (context.mounted) await PhotoErrorHandler.handle(context, e);
+      return null;
+    }
+  }
+  if (!context.mounted) return null;
+  return Navigator.of(context, rootNavigator: true).push<MemoryDraft>(
+    MaterialPageRoute(
+      fullscreenDialog: true,
+      builder: (_) => MomentCaptureScreen(
+        wineId: '',
+        draftSeed: existing,
+        initialPhotoUrl: initialUrl,
+        wineLocationName: wineLocationName,
+        wineLocationLat: wineLocationLat,
+        wineLocationLng: wineLocationLng,
+      ),
+    ),
+  );
+}
+
 /// Opens the moment capture flow. Photo-first, full-bleed canvas with
 /// a single integrated bottom panel: date + place chips, caption, save.
 ///
@@ -107,6 +199,7 @@ class MomentCaptureScreen extends ConsumerStatefulWidget {
     this.existing,
     this.existingPhotos = const [],
     this.initialPhotoUrl,
+    this.draftSeed,
     this.wineLocationName,
     this.wineLocationLat,
     this.wineLocationLng,
@@ -116,12 +209,22 @@ class MomentCaptureScreen extends ConsumerStatefulWidget {
   final WineMemoryEntity? existing;
   final List<WineMemoryPhotoEntity> existingPhotos;
   final String? initialPhotoUrl;
+
+  /// When non-null, the screen runs in **draft mode**: nothing is
+  /// written to the repo on save; instead the built [MemoryDraft] is
+  /// returned to the caller via [Navigator.pop]. Used by wine_add
+  /// where the parent wineId isn't known yet.
+  final MemoryDraft? draftSeed;
   // Wine's own location; used to pre-fill the place chip so a new
   // moment starts at the "initial drink ort". User can override per
   // moment via the place sheet (text or current GPS).
   final String? wineLocationName;
   final double? wineLocationLat;
   final double? wineLocationLng;
+
+  /// Draft mode = no parent wineId. Save pops a [MemoryDraft] for the
+  /// caller to persist later; nothing hits the repo from this screen.
+  bool get isDraftMode => wineId.isEmpty;
 
   @override
   ConsumerState<MomentCaptureScreen> createState() =>
@@ -148,12 +251,17 @@ class _MomentCaptureScreenState extends ConsumerState<MomentCaptureScreen> {
   void initState() {
     super.initState();
     final e = widget.existing;
-    _captionCtrl.text = e?.note ?? '';
-    _occurredAt = e?.occurredAt ?? DateTime.now();
-    // Pre-fill place from existing moment first; otherwise fall back
-    // to the wine's own location so new moments default to "where the
-    // bottle was logged" rather than empty.
-    if (e?.placeName != null && e!.placeName!.isNotEmpty) {
+    final d = widget.draftSeed;
+    _captionCtrl.text = d?.note ?? d?.caption ?? e?.note ?? '';
+    _occurredAt = d?.occurredAt ?? e?.occurredAt ?? DateTime.now();
+    // Pre-fill place from draft / existing moment first; otherwise
+    // fall back to the wine's own location so new moments default to
+    // "where the bottle was logged" rather than empty.
+    if (d?.placeName != null && d!.placeName!.isNotEmpty) {
+      _placeCtrl.text = d.placeName!;
+      _placeLat = d.placeLat;
+      _placeLng = d.placeLng;
+    } else if (e?.placeName != null && e!.placeName!.isNotEmpty) {
       _placeCtrl.text = e.placeName!;
       _placeLat = e.placeLat;
       _placeLng = e.placeLng;
@@ -163,12 +271,19 @@ class _MomentCaptureScreenState extends ConsumerState<MomentCaptureScreen> {
       _placeLat = widget.wineLocationLat;
       _placeLng = widget.wineLocationLng;
     }
-    _companionIds.addAll(e?.companionUserIds ?? const []);
+    _companionIds.addAll(
+      d?.companionUserIds ?? e?.companionUserIds ?? const [],
+    );
     _photos.addAll(
       widget.existingPhotos.map(
         (p) => _PhotoSlot(id: p.id, url: p.storagePath),
       ),
     );
+    if (d != null) {
+      for (final url in d.photoUrls) {
+        _photos.add(_PhotoSlot(id: const Uuid().v4(), url: url));
+      }
+    }
     if (widget.initialPhotoUrl != null) {
       _photos.add(
         _PhotoSlot(id: const Uuid().v4(), url: widget.initialPhotoUrl!),
@@ -332,14 +447,37 @@ class _MomentCaptureScreenState extends ConsumerState<MomentCaptureScreen> {
     if (_photos.isEmpty && _captionCtrl.text.trim().isEmpty) return;
     setState(() => _saving = true);
     try {
+      final caption = _captionCtrl.text.trim();
+      final place = _placeCtrl.text.trim();
+
+      // Draft mode: build a MemoryDraft and hand it back to the
+      // caller. No repo write — wine_add owns persistence once the
+      // wineId exists.
+      if (widget.isDraftMode) {
+        final draft = MemoryDraft(
+          id: widget.draftSeed?.id ?? const Uuid().v4(),
+          photoUrls: _photos.map((p) => p.url).toList(),
+          caption: caption.isEmpty ? null : caption,
+          occurredAt: _occurredAt,
+          occasion: widget.draftSeed?.occasion,
+          placeName: place.isEmpty ? null : place,
+          placeLat: place.isEmpty ? null : _placeLat,
+          placeLng: place.isEmpty ? null : _placeLng,
+          foodPaired: widget.draftSeed?.foodPaired,
+          companionUserIds: _companionIds.toList(),
+          note: caption.isEmpty ? null : caption,
+          visibility: widget.draftSeed?.visibility ?? 'friends',
+        );
+        if (mounted) Navigator.of(context).pop(draft);
+        return;
+      }
+
       final userId = ref.read(currentUserIdProvider);
       if (userId == null) return;
       final memoryRepo = ref.read(wineMemoryRepositoryProvider);
       final photoRepo = ref.read(wineMemoryPhotoRepositoryProvider);
       final now = DateTime.now();
       final memoryId = widget.existing?.id ?? const Uuid().v4();
-      final caption = _captionCtrl.text.trim();
-      final place = _placeCtrl.text.trim();
       final entity = WineMemoryEntity(
         id: memoryId,
         wineId: widget.wineId,
@@ -501,7 +639,9 @@ class _MomentCaptureScreenState extends ConsumerState<MomentCaptureScreen> {
                 child: IconButton(
                   icon: const Icon(PhosphorIconsRegular.x, color: Colors.white),
                   iconSize: context.w * 0.055,
-                  onPressed: () => Navigator.of(context).pop(false),
+                  onPressed: () => Navigator.of(
+                    context,
+                  ).pop(widget.isDraftMode ? null : false),
                 ),
               ),
 

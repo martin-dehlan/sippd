@@ -52,53 +52,53 @@ class ExpertTastingSummary extends ConsumerWidget {
   }
 }
 
-/// Locked-state for non-Pro users. Collapsed by default — renders a
-/// single-row teaser so the section doesn't dominate the rating-first
-/// stack. Tapping the row expands to the full six-axis blurred
-/// preview + paywall CTA. Two-step funnel: see → curious → expand →
-/// unlock.
-class _ProLockedPreview extends StatefulWidget {
+/// Locked-state for non-Pro users. Single rounded container — soft
+/// surface, Pro pill, chevron. Tap routes to the paywall via [onTap].
+/// Drops the previous expand-to-blurred-axes funnel: it added noise
+/// without converting; the contained tile reads as a quieter "there's
+/// a Pro feature here" badge that doesn't elbow the rating section.
+class _ProLockedPreview extends StatelessWidget {
   const _ProLockedPreview({required this.onTap});
   final VoidCallback? onTap;
-
-  @override
-  State<_ProLockedPreview> createState() => _ProLockedPreviewState();
-}
-
-class _ProLockedPreviewState extends State<_ProLockedPreview> {
-  bool _expanded = false;
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context);
-    final axes = <String>[
-      l10n.winesExpertSummaryAxisBody,
-      l10n.winesExpertSummaryAxisTannin,
-      l10n.winesExpertSummaryAxisAcidity,
-      l10n.winesExpertSummaryAxisSweetness,
-      l10n.winesExpertSummaryAxisOak,
-      l10n.winesExpertSummaryAxisFinish,
-    ];
 
     return Padding(
       padding: EdgeInsets.symmetric(
         horizontal: context.paddingH * 1.3,
         vertical: context.xs,
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // Slim collapsible teaser row. Always rendered so the
-          // section header stays consistent with the filled state.
-          InkWell(
-            onTap: () => setState(() => _expanded = !_expanded),
-            borderRadius: BorderRadius.circular(context.w * 0.02),
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: context.s),
-              child: Row(
-                children: [
-                  Text(
+      child: Material(
+        color: cs.surfaceContainer,
+        borderRadius: BorderRadius.circular(context.w * 0.04),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(context.w * 0.04),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(context.w * 0.04),
+              border: Border.all(
+                color: cs.outlineVariant.withValues(alpha: 0.5),
+                width: 0.8,
+              ),
+            ),
+            padding: EdgeInsets.symmetric(
+              horizontal: context.m,
+              vertical: context.m * 0.9,
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  PhosphorIconsRegular.lockKey,
+                  size: context.captionFont * 1.1,
+                  color: cs.onSurface.withValues(alpha: 0.72),
+                ),
+                SizedBox(width: context.s),
+                Expanded(
+                  child: Text(
                     l10n.winesExpertSummaryHeader,
                     style: TextStyle(
                       fontSize: context.captionFont * 0.95,
@@ -107,164 +107,37 @@ class _ProLockedPreviewState extends State<_ProLockedPreview> {
                       letterSpacing: 1.2,
                     ),
                   ),
-                  SizedBox(width: context.s),
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: context.xs * 1.4,
-                      vertical: context.xs * 0.5,
-                    ),
-                    decoration: BoxDecoration(
-                      color: cs.primary,
-                      borderRadius: BorderRadius.circular(context.w * 0.015),
-                    ),
-                    child: Text(
-                      'PRO',
-                      style: TextStyle(
-                        fontSize: context.captionFont * 0.7,
-                        fontWeight: FontWeight.w800,
-                        color: cs.onPrimary,
-                        letterSpacing: 1.4,
-                      ),
+                ),
+                Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: context.xs * 1.6,
+                    vertical: context.xs * 0.6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: cs.primary,
+                    borderRadius: BorderRadius.circular(context.w * 0.015),
+                  ),
+                  child: Text(
+                    'PRO',
+                    style: TextStyle(
+                      fontSize: context.captionFont * 0.7,
+                      fontWeight: FontWeight.w800,
+                      color: cs.onPrimary,
+                      letterSpacing: 1.4,
                     ),
                   ),
-                  const Spacer(),
-                  Icon(
-                    _expanded
-                        ? PhosphorIconsRegular.caretUp
-                        : PhosphorIconsRegular.caretDown,
-                    size: context.captionFont * 1.1,
-                    color: cs.onSurfaceVariant,
-                  ),
-                ],
-              ),
+                ),
+                SizedBox(width: context.s),
+                Icon(
+                  PhosphorIconsRegular.caretRight,
+                  size: context.captionFont * 1.1,
+                  color: cs.onSurfaceVariant,
+                ),
+              ],
             ),
           ),
-          AnimatedSize(
-            duration: const Duration(milliseconds: 220),
-            curve: Curves.easeOutCubic,
-            alignment: Alignment.topCenter,
-            child: _expanded
-                ? Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      SizedBox(height: context.s),
-                      for (var i = 0; i < axes.length; i += 2)
-                        Padding(
-                          padding: EdgeInsets.only(bottom: context.m),
-                          child: IntrinsicHeight(
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(child: _LockedCell(label: axes[i])),
-                                SizedBox(width: context.w * 0.04),
-                                Expanded(
-                                  child: i + 1 < axes.length
-                                      ? _LockedCell(label: axes[i + 1])
-                                      : const SizedBox.shrink(),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      SizedBox(height: context.xs),
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: InkWell(
-                          onTap: widget.onTap,
-                          borderRadius: BorderRadius.circular(context.w * 0.02),
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(
-                              vertical: context.xs,
-                              horizontal: context.xs,
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  PhosphorIconsRegular.lockKey,
-                                  size: context.captionFont,
-                                  color: cs.primary,
-                                ),
-                                SizedBox(width: context.xs * 1.2),
-                                Text(
-                                  l10n.winesExpertProUnlock,
-                                  style: TextStyle(
-                                    fontSize: context.captionFont,
-                                    fontWeight: FontWeight.w600,
-                                    color: cs.primary,
-                                    letterSpacing: 0.2,
-                                  ),
-                                ),
-                                SizedBox(width: context.xs * 0.6),
-                                Icon(
-                                  PhosphorIconsRegular.caretRight,
-                                  size: context.captionFont,
-                                  color: cs.primary,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  )
-                : const SizedBox.shrink(),
-          ),
-        ],
+        ),
       ),
-    );
-  }
-}
-
-class _LockedCell extends StatelessWidget {
-  const _LockedCell({required this.label});
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: context.captionFont * 0.78,
-            fontWeight: FontWeight.w700,
-            color: cs.onSurfaceVariant,
-            letterSpacing: 1.4,
-          ),
-        ),
-        SizedBox(height: context.xs * 0.6),
-        // Placeholder bar — same vertical rhythm as the descriptor
-        // line in the filled state.
-        Container(
-          height: context.bodyFont * 1.18,
-          width: context.w * 0.22,
-          decoration: BoxDecoration(
-            color: cs.surfaceContainer,
-            borderRadius: BorderRadius.circular(context.w * 0.012),
-          ),
-        ),
-        SizedBox(height: context.xs * 1.2),
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: List.generate(5, (i) {
-            return Padding(
-              padding: EdgeInsets.only(right: i == 4 ? 0 : context.w * 0.012),
-              child: Container(
-                width: context.w * 0.018,
-                height: context.w * 0.018,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: cs.outlineVariant.withValues(alpha: 0.4),
-                ),
-              ),
-            );
-          }),
-        ),
-      ],
     );
   }
 }
