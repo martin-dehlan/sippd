@@ -3528,6 +3528,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shareRatingPromptDismiss => 'Not now';
 
   @override
+  String get reviewPromptTitle => 'Enjoying Sippd?';
+
+  @override
+  String get reviewPromptBody =>
+      'You\'ve rated a few wines now. A quick review helps other wine lovers discover Sippd.';
+
+  @override
+  String get reviewPromptCtaPositive => 'Love it';
+
+  @override
+  String get reviewPromptCtaNegative => 'Not yet';
+
+  @override
   String get commonRetry => 'Retry';
 
   @override

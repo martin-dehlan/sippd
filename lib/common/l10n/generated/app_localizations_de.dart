@@ -3575,6 +3575,19 @@ class AppLocalizationsDe extends AppLocalizations {
   String get shareRatingPromptDismiss => 'Nicht jetzt';
 
   @override
+  String get reviewPromptTitle => 'Gefällt dir Sippd?';
+
+  @override
+  String get reviewPromptBody =>
+      'Du hast jetzt schon ein paar Weine bewertet. Eine kurze Bewertung hilft anderen Weinfans, Sippd zu entdecken.';
+
+  @override
+  String get reviewPromptCtaPositive => 'Ich liebe es';
+
+  @override
+  String get reviewPromptCtaNegative => 'Noch nicht';
+
+  @override
   String get commonRetry => 'Erneut versuchen';
 
   @override

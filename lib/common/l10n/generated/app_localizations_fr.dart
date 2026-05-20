@@ -3574,6 +3574,19 @@ class AppLocalizationsFr extends AppLocalizations {
   String get shareRatingPromptDismiss => 'Pas maintenant';
 
   @override
+  String get reviewPromptTitle => 'Tu aimes Sippd ?';
+
+  @override
+  String get reviewPromptBody =>
+      'Tu as déjà noté quelques vins. Un court avis aide d\'autres amateurs de vin à découvrir Sippd.';
+
+  @override
+  String get reviewPromptCtaPositive => 'J\'adore';
+
+  @override
+  String get reviewPromptCtaNegative => 'Pas encore';
+
+  @override
   String get commonRetry => 'Réessayer';
 
   @override

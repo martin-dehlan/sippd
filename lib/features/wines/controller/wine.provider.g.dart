@@ -1123,7 +1123,7 @@ final canonicalMergeCandidatesProvider =
 
 typedef _$CanonicalMergeCandidates =
     AutoDisposeAsyncNotifier<List<CanonicalMergePair>>;
-String _$wineControllerHash() => r'42271f76d56e90025e83377e17f48d3a9a79b79d';
+String _$wineControllerHash() => r'529f8abc2c5b89380f4b27364eeaea5afff9672a';
 
 /// See also [WineController].
 @ProviderFor(WineController)

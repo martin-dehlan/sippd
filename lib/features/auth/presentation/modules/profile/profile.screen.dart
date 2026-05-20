@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../../common/l10n/generated/app_localizations.dart';
+import '../../../../../common/services/review/review.provider.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/inline_error.widget.dart';
 import '../../../../../core/routes/app.routes.dart';
@@ -155,7 +156,9 @@ class ProfileScreen extends ConsumerWidget {
             _MenuItem(
               icon: PhosphorIconsRegular.star,
               label: l10n.authProfileRateSippd,
-              onTap: () => _launch(context, 'https://apps.apple.com/app/sippd'),
+              onTap: () => ref
+                  .read(reviewPromptControllerProvider.notifier)
+                  .openStoreListing(),
             ),
             SizedBox(height: context.l),
 

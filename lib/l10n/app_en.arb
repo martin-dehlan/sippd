@@ -1961,6 +1961,15 @@
   "shareRatingPromptDismiss": "Not now",
   "@shareRatingPromptDismiss": {},
 
+  "reviewPromptTitle": "Enjoying Sippd?",
+  "@reviewPromptTitle": {},
+  "reviewPromptBody": "You've rated a few wines now. A quick review helps other wine lovers discover Sippd.",
+  "@reviewPromptBody": {},
+  "reviewPromptCtaPositive": "Love it",
+  "@reviewPromptCtaPositive": {},
+  "reviewPromptCtaNegative": "Not yet",
+  "@reviewPromptCtaNegative": {},
+
   "commonRetry": "Retry",
   "@commonRetry": {},
   "commonSave": "Save",

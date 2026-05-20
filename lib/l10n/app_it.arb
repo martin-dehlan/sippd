@@ -1235,6 +1235,11 @@
   "shareRatingPromptPreparing": "Preparazione…",
   "shareRatingPromptDismiss": "Non ora",
 
+  "reviewPromptTitle": "Ti piace Sippd?",
+  "reviewPromptBody": "Hai già valutato qualche vino. Una breve recensione aiuta altri appassionati a scoprire Sippd.",
+  "reviewPromptCtaPositive": "Lo adoro",
+  "reviewPromptCtaNegative": "Non ancora",
+
   "commonRetry": "Riprova",
   "commonSave": "Salva",
   "commonClear": "Cancella",

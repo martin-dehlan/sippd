@@ -6452,6 +6452,30 @@ abstract class AppLocalizations {
   /// **'Not now'**
   String get shareRatingPromptDismiss;
 
+  /// No description provided for @reviewPromptTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enjoying Sippd?'**
+  String get reviewPromptTitle;
+
+  /// No description provided for @reviewPromptBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve rated a few wines now. A quick review helps other wine lovers discover Sippd.'**
+  String get reviewPromptBody;
+
+  /// No description provided for @reviewPromptCtaPositive.
+  ///
+  /// In en, this message translates to:
+  /// **'Love it'**
+  String get reviewPromptCtaPositive;
+
+  /// No description provided for @reviewPromptCtaNegative.
+  ///
+  /// In en, this message translates to:
+  /// **'Not yet'**
+  String get reviewPromptCtaNegative;
+
   /// No description provided for @commonRetry.
   ///
   /// In en, this message translates to:
