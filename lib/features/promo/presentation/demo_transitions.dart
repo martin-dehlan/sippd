@@ -9,23 +9,25 @@ Page<void> demoPage(LocalKey key, Widget child) {
   return CustomTransitionPage<void>(
     key: key,
     child: child,
-    transitionDuration: const Duration(milliseconds: 520),
-    reverseTransitionDuration: const Duration(milliseconds: 400),
+    transitionDuration: const Duration(milliseconds: 540),
+    reverseTransitionDuration: const Duration(milliseconds: 480),
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
       final curve = CurvedAnimation(
         parent: animation,
         curve: Curves.easeOutCubic,
         reverseCurve: Curves.easeInCubic,
       );
+      // Slightly more pronounced both ways so the open *and* the close read
+      // as deliberate, cinematic beats.
       return FadeTransition(
         opacity: curve,
         child: SlideTransition(
           position: Tween<Offset>(
-            begin: const Offset(0, 0.04),
+            begin: const Offset(0, 0.06),
             end: Offset.zero,
           ).animate(curve),
           child: ScaleTransition(
-            scale: Tween<double>(begin: 0.97, end: 1).animate(curve),
+            scale: Tween<double>(begin: 0.93, end: 1).animate(curve),
             child: child,
           ),
         ),

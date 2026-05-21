@@ -139,23 +139,63 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
   }
 
   /// Demo only: after the entrance settles, spotlight each hero feature once
-  /// (image → rating → price → origin) so the tour shows them individually.
+  /// (image → rating → price → origin), then briefly reveal the deeper edit
+  /// menus (rating sheet, then price sheet) so the tour shows them too. The
+  /// busy flag keeps the auto-tour from navigating away mid-sequence.
   Future<void> _runDemoBeats() async {
-    await Future<void>.delayed(const Duration(milliseconds: 1500));
+    demoScreenBusy.value = true;
+    await Future<void>.delayed(const Duration(milliseconds: 1400));
     for (var beat = 0; beat <= 3; beat++) {
-      if (!mounted) {
-        demoDetailBeat.value = null;
-        return;
-      }
+      if (!mounted) return _endDemoBeats();
       demoDetailBeat.value = beat;
-      await Future<void>.delayed(const Duration(milliseconds: 1250));
+      await Future<void>.delayed(const Duration(milliseconds: 1150));
     }
+
+    // Tap the rating, then the price — reveal the deeper menus, auto-closed.
+    if (widget.isOwner) {
+      if (!mounted) return _endDemoBeats();
+      demoDetailBeat.value = 1;
+      // ignore: use_build_context_synchronously
+      final ratingFuture = showWineRatingSheet(
+        context: context,
+        initial: widget.wine.rating,
+        ratingContext: 'personal',
+        wine: widget.wine,
+        wineType: widget.wine.type,
+      );
+      await Future<void>.delayed(const Duration(milliseconds: 2400));
+      if (mounted && Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      }
+      await ratingFuture;
+
+      if (!mounted) return _endDemoBeats();
+      await Future<void>.delayed(const Duration(milliseconds: 500));
+      demoDetailBeat.value = 2;
+      final priceFuture = showPriceInputSheet(
+        // ignore: use_build_context_synchronously
+        context: context,
+        initial: widget.wine.price,
+      );
+      await Future<void>.delayed(const Duration(milliseconds: 2200));
+      if (mounted && Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      }
+      await priceFuture;
+    }
+
+    _endDemoBeats();
+  }
+
+  void _endDemoBeats() {
     if (mounted) demoDetailBeat.value = null;
+    demoScreenBusy.value = false;
   }
 
   @override
   void dispose() {
     demoDetailBeat.value = null;
+    demoScreenBusy.value = false;
     _animController.dispose();
     super.dispose();
   }

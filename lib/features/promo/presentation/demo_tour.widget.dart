@@ -29,6 +29,18 @@ class _DemoTourState extends ConsumerState<DemoTour> {
   Future<void> _wait(int ms) =>
       Future<void>.delayed(Duration(milliseconds: ms));
 
+  /// Waits for the just-opened screen's demo director to finish (it flips
+  /// [demoScreenBusy]); falls back to [max] so a screen without a director
+  /// doesn't stall the tour.
+  Future<void> _waitUntilIdle({int max = 16000}) async {
+    await _wait(400); // let the director set busy = true first
+    var waited = 0;
+    while (mounted && demoScreenBusy.value && waited < max) {
+      await _wait(200);
+      waited += 200;
+    }
+  }
+
   void _cleanup() {
     demoSpotlightId.value = null;
     if (mounted) setState(() => _running = false);
@@ -61,7 +73,7 @@ class _DemoTourState extends ConsumerState<DemoTour> {
     await _wait(1000);
     if (!mounted) return _cleanup();
     router.push(AppRoutes.wineDetailPath(shown.first.id), extra: shown.first);
-    await _wait(7000); // transition + entrance + the four feature beats + read
+    await _waitUntilIdle(); // feature beats + rating/price sheets
     if (!mounted) return _cleanup();
     if (router.canPop()) router.pop();
     demoSpotlightId.value = null;
@@ -70,7 +82,7 @@ class _DemoTourState extends ConsumerState<DemoTour> {
     // Stats (TRACK) — pushed route, cinematic transition.
     if (!mounted) return _cleanup();
     router.push(AppRoutes.wineStats);
-    await _wait(5500);
+    await _waitUntilIdle(max: 14000); // chart spotlight beats
     if (!mounted) return _cleanup();
     if (router.canPop()) router.pop();
     await _wait(900);

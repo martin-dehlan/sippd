@@ -9,6 +9,8 @@ import '../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../../paywall/controller/paywall.provider.dart';
+import '../../../../promo/promo.config.dart';
+import '../../../../promo/presentation/demo_spotlight.widget.dart';
 import '../../../controller/wine_stats.provider.dart';
 import 'widgets/drinking_partners.widget.dart';
 import 'widgets/spending_section.widget.dart';
@@ -22,11 +24,65 @@ import 'widgets/wine_locations_map.widget.dart';
 import 'widgets/wine_timeline.widget.dart';
 import 'widgets/wine_type_breakdown.widget.dart';
 
-class WineStatsScreen extends ConsumerWidget {
+class WineStatsScreen extends ConsumerStatefulWidget {
   const WineStatsScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<WineStatsScreen> createState() => _WineStatsScreenState();
+}
+
+class _WineStatsScreenState extends ConsumerState<WineStatsScreen> {
+  final ScrollController _scroll = ScrollController();
+  final GlobalKey _heroKey = GlobalKey();
+  final GlobalKey _typeKey = GlobalKey();
+  final GlobalKey _topKey = GlobalKey();
+
+  @override
+  void initState() {
+    super.initState();
+    if (kIsDemo) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _runStatsBeats());
+    }
+  }
+
+  @override
+  void dispose() {
+    demoDetailBeat.value = null;
+    demoScreenBusy.value = false;
+    _scroll.dispose();
+    super.dispose();
+  }
+
+  /// Demo only: scroll each chart into view and spotlight it in turn.
+  Future<void> _runStatsBeats() async {
+    demoScreenBusy.value = true;
+    await Future<void>.delayed(const Duration(milliseconds: 700));
+    final beats = <(GlobalKey, int)>[
+      (_heroKey, 0),
+      (_typeKey, 1),
+      (_topKey, 2),
+    ];
+    for (final (key, beat) in beats) {
+      if (!mounted) break;
+      final ctx = key.currentContext;
+      if (ctx != null && ctx.mounted) {
+        await Scrollable.ensureVisible(
+          ctx,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeOutCubic,
+          alignment: 0.15,
+        );
+      }
+      if (!mounted) break;
+      demoDetailBeat.value = beat;
+      await Future<void>.delayed(const Duration(milliseconds: 1600));
+    }
+    if (mounted) demoDetailBeat.value = null;
+    demoScreenBusy.value = false;
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final regions = ref.watch(statsTopRegionsProvider);
     final breakdown = ref.watch(statsTypeBreakdownProvider);
@@ -49,6 +105,7 @@ class WineStatsScreen extends ConsumerWidget {
         child: Stack(
           children: [
             CustomScrollView(
+              controller: _scroll,
               restorationId: 'wine_stats_scroll',
               slivers: [
                 SliverToBoxAdapter(child: SizedBox(height: context.l)),
@@ -72,9 +129,15 @@ class WineStatsScreen extends ConsumerWidget {
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: context.paddingH),
-                    child: hasWines
-                        ? const StatsHero()
-                        : const StatsEmptyHero(),
+                    child: KeyedSubtree(
+                      key: _heroKey,
+                      child: DemoBeatHighlight(
+                        beat: 0,
+                        child: hasWines
+                            ? const StatsHero()
+                            : const StatsEmptyHero(),
+                      ),
+                    ),
                   ),
                 ),
                 SliverToBoxAdapter(child: SizedBox(height: context.l)),
@@ -94,7 +157,13 @@ class WineStatsScreen extends ConsumerWidget {
                   title: l10n.winesStatsSectionTypeBreakdown,
                   subtitle: l10n.winesStatsSectionTypeBreakdownSubtitle,
                   delay: 100,
-                  child: WineTypeBreakdown(data: breakdown),
+                  child: KeyedSubtree(
+                    key: _typeKey,
+                    child: DemoBeatHighlight(
+                      beat: 1,
+                      child: WineTypeBreakdown(data: breakdown),
+                    ),
+                  ),
                 ),
                 SliverToBoxAdapter(child: SizedBox(height: context.m)),
 
@@ -102,7 +171,13 @@ class WineStatsScreen extends ConsumerWidget {
                   title: l10n.winesStatsSectionTopRated,
                   subtitle: l10n.winesStatsSectionTopRatedSubtitle,
                   delay: 150,
-                  child: TopWinesList(wines: topWines, maxItems: 5),
+                  child: KeyedSubtree(
+                    key: _topKey,
+                    child: DemoBeatHighlight(
+                      beat: 2,
+                      child: TopWinesList(wines: topWines, maxItems: 5),
+                    ),
+                  ),
                 ),
                 SliverToBoxAdapter(child: SizedBox(height: context.m)),
 

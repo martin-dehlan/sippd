@@ -7,10 +7,15 @@ import '../promo.config.dart';
 /// wrappers react. `null` = nothing spotlighted (normal list).
 final ValueNotifier<String?> demoSpotlightId = ValueNotifier<String?>(null);
 
-/// Which wine-detail feature is currently spotlighted (image=0, rating=1,
-/// price=2, origin=3). The detail screen's demo director steps through these
-/// so the tour shows each feature once; [DemoBeatHighlight] wrappers react.
+/// Active demo "feature beat" on whichever screen is running its director
+/// (wine detail or stats). [DemoBeatHighlight] wrappers react: the matching
+/// beat pops, the rest dim. `null` = nothing highlighted.
 final ValueNotifier<int?> demoDetailBeat = ValueNotifier<int?>(null);
+
+/// True while a screen's demo director is mid-sequence (including briefly
+/// opened sheets). The auto-tour waits for this to clear before navigating
+/// away, so timing isn't hard-coded in two places.
+final ValueNotifier<bool> demoScreenBusy = ValueNotifier<bool>(false);
 
 /// Wraps a detail-screen feature so it pops forward when it's the active
 /// [beat] and dims when a *different* feature is active. No-op in prod.
