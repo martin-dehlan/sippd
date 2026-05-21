@@ -42,6 +42,7 @@ import '../../features/wines/presentation/modules/wine_detail/wine_detail.screen
 import '../../features/wines/presentation/modules/wine_edit/wine_edit.screen.dart';
 import '../../features/wines/presentation/modules/wine_compare/wine_compare.screen.dart';
 import '../../features/wines/presentation/modules/wine_compare/wine_compare_picker.screen.dart';
+import '../../features/promo/presentation/demo_transitions.dart';
 import 'app.routes.dart';
 
 part 'route_config.g.dart';
@@ -311,7 +312,7 @@ GoRouter goRouter(GoRouterRef ref) {
           return WineComparePickerScreen(excludeId: q['excludeId']);
         },
       ),
-      GoRoute(
+      demoRoute(
         path: AppRoutes.wineDetail,
         builder: (context, state) {
           final id = state.pathParameters['id']!;
@@ -331,7 +332,7 @@ GoRouter goRouter(GoRouterRef ref) {
       ),
 
       // Group detail
-      GoRoute(
+      demoRoute(
         path: AppRoutes.groupDetail,
         builder: (context, state) =>
             GroupDetailScreen(groupId: state.pathParameters['id']!),
@@ -358,7 +359,7 @@ GoRouter goRouter(GoRouterRef ref) {
       ),
 
       // Tasting detail
-      GoRoute(
+      demoRoute(
         path: AppRoutes.tastingDetail,
         builder: (context, state) =>
             TastingDetailScreen(tastingId: state.pathParameters['id']!),
@@ -403,7 +404,7 @@ GoRouter goRouter(GoRouterRef ref) {
         path: AppRoutes.friends,
         builder: (context, state) => const FriendsScreen(),
       ),
-      GoRoute(
+      demoRoute(
         path: AppRoutes.friendProfile,
         builder: (context, state) =>
             FriendProfileScreen(friendId: state.pathParameters['id']!),
