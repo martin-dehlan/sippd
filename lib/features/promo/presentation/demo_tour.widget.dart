@@ -41,23 +41,32 @@ class _DemoTourState extends ConsumerState<DemoTour> {
             .take(3)
             .toList();
 
+    if (shown.isEmpty) return _cleanup();
+
     // Let the staggered list entrance finish.
     await _wait(2400);
 
-    for (var i = 0; i < shown.length; i++) {
+    // Browse: pop each tile in turn so the list reads as interactive.
+    for (final wine in shown) {
       if (!mounted) return _cleanup();
-      // Pop the tile forward + dim the rest — "look here" — then open it.
-      demoSpotlightId.value = shown[i].id;
-      await _wait(1300);
-      router.push(AppRoutes.wineDetailPath(shown[i].id), extra: shown[i]);
-      // Cinematic transition + image expand + staggered stat reveal + read.
-      await _wait(4400);
-      if (!mounted) return _cleanup();
-      if (router.canPop()) router.pop();
-      demoSpotlightId.value = null; // list returns to normal
-      await _wait(1500);
+      demoSpotlightId.value = wine.id;
+      await _wait(950);
     }
+    await _wait(300);
 
+    // Deep-dive the top wine — its detail spotlights each feature once
+    // (image → rating → price → origin), so nothing is shown twice.
+    demoSpotlightId.value = shown.first.id;
+    await _wait(1000);
+    if (!mounted) return _cleanup();
+    router.push(AppRoutes.wineDetailPath(shown.first.id), extra: shown.first);
+    await _wait(7000); // transition + entrance + the four feature beats + read
+    if (!mounted) return _cleanup();
+    if (router.canPop()) router.pop();
+    demoSpotlightId.value = null;
+    await _wait(1400);
+
+    // Stats.
     if (!mounted) return _cleanup();
     router.push(AppRoutes.wineStats);
     await _wait(4400);

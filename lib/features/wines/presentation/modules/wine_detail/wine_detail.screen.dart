@@ -19,7 +19,9 @@ import '../../../../friends/presentation/widgets/friend_multi_picker.widget.dart
 import '../../../../groups/presentation/widgets/share_wine_sheet.dart';
 import '../../../../paywall/controller/paywall.provider.dart';
 import '../../../../profile/controller/profile.provider.dart';
+import '../../../../promo/promo.config.dart';
 import '../../../../promo/presentation/demo_reveal.widget.dart';
+import '../../../../promo/presentation/demo_spotlight.widget.dart';
 import '../../../../share_cards/controller/share_card.provider.dart';
 import '../../../controller/wine.provider.dart';
 import '../../../domain/entities/wine.entity.dart';
@@ -133,10 +135,27 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
           CurvedAnimation(parent: _animController, curve: Curves.easeOutCubic),
         );
     _animController.forward();
+    if (kIsDemo) _runDemoBeats();
+  }
+
+  /// Demo only: after the entrance settles, spotlight each hero feature once
+  /// (image → rating → price → origin) so the tour shows them individually.
+  Future<void> _runDemoBeats() async {
+    await Future<void>.delayed(const Duration(milliseconds: 1500));
+    for (var beat = 0; beat <= 3; beat++) {
+      if (!mounted) {
+        demoDetailBeat.value = null;
+        return;
+      }
+      demoDetailBeat.value = beat;
+      await Future<void>.delayed(const Duration(milliseconds: 1250));
+    }
+    if (mounted) demoDetailBeat.value = null;
   }
 
   @override
   void dispose() {
+    demoDetailBeat.value = null;
     _animController.dispose();
     super.dispose();
   }
@@ -234,10 +253,14 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
                     children: [
                       Expanded(
                         flex: 5,
-                        child: DemoReveal(
-                          delay: const Duration(milliseconds: 520),
-                          fromScale: 0.82,
-                          child: WineDetailImage(wine: widget.wine),
+                        child: DemoBeatHighlight(
+                          beat: 0,
+                          activeScale: 1.1,
+                          child: DemoReveal(
+                            delay: const Duration(milliseconds: 520),
+                            fromScale: 0.82,
+                            child: WineDetailImage(wine: widget.wine),
+                          ),
                         ),
                       ),
                       Expanded(
@@ -552,6 +575,7 @@ class _StatsColumn extends ConsumerWidget {
             unit: l10n.winesDetailStatRatingUnit,
             onTap: isOwner ? () => _editRating(context, ref) : null,
             revealDelay: const Duration(milliseconds: 700),
+            beat: 1,
           ),
           SizedBox(height: context.l),
           if (wine.price != null) ...[
@@ -561,6 +585,7 @@ class _StatsColumn extends ConsumerWidget {
               unit: wine.currency,
               onTap: isOwner ? () => _editPrice(context, ref) : null,
               revealDelay: const Duration(milliseconds: 820),
+              beat: 2,
             ),
             SizedBox(height: context.l),
           ] else if (isOwner) ...[
@@ -579,6 +604,7 @@ class _StatsColumn extends ConsumerWidget {
               isText: true,
               onTap: isOwner ? () => _editOrigin(context, ref) : null,
               revealDelay: const Duration(milliseconds: 940),
+              beat: 3,
             )
           else if (wine.country != null)
             _StatItem(
@@ -587,6 +613,7 @@ class _StatsColumn extends ConsumerWidget {
               isText: true,
               onTap: isOwner ? () => _editOrigin(context, ref) : null,
               revealDelay: const Duration(milliseconds: 940),
+              beat: 3,
             )
           else if (isOwner)
             _StatItem(
@@ -612,6 +639,9 @@ class _StatItem extends StatelessWidget {
   /// highlight one after another. Ignored in production.
   final Duration revealDelay;
 
+  /// Demo-only: the tour's feature-beat index this stat lights up on.
+  final int? beat;
+
   const _StatItem({
     required this.label,
     required this.value,
@@ -619,6 +649,7 @@ class _StatItem extends StatelessWidget {
     this.isText = false,
     this.onTap,
     this.revealDelay = Duration.zero,
+    this.beat,
   });
 
   @override
@@ -685,7 +716,10 @@ class _StatItem extends StatelessWidget {
               child: column,
             ),
           );
-    return DemoReveal(delay: revealDelay, child: result);
+    final highlighted = beat == null
+        ? result
+        : DemoBeatHighlight(beat: beat!, child: result);
+    return DemoReveal(delay: revealDelay, child: highlighted);
   }
 }
 
