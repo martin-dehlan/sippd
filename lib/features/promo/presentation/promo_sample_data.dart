@@ -220,7 +220,10 @@ abstract final class PromoSampleData {
 
   static final List<TimelineMonth> timelineMonths = [
     TimelineMonth(month: DateTime(2026, 4), wines: wines.take(3).toList()),
-    TimelineMonth(month: DateTime(2026, 3), wines: wines.skip(1).take(2).toList()),
+    TimelineMonth(
+      month: DateTime(2026, 3),
+      wines: wines.skip(1).take(2).toList(),
+    ),
     TimelineMonth(month: DateTime(2026, 2), wines: wines.take(2).toList()),
   ];
 

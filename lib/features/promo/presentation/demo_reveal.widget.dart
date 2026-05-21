@@ -55,10 +55,10 @@ class _DemoRevealAnimState extends State<_DemoRevealAnim>
     curve: Curves.easeOut,
   );
 
-  late final Animation<double> _scale =
-      Tween<double>(begin: widget.fromScale, end: 1).animate(
-        CurvedAnimation(parent: _controller, curve: Curves.easeOutBack),
-      );
+  late final Animation<double> _scale = Tween<double>(
+    begin: widget.fromScale,
+    end: 1,
+  ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
 
   @override
   void initState() {

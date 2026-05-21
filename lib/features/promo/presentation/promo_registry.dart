@@ -220,10 +220,8 @@ final List<PromoEntry> promoEntries = [
   ),
   PromoEntry(
     name: 'Trial Timeline',
-    builder: (context) => SizedBox(
-      width: context.w * 0.9,
-      child: const PaywallTrialTimeline(),
-    ),
+    builder: (context) =>
+        SizedBox(width: context.w * 0.9, child: const PaywallTrialTimeline()),
   ),
 
   // ── Wine detail / compare ──
@@ -239,10 +237,8 @@ final List<PromoEntry> promoEntries = [
   ),
   PromoEntry(
     name: 'Wine Thumb',
-    builder: (context) => WineThumb(
-      wine: PromoSampleData.wine,
-      size: context.w * 0.5,
-    ),
+    builder: (context) =>
+        WineThumb(wine: PromoSampleData.wine, size: context.w * 0.5),
   ),
   PromoEntry(
     name: 'Wine Detail Title',
@@ -309,10 +305,7 @@ final List<PromoEntry> promoEntries = [
       (context) => TopWinesList(wines: PromoSampleData.wines),
     ],
   ),
-  PromoEntry(
-    name: 'Scene · Wine list',
-    slots: _wineListSlots(),
-  ),
+  PromoEntry(name: 'Scene · Wine list', slots: _wineListSlots()),
   PromoEntry(
     name: 'Scene · Taste',
     slots: [

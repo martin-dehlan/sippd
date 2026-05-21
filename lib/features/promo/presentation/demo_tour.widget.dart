@@ -26,7 +26,8 @@ class DemoTour extends ConsumerStatefulWidget {
 class _DemoTourState extends ConsumerState<DemoTour> {
   bool _running = false;
 
-  Future<void> _wait(int ms) => Future<void>.delayed(Duration(milliseconds: ms));
+  Future<void> _wait(int ms) =>
+      Future<void>.delayed(Duration(milliseconds: ms));
 
   void _cleanup() {
     demoSpotlightId.value = null;

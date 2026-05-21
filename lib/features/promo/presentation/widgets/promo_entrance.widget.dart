@@ -55,15 +55,15 @@ class _PromoEntranceState extends State<PromoEntrance>
     curve: Curves.easeOut,
   );
 
-  late final Animation<Offset> _slide =
-      Tween<Offset>(begin: const Offset(0, 0.12), end: Offset.zero).animate(
-        CurvedAnimation(parent: _intro, curve: Curves.easeOutCubic),
-      );
+  late final Animation<Offset> _slide = Tween<Offset>(
+    begin: const Offset(0, 0.12),
+    end: Offset.zero,
+  ).animate(CurvedAnimation(parent: _intro, curve: Curves.easeOutCubic));
 
-  late final Animation<double> _popScale =
-      Tween<double>(begin: 0.82, end: 1).animate(
-        CurvedAnimation(parent: _intro, curve: Curves.easeOutBack),
-      );
+  late final Animation<double> _popScale = Tween<double>(
+    begin: 0.82,
+    end: 1,
+  ).animate(CurvedAnimation(parent: _intro, curve: Curves.easeOutBack));
 
   @override
   void initState() {
@@ -97,9 +97,10 @@ class _PromoEntranceState extends State<PromoEntrance>
         return ScaleTransition(
           scale: _popScale,
           child: ScaleTransition(
-            scale: Tween<double>(begin: 1, end: 1.04).animate(
-              CurvedAnimation(parent: pulse, curve: Curves.easeInOut),
-            ),
+            scale: Tween<double>(
+              begin: 1,
+              end: 1.04,
+            ).animate(CurvedAnimation(parent: pulse, curve: Curves.easeInOut)),
             child: faded,
           ),
         );

@@ -38,8 +38,10 @@ class PromoScene extends StatefulWidget {
 class _PromoSceneState extends State<PromoScene>
     with SingleTickerProviderStateMixin {
   final GlobalKey _stackKey = GlobalKey();
-  late final List<GlobalKey> _slotKeys =
-      List.generate(widget.slots.length, (_) => GlobalKey());
+  late final List<GlobalKey> _slotKeys = List.generate(
+    widget.slots.length,
+    (_) => GlobalKey(),
+  );
 
   late final AnimationController _ctrl = AnimationController(
     vsync: this,

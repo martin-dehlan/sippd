@@ -51,7 +51,11 @@ class PromoRatingBadge extends StatelessWidget {
 
 /// Price chip, e.g. "€48".
 class PromoPriceTag extends StatelessWidget {
-  const PromoPriceTag({super.key, required this.price, this.currencySymbol = '€'});
+  const PromoPriceTag({
+    super.key,
+    required this.price,
+    this.currencySymbol = '€',
+  });
 
   final double price;
   final String currencySymbol;
