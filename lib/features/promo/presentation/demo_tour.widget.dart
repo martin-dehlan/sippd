@@ -66,13 +66,28 @@ class _DemoTourState extends ConsumerState<DemoTour> {
     demoSpotlightId.value = null;
     await _wait(1400);
 
-    // Stats.
+    // Stats (TRACK) — pushed route, cinematic transition.
     if (!mounted) return _cleanup();
     router.push(AppRoutes.wineStats);
-    await _wait(4400);
+    await _wait(5500);
     if (!mounted) return _cleanup();
     if (router.canPop()) router.pop();
     await _wait(900);
+
+    // Groups (HOST / SHARE) — tab switch.
+    if (!mounted) return _cleanup();
+    router.go(AppRoutes.groups);
+    await _wait(5500);
+
+    // Taste profile (your palate) — tab switch.
+    if (!mounted) return _cleanup();
+    router.go(AppRoutes.profile);
+    await _wait(5500);
+
+    // Back home.
+    if (!mounted) return _cleanup();
+    router.go(AppRoutes.wines);
+    await _wait(800);
 
     _cleanup();
   }
