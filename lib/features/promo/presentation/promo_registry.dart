@@ -17,6 +17,7 @@ import '../../taste_match/presentation/widgets/compass_radar.widget.dart';
 import '../../taste_match/presentation/widgets/dna_shape.widget.dart';
 import '../../taste_match/presentation/widgets/shared_bottles.widget.dart';
 import '../../taste_match/presentation/widgets/taste_match_score.widget.dart';
+import '../../wines/domain/entities/wine.entity.dart';
 import '../../wines/presentation/modules/wine_compare/widgets/wine_compare_hero.widget.dart';
 import '../../wines/presentation/modules/wine_stats/widgets/drinking_partners.widget.dart';
 import '../../wines/presentation/modules/wine_stats/widgets/region_skyline.widget.dart';
@@ -24,6 +25,7 @@ import '../../wines/presentation/modules/wine_stats/widgets/top_wines_list.widge
 import '../../wines/presentation/modules/wine_stats/widgets/wine_timeline.widget.dart';
 import '../../wines/presentation/modules/wine_stats/widgets/wine_type_breakdown.widget.dart';
 import '../../wines/presentation/widgets/wine_card.widget.dart';
+import 'widgets/promo_callouts.widget.dart';
 import '../../wines/presentation/widgets/wine_detail_blocks.widget.dart';
 import '../../wines/presentation/widgets/wine_rating_input.widget.dart';
 import '../../wines/presentation/widgets/wine_thumb.widget.dart';
@@ -276,6 +278,27 @@ final List<PromoEntry> promoEntries = [
     builder: (context) => AppLogo(size: context.w * 0.4),
   ),
 
+  // ── Overlay callouts: background-free highlight chips for the edit ──
+  PromoEntry(
+    name: 'Callout · Rating',
+    builder: (context) => const PromoRatingBadge(rating: 9.2),
+  ),
+  PromoEntry(
+    name: 'Callout · Price',
+    builder: (context) => const PromoPriceTag(price: 48),
+  ),
+  PromoEntry(
+    name: 'Callout · Region',
+    builder: (context) => const PromoRegionChip(label: 'Piedmont'),
+  ),
+  PromoEntry(
+    name: 'Callout · Wine Type',
+    builder: (context) => const WineTypeBadge(type: WineType.red),
+  ),
+
+  // ── Individual tiles, for a "pop in 1·2·3·4" overlay sequence ──
+  ..._wineTileEntries(),
+
   // ── Scenes: app-like screens whose widgets pop out into focus ──
   PromoEntry(
     name: 'Scene · Stats',
@@ -312,6 +335,21 @@ final List<PromoEntry> promoEntries = [
     ],
   ),
 ];
+
+/// One showcase entry per sample wine tile, so each can be exported as its
+/// own transparent PNG and popped in sequence (1·2·3·4) in the edit.
+List<PromoEntry> _wineTileEntries() {
+  return [
+    for (final (i, w) in PromoSampleData.wines.indexed)
+      PromoEntry(
+        name: 'Tile ${i + 1} · ${w.name}',
+        builder: (context) => SizedBox(
+          width: context.w * 0.9,
+          child: WineCardWidget(wine: w, rank: i + 1),
+        ),
+      ),
+  ];
+}
 
 /// One [WineCardWidget] per sample wine, ranked — used by the wine-list
 /// scene so each card can pop out individually.
