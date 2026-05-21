@@ -15,3 +15,19 @@
 /// (Flutter has no per-flavor plugin gating without build flavors) — only
 /// the Dart promo screens are excluded.
 const bool kIsPromo = bool.fromEnvironment('PROMO', defaultValue: false);
+
+/// Compile-time flag for "demo" recordings of the REAL app.
+///
+/// Enable with:
+///
+/// ```sh
+/// flutter run --dart-define=DEMO=true
+/// ```
+///
+/// Unlike [kIsPromo] (which boots the isolated widget showcase), a demo
+/// build runs the normal app — real login, real data — but turns on
+/// flow-video flourishes on the real screens (more pronounced staggered
+/// entrances, highlight beats) so a screen recording already looks
+/// finished, with minimal editing. Production never sees these: `kIsDemo`
+/// is a `const false` there, so every `if (kIsDemo)` branch is tree-shaken.
+const bool kIsDemo = bool.fromEnvironment('DEMO', defaultValue: false);

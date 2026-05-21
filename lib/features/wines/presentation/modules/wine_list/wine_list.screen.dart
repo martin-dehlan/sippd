@@ -7,6 +7,7 @@ import '../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/error_view.widget.dart';
 import '../../../../../core/routes/app.routes.dart';
+import '../../../../promo/promo.config.dart';
 import '../../../controller/wine.provider.dart';
 import '../../../domain/entities/wine.entity.dart';
 import '../../widgets/wine_card.widget.dart';
@@ -365,12 +366,14 @@ class _AnimatedWineCardState extends State<AnimatedWineCard>
   late final AnimationController _controller;
   late final Animation<double> _fadeAnimation;
   late final Animation<Offset> _slideAnimation;
+  late final Animation<double> _scaleAnimation;
 
   @override
   void initState() {
     super.initState();
+    // Demo builds play a more pronounced staggered pop for flow videos.
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 400),
+      duration: Duration(milliseconds: kIsDemo ? 600 : 400),
       vsync: this,
     );
     _fadeAnimation = CurvedAnimation(
@@ -378,11 +381,16 @@ class _AnimatedWineCardState extends State<AnimatedWineCard>
       curve: Curves.easeOut,
     );
     _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.15),
+      begin: Offset(0, kIsDemo ? 0.22 : 0.15),
       end: Offset.zero,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
+    _scaleAnimation = kIsDemo
+        ? Tween<double>(begin: 0.86, end: 1).animate(
+            CurvedAnimation(parent: _controller, curve: Curves.easeOutBack),
+          )
+        : const AlwaysStoppedAnimation<double>(1);
 
-    Future.delayed(Duration(milliseconds: 60 * widget.index), () {
+    Future.delayed(Duration(milliseconds: (kIsDemo ? 110 : 60) * widget.index), () {
       if (mounted) _controller.forward();
     });
   }
@@ -397,7 +405,10 @@ class _AnimatedWineCardState extends State<AnimatedWineCard>
   Widget build(BuildContext context) {
     return FadeTransition(
       opacity: _fadeAnimation,
-      child: SlideTransition(position: _slideAnimation, child: widget.child),
+      child: SlideTransition(
+        position: _slideAnimation,
+        child: ScaleTransition(scale: _scaleAnimation, child: widget.child),
+      ),
     );
   }
 }

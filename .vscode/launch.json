@@ -37,6 +37,21 @@
       "toolArgs": ["--dart-define=PROMO=true"]
     },
     {
+      "name": "sippd DEMO (real app, debug)",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "toolArgs": ["--dart-define=DEMO=true"]
+    },
+    {
+      "name": "sippd DEMO (real app, release)",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "flutterMode": "release",
+      "toolArgs": ["--dart-define=DEMO=true"]
+    },
+    {
       "name": "sippd (profile)",
       "request": "launch",
       "type": "dart",
