@@ -5,6 +5,7 @@ import 'package:widget_recorder_plus/widget_recorder_plus.dart';
 import '../../../../common/utils/responsive.dart';
 import '../promo_registry.dart';
 import 'promo_entrance.widget.dart';
+import 'promo_spotlight.widget.dart';
 
 /// Renders a single [PromoEntry] isolated on a clean canvas, ready to be
 /// screen-recorded or screenshotted.
@@ -21,6 +22,7 @@ class PromoStage extends StatelessWidget {
     super.key,
     required this.entry,
     required this.replayTick,
+    required this.motion,
     required this.screenshotController,
     required this.recorderController,
   });
@@ -30,12 +32,32 @@ class PromoStage extends StatelessWidget {
   /// Bumped by the showcase to force the entrance animation to replay.
   final int replayTick;
 
+  /// Entrance / emphasis style to play.
+  final PromoMotion motion;
+
   final ScreenshotController screenshotController;
   final WidgetRecorderController recorderController;
 
   @override
   Widget build(BuildContext context) {
-    final Widget raw = Builder(builder: entry.builder);
+    if (entry.isScene) {
+      return WidgetRecorder(
+        controller: recorderController,
+        child: ColoredBox(
+          color: entry.background,
+          child: Screenshot(
+            controller: screenshotController,
+            child: PromoScene(
+              key: ValueKey('${entry.slug}-scene-$replayTick'),
+              title: entry.name.replaceFirst('Scene · ', ''),
+              slots: entry.slots!,
+            ),
+          ),
+        ),
+      );
+    }
+
+    final Widget raw = Builder(builder: entry.builder!);
 
     // Fixed-canvas artifacts (the 1080×1920 share cards) are scaled to fit;
     // responsive in-app widgets render at their natural box size.
@@ -58,7 +80,8 @@ class PromoStage extends StatelessWidget {
               child: Screenshot(
                 controller: screenshotController,
                 child: PromoEntrance(
-                  key: ValueKey('${entry.slug}-$replayTick'),
+                  key: ValueKey('${entry.slug}-${motion.name}-$replayTick'),
+                  motion: motion,
                   child: content,
                 ),
               ),

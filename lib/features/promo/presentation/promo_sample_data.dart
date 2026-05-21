@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 
 import '../../../common/widgets/stats_card.widget.dart';
+import '../../groups/domain/entities/drinking_partner.entity.dart';
 import '../../share_cards/presentation/cards/compass_share_card.widget.dart';
 import '../../share_cards/presentation/cards/friend_invite_card.widget.dart';
 import '../../share_cards/presentation/cards/tasting_recap_card.widget.dart';
+import '../../taste_match/domain/entities/shared_bottle.entity.dart';
+import '../../taste_match/domain/entities/taste_compass.entity.dart';
 import '../../taste_match/domain/entities/taste_match.entity.dart';
 import '../../taste_match/domain/entities/user_style_dna.entity.dart';
 import '../../taste_match/presentation/widgets/compass_modes.dart';
@@ -146,6 +149,167 @@ abstract final class PromoSampleData {
     displayName: 'Martin',
     username: 'martin',
   );
+
+  /// A small varied cellar for list/timeline/compare widgets.
+  static final List<WineEntity> wines = [
+    wine,
+    WineEntity(
+      id: 'promo-wine-2',
+      name: 'Sancerre',
+      rating: 8.6,
+      type: WineType.white,
+      price: 24,
+      country: 'France',
+      region: 'Loire',
+      vintage: 2022,
+      grape: 'Sauvignon Blanc',
+      winery: 'Domaine Vacheron',
+      userId: 'promo-user',
+      createdAt: DateTime(2026, 3, 2),
+    ),
+    WineEntity(
+      id: 'promo-wine-3',
+      name: 'Brunello di Montalcino',
+      rating: 9.0,
+      type: WineType.red,
+      price: 62,
+      country: 'Italy',
+      region: 'Tuscany',
+      vintage: 2018,
+      grape: 'Sangiovese',
+      winery: 'Biondi-Santi',
+      userId: 'promo-user',
+      createdAt: DateTime(2026, 2, 14),
+    ),
+    WineEntity(
+      id: 'promo-wine-4',
+      name: 'Provence Rosé',
+      rating: 7.8,
+      type: WineType.rose,
+      price: 18,
+      country: 'France',
+      region: 'Provence',
+      vintage: 2023,
+      grape: 'Grenache',
+      winery: 'Château Minuty',
+      userId: 'promo-user',
+      createdAt: DateTime(2026, 1, 20),
+    ),
+    WineEntity(
+      id: 'promo-wine-5',
+      name: 'Champagne Brut',
+      rating: 8.9,
+      type: WineType.sparkling,
+      price: 55,
+      country: 'France',
+      region: 'Champagne',
+      vintage: 2017,
+      grape: 'Chardonnay',
+      winery: 'Pol Roger',
+      userId: 'promo-user',
+      createdAt: DateTime(2025, 12, 31),
+    ),
+  ];
+
+  static const List<TypeBreakdown> typeBreakdown = [
+    TypeBreakdown(type: WineType.red, count: 84, avgRating: 8.6),
+    TypeBreakdown(type: WineType.white, count: 38, avgRating: 8.2),
+    TypeBreakdown(type: WineType.rose, count: 12, avgRating: 7.9),
+    TypeBreakdown(type: WineType.sparkling, count: 8, avgRating: 8.8),
+  ];
+
+  static final List<TimelineMonth> timelineMonths = [
+    TimelineMonth(month: DateTime(2026, 4), wines: wines.take(3).toList()),
+    TimelineMonth(month: DateTime(2026, 3), wines: wines.skip(1).take(2).toList()),
+    TimelineMonth(month: DateTime(2026, 2), wines: wines.take(2).toList()),
+  ];
+
+  static const List<DrinkingPartnerEntity> partners = [
+    DrinkingPartnerEntity(
+      userId: 'u1',
+      displayName: 'Lena',
+      username: 'lena',
+      sharedWines: 23,
+    ),
+    DrinkingPartnerEntity(
+      userId: 'u2',
+      displayName: 'Tom',
+      username: 'tom',
+      sharedWines: 17,
+    ),
+    DrinkingPartnerEntity(
+      userId: 'u3',
+      displayName: 'Sofia',
+      username: 'sofia',
+      sharedWines: 11,
+    ),
+    DrinkingPartnerEntity(
+      userId: 'u4',
+      displayName: 'Max',
+      username: 'max',
+      sharedWines: 6,
+    ),
+  ];
+
+  static const TasteCompassEntity compass = TasteCompassEntity(
+    totalCount: 142,
+    overallAvg: 8.4,
+    topRegions: [
+      CompassBucket(label: 'Piedmont', count: 18, avgRating: 8.9),
+      CompassBucket(label: 'Tuscany', count: 14, avgRating: 8.5),
+      CompassBucket(label: 'Burgundy', count: 11, avgRating: 8.7),
+    ],
+    topCountries: [
+      CompassBucket(label: 'Italy', count: 64, avgRating: 8.6),
+      CompassBucket(label: 'France', count: 52, avgRating: 8.5),
+    ],
+    typeBreakdown: [
+      CompassBucket(label: 'Red', count: 84, avgRating: 8.6),
+      CompassBucket(label: 'White', count: 38, avgRating: 8.2),
+    ],
+  );
+
+  static const List<SharedBottleEntity> sharedBottles = [
+    SharedBottleEntity(
+      groupId: 'g1',
+      wineId: 'w1',
+      wineName: 'Barolo Riserva',
+      winery: 'Giacomo Conterno',
+      region: 'Piedmont',
+      country: 'Italy',
+      type: 'red',
+      vintage: 2016,
+      myRating: 9.2,
+      theirRating: 9.0,
+      delta: 0.2,
+    ),
+    SharedBottleEntity(
+      groupId: 'g1',
+      wineId: 'w2',
+      wineName: 'Brunello di Montalcino',
+      winery: 'Biondi-Santi',
+      region: 'Tuscany',
+      country: 'Italy',
+      type: 'red',
+      vintage: 2018,
+      myRating: 9.0,
+      theirRating: 7.8,
+      delta: 1.2,
+    ),
+    SharedBottleEntity(
+      groupId: 'g1',
+      wineId: 'w3',
+      wineName: 'Sancerre',
+      winery: 'Domaine Vacheron',
+      region: 'Loire',
+      country: 'France',
+      type: 'white',
+      vintage: 2022,
+      myRating: 8.6,
+      theirRating: 8.9,
+      delta: 0.3,
+    ),
+  ];
 
   /// Wine rating share card uses the same wine; no image → editorial
   /// (typographic) layout, which keeps the render network-free.
