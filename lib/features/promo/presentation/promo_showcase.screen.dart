@@ -15,14 +15,13 @@ import 'widgets/promo_stage.widget.dart';
 
 /// Stage that shows one promo widget at a time with a bottom control bar.
 ///
-/// Workflow:
-///  - **Record** captures just the widget to an MP4 (replays the entrance
-///    first so the clip starts clean), then opens the share sheet.
-///  - **PNG** captures a transparent-surround still, then shares it.
-///  - Tap the widget area to hide the bar for a clean OS screen-recording.
+/// Exports (all open the share sheet → AirDrop / Files):
+///  - **PNG** — native-resolution still with a transparent surround.
+///  - **Sequence** — an alpha PNG frame sequence of the pop animation, for
+///    transparent motion overlays in the editor (MP4 can't carry alpha).
+///  - **Record** — full-frame MP4 (background baked in; B-roll, not overlay).
 ///
-/// Exports capture only the widget subtree, so the control bar never shows
-/// up in a PNG/MP4 — only in OS-level screen recordings.
+/// Tap the widget area to hide the bar for a clean OS screen-recording.
 class PromoShowcaseScreen extends StatefulWidget {
   const PromoShowcaseScreen({super.key, this.initialIndex = 0});
 
@@ -37,12 +36,20 @@ class _PromoShowcaseScreenState extends State<PromoShowcaseScreen> {
   int _replayTick = 0;
   bool _recording = false;
   bool _chromeVisible = true;
+  bool _shadow = false;
   PromoMotion _motion = PromoMotion.pop;
+
+  /// Non-null only while rendering an alpha frame sequence.
+  double? _seqT;
 
   final ScreenshotController _shot = ScreenshotController();
   late final WidgetRecorderController _rec;
 
   PromoEntry get _entry => promoEntries[_index];
+
+  // Native render: share cards are already 1080-wide, so 2× is plenty;
+  // smaller in-app widgets get a higher ratio for crispness.
+  double get _pixelRatio => _entry.designSize != null ? 2 : 3.5;
 
   @override
   void initState() {
@@ -50,7 +57,7 @@ class _PromoShowcaseScreenState extends State<PromoShowcaseScreen> {
     _rec = WidgetRecorderController(
       onComplete: (path) async {
         _notify('MP4 saved — opening share sheet…');
-        await _share(path, 'Sippd promo — ${_entry.name}');
+        await _share([XFile(path)], 'Sippd promo — ${_entry.name}');
       },
       onError: (error) => _notify('Recording failed: $error'),
     );
@@ -69,8 +76,9 @@ class _PromoShowcaseScreenState extends State<PromoShowcaseScreen> {
       ..showSnackBar(SnackBar(content: Text(message)));
   }
 
-  Future<void> _share(String path, String subject) async {
-    await Share.shareXFiles([XFile(path)], subject: subject, text: subject);
+  Future<void> _share(List<XFile> files, String subject) async {
+    if (files.isEmpty) return;
+    await Share.shareXFiles(files, subject: subject, text: subject);
   }
 
   void _go(int delta) {
@@ -94,15 +102,20 @@ class _PromoShowcaseScreenState extends State<PromoShowcaseScreen> {
   void _cycleMotion() {
     setState(() {
       _motion = _motion.next;
-      _replayTick++; // remount so the new motion plays immediately
+      _replayTick++;
     });
     _notify('Motion: ${_motion.label}');
   }
 
+  void _toggleShadow() {
+    setState(() => _shadow = !_shadow);
+    _notify('Drop shadow: ${_shadow ? 'on' : 'off'}');
+  }
+
   Future<void> _capturePng() async {
     final bytes = await _shot.capture(
-      pixelRatio: 3,
-      delay: const Duration(milliseconds: 700),
+      pixelRatio: _pixelRatio,
+      delay: const Duration(milliseconds: 320),
     );
     if (bytes == null) {
       _notify('Capture returned no image');
@@ -114,18 +127,48 @@ class _PromoShowcaseScreenState extends State<PromoShowcaseScreen> {
     await file.writeAsBytes(bytes);
     if (!mounted) return;
     _notify('PNG saved — opening share sheet…');
-    await _share(file.path, 'Sippd promo — ${_entry.name}');
+    await _share([XFile(file.path)], 'Sippd promo — ${_entry.name}');
+  }
+
+  /// Renders the pop as 24 transparent PNG frames into a folder, then shares
+  /// them. Import as an image sequence in the editor for an alpha overlay.
+  Future<void> _exportSequence() async {
+    if (_entry.isScene) {
+      _notify('Sequence export is for single widgets, not scenes');
+      return;
+    }
+    const frames = 24;
+    final dir = await getApplicationDocumentsDirectory();
+    final ts = DateTime.now().millisecondsSinceEpoch;
+    final folder = Directory('${dir.path}/seq_${_entry.slug}_$ts');
+    await folder.create();
+
+    final files = <XFile>[];
+    for (var i = 0; i < frames; i++) {
+      if (!mounted) break;
+      setState(() => _seqT = i / (frames - 1));
+      await WidgetsBinding.instance.endOfFrame;
+      final bytes = await _shot.capture(pixelRatio: _pixelRatio);
+      if (bytes == null) continue;
+      final f = File(
+        '${folder.path}/frame_${i.toString().padLeft(3, '0')}.png',
+      );
+      await f.writeAsBytes(bytes);
+      files.add(XFile(f.path));
+    }
+    if (mounted) setState(() => _seqT = null);
+    _notify('Sequence: ${files.length} frames → ${folder.path}');
+    await _share(files, 'Sippd promo sequence — ${_entry.name}');
   }
 
   Future<void> _toggleRecord() async {
     if (_recording) {
-      await _rec.stop(); // onComplete handles sharing
+      await _rec.stop();
       if (mounted) setState(() => _recording = false);
       return;
     }
     await _rec.start();
     if (!mounted) return;
-    // Restart the entrance so the clip captures the animation from zero.
     setState(() {
       _recording = true;
       _replayTick++;
@@ -171,6 +214,8 @@ class _PromoShowcaseScreenState extends State<PromoShowcaseScreen> {
                 entry: _entry,
                 replayTick: _replayTick,
                 motion: _motion,
+                captureT: _seqT,
+                shadow: _shadow,
                 screenshotController: _shot,
                 recorderController: _rec,
               ),
@@ -189,11 +234,14 @@ class _PromoShowcaseScreenState extends State<PromoShowcaseScreen> {
                 entry: _entry,
                 recording: _recording,
                 motion: _motion,
+                shadow: _shadow,
                 onPrev: () => _go(-1),
                 onNext: () => _go(1),
                 onReplay: _replay,
                 onCycleMotion: _cycleMotion,
+                onToggleShadow: _toggleShadow,
                 onCapture: _capturePng,
+                onSequence: _exportSequence,
                 onToggleRecord: _toggleRecord,
                 onOpenList: _openList,
               ),
