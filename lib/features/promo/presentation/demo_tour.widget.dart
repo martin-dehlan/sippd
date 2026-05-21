@@ -7,7 +7,7 @@ import '../../../common/utils/responsive.dart';
 import '../../../core/routes/app.routes.dart';
 import '../../wines/controller/wine.provider.dart';
 import '../../wines/domain/entities/wine.entity.dart';
-import 'demo_caption.dart';
+import 'demo_spotlight.widget.dart';
 
 /// Hands-free demo tour: tap ▶ and the app drives itself through the flow,
 /// announcing each section with a keynote-style caption and letting every
@@ -29,7 +29,7 @@ class _DemoTourState extends ConsumerState<DemoTour> {
   Future<void> _wait(int ms) => Future<void>.delayed(Duration(milliseconds: ms));
 
   void _cleanup() {
-    demoCaption.value = null;
+    demoSpotlightId.value = null;
     if (mounted) setState(() => _running = false);
   }
 
@@ -41,34 +41,26 @@ class _DemoTourState extends ConsumerState<DemoTour> {
             .take(3)
             .toList();
 
-    const captions = [
-      'Remember what you loved',
-      'Every note, photo & place',
-      'Compare your favourites',
-    ];
-
-    // Beat 0 — the list itself, while the tiles stagger in.
-    demoCaption.value = 'Every bottle, rated';
-    await _wait(2800);
+    // Let the staggered list entrance finish.
+    await _wait(2400);
 
     for (var i = 0; i < shown.length; i++) {
       if (!mounted) return _cleanup();
-      // Announce, hold so the label reads, then open — anticipation first.
-      demoCaption.value = captions[i % captions.length];
-      await _wait(1400);
+      // Pop the tile forward + dim the rest — "look here" — then open it.
+      demoSpotlightId.value = shown[i].id;
+      await _wait(1300);
       router.push(AppRoutes.wineDetailPath(shown[i].id), extra: shown[i]);
-      // Cinematic transition + image expand + staggered stats + a read beat.
-      await _wait(4600);
+      // Cinematic transition + image expand + staggered stat reveal + read.
+      await _wait(4400);
       if (!mounted) return _cleanup();
       if (router.canPop()) router.pop();
-      await _wait(1600);
+      demoSpotlightId.value = null; // list returns to normal
+      await _wait(1500);
     }
 
     if (!mounted) return _cleanup();
-    demoCaption.value = 'Your taste, visualised';
-    await _wait(1300);
     router.push(AppRoutes.wineStats);
-    await _wait(4600);
+    await _wait(4400);
     if (!mounted) return _cleanup();
     if (router.canPop()) router.pop();
     await _wait(900);

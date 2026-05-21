@@ -32,7 +32,6 @@ import 'features/wines/controller/wine.provider.dart';
 import 'features/tastings/controller/tastings.provider.dart';
 import 'features/promo/promo.config.dart';
 import 'features/promo/presentation/promo_app.dart';
-import 'features/promo/presentation/demo_caption.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -201,10 +200,6 @@ class _SippdAppState extends ConsumerState<SippdApp> {
       routerConfig: router,
       restorationScopeId: 'sippd_app',
       debugShowCheckedModeBanner: false,
-      // Demo builds float keynote-style section labels over every screen.
-      builder: kIsDemo
-          ? (context, child) => DemoCaptionLayer(child: child!)
-          : null,
       locale: ref.watch(appLocaleControllerProvider),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,

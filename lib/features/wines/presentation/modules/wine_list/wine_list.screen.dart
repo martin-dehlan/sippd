@@ -9,6 +9,7 @@ import '../../../../../common/widgets/error_view.widget.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../../promo/promo.config.dart';
 import '../../../../promo/presentation/demo_tour.widget.dart';
+import '../../../../promo/presentation/demo_spotlight.widget.dart';
 import '../../../controller/wine.provider.dart';
 import '../../../domain/entities/wine.entity.dart';
 import '../../widgets/wine_card.widget.dart';
@@ -284,17 +285,20 @@ class _WineListScreenState extends ConsumerState<WineListScreen>
                               SizedBox(height: context.s),
                           itemBuilder: (context, index) => AnimatedWineCard(
                             index: index,
-                            child: WineCardWidget(
-                              wine: sorted[index],
-                              rank: rankById[sorted[index].id] ?? index + 1,
-                              compact: true,
-                              circularImage: false,
-                              onTap: () => context.push(
-                                AppRoutes.wineDetailPath(sorted[index].id),
-                              ),
-                              onLongPress: () => startCompareFlow(
-                                context,
-                                sourceWineId: sorted[index].id,
+                            child: DemoSpotlightTile(
+                              id: sorted[index].id,
+                              child: WineCardWidget(
+                                wine: sorted[index],
+                                rank: rankById[sorted[index].id] ?? index + 1,
+                                compact: true,
+                                circularImage: false,
+                                onTap: () => context.push(
+                                  AppRoutes.wineDetailPath(sorted[index].id),
+                                ),
+                                onLongPress: () => startCompareFlow(
+                                  context,
+                                  sourceWineId: sorted[index].id,
+                                ),
                               ),
                             ),
                           ),
