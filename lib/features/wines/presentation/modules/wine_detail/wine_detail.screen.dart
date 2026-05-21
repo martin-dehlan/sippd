@@ -19,6 +19,7 @@ import '../../../../friends/presentation/widgets/friend_multi_picker.widget.dart
 import '../../../../groups/presentation/widgets/share_wine_sheet.dart';
 import '../../../../paywall/controller/paywall.provider.dart';
 import '../../../../profile/controller/profile.provider.dart';
+import '../../../../promo/presentation/demo_reveal.widget.dart';
 import '../../../../share_cards/controller/share_card.provider.dart';
 import '../../../controller/wine.provider.dart';
 import '../../../domain/entities/wine.entity.dart';
@@ -233,7 +234,11 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
                     children: [
                       Expanded(
                         flex: 5,
-                        child: WineDetailImage(wine: widget.wine),
+                        child: DemoReveal(
+                          delay: const Duration(milliseconds: 520),
+                          fromScale: 0.82,
+                          child: WineDetailImage(wine: widget.wine),
+                        ),
                       ),
                       Expanded(
                         flex: 4,
@@ -546,6 +551,7 @@ class _StatsColumn extends ConsumerWidget {
             value: wine.rating.toStringAsFixed(1),
             unit: l10n.winesDetailStatRatingUnit,
             onTap: isOwner ? () => _editRating(context, ref) : null,
+            revealDelay: const Duration(milliseconds: 700),
           ),
           SizedBox(height: context.l),
           if (wine.price != null) ...[
@@ -554,6 +560,7 @@ class _StatsColumn extends ConsumerWidget {
               value: formatPrice(wine.price!),
               unit: wine.currency,
               onTap: isOwner ? () => _editPrice(context, ref) : null,
+              revealDelay: const Duration(milliseconds: 820),
             ),
             SizedBox(height: context.l),
           ] else if (isOwner) ...[
@@ -571,6 +578,7 @@ class _StatsColumn extends ConsumerWidget {
               value: wine.region!,
               isText: true,
               onTap: isOwner ? () => _editOrigin(context, ref) : null,
+              revealDelay: const Duration(milliseconds: 940),
             )
           else if (wine.country != null)
             _StatItem(
@@ -578,6 +586,7 @@ class _StatsColumn extends ConsumerWidget {
               value: wine.country!,
               isText: true,
               onTap: isOwner ? () => _editOrigin(context, ref) : null,
+              revealDelay: const Duration(milliseconds: 940),
             )
           else if (isOwner)
             _StatItem(
@@ -599,12 +608,17 @@ class _StatItem extends StatelessWidget {
   final bool isText;
   final VoidCallback? onTap;
 
+  /// Demo-only: staggers this stat's pop-in so rating/price/region
+  /// highlight one after another. Ignored in production.
+  final Duration revealDelay;
+
   const _StatItem({
     required this.label,
     required this.value,
     this.unit,
     this.isText = false,
     this.onTap,
+    this.revealDelay = Duration.zero,
   });
 
   @override
@@ -661,15 +675,17 @@ class _StatItem extends StatelessWidget {
           ),
       ],
     );
-    if (onTap == null) return column;
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(context.w * 0.02),
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: context.xs),
-        child: column,
-      ),
-    );
+    final result = onTap == null
+        ? column
+        : InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(context.w * 0.02),
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: context.xs),
+              child: column,
+            ),
+          );
+    return DemoReveal(delay: revealDelay, child: result);
   }
 }
 
