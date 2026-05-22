@@ -122,6 +122,14 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
   late final Animation<double> _fadeIn;
   late final Animation<Offset> _slideUp;
 
+  // Demo only: scroll + spotlight the lower detail sections.
+  final ScrollController _scroll = ScrollController();
+  final GlobalKey _notesKey = GlobalKey();
+  final GlobalKey _expertKey = GlobalKey();
+  final GlobalKey _friendsKey = GlobalKey();
+  final GlobalKey _momentsKey = GlobalKey();
+  final GlobalKey _placeKey = GlobalKey();
+
   @override
   void initState() {
     super.initState();
@@ -216,6 +224,32 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
       await Future<void>.delayed(const Duration(milliseconds: 400));
     }
 
+    // Lower sections: scroll down and spotlight each in turn (notes, expert
+    // tasting, friend ratings, moments, place). Keys that aren't rendered for
+    // this wine are skipped.
+    final lower = <(GlobalKey, int)>[
+      (_notesKey, 4),
+      (_expertKey, 5),
+      (_friendsKey, 6),
+      (_momentsKey, 7),
+      (_placeKey, 8),
+    ];
+    for (final (key, beat) in lower) {
+      if (!mounted) return _endDemoBeats();
+      final ctx = key.currentContext;
+      if (ctx != null && ctx.mounted) {
+        await Scrollable.ensureVisible(
+          ctx,
+          duration: const Duration(milliseconds: 600),
+          curve: Curves.easeOutCubic,
+          alignment: 0.2,
+        );
+      }
+      if (!mounted) return _endDemoBeats();
+      demoDetailBeat.value = beat;
+      await Future<void>.delayed(const Duration(milliseconds: 2000));
+    }
+
     _endDemoBeats();
   }
 
@@ -232,6 +266,7 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
   void dispose() {
     demoDetailBeat.value = null;
     demoScreenBusy.value = false;
+    _scroll.dispose();
     _animController.dispose();
     super.dispose();
   }
@@ -247,6 +282,7 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
         child: SlideTransition(
           position: _slideUp,
           child: ListView(
+            controller: _scroll,
             padding: EdgeInsets.zero,
             children: [
               SizedBox(height: context.xl * 1.5),
@@ -362,41 +398,77 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
                   label: AppLocalizations.of(context).winesDetailSectionNotes,
                 ),
                 SizedBox(height: context.m),
-                _NotesBlock(notes: widget.wine.notes!),
+                KeyedSubtree(
+                  key: _notesKey,
+                  child: DemoBeatHighlight(
+                    beat: 4,
+                    child: _NotesBlock(notes: widget.wine.notes!),
+                  ),
+                ),
               ],
               if (widget.wine.canonicalWineId != null) ...[
                 SizedBox(height: context.xl),
                 // Read-only display of the user's own expert tasting
                 // dimensions for this wine. Renders nothing when empty,
                 // so non-Pro / unfilled wines stay clean.
-                ExpertTastingSummary(
-                  canonicalWineId: widget.wine.canonicalWineId!,
-                  onEdit: () {
-                    final isPro = ref.read(isProProvider);
-                    if (!isPro) {
-                      context.push(
-                        AppRoutes.paywall,
-                        extra: const {'source': 'expert_tasting_summary'},
-                      );
-                      return;
-                    }
-                    showExpertTastingSheet(context: context, wine: widget.wine);
-                  },
+                KeyedSubtree(
+                  key: _expertKey,
+                  child: DemoBeatHighlight(
+                    beat: 5,
+                    child: ExpertTastingSummary(
+                      canonicalWineId: widget.wine.canonicalWineId!,
+                      onEdit: () {
+                        final isPro = ref.read(isProProvider);
+                        if (!isPro) {
+                          context.push(
+                            AppRoutes.paywall,
+                            extra: const {'source': 'expert_tasting_summary'},
+                          );
+                          return;
+                        }
+                        showExpertTastingSheet(
+                          context: context,
+                          wine: widget.wine,
+                        );
+                      },
+                    ),
+                  ),
                 ),
                 SizedBox(height: context.l),
-                FriendRatingsStrip(
-                  canonicalWineId: widget.wine.canonicalWineId!,
+                KeyedSubtree(
+                  key: _friendsKey,
+                  child: DemoBeatHighlight(
+                    beat: 6,
+                    child: FriendRatingsStrip(
+                      canonicalWineId: widget.wine.canonicalWineId!,
+                    ),
+                  ),
                 ),
               ],
-              _MemoriesSection(wine: widget.wine),
+              KeyedSubtree(
+                key: _momentsKey,
+                child: DemoBeatHighlight(
+                  beat: 7,
+                  child: _MemoriesSection(wine: widget.wine),
+                ),
+              ),
               SizedBox(height: context.xl),
               WineDetailSectionHeader(
                 label: AppLocalizations.of(context).winesDetailSectionPlace,
               ),
               SizedBox(height: context.s),
-              SizedBox(
-                height: context.h * 0.28,
-                child: _PlaceSection(wine: widget.wine, hasCoords: hasCoords),
+              KeyedSubtree(
+                key: _placeKey,
+                child: DemoBeatHighlight(
+                  beat: 8,
+                  child: SizedBox(
+                    height: context.h * 0.28,
+                    child: _PlaceSection(
+                      wine: widget.wine,
+                      hasCoords: hasCoords,
+                    ),
+                  ),
+                ),
               ),
               SizedBox(height: context.xxl * 1.5),
             ],

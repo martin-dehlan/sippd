@@ -73,7 +73,9 @@ class _DemoTourState extends ConsumerState<DemoTour> {
     await _wait(1000);
     if (!mounted) return _cleanup();
     router.push(AppRoutes.wineDetailPath(shown.first.id), extra: shown.first);
-    await _waitUntilIdle(max: 26000); // feature beats + edit sheets + pickers
+    await _waitUntilIdle(
+      max: 42000,
+    ); // beats + edit sheets + pickers + sections
     if (!mounted) return _cleanup();
     if (router.canPop()) router.pop();
     demoSpotlightId.value = null;
