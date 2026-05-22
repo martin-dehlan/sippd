@@ -1,7 +1,7 @@
 name: sippd
 description: "Wine ranking & sharing app"
 publish_to: 'none'
-version: 0.1.20+23
+version: 0.1.21+25
 
 environment:
   sdk: ^3.11.4

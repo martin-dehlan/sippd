@@ -151,8 +151,6 @@ class ExpertRatingPanel extends StatelessWidget {
   final ValueChanged<ExpertTastingEntity> onTastingChange;
   final VoidCallback onToggleAromas;
 
-  bool get _isRed => wineType == WineType.red;
-
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
@@ -192,14 +190,13 @@ class ExpertRatingPanel extends StatelessWidget {
             value: tasting.body,
             onChanged: (v) => onTastingChange(tasting.copyWith(body: v)),
           ),
-          if (_isRed)
-            ets.TastingCompactRow(
-              label: l10n.winesExpertAxisTannin,
-              lowLabel: l10n.winesExpertTanninLow,
-              highLabel: l10n.winesExpertTanninHigh,
-              value: tasting.tannin,
-              onChanged: (v) => onTastingChange(tasting.copyWith(tannin: v)),
-            ),
+          ets.TastingCompactRow(
+            label: l10n.winesExpertAxisTannin,
+            lowLabel: l10n.winesExpertTanninLow,
+            highLabel: l10n.winesExpertTanninHigh,
+            value: tasting.tannin,
+            onChanged: (v) => onTastingChange(tasting.copyWith(tannin: v)),
+          ),
           ets.TastingCompactRow(
             label: l10n.winesExpertAxisAcidity,
             lowLabel: l10n.winesExpertAcidityLow,
