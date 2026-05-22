@@ -788,6 +788,19 @@ class _PlaceSectionState extends ConsumerState<_PlaceSection>
       const Color(0xFFE8D9A1),
       cs.secondary,
     ];
+    // A moment can sit on the wine's first-drink location; collapse those so
+    // the same place isn't pinned/chipped twice.
+    final wp = winePoint;
+    final dedupedMoments = wp == null
+        ? momentPoints
+        : momentPoints
+              .where(
+                (m) =>
+                    (m.placeLat! - wp.latitude).abs() >= 1e-5 ||
+                    (m.placeLng! - wp.longitude).abs() >= 1e-5,
+              )
+              .toList();
+
     final marks = <_PlaceMark>[
       if (winePoint != null)
         _PlaceMark(
@@ -796,10 +809,13 @@ class _PlaceSectionState extends ConsumerState<_PlaceSection>
           color: palette[0],
           glyph: PhosphorIconsFill.wine,
         ),
-      for (var i = 0; i < momentPoints.length; i++)
+      for (var i = 0; i < dedupedMoments.length; i++)
         _PlaceMark(
-          label: momentPoints[i].placeName ?? '·',
-          point: LatLng(momentPoints[i].placeLat!, momentPoints[i].placeLng!),
+          label: dedupedMoments[i].placeName ?? '·',
+          point: LatLng(
+            dedupedMoments[i].placeLat!,
+            dedupedMoments[i].placeLng!,
+          ),
           color: palette[(i + 1) % palette.length],
           number: i + 1,
         ),
