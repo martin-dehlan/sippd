@@ -5,6 +5,10 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../common/utils/responsive.dart';
 import '../../../core/routes/app.routes.dart';
+import '../../friends/controller/friends.provider.dart';
+import '../../groups/controller/group.provider.dart';
+import '../../groups/domain/entities/group.entity.dart';
+import '../../tastings/controller/tastings.provider.dart';
 import '../../wines/controller/wine.provider.dart';
 import '../../wines/controller/wine_stats.provider.dart';
 import '../../wines/domain/entities/wine.entity.dart';
@@ -33,8 +37,18 @@ class _DemoTourState extends ConsumerState<DemoTour> {
   /// Waits for the just-opened screen's demo director to finish (it flips
   /// [demoScreenBusy]); falls back to [max] so a screen without a director
   /// doesn't stall the tour.
-  Future<void> _waitUntilIdle({int max = 16000}) async {
-    await _wait(400); // let the director set busy = true first
+  ///
+  /// First waits (up to [armCap]) for the director to flip busy *on* — async
+  /// screens (group / tasting / friend / compare) only mount their director
+  /// once their data resolves, so the flag may lag the navigation. Then waits
+  /// for it to clear.
+  Future<void> _waitUntilIdle({int max = 16000, int armCap = 4000}) async {
+    await _wait(400); // let an instant director set busy = true first
+    var armed = 0;
+    while (mounted && !demoScreenBusy.value && armed < armCap) {
+      await _wait(150);
+      armed += 150;
+    }
     var waited = 0;
     while (mounted && demoScreenBusy.value && waited < max) {
       await _wait(200);
@@ -66,7 +80,17 @@ class _DemoTourState extends ConsumerState<DemoTour> {
       demoSpotlightId.value = wine.id;
       await _wait(950);
     }
+    demoSpotlightId.value = null;
     await _wait(300);
+
+    // Add & rate (RATE) — open the add-wine flow; its director fills the
+    // form and opens the rating sheet without ever saving a real wine.
+    if (!mounted) return _cleanup();
+    router.push(AppRoutes.wineAdd);
+    await _waitUntilIdle(max: 22000);
+    if (!mounted) return _cleanup();
+    if (router.canPop()) router.pop();
+    await _wait(900);
 
     // Deep-dive the top wine — its detail spotlights each feature once
     // (image → rating → price → origin), so nothing is shown twice.
@@ -81,6 +105,16 @@ class _DemoTourState extends ConsumerState<DemoTour> {
     if (router.canPop()) router.pop();
     demoSpotlightId.value = null;
     await _wait(1400);
+
+    // Compare — side-by-side of the top two wines (needs at least two).
+    if (shown.length >= 2) {
+      if (!mounted) return _cleanup();
+      router.push(AppRoutes.wineComparePath(shown[0].id, shown[1].id));
+      await _waitUntilIdle(max: 18000);
+      if (!mounted) return _cleanup();
+      if (router.canPop()) router.pop();
+      await _wait(1000);
+    }
 
     // Stats (TRACK) — prewarm the unified rating summary first (and keep it
     // alive) so the hero average animates straight to its final value instead
@@ -105,13 +139,49 @@ class _DemoTourState extends ConsumerState<DemoTour> {
     if (!mounted) return _cleanup();
     router.go(AppRoutes.groups);
     await _wait(1100);
-    for (var b = 0; b < 2; b++) {
+    final groups = await _readGroups();
+    final cardBeats = groups.isEmpty ? 0 : (groups.length < 2 ? 1 : 2);
+    for (var b = 0; b < cardBeats; b++) {
       if (!mounted) return _cleanup();
       demoDetailBeat.value = b;
       await _wait(2200);
     }
     demoDetailBeat.value = null;
     await _wait(500);
+
+    // Group detail (HOST) — open the first group; its director walks
+    // members → shared wines → tastings.
+    if (groups.isNotEmpty) {
+      final groupId = groups.first.id;
+      if (!mounted) return _cleanup();
+      router.push(AppRoutes.groupDetailPath(groupId));
+      await _waitUntilIdle(max: 12000);
+
+      // Tasting (HOST / SHARE) — drill into the group's first tasting.
+      final tastingId = await _firstTastingId(groupId);
+      if (mounted && tastingId != null) {
+        router.push(AppRoutes.tastingDetailPath(tastingId));
+        await _waitUntilIdle(max: 20000);
+        if (!mounted) return _cleanup();
+        if (router.canPop()) router.pop(); // tasting → group detail
+        await _wait(700);
+      }
+
+      if (!mounted) return _cleanup();
+      if (router.canPop()) router.pop(); // group detail → groups list
+      await _wait(800);
+    }
+
+    // Friend taste-match (SHARE) — open the first friend's profile; its
+    // director walks identity → taste personality → match % → shared bottles.
+    final friendId = await _firstFriendId();
+    if (mounted && friendId != null) {
+      router.push(AppRoutes.friendProfilePath(friendId));
+      await _waitUntilIdle(max: 16000);
+      if (!mounted) return _cleanup();
+      if (router.canPop()) router.pop();
+      await _wait(800);
+    }
 
     // Taste profile (your palate) — tab switch, then spotlight the
     // wine-personality hero.
@@ -129,6 +199,36 @@ class _DemoTourState extends ConsumerState<DemoTour> {
     await _wait(800);
 
     _cleanup();
+  }
+
+  /// The signed-in user's groups, forcing a load so a freshly opened tab
+  /// doesn't report empty. Returns `[]` on any error (offline, etc.).
+  Future<List<GroupEntity>> _readGroups() async {
+    try {
+      return await ref.read(groupControllerProvider.future);
+    } catch (_) {
+      return const [];
+    }
+  }
+
+  /// Id of the group's first tasting, or `null` if it has none / load fails.
+  Future<String?> _firstTastingId(String groupId) async {
+    try {
+      final tastings = await ref.read(groupTastingsProvider(groupId).future);
+      return tastings.isEmpty ? null : tastings.first.id;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// Id of the user's first friend, or `null` if none / load fails.
+  Future<String?> _firstFriendId() async {
+    try {
+      final friends = await ref.read(friendsListProvider.future);
+      return friends.isEmpty ? null : friends.first.id;
+    } catch (_) {
+      return null;
+    }
   }
 
   @override
