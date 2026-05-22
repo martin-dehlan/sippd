@@ -83,6 +83,10 @@ void main() async {
         sharedPreferencesProvider.overrideWithValue(prefs),
         analyticsProvider.overrideWithValue(analytics),
         paywallProvider.overrideWithValue(paywall),
+        // Demo builds unlock Pro so every Pro-gated widget renders in the
+        // flow video. A demo build auto-runs the tour and fakes interactions,
+        // so it's non-shippable — this can't unlock Pro in the real app.
+        if (kIsDemo) isProProvider.overrideWith((ref) => true),
       ],
       child: const SippdApp(),
     ),
