@@ -82,7 +82,7 @@ class _DemoTourState extends ConsumerState<DemoTour> {
     // Stats (TRACK) — pushed route, cinematic transition.
     if (!mounted) return _cleanup();
     router.push(AppRoutes.wineStats);
-    await _waitUntilIdle(max: 16000); // chart spotlight beats + count bump
+    await _waitUntilIdle(max: 30000); // all chart sections incl. Pro
     if (!mounted) return _cleanup();
     if (router.canPop()) router.pop();
     await _wait(900);

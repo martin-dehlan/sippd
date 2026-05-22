@@ -36,6 +36,11 @@ class _WineStatsScreenState extends ConsumerState<WineStatsScreen> {
   final GlobalKey _heroKey = GlobalKey();
   final GlobalKey _typeKey = GlobalKey();
   final GlobalKey _topKey = GlobalKey();
+  final GlobalKey _timelineKey = GlobalKey();
+  final GlobalKey _partnersKey = GlobalKey();
+  final GlobalKey _spendingKey = GlobalKey();
+  final GlobalKey _placesKey = GlobalKey();
+  final GlobalKey _regionsKey = GlobalKey();
 
   @override
   void initState() {
@@ -61,6 +66,11 @@ class _WineStatsScreenState extends ConsumerState<WineStatsScreen> {
       (_heroKey, 0),
       (_typeKey, 1),
       (_topKey, 2),
+      (_timelineKey, 3),
+      (_partnersKey, 4),
+      (_spendingKey, 5),
+      (_placesKey, 6),
+      (_regionsKey, 7),
     ];
     for (final (key, beat) in beats) {
       if (!mounted) break;
@@ -76,7 +86,7 @@ class _WineStatsScreenState extends ConsumerState<WineStatsScreen> {
       if (!mounted) break;
       demoDetailBeat.value = beat;
       // Calmer, longer hold so each chart (and its count bump) can breathe.
-      await Future<void>.delayed(const Duration(milliseconds: 2500));
+      await Future<void>.delayed(const Duration(milliseconds: 2100));
     }
     if (mounted) demoDetailBeat.value = null;
     demoScreenBusy.value = false;
@@ -187,9 +197,15 @@ class _WineStatsScreenState extends ConsumerState<WineStatsScreen> {
                     title: l10n.winesStatsSectionTimeline,
                     subtitle: l10n.winesStatsSectionTimelineSubtitle,
                     delay: 175,
-                    child: hasWines
-                        ? WineTimeline(months: timeline)
-                        : const WineTimeline(months: []),
+                    child: KeyedSubtree(
+                      key: _timelineKey,
+                      child: DemoBeatHighlight(
+                        beat: 3,
+                        child: hasWines
+                            ? WineTimeline(months: timeline)
+                            : const WineTimeline(months: []),
+                      ),
+                    ),
                   ),
                   SliverToBoxAdapter(child: SizedBox(height: context.m)),
 
@@ -197,22 +213,28 @@ class _WineStatsScreenState extends ConsumerState<WineStatsScreen> {
                     title: l10n.winesStatsSectionPartners,
                     subtitle: l10n.winesStatsSectionPartnersSubtitle,
                     delay: 220,
-                    child: partnersAsync.when(
-                      loading: () => const DrinkingPartnersSkeleton(),
-                      error: (_, _) => StatsSectionEmpty(
-                        icon: PhosphorIconsFill.usersThree,
-                        title: l10n.winesStatsPartnersErrorTitle,
-                        body: l10n.winesStatsPartnersErrorBody,
+                    child: KeyedSubtree(
+                      key: _partnersKey,
+                      child: DemoBeatHighlight(
+                        beat: 4,
+                        child: partnersAsync.when(
+                          loading: () => const DrinkingPartnersSkeleton(),
+                          error: (_, _) => StatsSectionEmpty(
+                            icon: PhosphorIconsFill.usersThree,
+                            title: l10n.winesStatsPartnersErrorTitle,
+                            body: l10n.winesStatsPartnersErrorBody,
+                          ),
+                          data: (partners) => partners.isEmpty
+                              ? StatsSectionEmpty(
+                                  icon: PhosphorIconsFill.usersThree,
+                                  title: l10n.winesStatsPartnersEmptyTitle,
+                                  body: l10n.winesStatsPartnersEmptyBody,
+                                  ctaLabel: l10n.winesStatsPartnersCta,
+                                  onTap: () => context.go(AppRoutes.groups),
+                                )
+                              : DrinkingPartners(partners: partners),
+                        ),
                       ),
-                      data: (partners) => partners.isEmpty
-                          ? StatsSectionEmpty(
-                              icon: PhosphorIconsFill.usersThree,
-                              title: l10n.winesStatsPartnersEmptyTitle,
-                              body: l10n.winesStatsPartnersEmptyBody,
-                              ctaLabel: l10n.winesStatsPartnersCta,
-                              onTap: () => context.go(AppRoutes.groups),
-                            )
-                          : DrinkingPartners(partners: partners),
                     ),
                   ),
                   SliverToBoxAdapter(child: SizedBox(height: context.m)),
@@ -221,15 +243,21 @@ class _WineStatsScreenState extends ConsumerState<WineStatsScreen> {
                     title: l10n.winesStatsSectionPrices,
                     subtitle: l10n.winesStatsSectionPricesSubtitle,
                     delay: 200,
-                    child: hasWines && !hasPriced
-                        ? StatsSectionEmpty(
-                            icon: PhosphorIconsFill.tag,
-                            title: l10n.winesStatsPriceEmptyTitle,
-                            body: l10n.winesStatsPriceEmptyBody,
-                            ctaLabel: l10n.winesStatsPriceEmptyCta,
-                            onTap: () => context.pop(),
-                          )
-                        : const SpendingSection(),
+                    child: KeyedSubtree(
+                      key: _spendingKey,
+                      child: DemoBeatHighlight(
+                        beat: 5,
+                        child: hasWines && !hasPriced
+                            ? StatsSectionEmpty(
+                                icon: PhosphorIconsFill.tag,
+                                title: l10n.winesStatsPriceEmptyTitle,
+                                body: l10n.winesStatsPriceEmptyBody,
+                                ctaLabel: l10n.winesStatsPriceEmptyCta,
+                                onTap: () => context.pop(),
+                              )
+                            : const SpendingSection(),
+                      ),
+                    ),
                   ),
                   SliverToBoxAdapter(child: SizedBox(height: context.m)),
 
@@ -237,15 +265,21 @@ class _WineStatsScreenState extends ConsumerState<WineStatsScreen> {
                     title: l10n.winesStatsSectionPlaces,
                     subtitle: l10n.winesStatsSectionPlacesSubtitle,
                     delay: 300,
-                    child: hasWines && !hasLocations
-                        ? StatsSectionEmpty(
-                            icon: PhosphorIconsFill.mapPin,
-                            title: l10n.winesStatsPlacesEmptyTitle,
-                            body: l10n.winesStatsPlacesEmptyBody,
-                            ctaLabel: l10n.winesStatsPlacesEmptyCta,
-                            onTap: () => context.pop(),
-                          )
-                        : const WineLocationsMap(),
+                    child: KeyedSubtree(
+                      key: _placesKey,
+                      child: DemoBeatHighlight(
+                        beat: 6,
+                        child: hasWines && !hasLocations
+                            ? StatsSectionEmpty(
+                                icon: PhosphorIconsFill.mapPin,
+                                title: l10n.winesStatsPlacesEmptyTitle,
+                                body: l10n.winesStatsPlacesEmptyBody,
+                                ctaLabel: l10n.winesStatsPlacesEmptyCta,
+                                onTap: () => context.pop(),
+                              )
+                            : const WineLocationsMap(),
+                      ),
+                    ),
                   ),
                   SliverToBoxAdapter(child: SizedBox(height: context.m)),
 
@@ -253,15 +287,21 @@ class _WineStatsScreenState extends ConsumerState<WineStatsScreen> {
                     title: l10n.winesStatsSectionRegions,
                     subtitle: l10n.winesStatsSectionRegionsSubtitle,
                     delay: 400,
-                    child: hasWines && regions.isEmpty
-                        ? StatsSectionEmpty(
-                            icon: PhosphorIconsFill.globe,
-                            title: l10n.winesStatsRegionsEmptyTitle,
-                            body: l10n.winesStatsRegionsEmptyBody,
-                            ctaLabel: l10n.winesStatsRegionsEmptyCta,
-                            onTap: () => context.pop(),
-                          )
-                        : RegionSkyline(items: regions),
+                    child: KeyedSubtree(
+                      key: _regionsKey,
+                      child: DemoBeatHighlight(
+                        beat: 7,
+                        child: hasWines && regions.isEmpty
+                            ? StatsSectionEmpty(
+                                icon: PhosphorIconsFill.globe,
+                                title: l10n.winesStatsRegionsEmptyTitle,
+                                body: l10n.winesStatsRegionsEmptyBody,
+                                ctaLabel: l10n.winesStatsRegionsEmptyCta,
+                                onTap: () => context.pop(),
+                              )
+                            : RegionSkyline(items: regions),
+                      ),
+                    ),
                   ),
                 ] else ...[
                   SliverToBoxAdapter(
