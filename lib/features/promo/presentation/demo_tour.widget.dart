@@ -89,15 +89,27 @@ class _DemoTourState extends ConsumerState<DemoTour> {
     if (router.canPop()) router.pop();
     await _wait(900);
 
-    // Groups (HOST / SHARE) — tab switch.
+    // Groups (HOST / SHARE) — tab switch, then spotlight the group cards.
     if (!mounted) return _cleanup();
     router.go(AppRoutes.groups);
-    await _wait(5500);
+    await _wait(1100);
+    for (var b = 0; b < 2; b++) {
+      if (!mounted) return _cleanup();
+      demoDetailBeat.value = b;
+      await _wait(2200);
+    }
+    demoDetailBeat.value = null;
+    await _wait(500);
 
-    // Taste profile (your palate) — tab switch.
+    // Taste profile (your palate) — tab switch, then spotlight the
+    // wine-personality hero.
     if (!mounted) return _cleanup();
     router.go(AppRoutes.profile);
-    await _wait(5500);
+    await _wait(1100);
+    demoDetailBeat.value = 0;
+    await _wait(3200);
+    demoDetailBeat.value = null;
+    await _wait(500);
 
     // Back home.
     if (!mounted) return _cleanup();
