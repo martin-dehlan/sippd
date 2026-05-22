@@ -6,6 +6,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../../common/utils/responsive.dart';
 import '../../../core/routes/app.routes.dart';
 import '../../wines/controller/wine.provider.dart';
+import '../../wines/controller/wine_stats.provider.dart';
 import '../../wines/domain/entities/wine.entity.dart';
 import 'demo_spotlight.widget.dart';
 
@@ -81,12 +82,23 @@ class _DemoTourState extends ConsumerState<DemoTour> {
     demoSpotlightId.value = null;
     await _wait(1400);
 
-    // Stats (TRACK) — pushed route, cinematic transition.
+    // Stats (TRACK) — prewarm the unified rating summary first (and keep it
+    // alive) so the hero average animates straight to its final value instead
+    // of counting to the local avg then snapping to the server one mid-focus.
     if (!mounted) return _cleanup();
-    router.push(AppRoutes.wineStats);
-    await _waitUntilIdle(max: 30000); // all chart sections incl. Pro
+    final summarySub = ref.listenManual(userRatingSummaryProvider, (_, _) {});
+    try {
+      await ref.read(userRatingSummaryProvider.future);
+    } catch (_) {
+      // Fall through — the hero still renders, just possibly local-only.
+    }
+    if (mounted) {
+      router.push(AppRoutes.wineStats);
+      await _waitUntilIdle(max: 30000); // all chart sections incl. Pro
+      if (mounted && router.canPop()) router.pop();
+    }
+    summarySub.close();
     if (!mounted) return _cleanup();
-    if (router.canPop()) router.pop();
     await _wait(900);
 
     // Groups (HOST / SHARE) — tab switch, then spotlight the group cards.
