@@ -73,7 +73,7 @@ class _DemoTourState extends ConsumerState<DemoTour> {
     await _wait(1000);
     if (!mounted) return _cleanup();
     router.push(AppRoutes.wineDetailPath(shown.first.id), extra: shown.first);
-    await _waitUntilIdle(); // feature beats + rating/price sheets
+    await _waitUntilIdle(max: 26000); // feature beats + edit sheets + pickers
     if (!mounted) return _cleanup();
     if (router.canPop()) router.pop();
     demoSpotlightId.value = null;
@@ -82,7 +82,7 @@ class _DemoTourState extends ConsumerState<DemoTour> {
     // Stats (TRACK) — pushed route, cinematic transition.
     if (!mounted) return _cleanup();
     router.push(AppRoutes.wineStats);
-    await _waitUntilIdle(max: 14000); // chart spotlight beats
+    await _waitUntilIdle(max: 16000); // chart spotlight beats + count bump
     if (!mounted) return _cleanup();
     if (router.canPop()) router.pop();
     await _wait(900);

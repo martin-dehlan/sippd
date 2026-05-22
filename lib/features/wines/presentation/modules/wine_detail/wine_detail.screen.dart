@@ -138,55 +138,88 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
     if (kIsDemo) _runDemoBeats();
   }
 
-  /// Demo only: after the entrance settles, spotlight each hero feature once
-  /// (image → rating → price → origin), then briefly reveal the deeper edit
-  /// menus (rating sheet, then price sheet) so the tour shows them too. The
-  /// busy flag keeps the auto-tour from navigating away mid-sequence.
+  /// Demo only: walk the hero features one at a time — highlight each, then
+  /// open its editor and show the value being changed, then close and move
+  /// on. image → rating (sheet) → price (sheet) → origin (country + region
+  /// pickers). The busy flag keeps the auto-tour from navigating away
+  /// mid-sequence.
   Future<void> _runDemoBeats() async {
     demoScreenBusy.value = true;
     await Future<void>.delayed(const Duration(milliseconds: 1400));
-    for (var beat = 0; beat <= 3; beat++) {
-      if (!mounted) return _endDemoBeats();
-      demoDetailBeat.value = beat;
-      await Future<void>.delayed(const Duration(milliseconds: 1150));
-    }
 
-    // Tap the rating, then the price — reveal the deeper menus, auto-closed.
-    if (widget.isOwner) {
-      if (!mounted) return _endDemoBeats();
-      demoDetailBeat.value = 1;
+    // Image.
+    if (!mounted) return _endDemoBeats();
+    demoDetailBeat.value = 0;
+    await Future<void>.delayed(const Duration(milliseconds: 1500));
+
+    if (!widget.isOwner) return _endDemoBeats();
+
+    // Rating: highlight, open sheet, adjust, close.
+    if (!mounted) return _endDemoBeats();
+    demoDetailBeat.value = 1;
+    await Future<void>.delayed(const Duration(milliseconds: 900));
+    final ratingFuture = showWineRatingSheet(
       // ignore: use_build_context_synchronously
-      final ratingFuture = showWineRatingSheet(
-        context: context,
-        initial: widget.wine.rating,
-        ratingContext: 'personal',
-        wine: widget.wine,
-        wineType: widget.wine.type,
-        demoAnimate: true,
-      );
-      await Future<void>.delayed(const Duration(milliseconds: 3600));
-      if (mounted && Navigator.of(context).canPop()) {
-        Navigator.of(context).pop();
-      }
-      await ratingFuture;
+      context: context,
+      initial: widget.wine.rating,
+      ratingContext: 'personal',
+      wine: widget.wine,
+      wineType: widget.wine.type,
+      demoAnimate: true,
+    );
+    await Future<void>.delayed(const Duration(milliseconds: 4400));
+    _closeSheet();
+    await ratingFuture;
+    await Future<void>.delayed(const Duration(milliseconds: 500));
 
-      if (!mounted) return _endDemoBeats();
-      await Future<void>.delayed(const Duration(milliseconds: 500));
-      demoDetailBeat.value = 2;
-      final priceFuture = showPriceInputSheet(
+    // Price: highlight, open sheet, adjust, close.
+    if (!mounted) return _endDemoBeats();
+    demoDetailBeat.value = 2;
+    await Future<void>.delayed(const Duration(milliseconds: 900));
+    final priceFuture = showPriceInputSheet(
+      // ignore: use_build_context_synchronously
+      context: context,
+      initial: widget.wine.price,
+      demoAutoFill: true,
+    );
+    await Future<void>.delayed(const Duration(milliseconds: 4400));
+    _closeSheet();
+    await priceFuture;
+    await Future<void>.delayed(const Duration(milliseconds: 500));
+
+    // Origin: highlight, then reveal the country picker, then the region.
+    if (!mounted) return _endDemoBeats();
+    demoDetailBeat.value = 3;
+    await Future<void>.delayed(const Duration(milliseconds: 900));
+    final country = widget.wine.country;
+    if (country != null) {
+      showWineCountryPicker(
         // ignore: use_build_context_synchronously
         context: context,
-        initial: widget.wine.price,
-        demoAutoFill: true,
+        selected: country,
+        onChanged: (_) {},
       );
-      await Future<void>.delayed(const Duration(milliseconds: 3500));
-      if (mounted && Navigator.of(context).canPop()) {
-        Navigator.of(context).pop();
-      }
-      await priceFuture;
+      await Future<void>.delayed(const Duration(milliseconds: 2000));
+      _closeSheet();
+      await Future<void>.delayed(const Duration(milliseconds: 500));
+      if (!mounted) return _endDemoBeats();
+      showWineRegionPicker(
+        // ignore: use_build_context_synchronously
+        context: context,
+        country: country,
+        selected: widget.wine.region,
+        onChanged: (_) {},
+      );
+      await Future<void>.delayed(const Duration(milliseconds: 2000));
+      _closeSheet();
+      await Future<void>.delayed(const Duration(milliseconds: 400));
     }
 
     _endDemoBeats();
+  }
+
+  void _closeSheet() {
+    if (mounted && Navigator.of(context).canPop()) Navigator.of(context).pop();
   }
 
   void _endDemoBeats() {

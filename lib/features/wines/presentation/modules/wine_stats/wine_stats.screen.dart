@@ -161,7 +161,7 @@ class _WineStatsScreenState extends ConsumerState<WineStatsScreen> {
                     key: _typeKey,
                     child: DemoBeatHighlight(
                       beat: 1,
-                      child: WineTypeBreakdown(data: breakdown),
+                      child: WineTypeBreakdown(data: breakdown, demoBeat: 1),
                     ),
                   ),
                 ),
