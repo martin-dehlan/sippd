@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -70,35 +68,20 @@ class _PriceInputSheetState extends State<_PriceInputSheet> {
     );
     _focusNode = FocusNode();
     _controller.addListener(_onChanged);
-    if (widget.demoAutoFill && widget.initial != null) _runDemoFill();
+    if (widget.demoAutoFill) _runDemoFill();
   }
 
-  /// Demo only: one continuous, calm dip-and-recover (value → −3 → value)
-  /// using a sine path, so there's no lingering pause at the low or high
-  /// extreme. Not persisted — the tour closes without saving.
+  /// Demo only: tap through a few preset chips so the price reads as being
+  /// chosen, not typed (each pick highlights its chip). Not persisted — the
+  /// tour closes without saving.
   Future<void> _runDemoFill() async {
-    final base = widget.initial!;
-    if (base <= 0) return;
-    await Future<void>.delayed(const Duration(milliseconds: 700));
-    const dip = 3.0;
-    const totalMs = 2400;
-    const stepMs = 16;
-    final steps = totalMs ~/ stepMs;
-    for (var i = 0; i <= steps; i++) {
+    await Future<void>.delayed(const Duration(milliseconds: 900));
+    const picks = [15, 30, 50];
+    for (final p in picks) {
       if (!mounted) return;
-      final f = math.sin(i / steps * math.pi); // 0 → 1 → 0, smooth turnaround
-      _setPrice((base - dip * f).clamp(0.0, base));
-      await Future<void>.delayed(const Duration(milliseconds: stepMs));
+      _applyPreset(p);
+      await Future<void>.delayed(const Duration(milliseconds: 900));
     }
-    if (mounted) _setPrice(base);
-  }
-
-  void _setPrice(double v) {
-    final text = formatPrice(v);
-    _controller.value = TextEditingValue(
-      text: text,
-      selection: TextSelection.collapsed(offset: text.length),
-    );
   }
 
   @override
