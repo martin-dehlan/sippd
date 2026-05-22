@@ -167,7 +167,7 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
       wineType: widget.wine.type,
       demoAnimate: true,
     );
-    await Future<void>.delayed(const Duration(milliseconds: 4400));
+    await Future<void>.delayed(const Duration(milliseconds: 3900));
     _closeSheet();
     await ratingFuture;
     await Future<void>.delayed(const Duration(milliseconds: 500));
@@ -182,7 +182,7 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
       initial: widget.wine.price,
       demoAutoFill: true,
     );
-    await Future<void>.delayed(const Duration(milliseconds: 4400));
+    await Future<void>.delayed(const Duration(milliseconds: 3900));
     _closeSheet();
     await priceFuture;
     await Future<void>.delayed(const Duration(milliseconds: 500));
@@ -199,9 +199,10 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
         selected: country,
         onChanged: (_) {},
       );
-      await Future<void>.delayed(const Duration(milliseconds: 2000));
+      await Future<void>.delayed(const Duration(milliseconds: 2200));
       _closeSheet();
-      await Future<void>.delayed(const Duration(milliseconds: 500));
+      // Let the country sheet fully settle out before the region slides in.
+      await Future<void>.delayed(const Duration(milliseconds: 800));
       if (!mounted) return _endDemoBeats();
       showWineRegionPicker(
         // ignore: use_build_context_synchronously
@@ -210,7 +211,7 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
         selected: widget.wine.region,
         onChanged: (_) {},
       );
-      await Future<void>.delayed(const Duration(milliseconds: 2000));
+      await Future<void>.delayed(const Duration(milliseconds: 2200));
       _closeSheet();
       await Future<void>.delayed(const Duration(milliseconds: 400));
     }

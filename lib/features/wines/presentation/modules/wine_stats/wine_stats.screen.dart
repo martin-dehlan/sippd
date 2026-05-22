@@ -56,7 +56,7 @@ class _WineStatsScreenState extends ConsumerState<WineStatsScreen> {
   /// Demo only: scroll each chart into view and spotlight it in turn.
   Future<void> _runStatsBeats() async {
     demoScreenBusy.value = true;
-    await Future<void>.delayed(const Duration(milliseconds: 700));
+    await Future<void>.delayed(const Duration(milliseconds: 1000));
     final beats = <(GlobalKey, int)>[
       (_heroKey, 0),
       (_typeKey, 1),
@@ -68,14 +68,15 @@ class _WineStatsScreenState extends ConsumerState<WineStatsScreen> {
       if (ctx != null && ctx.mounted) {
         await Scrollable.ensureVisible(
           ctx,
-          duration: const Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 650),
           curve: Curves.easeOutCubic,
           alignment: 0.15,
         );
       }
       if (!mounted) break;
       demoDetailBeat.value = beat;
-      await Future<void>.delayed(const Duration(milliseconds: 1600));
+      // Calmer, longer hold so each chart (and its count bump) can breathe.
+      await Future<void>.delayed(const Duration(milliseconds: 2500));
     }
     if (mounted) demoDetailBeat.value = null;
     demoScreenBusy.value = false;

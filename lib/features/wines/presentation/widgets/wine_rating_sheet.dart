@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -129,27 +131,23 @@ class _WineRatingSheetState extends ConsumerState<_WineRatingSheet> {
     if (widget.demoAnimate) _runDemoSweep();
   }
 
-  /// Demo only: nudge the rating down a few points then smoothly back up to
-  /// its real value, so a flow video shows a natural adjustment. Slow and
-  /// calm — not a flashy sweep. Not persisted; the tour closes without saving.
+  /// Demo only: one continuous, calm dip-and-recover (value → −3 → value)
+  /// using a sine path, so there's no lingering pause at the low or high
+  /// extreme. Not persisted; the tour closes without saving.
   Future<void> _runDemoSweep() async {
     await Future<void>.delayed(const Duration(milliseconds: 700));
     final base = _value;
-    final low = (base - 3).clamp(0.0, 10.0);
-    await _animateRating(base, low, const Duration(milliseconds: 1300));
-    await Future<void>.delayed(const Duration(milliseconds: 200));
-    await _animateRating(low, base, const Duration(milliseconds: 1300));
-  }
-
-  Future<void> _animateRating(double from, double to, Duration d) async {
+    const dip = 3.0;
+    const totalMs = 2400;
     const stepMs = 16;
-    final steps = (d.inMilliseconds / stepMs).round();
+    final steps = totalMs ~/ stepMs;
     for (var i = 0; i <= steps; i++) {
       if (!mounted) return;
-      final t = Curves.easeInOut.transform(i / steps);
-      setState(() => _value = from + (to - from) * t);
+      final f = math.sin(i / steps * math.pi); // 0 → 1 → 0, smooth turnaround
+      setState(() => _value = (base - dip * f).clamp(0.0, 10.0));
       await Future<void>.delayed(const Duration(milliseconds: stepMs));
     }
+    if (mounted) setState(() => _value = base);
   }
 
   String? get _canonicalId => widget.wine?.canonicalWineId;

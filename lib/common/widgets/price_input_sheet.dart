@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -71,33 +73,32 @@ class _PriceInputSheetState extends State<_PriceInputSheet> {
     if (widget.demoAutoFill && widget.initial != null) _runDemoFill();
   }
 
-  /// Demo only: nudge the price down a bit then smoothly back up to its real
-  /// value, so a flow video shows a natural adjustment. Slow and calm. Not
-  /// persisted — the tour closes without saving.
+  /// Demo only: one continuous, calm dip-and-recover (value → −3 → value)
+  /// using a sine path, so there's no lingering pause at the low or high
+  /// extreme. Not persisted — the tour closes without saving.
   Future<void> _runDemoFill() async {
     final base = widget.initial!;
     if (base <= 0) return;
     await Future<void>.delayed(const Duration(milliseconds: 700));
-    final low = (base - 3).clamp(0.0, base);
-    await _animatePrice(base, low, const Duration(milliseconds: 1300));
-    await Future<void>.delayed(const Duration(milliseconds: 200));
-    await _animatePrice(low, base, const Duration(milliseconds: 1300));
-  }
-
-  Future<void> _animatePrice(double from, double to, Duration d) async {
+    const dip = 3.0;
+    const totalMs = 2400;
     const stepMs = 16;
-    final steps = (d.inMilliseconds / stepMs).round();
+    final steps = totalMs ~/ stepMs;
     for (var i = 0; i <= steps; i++) {
       if (!mounted) return;
-      final t = Curves.easeInOut.transform(i / steps);
-      final v = from + (to - from) * t;
-      final text = formatPrice(v);
-      _controller.value = TextEditingValue(
-        text: text,
-        selection: TextSelection.collapsed(offset: text.length),
-      );
+      final f = math.sin(i / steps * math.pi); // 0 → 1 → 0, smooth turnaround
+      _setPrice((base - dip * f).clamp(0.0, base));
       await Future<void>.delayed(const Duration(milliseconds: stepMs));
     }
+    if (mounted) _setPrice(base);
+  }
+
+  void _setPrice(double v) {
+    final text = formatPrice(v);
+    _controller.value = TextEditingValue(
+      text: text,
+      selection: TextSelection.collapsed(offset: text.length),
+    );
   }
 
   @override

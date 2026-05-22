@@ -55,7 +55,7 @@ class _WineTypeBreakdownState extends State<WineTypeBreakdown> {
     const deltas = [2, 1, 3, 1];
     final base = widget.data;
     for (var step = 1; step <= 3; step++) {
-      await Future<void>.delayed(const Duration(milliseconds: 320));
+      await Future<void>.delayed(const Duration(milliseconds: 420));
       if (!mounted) return;
       setState(() {
         _data = [
