@@ -129,18 +129,26 @@ class _WineRatingSheetState extends ConsumerState<_WineRatingSheet> {
     if (widget.demoAnimate) _runDemoSweep();
   }
 
-  /// Demo only: visibly drag the rating up to its value so a flow video
-  /// shows it "being set". Not persisted — the tour closes without saving.
+  /// Demo only: nudge the rating down a few points then smoothly back up to
+  /// its real value, so a flow video shows a natural adjustment. Slow and
+  /// calm — not a flashy sweep. Not persisted; the tour closes without saving.
   Future<void> _runDemoSweep() async {
-    await Future<void>.delayed(const Duration(milliseconds: 600));
-    final target = _value;
-    final start = (target - 2.5).clamp(0.0, 10.0);
-    const steps = 26;
+    await Future<void>.delayed(const Duration(milliseconds: 700));
+    final base = _value;
+    final low = (base - 3).clamp(0.0, 10.0);
+    await _animateRating(base, low, const Duration(milliseconds: 1300));
+    await Future<void>.delayed(const Duration(milliseconds: 200));
+    await _animateRating(low, base, const Duration(milliseconds: 1300));
+  }
+
+  Future<void> _animateRating(double from, double to, Duration d) async {
+    const stepMs = 16;
+    final steps = (d.inMilliseconds / stepMs).round();
     for (var i = 0; i <= steps; i++) {
       if (!mounted) return;
       final t = Curves.easeInOut.transform(i / steps);
-      setState(() => _value = start + (target - start) * t);
-      await Future<void>.delayed(const Duration(milliseconds: 38));
+      setState(() => _value = from + (to - from) * t);
+      await Future<void>.delayed(const Duration(milliseconds: stepMs));
     }
   }
 

@@ -20,7 +20,6 @@ import '../../../../groups/presentation/widgets/share_wine_sheet.dart';
 import '../../../../paywall/controller/paywall.provider.dart';
 import '../../../../profile/controller/profile.provider.dart';
 import '../../../../promo/promo.config.dart';
-import '../../../../promo/presentation/demo_count_up.widget.dart';
 import '../../../../promo/presentation/demo_reveal.widget.dart';
 import '../../../../promo/presentation/demo_spotlight.widget.dart';
 import '../../../../share_cards/controller/share_card.provider.dart';
@@ -165,7 +164,7 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
         wineType: widget.wine.type,
         demoAnimate: true,
       );
-      await Future<void>.delayed(const Duration(milliseconds: 2400));
+      await Future<void>.delayed(const Duration(milliseconds: 3600));
       if (mounted && Navigator.of(context).canPop()) {
         Navigator.of(context).pop();
       }
@@ -180,7 +179,7 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
         initial: widget.wine.price,
         demoAutoFill: true,
       );
-      await Future<void>.delayed(const Duration(milliseconds: 2200));
+      await Future<void>.delayed(const Duration(milliseconds: 3500));
       if (mounted && Navigator.of(context).canPop()) {
         Navigator.of(context).pop();
       }
@@ -619,8 +618,6 @@ class _StatsColumn extends ConsumerWidget {
             onTap: isOwner ? () => _editRating(context, ref) : null,
             revealDelay: const Duration(milliseconds: 700),
             beat: 1,
-            countUpValue: wine.rating,
-            countUpFormat: (v) => v.toStringAsFixed(1),
           ),
           SizedBox(height: context.l),
           if (wine.price != null) ...[
@@ -631,8 +628,6 @@ class _StatsColumn extends ConsumerWidget {
               onTap: isOwner ? () => _editPrice(context, ref) : null,
               revealDelay: const Duration(milliseconds: 820),
               beat: 2,
-              countUpValue: wine.price!,
-              countUpFormat: (v) => formatPrice(v),
             ),
             SizedBox(height: context.l),
           ] else if (isOwner) ...[
@@ -689,11 +684,6 @@ class _StatItem extends StatelessWidget {
   /// Demo-only: the tour's feature-beat index this stat lights up on.
   final int? beat;
 
-  /// Demo-only: when set, the value counts up from 0 to this number so it
-  /// reads as "being set" in a flow video. [value] is still used in prod.
-  final double? countUpValue;
-  final String Function(double)? countUpFormat;
-
   const _StatItem({
     required this.label,
     required this.value,
@@ -702,8 +692,6 @@ class _StatItem extends StatelessWidget {
     this.onTap,
     this.revealDelay = Duration.zero,
     this.beat,
-    this.countUpValue,
-    this.countUpFormat,
   });
 
   @override
@@ -739,24 +727,13 @@ class _StatItem extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.baseline,
             textBaseline: TextBaseline.alphabetic,
             children: [
-              if (countUpValue != null && countUpFormat != null)
-                DemoCountUp(
-                  value: countUpValue!,
-                  format: countUpFormat!,
-                  beat: beat,
-                  style: TextStyle(
-                    fontSize: context.headingFont * 1.4,
-                    fontWeight: FontWeight.bold,
-                  ),
-                )
-              else
-                Text(
-                  value,
-                  style: TextStyle(
-                    fontSize: context.headingFont * 1.4,
-                    fontWeight: FontWeight.bold,
-                  ),
+              Text(
+                value,
+                style: TextStyle(
+                  fontSize: context.headingFont * 1.4,
+                  fontWeight: FontWeight.bold,
                 ),
+              ),
               if (unit != null) ...[
                 SizedBox(width: context.w * 0.01),
                 Text(
