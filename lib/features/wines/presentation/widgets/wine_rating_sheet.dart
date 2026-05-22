@@ -53,6 +53,7 @@ Future<WineRatingResult?> showWineRatingSheet({
   Future<void> Function(double rating)? onSave,
   String? groupId,
   String? tastingId,
+  bool demoAnimate = false,
 }) {
   return showModalBottomSheet<WineRatingResult>(
     context: context,
@@ -73,6 +74,7 @@ Future<WineRatingResult?> showWineRatingSheet({
       groupId: groupId,
       tastingId: tastingId,
       onSave: onSave,
+      demoAnimate: demoAnimate,
     ),
   );
 }
@@ -87,6 +89,7 @@ class _WineRatingSheet extends ConsumerStatefulWidget {
     required this.groupId,
     required this.tastingId,
     required this.onSave,
+    this.demoAnimate = false,
   });
 
   final WineEntity? wine;
@@ -97,6 +100,7 @@ class _WineRatingSheet extends ConsumerStatefulWidget {
   final String? groupId;
   final String? tastingId;
   final Future<void> Function(double rating)? onSave;
+  final bool demoAnimate;
 
   @override
   ConsumerState<_WineRatingSheet> createState() => _WineRatingSheetState();
@@ -118,6 +122,27 @@ class _WineRatingSheetState extends ConsumerState<_WineRatingSheet> {
   // Pre-seeded entries (initialExpert) also flip this true so the sheet
   // doesn't try to fetch over them.
   late bool _expertLoaded = widget.initialExpert != null;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.demoAnimate) _runDemoSweep();
+  }
+
+  /// Demo only: visibly drag the rating up to its value so a flow video
+  /// shows it "being set". Not persisted — the tour closes without saving.
+  Future<void> _runDemoSweep() async {
+    await Future<void>.delayed(const Duration(milliseconds: 600));
+    final target = _value;
+    final start = (target - 2.5).clamp(0.0, 10.0);
+    const steps = 26;
+    for (var i = 0; i <= steps; i++) {
+      if (!mounted) return;
+      final t = Curves.easeInOut.transform(i / steps);
+      setState(() => _value = start + (target - start) * t);
+      await Future<void>.delayed(const Duration(milliseconds: 38));
+    }
+  }
 
   String? get _canonicalId => widget.wine?.canonicalWineId;
   String get _paywallSource => 'expert_tasting_${widget.ratingContext}';

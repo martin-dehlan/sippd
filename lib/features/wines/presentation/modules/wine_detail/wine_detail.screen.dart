@@ -163,6 +163,7 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
         ratingContext: 'personal',
         wine: widget.wine,
         wineType: widget.wine.type,
+        demoAnimate: true,
       );
       await Future<void>.delayed(const Duration(milliseconds: 2400));
       if (mounted && Navigator.of(context).canPop()) {
@@ -177,6 +178,7 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
         // ignore: use_build_context_synchronously
         context: context,
         initial: widget.wine.price,
+        demoAutoFill: true,
       );
       await Future<void>.delayed(const Duration(milliseconds: 2200));
       if (mounted && Navigator.of(context).canPop()) {
@@ -741,6 +743,7 @@ class _StatItem extends StatelessWidget {
                 DemoCountUp(
                   value: countUpValue!,
                   format: countUpFormat!,
+                  beat: beat,
                   style: TextStyle(
                     fontSize: context.headingFont * 1.4,
                     fontWeight: FontWeight.bold,

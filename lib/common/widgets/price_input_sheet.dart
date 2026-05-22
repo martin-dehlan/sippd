@@ -14,6 +14,7 @@ Future<String?> showPriceInputSheet({
   double? initial,
   String currencySymbol = '€',
   String currencyCode = 'EUR',
+  bool demoAutoFill = false,
 }) {
   return showModalBottomSheet<String>(
     context: context,
@@ -28,6 +29,7 @@ Future<String?> showPriceInputSheet({
       initial: initial,
       currencySymbol: currencySymbol,
       currencyCode: currencyCode,
+      demoAutoFill: demoAutoFill,
     ),
   );
 }
@@ -36,10 +38,12 @@ class _PriceInputSheet extends StatefulWidget {
   final double? initial;
   final String currencySymbol;
   final String currencyCode;
+  final bool demoAutoFill;
   const _PriceInputSheet({
     required this.initial,
     required this.currencySymbol,
     required this.currencyCode,
+    this.demoAutoFill = false,
   });
 
   @override
@@ -54,9 +58,12 @@ class _PriceInputSheetState extends State<_PriceInputSheet> {
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController(
-      text: widget.initial != null ? formatPrice(widget.initial!) : '',
-    );
+    // In a demo auto-fill, start empty and count the value up so it reads
+    // as "being typed"; otherwise seed with the existing price.
+    final startText = (widget.demoAutoFill || widget.initial == null)
+        ? ''
+        : formatPrice(widget.initial!);
+    _controller = TextEditingController(text: startText);
     // Collapse the cursor at end of text so iOS autofocus doesn't
     // paint a "select-all" rectangle behind the hint placeholder.
     _controller.selection = TextSelection.collapsed(
@@ -64,6 +71,26 @@ class _PriceInputSheetState extends State<_PriceInputSheet> {
     );
     _focusNode = FocusNode();
     _controller.addListener(_onChanged);
+    if (widget.demoAutoFill && widget.initial != null) _runDemoFill();
+  }
+
+  /// Demo only: count the price up to its value so a flow video shows it
+  /// "being entered". Not persisted — the tour closes without saving.
+  Future<void> _runDemoFill() async {
+    final target = widget.initial!;
+    if (target <= 0) return;
+    await Future<void>.delayed(const Duration(milliseconds: 600));
+    const steps = 22;
+    for (var i = 0; i <= steps; i++) {
+      if (!mounted) return;
+      final v = target * Curves.easeOutCubic.transform(i / steps);
+      final text = formatPrice(v);
+      _controller.value = TextEditingValue(
+        text: text,
+        selection: TextSelection.collapsed(offset: text.length),
+      );
+      await Future<void>.delayed(const Duration(milliseconds: 42));
+    }
   }
 
   @override
