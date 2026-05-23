@@ -1214,6 +1214,84 @@ abstract class AppLocalizations {
   /// **'Notifications'**
   String get authProfileNotifications;
 
+  /// No description provided for @authProfileAnimations.
+  ///
+  /// In en, this message translates to:
+  /// **'Animations'**
+  String get authProfileAnimations;
+
+  /// No description provided for @animationsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Animations'**
+  String get animationsTitle;
+
+  /// No description provided for @animationsMasterLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Animations'**
+  String get animationsMasterLabel;
+
+  /// No description provided for @animationsMasterSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Subtle motion throughout the app'**
+  String get animationsMasterSubtitle;
+
+  /// No description provided for @animationsScreenTransitionsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Screen transitions'**
+  String get animationsScreenTransitionsLabel;
+
+  /// No description provided for @animationsScreenTransitionsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pages fade and slide in when opened'**
+  String get animationsScreenTransitionsSubtitle;
+
+  /// No description provided for @animationsListEntrancesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'List & card entrances'**
+  String get animationsListEntrancesLabel;
+
+  /// No description provided for @animationsListEntrancesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cards gently stagger into view'**
+  String get animationsListEntrancesSubtitle;
+
+  /// No description provided for @animationsTabCrossfadeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Tab crossfade'**
+  String get animationsTabCrossfadeLabel;
+
+  /// No description provided for @animationsTabCrossfadeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Soft fade when switching tabs'**
+  String get animationsTabCrossfadeSubtitle;
+
+  /// No description provided for @animationsValueAnimationsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Counting numbers & bars'**
+  String get animationsValueAnimationsLabel;
+
+  /// No description provided for @animationsValueAnimationsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Stats and ratings animate to their value'**
+  String get animationsValueAnimationsSubtitle;
+
+  /// No description provided for @animationsReducedBySystemNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Your device\'s Reduce Motion setting is on, so in-app animations stay off.'**
+  String get animationsReducedBySystemNote;
+
   /// No description provided for @authProfileCleanupDuplicates.
   ///
   /// In en, this message translates to:

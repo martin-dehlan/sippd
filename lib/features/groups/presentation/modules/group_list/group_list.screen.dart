@@ -8,9 +8,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../common/services/analytics/analytics.provider.dart';
+import '../../../../../common/services/motion/motion.provider.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/error_view.widget.dart';
 import '../../../../../common/widgets/inline_error.widget.dart';
+import '../../../../../common/widgets/staggered_list_entrance.widget.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../../paywall/controller/paywall.provider.dart';
 import '../../../controller/group.provider.dart';
@@ -31,6 +33,7 @@ class GroupListScreen extends ConsumerWidget {
     final sortMode = ref.watch(groupSortProvider);
     final cs = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context);
+    final animateEntrances = ref.motionOn(MotionFeature.listEntrances, context);
 
     return Scaffold(
       body: SafeArea(
@@ -127,7 +130,11 @@ class GroupListScreen extends ConsumerWidget {
                     ),
                     itemCount: sorted.length,
                     separatorBuilder: (_, _) => SizedBox(height: context.s),
-                    itemBuilder: (_, index) => _GroupCard(group: sorted[index]),
+                    itemBuilder: (_, index) => StaggeredListEntrance(
+                      index: index,
+                      enabled: animateEntrances,
+                      child: _GroupCard(group: sorted[index]),
+                    ),
                   );
                 },
                 loading: () => const Center(child: CircularProgressIndicator()),

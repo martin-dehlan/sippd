@@ -120,6 +120,11 @@ class ProfileScreen extends ConsumerWidget {
                 onTap: () => context.push(AppRoutes.profileNotifications),
               ),
               _MenuItem(
+                icon: PhosphorIconsRegular.sparkle,
+                label: l10n.authProfileAnimations,
+                onTap: () => context.push(AppRoutes.profileAnimations),
+              ),
+              _MenuItem(
                 icon: PhosphorIconsRegular.translate,
                 label: l10n.profileTileLanguageLabel,
                 onTap: () => showLanguagePickerSheet(context),

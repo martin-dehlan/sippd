@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../../common/l10n/generated/app_localizations.dart';
+import '../../../../../common/services/motion/motion.provider.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/error_view.widget.dart';
 import '../../../../../common/widgets/stats_card.widget.dart';
@@ -79,83 +80,127 @@ class _BackFab extends StatelessWidget {
   }
 }
 
-class _Body extends StatelessWidget {
+class _Body extends ConsumerStatefulWidget {
   final FriendProfileEntity profile;
   final AsyncValue<List<WineEntity>> winesAsync;
   const _Body({required this.profile, required this.winesAsync});
 
   @override
+  ConsumerState<_Body> createState() => _BodyState();
+}
+
+class _BodyState extends ConsumerState<_Body>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _animController;
+  late final Animation<double> _fadeIn;
+  late final Animation<Offset> _slideUp;
+
+  @override
+  void initState() {
+    super.initState();
+    _animController = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    );
+    _fadeIn = CurvedAnimation(parent: _animController, curve: Curves.easeOut);
+    _slideUp = Tween<Offset>(begin: const Offset(0, 0.06), end: Offset.zero)
+        .animate(
+          CurvedAnimation(parent: _animController, curve: Curves.easeOutCubic),
+        );
+    if (ref.motionOnNow(MotionFeature.screenTransitions)) {
+      _animController.forward();
+    } else {
+      // Motion off — jump straight to the final state, no animation.
+      _animController.value = 1;
+    }
+  }
+
+  @override
+  void dispose() {
+    _animController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final padH = context.paddingH * 1.3;
-    return ListView(
-      padding: EdgeInsets.zero,
-      children: [
-        SizedBox(height: context.xl * 1.2),
-        _HeroHeader(profile: profile),
-        // Stats live right under the header — count + avg + countries
-        // function as the at-a-glance "size" of this person's wine
-        // life, before the editorial identity layers kick in.
-        SizedBox(height: context.l),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: padH),
-          child: winesAsync.when(
-            data: (wines) => StatsCard(stats: _statsFor(wines, l10n)),
-            loading: () => StatsCard(stats: _statsFor(const [], l10n)),
-            error: (_, _) => const SizedBox.shrink(),
-          ),
-        ),
-        // Identity zone — who this person is, before how we relate to
-        // them. Personality hero owns its own traits expansion (taps
-        // the chevron on the hero); we don't embed TasteTraits as a
-        // sibling because it would render twice — once collapsed +
-        // once expanded — once the user opens the hero.
-        SizedBox(height: context.l),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: padH),
-          child: WinePersonalityHero(userId: profile.id),
-        ),
-        SizedBox(height: context.l),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: padH),
-          child: FriendTasteMatchSection(
-            friendId: profile.id,
-            friendDisplayName:
-                profile.displayName ??
-                profile.username ??
-                l10n.friendsProfileNameFallback,
-          ),
-        ),
-        SizedBox(height: context.l),
-        _SharedMomentsSection(friendId: profile.id),
-        SizedBox(height: context.xl),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: padH),
-          child: Text(
-            l10n.friendsProfileRecentWinesHeader,
-            style: TextStyle(
-              fontSize: context.captionFont * 0.9,
-              fontWeight: FontWeight.w700,
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-              letterSpacing: 1.2,
+    final profile = widget.profile;
+    final winesAsync = widget.winesAsync;
+    return FadeTransition(
+      opacity: _fadeIn,
+      child: SlideTransition(
+        position: _slideUp,
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            SizedBox(height: context.xl * 1.2),
+            _HeroHeader(profile: profile),
+            // Stats live right under the header — count + avg + countries
+            // function as the at-a-glance "size" of this person's wine
+            // life, before the editorial identity layers kick in.
+            SizedBox(height: context.l),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: padH),
+              child: winesAsync.when(
+                data: (wines) => StatsCard(stats: _statsFor(wines, l10n)),
+                loading: () => StatsCard(stats: _statsFor(const [], l10n)),
+                error: (_, _) => const SizedBox.shrink(),
+              ),
             ),
-          ),
+            // Identity zone — who this person is, before how we relate to
+            // them. Personality hero owns its own traits expansion (taps
+            // the chevron on the hero); we don't embed TasteTraits as a
+            // sibling because it would render twice — once collapsed +
+            // once expanded — once the user opens the hero.
+            SizedBox(height: context.l),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: padH),
+              child: WinePersonalityHero(userId: profile.id),
+            ),
+            SizedBox(height: context.l),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: padH),
+              child: FriendTasteMatchSection(
+                friendId: profile.id,
+                friendDisplayName:
+                    profile.displayName ??
+                    profile.username ??
+                    l10n.friendsProfileNameFallback,
+              ),
+            ),
+            SizedBox(height: context.l),
+            _SharedMomentsSection(friendId: profile.id),
+            SizedBox(height: context.xl),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: padH),
+              child: Text(
+                l10n.friendsProfileRecentWinesHeader,
+                style: TextStyle(
+                  fontSize: context.captionFont * 0.9,
+                  fontWeight: FontWeight.w700,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  letterSpacing: 1.2,
+                ),
+              ),
+            ),
+            SizedBox(height: context.s),
+            winesAsync.when(
+              data: (wines) => _WinesList(wines: wines),
+              loading: () => Padding(
+                padding: EdgeInsets.all(context.l),
+                child: const Center(child: CircularProgressIndicator()),
+              ),
+              error: (e, _) => ErrorView(
+                title: l10n.friendsProfileWinesErrorLoad,
+                compact: true,
+                error: e,
+              ),
+            ),
+            SizedBox(height: context.xl * 2),
+          ],
         ),
-        SizedBox(height: context.s),
-        winesAsync.when(
-          data: (wines) => _WinesList(wines: wines),
-          loading: () => Padding(
-            padding: EdgeInsets.all(context.l),
-            child: const Center(child: CircularProgressIndicator()),
-          ),
-          error: (e, _) => ErrorView(
-            title: l10n.friendsProfileWinesErrorLoad,
-            compact: true,
-            error: e,
-          ),
-        ),
-        SizedBox(height: context.xl * 2),
-      ],
+      ),
     );
   }
 }
