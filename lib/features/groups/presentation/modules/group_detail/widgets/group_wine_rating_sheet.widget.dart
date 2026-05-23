@@ -222,7 +222,10 @@ class _SheetState extends ConsumerState<_Sheet> {
             rating: _myRating!,
             notes: notes.isEmpty ? null : notes,
           );
-      ref.invalidate(groupWineRatingsProvider(widget.groupId, canonicalId));
+      // No explicit groupWineRatings invalidate here: it caused the ranking
+      // list to repaint several times per save (it already reloads via the
+      // wineController watch for the owner row, and via the realtime channel
+      // for the just-written row) — the overlapping reloads were the flicker.
       // Expert dims piggyback on the same save tap. Persisted only when
       // the user expanded the panel during this sheet open — collapsed
       // means "didn't engage with expert", same convention as the
