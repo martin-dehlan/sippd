@@ -276,7 +276,8 @@ class _FriendList extends ConsumerWidget {
           // already in this group or have a pending invite" — the invitable
           // list filters out both members and pending invitees.
           final hasAnyFriends =
-              (ref.watch(friendsListProvider).valueOrNull ?? const []).isNotEmpty;
+              (ref.watch(friendsListProvider).valueOrNull ?? const [])
+                  .isNotEmpty;
           return Padding(
             padding: EdgeInsets.symmetric(vertical: context.m),
             child: Text(
