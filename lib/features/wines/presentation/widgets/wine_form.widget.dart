@@ -18,7 +18,6 @@ import '../../../../common/widgets/text_input_sheet.dart';
 import '../../../../common/widgets/year_picker_sheet.dart';
 import '../../../locations/domain/entities/location.entity.dart';
 import '../../../locations/presentation/widgets/location_search_sheet.dart';
-import '../../../promo/presentation/demo_spotlight.widget.dart';
 import '../../controller/wine.provider.dart';
 import '../../domain/entities/expert_tasting.entity.dart';
 import '../../domain/entities/wine.entity.dart';
@@ -119,48 +118,6 @@ class WineFormState extends ConsumerState<WineForm>
   /// Public submit hook for parents that host the action button outside
   /// the form (e.g. floating action button).
   Future<void> submit() => _submit();
-
-  // --- Demo director hooks (kIsDemo only) --------------------------------
-  // The wine_add screen's demo director drives these to walk the form for a
-  // hands-free promo recording. They only touch local in-memory form state
-  // (controller text / setState) and open the rating sheet — they never call
-  // [onSubmit], so no wine is ever saved. Dead code in production: the host
-  // only invokes them behind an `if (kIsDemo)` guard.
-
-  /// Visually type a wine name (local controller text only — never saved).
-  void demoSetName(String name) {
-    _nameController.text = name;
-    _nameController.selection = TextSelection.collapsed(offset: name.length);
-  }
-
-  /// Select a wine type chip (local form state only).
-  void demoSetType(WineType type) {
-    if (!mounted) return;
-    setState(() => _type = type);
-    _scheduleAutoSave();
-  }
-
-  /// Set the winery (local form state only).
-  void demoSetWinery(String winery) {
-    if (!mounted) return;
-    setState(() => _winery = winery);
-    _scheduleAutoSave();
-  }
-
-  /// Open the rating sheet with the demo auto-animation. Returns the
-  /// sheet's future so the director can await its dismissal. The result
-  /// is ignored — nothing is persisted.
-  Future<void> demoOpenRatingSheet() async {
-    FocusScope.of(context).unfocus();
-    await showWineRatingSheet(
-      context: context,
-      initial: _rating,
-      ratingContext: 'personal',
-      wineType: _type,
-      demoAnimate: true,
-    );
-  }
-  // -----------------------------------------------------------------------
 
   final _nameController = TextEditingController();
   final _nameFocus = FocusNode();
@@ -470,26 +427,20 @@ class WineFormState extends ConsumerState<WineForm>
       padding: EdgeInsets.zero,
       children: [
         SizedBox(height: context.xl * 1.5),
-        DemoBeatHighlight(
-          beat: 0,
-          child: WineFormNameField(
-            key: _nameFieldKey,
-            controller: _nameController,
-            focusNode: _nameFocus,
-            hasError: _nameError,
-            shake: _shake,
-          ),
+        WineFormNameField(
+          key: _nameFieldKey,
+          controller: _nameController,
+          focusNode: _nameFocus,
+          hasError: _nameError,
+          shake: _shake,
         ),
         SizedBox(height: context.s),
-        DemoBeatHighlight(
-          beat: 1,
-          child: WineFormTypeChipRow(
-            selected: _type,
-            onChanged: (t) {
-              setState(() => _type = t);
-              _scheduleAutoSave();
-            },
-          ),
+        WineFormTypeChipRow(
+          selected: _type,
+          onChanged: (t) {
+            setState(() => _type = t);
+            _scheduleAutoSave();
+          },
         ),
         SizedBox(height: context.l),
         Padding(
@@ -524,23 +475,14 @@ class WineFormState extends ConsumerState<WineForm>
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      DemoBeatHighlight(
-                        beat: 2,
-                        child: WineFormRatingStat(
-                          rating: _rating,
-                          onTap: _editRating,
-                        ),
-                      ),
+                      WineFormRatingStat(rating: _rating, onTap: _editRating),
                       SizedBox(height: context.l),
                       WineFormPriceStat(price: _price, onTap: _editPrice),
                       SizedBox(height: context.l),
-                      DemoBeatHighlight(
-                        beat: 3,
-                        child: WineFormCountryStat(
-                          country: _country,
-                          region: _region,
-                          onTap: _editOrigin,
-                        ),
+                      WineFormCountryStat(
+                        country: _country,
+                        region: _region,
+                        onTap: _editOrigin,
                       ),
                     ],
                   ),
@@ -550,18 +492,15 @@ class WineFormState extends ConsumerState<WineForm>
           ),
         ),
         SizedBox(height: context.l),
-        DemoBeatHighlight(
-          beat: 4,
-          child: WineFormChipsRow(
-            grape: _resolvedGrapeLabel(),
-            vintage: _vintage,
-            notes: _notes,
-            winery: _winery,
-            onGrapeTap: _editGrape,
-            onVintageTap: _editVintage,
-            onNotesTap: _editNotes,
-            onWineryTap: _editWinery,
-          ),
+        WineFormChipsRow(
+          grape: _resolvedGrapeLabel(),
+          vintage: _vintage,
+          notes: _notes,
+          winery: _winery,
+          onGrapeTap: _editGrape,
+          onVintageTap: _editVintage,
+          onNotesTap: _editNotes,
+          onWineryTap: _editWinery,
         ),
         if (widget.momentsHook != null) ...[
           SizedBox(height: context.l),

@@ -2156,10 +2156,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get groupInviteFriendsEmpty => 'No friends available to invite.';
 
   @override
-  String get groupInviteFriendsAllInvited =>
-      'All your friends are already in this group or invited.';
-
-  @override
   String get groupInviteFriendsErrorLoad => 'Couldn\'t load friends';
 
   @override

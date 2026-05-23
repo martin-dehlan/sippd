@@ -10,8 +10,6 @@ import '../../../../../common/utils/price_format.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/inline_error.widget.dart';
 import '../../../../../core/routes/app.routes.dart';
-import '../../../../promo/promo.config.dart';
-import '../../../../promo/presentation/demo_spotlight.widget.dart';
 import '../../../controller/wine.provider.dart';
 import '../../../domain/entities/wine.entity.dart';
 import 'widgets/wine_compare_attribute_row.widget.dart';
@@ -83,100 +81,16 @@ class _LoadedBody extends StatelessWidget {
   }
 }
 
-class _ScrollBody extends ConsumerStatefulWidget {
+class _ScrollBody extends StatelessWidget {
   final WineEntity left;
   final WineEntity right;
 
   const _ScrollBody({required this.left, required this.right});
 
   @override
-  ConsumerState<_ScrollBody> createState() => _ScrollBodyState();
-}
-
-class _ScrollBodyState extends ConsumerState<_ScrollBody> {
-  // Demo only: scroll + spotlight the comparison sections one at a time.
-  final ScrollController _scroll = ScrollController();
-  final GlobalKey _heroKey = GlobalKey();
-  final GlobalKey _glanceKey = GlobalKey();
-  final GlobalKey _tastingKey = GlobalKey();
-  final GlobalKey _notesKey = GlobalKey();
-
-  @override
-  void initState() {
-    super.initState();
-    if (kIsDemo) _runDemoBeats();
-  }
-
-  /// Demo only: walk the side-by-side one beat at a time so a screen
-  /// recording reads as a guided comparison. Hero (two bottles) → at-a-glance
-  /// diff metrics → tasting comparison → notes (when present). Each lower
-  /// section is scrolled into view first. Purely visual — no data mutated.
-  /// The busy flag keeps the auto-tour from navigating away mid-sequence.
-  Future<void> _runDemoBeats() async {
-    demoScreenBusy.value = true;
-    await Future<void>.delayed(const Duration(milliseconds: 1400));
-
-    // Hero: the two bottles side by side.
-    if (!mounted) return _endDemoBeats();
-    final heroCtx = _heroKey.currentContext;
-    if (heroCtx != null && heroCtx.mounted) {
-      await Scrollable.ensureVisible(
-        heroCtx,
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.easeOutCubic,
-        alignment: 0.1,
-      );
-    }
-    if (!mounted) return _endDemoBeats();
-    demoDetailBeat.value = 0;
-    await Future<void>.delayed(const Duration(milliseconds: 2200));
-
-    // Lower sections: scroll each into view, then spotlight in turn —
-    // at-a-glance diff metrics, tasting comparison, notes. The notes key
-    // isn't rendered when both wines lack notes, so that beat is skipped.
-    final lower = <(GlobalKey, int)>[
-      (_glanceKey, 1),
-      (_tastingKey, 2),
-      (_notesKey, 3),
-    ];
-    for (final (key, beat) in lower) {
-      if (!mounted) return _endDemoBeats();
-      final ctx = key.currentContext;
-      if (ctx == null || !ctx.mounted) continue;
-      await Scrollable.ensureVisible(
-        ctx,
-        duration: const Duration(milliseconds: 600),
-        curve: Curves.easeOutCubic,
-        alignment: 0.15,
-      );
-      if (!mounted) return _endDemoBeats();
-      demoDetailBeat.value = beat;
-      await Future<void>.delayed(const Duration(milliseconds: 2400));
-    }
-
-    _endDemoBeats();
-  }
-
-  void _endDemoBeats() {
-    if (mounted) demoDetailBeat.value = null;
-    demoScreenBusy.value = false;
-  }
-
-  @override
-  void dispose() {
-    demoDetailBeat.value = null;
-    demoScreenBusy.value = false;
-    _scroll.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final left = widget.left;
-    final right = widget.right;
     final l10n = AppLocalizations.of(context);
     return CustomScrollView(
-      controller: _scroll,
       slivers: [
         SliverToBoxAdapter(child: SizedBox(height: context.l)),
         SliverToBoxAdapter(
@@ -200,14 +114,7 @@ class _ScrollBodyState extends ConsumerState<_ScrollBody> {
                   curve: Curves.easeOut,
                 ),
               ],
-              child: KeyedSubtree(
-                key: _heroKey,
-                child: DemoBeatHighlight(
-                  beat: 0,
-                  activeScale: 1.04,
-                  child: WineCompareHeroWidget(left: left, right: right),
-                ),
-              ),
+              child: WineCompareHeroWidget(left: left, right: right),
             ),
           ),
         ),
@@ -215,26 +122,14 @@ class _ScrollBodyState extends ConsumerState<_ScrollBody> {
         _Section(
           title: l10n.winesCompareSectionAtAGlance,
           delay: 160,
-          child: KeyedSubtree(
-            key: _glanceKey,
-            child: DemoBeatHighlight(
-              beat: 1,
-              child: _AttributesCard(left: left, right: right),
-            ),
-          ),
+          child: _AttributesCard(left: left, right: right),
         ),
         SliverToBoxAdapter(child: SizedBox(height: context.m)),
         _Section(
           title: l10n.winesCompareSectionTasting,
           subtitle: l10n.winesCompareSectionTastingSubtitle,
           delay: 220,
-          child: KeyedSubtree(
-            key: _tastingKey,
-            child: DemoBeatHighlight(
-              beat: 2,
-              child: WineCompareTastingWidget(left: left, right: right),
-            ),
-          ),
+          child: WineCompareTastingWidget(left: left, right: right),
         ),
         SliverToBoxAdapter(child: SizedBox(height: context.m)),
         if ((left.notes ?? '').isNotEmpty ||
@@ -242,13 +137,7 @@ class _ScrollBodyState extends ConsumerState<_ScrollBody> {
           _Section(
             title: l10n.winesCompareSectionNotes,
             delay: 280,
-            child: KeyedSubtree(
-              key: _notesKey,
-              child: DemoBeatHighlight(
-                beat: 3,
-                child: WineCompareNotesWidget(left: left, right: right),
-              ),
-            ),
+            child: WineCompareNotesWidget(left: left, right: right),
           ),
           SliverToBoxAdapter(child: SizedBox(height: context.m)),
         ],

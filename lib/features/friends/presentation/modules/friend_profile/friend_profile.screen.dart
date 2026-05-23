@@ -9,8 +9,6 @@ import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/error_view.widget.dart';
 import '../../../../../common/widgets/stats_card.widget.dart';
 import '../../../../groups/presentation/widgets/friend_actions_sheet.widget.dart';
-import '../../../../promo/promo.config.dart';
-import '../../../../promo/presentation/demo_spotlight.widget.dart';
 import '../../../../taste_match/presentation/widgets/friend_taste_match_section.widget.dart';
 import '../../../../taste_match/presentation/widgets/wine_personality_hero.widget.dart';
 import '../../../../wines/controller/wine.provider.dart';
@@ -81,97 +79,20 @@ class _BackFab extends StatelessWidget {
   }
 }
 
-class _Body extends StatefulWidget {
+class _Body extends StatelessWidget {
   final FriendProfileEntity profile;
   final AsyncValue<List<WineEntity>> winesAsync;
   const _Body({required this.profile, required this.winesAsync});
 
   @override
-  State<_Body> createState() => _BodyState();
-}
-
-class _BodyState extends State<_Body> {
-  // Demo only: scroll + spotlight the key social/taste sections.
-  final ScrollController _scroll = ScrollController();
-  final GlobalKey _identityKey = GlobalKey();
-  final GlobalKey _personalityKey = GlobalKey();
-  final GlobalKey _matchKey = GlobalKey();
-  final GlobalKey _momentsKey = GlobalKey();
-
-  @override
-  void initState() {
-    super.initState();
-    if (kIsDemo) _runDemoBeats();
-  }
-
-  /// Demo only: walk a friend's profile to sell the taste-match / social
-  /// story — identity header → taste personality (compass + archetype) →
-  /// taste-match score (Match % + shared bottles) → shared moments. Each
-  /// section scrolls into view and pops; sections that don't render for
-  /// this friend (no shared bottles / moments) are skipped. Purely
-  /// visual: nothing is mutated, no friend/unfriend, no requests. The
-  /// busy flag keeps the auto-tour from navigating away mid-sequence.
-  Future<void> _runDemoBeats() async {
-    demoScreenBusy.value = true;
-    await Future<void>.delayed(const Duration(milliseconds: 1400));
-
-    // identity header → personality → taste-match → shared moments.
-    final beats = <(GlobalKey, int)>[
-      (_identityKey, 0),
-      (_personalityKey, 1),
-      (_matchKey, 2),
-      (_momentsKey, 3),
-    ];
-    for (final (key, beat) in beats) {
-      if (!mounted) return _endDemoBeats();
-      final ctx = key.currentContext;
-      if (ctx != null && ctx.mounted) {
-        await Scrollable.ensureVisible(
-          ctx,
-          duration: const Duration(milliseconds: 600),
-          curve: Curves.easeOutCubic,
-          alignment: 0.15,
-        );
-      }
-      if (!mounted) return _endDemoBeats();
-      demoDetailBeat.value = beat;
-      await Future<void>.delayed(const Duration(milliseconds: 2200));
-    }
-
-    _endDemoBeats();
-  }
-
-  void _endDemoBeats() {
-    if (mounted) demoDetailBeat.value = null;
-    demoScreenBusy.value = false;
-  }
-
-  @override
-  void dispose() {
-    demoDetailBeat.value = null;
-    demoScreenBusy.value = false;
-    _scroll.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final profile = widget.profile;
-    final winesAsync = widget.winesAsync;
     final l10n = AppLocalizations.of(context);
     final padH = context.paddingH * 1.3;
     return ListView(
-      controller: _scroll,
       padding: EdgeInsets.zero,
       children: [
         SizedBox(height: context.xl * 1.2),
-        KeyedSubtree(
-          key: _identityKey,
-          child: DemoBeatHighlight(
-            beat: 0,
-            child: _HeroHeader(profile: profile),
-          ),
-        ),
+        _HeroHeader(profile: profile),
         // Stats live right under the header — count + avg + countries
         // function as the at-a-glance "size" of this person's wine
         // life, before the editorial identity layers kick in.
@@ -192,39 +113,21 @@ class _BodyState extends State<_Body> {
         SizedBox(height: context.l),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: padH),
-          child: KeyedSubtree(
-            key: _personalityKey,
-            child: DemoBeatHighlight(
-              beat: 1,
-              child: WinePersonalityHero(userId: profile.id),
-            ),
-          ),
+          child: WinePersonalityHero(userId: profile.id),
         ),
         SizedBox(height: context.l),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: padH),
-          child: KeyedSubtree(
-            key: _matchKey,
-            child: DemoBeatHighlight(
-              beat: 2,
-              child: FriendTasteMatchSection(
-                friendId: profile.id,
-                friendDisplayName:
-                    profile.displayName ??
-                    profile.username ??
-                    l10n.friendsProfileNameFallback,
-              ),
-            ),
+          child: FriendTasteMatchSection(
+            friendId: profile.id,
+            friendDisplayName:
+                profile.displayName ??
+                profile.username ??
+                l10n.friendsProfileNameFallback,
           ),
         ),
         SizedBox(height: context.l),
-        KeyedSubtree(
-          key: _momentsKey,
-          child: DemoBeatHighlight(
-            beat: 3,
-            child: _SharedMomentsSection(friendId: profile.id),
-          ),
-        ),
+        _SharedMomentsSection(friendId: profile.id),
         SizedBox(height: context.xl),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: padH),

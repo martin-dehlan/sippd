@@ -814,7 +814,6 @@
   "groupInviteActionCopy": "Copier le code",
   "groupInviteActionShare": "Partager le lien",
   "groupInviteFriendsEmpty": "Aucun ami à inviter.",
-  "groupInviteFriendsAllInvited": "Tous tes amis sont déjà dans ce groupe ou invités.",
   "groupInviteFriendsErrorLoad": "Impossible de charger les amis",
   "groupInviteFriendFallback": "ami·e",
   "groupInviteUnknownName": "Inconnu",
