@@ -22,21 +22,6 @@
       "toolArgs": ["--dart-define=FORCE_PRO=false"]
     },
     {
-      "name": "sippd PROMO (debug)",
-      "request": "launch",
-      "type": "dart",
-      "program": "lib/main.dart",
-      "toolArgs": ["--dart-define=PROMO=true"]
-    },
-    {
-      "name": "sippd PROMO (release)",
-      "request": "launch",
-      "type": "dart",
-      "program": "lib/main.dart",
-      "flutterMode": "release",
-      "toolArgs": ["--dart-define=PROMO=true"]
-    },
-    {
       "name": "sippd DEMO (real app, debug)",
       "request": "launch",
       "type": "dart",
@@ -52,18 +37,12 @@
       "toolArgs": ["--dart-define=DEMO=true"]
     },
     {
-      "name": "sippd (profile)",
+      "name": "sippd PROMO (release)",
       "request": "launch",
       "type": "dart",
       "program": "lib/main.dart",
-      "flutterMode": "profile"
-    },
-    {
-      "name": "sippd (release)",
-      "request": "launch",
-      "type": "dart",
-      "program": "lib/main.dart",
-      "flutterMode": "release"
+      "flutterMode": "release",
+      "toolArgs": ["--dart-define=PROMO=true"]
     }
   ]
 }
