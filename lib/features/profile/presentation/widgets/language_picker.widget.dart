@@ -12,6 +12,8 @@ const _nativeLanguageNames = <String, String>{
   'es': 'Español',
   'it': 'Italiano',
   'fr': 'Français',
+  'pt': 'Português',
+  'nl': 'Nederlands',
 };
 
 Future<void> showLanguagePickerSheet(BuildContext context) {
