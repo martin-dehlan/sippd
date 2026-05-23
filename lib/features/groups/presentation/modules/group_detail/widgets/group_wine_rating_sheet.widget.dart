@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -89,30 +88,16 @@ class _SheetState extends ConsumerState<_Sheet> {
     if (mounted) setState(() {});
   }
 
-  /// Demo only: sweep the "your rating" slider, settle on a fresh value, and
+  /// Demo only: ease the "your rating" slider once to a fresh value, then
   /// actually save it — so the member ranking bar animates to the new rating
-  /// (the bar's TweenAnimationBuilder re-tweens to the changed value after the
-  /// ratings provider refreshes). Mirrors the unified rating sheet's sweep,
-  /// then commits. Writes a real row — demo builds only.
+  /// (its TweenAnimationBuilder re-tweens to the changed value once the ratings
+  /// provider refreshes). Calm, single move — no back-and-forth. Writes a real
+  /// row; demo builds only.
   Future<void> _runDemoSweep() async {
-    await Future<void>.delayed(const Duration(milliseconds: 900));
+    await Future<void>.delayed(const Duration(milliseconds: 1100));
     final base = _myRating ?? 7.5;
-    if (mounted) setState(() => _myRating = base);
-
-    // Sine dip-and-recover around the current value.
-    const dip = 3.0;
-    const totalMs = 2000;
-    const stepMs = 16;
-    final steps = totalMs ~/ stepMs;
-    for (var i = 0; i <= steps; i++) {
-      if (!mounted) return;
-      final f = math.sin(i / steps * math.pi); // 0 → 1 → 0
-      setState(() => _myRating = (base - dip * f).clamp(0.0, 10.0));
-      await Future<void>.delayed(const Duration(milliseconds: stepMs));
-    }
-
-    // Land on a value that differs from the current one (ping-pong, so the
-    // saved rating always changes and the bar visibly re-animates), then save.
+    // Ping-pong 7.5/9.0 so the saved value always differs and the bar visibly
+    // re-animates.
     final target = base >= 8.5 ? 7.5 : 9.0;
     await _animateMyRatingTo(target);
     if (!mounted) return;
@@ -124,12 +109,14 @@ class _SheetState extends ConsumerState<_Sheet> {
   /// Smoothly slide [_myRating] from its current value to [target].
   Future<void> _animateMyRatingTo(double target) async {
     final from = _myRating ?? target;
-    const ms = 450;
+    const ms = 700;
     const stepMs = 16;
     final steps = ms ~/ stepMs;
     for (var i = 1; i <= steps; i++) {
       if (!mounted) return;
-      setState(() => _myRating = from + (target - from) * (i / steps));
+      final t = i / steps;
+      final eased = Curves.easeInOut.transform(t);
+      setState(() => _myRating = from + (target - from) * eased);
       await Future<void>.delayed(const Duration(milliseconds: stepMs));
     }
     if (mounted) setState(() => _myRating = target);

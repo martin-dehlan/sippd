@@ -143,14 +143,15 @@ class _BodyState extends ConsumerState<_Body> {
   /// open its rating sheet (bars fill from zero, slider sweeps) and close —
   /// never saving.
   Future<void> _browseSharedWines() async {
-    for (final page in const [1, 2, 0]) {
+    // Calmly browse forward to the third card, then go into it.
+    const targetCard = 2;
+    for (var page = 1; page <= targetCard; page++) {
       if (!mounted) return;
       demoCarouselPage.value = page;
-      await Future<void>.delayed(const Duration(milliseconds: 1000));
+      await Future<void>.delayed(const Duration(milliseconds: 1500));
     }
-    demoCarouselPage.value = null;
 
-    final wine = _topSharedWine();
+    final wine = _cardWineAt(targetCard);
     if (wine == null || !mounted) return;
     final sheet = showGroupWineRatingSheet(
       context: context,
@@ -158,15 +159,16 @@ class _BodyState extends ConsumerState<_Body> {
       wine: wine,
       demoAnimate: true,
     );
-    // Cover the sweep + real save + the ranking bar re-animating to it.
-    await Future<void>.delayed(const Duration(milliseconds: 6500));
+    // Cover the slider ease + real save + the ranking bar animating to it.
+    await Future<void>.delayed(const Duration(milliseconds: 6000));
     _closeSheet();
     await sheet;
     await Future<void>.delayed(const Duration(milliseconds: 400));
   }
 
-  /// Top-ranked shared wine, sorted the same way the carousel orders cards.
-  WineEntity? _topSharedWine() {
+  /// The shared wine shown at carousel [index] (clamped), sorted the same way
+  /// the carousel orders its cards.
+  WineEntity? _cardWineAt(int index) {
     final wines = ref.read(groupWinesProvider(widget.group.id)).valueOrNull;
     if (wines == null || wines.isEmpty) return null;
     final ranks =
@@ -181,7 +183,7 @@ class _BodyState extends ConsumerState<_Body> {
         if (rb == null) return -1;
         return ra.compareTo(rb);
       });
-    return sorted.first;
+    return sorted[index.clamp(0, sorted.length - 1)];
   }
 
   void _closeSheet() {

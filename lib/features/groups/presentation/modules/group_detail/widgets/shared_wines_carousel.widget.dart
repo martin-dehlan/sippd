@@ -150,8 +150,8 @@ class _SharedWinesCarouselState extends ConsumerState<SharedWinesCarousel> {
         : target.clamp(0, (count - 1).clamp(0, target));
     _pageController.animateToPage(
       clamped,
-      duration: const Duration(milliseconds: 650),
-      curve: Curves.easeOutCubic,
+      duration: const Duration(milliseconds: 900),
+      curve: Curves.easeInOut,
     );
   }
 
