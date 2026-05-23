@@ -603,6 +603,49 @@ class AppLocalizationsPt extends AppLocalizations {
   String get authProfileNotifications => 'Notificações';
 
   @override
+  String get authProfileAnimations => 'Animations';
+
+  @override
+  String get animationsTitle => 'Animations';
+
+  @override
+  String get animationsMasterLabel => 'Animations';
+
+  @override
+  String get animationsMasterSubtitle => 'Subtle motion throughout the app';
+
+  @override
+  String get animationsScreenTransitionsLabel => 'Screen transitions';
+
+  @override
+  String get animationsScreenTransitionsSubtitle =>
+      'Pages fade and slide in when opened';
+
+  @override
+  String get animationsListEntrancesLabel => 'List & card entrances';
+
+  @override
+  String get animationsListEntrancesSubtitle =>
+      'Cards gently stagger into view';
+
+  @override
+  String get animationsTabCrossfadeLabel => 'Tab crossfade';
+
+  @override
+  String get animationsTabCrossfadeSubtitle => 'Soft fade when switching tabs';
+
+  @override
+  String get animationsValueAnimationsLabel => 'Counting numbers & bars';
+
+  @override
+  String get animationsValueAnimationsSubtitle =>
+      'Stats and ratings animate to their value';
+
+  @override
+  String get animationsReducedBySystemNote =>
+      'Your device\'s Reduce Motion setting is on, so in-app animations stay off.';
+
+  @override
   String get authProfileCleanupDuplicates => 'Limpar duplicados';
 
   @override
