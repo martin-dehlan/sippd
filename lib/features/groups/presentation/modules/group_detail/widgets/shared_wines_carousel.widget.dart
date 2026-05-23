@@ -11,6 +11,8 @@ import '../../../../../auth/controller/auth.provider.dart';
 import '../../../../../wines/domain/entities/wine.entity.dart';
 import '../../../../controller/group.provider.dart';
 import '../../../../domain/entities/group_wine_rating.entity.dart';
+import '../../../../../promo/presentation/demo_spotlight.widget.dart';
+import '../../../../../promo/promo.config.dart';
 import 'group_wine_rating_sheet.widget.dart';
 import 'wine_picker_sheet.widget.dart';
 
@@ -130,10 +132,32 @@ class _SharedWinesCarouselState extends ConsumerState<SharedWinesCarousel> {
     _pageController.addListener(() {
       setState(() => _page = _pageController.page ?? 0);
     });
+    if (kIsDemo) demoCarouselPage.addListener(_onDemoScroll);
+  }
+
+  /// Demo only: a screen director drives [demoCarouselPage] to browse the
+  /// cards hands-free. Clamp to the live item count so a short list never
+  /// over-scrolls.
+  void _onDemoScroll() {
+    final target = demoCarouselPage.value;
+    if (target == null || !mounted || !_pageController.hasClients) return;
+    final count = ref
+        .read(groupWinesProvider(widget.groupId))
+        .valueOrNull
+        ?.length;
+    final clamped = count == null
+        ? target
+        : target.clamp(0, (count - 1).clamp(0, target));
+    _pageController.animateToPage(
+      clamped,
+      duration: const Duration(milliseconds: 650),
+      curve: Curves.easeOutCubic,
+    );
   }
 
   @override
   void dispose() {
+    if (kIsDemo) demoCarouselPage.removeListener(_onDemoScroll);
     _pageController.dispose();
     super.dispose();
   }

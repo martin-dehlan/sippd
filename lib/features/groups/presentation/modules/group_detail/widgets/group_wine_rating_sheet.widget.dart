@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -26,6 +27,7 @@ Future<void> showGroupWineRatingSheet({
   required BuildContext context,
   required String groupId,
   required WineEntity wine,
+  bool demoAnimate = false,
 }) {
   return showModalBottomSheet(
     context: context,
@@ -37,14 +39,20 @@ Future<void> showGroupWineRatingSheet({
         top: Radius.circular(context.w * 0.06),
       ),
     ),
-    builder: (_) => _Sheet(groupId: groupId, wine: wine),
+    builder: (_) =>
+        _Sheet(groupId: groupId, wine: wine, demoAnimate: demoAnimate),
   );
 }
 
 class _Sheet extends ConsumerStatefulWidget {
   final String groupId;
   final WineEntity wine;
-  const _Sheet({required this.groupId, required this.wine});
+  final bool demoAnimate;
+  const _Sheet({
+    required this.groupId,
+    required this.wine,
+    this.demoAnimate = false,
+  });
 
   @override
   ConsumerState<_Sheet> createState() => _SheetState();
@@ -74,10 +82,33 @@ class _SheetState extends ConsumerState<_Sheet> {
   void initState() {
     super.initState();
     _notesController.addListener(_onTextChanged);
+    if (widget.demoAnimate) _runDemoSweep();
   }
 
   void _onTextChanged() {
     if (mounted) setState(() {});
+  }
+
+  /// Demo only: gently sweep the "your rating" slider so a screen recording
+  /// shows it moving. Mirrors the unified wine rating sheet — a sine dip and
+  /// recover around the current value. The member ranking bars already fill
+  /// from zero on open (TweenAnimationBuilder), so the whole rating block
+  /// reads as live. Never persists.
+  Future<void> _runDemoSweep() async {
+    await Future<void>.delayed(const Duration(milliseconds: 900));
+    final base = _myRating ?? 7.5;
+    if (mounted) setState(() => _myRating = base);
+    const dip = 3.0;
+    const totalMs = 2400;
+    const stepMs = 16;
+    final steps = totalMs ~/ stepMs;
+    for (var i = 0; i <= steps; i++) {
+      if (!mounted) return;
+      final f = math.sin(i / steps * math.pi); // 0 → 1 → 0
+      setState(() => _myRating = (base - dip * f).clamp(0.0, 10.0));
+      await Future<void>.delayed(const Duration(milliseconds: stepMs));
+    }
+    if (mounted) setState(() => _myRating = base);
   }
 
   @override

@@ -155,7 +155,9 @@ class _DemoTourState extends ConsumerState<DemoTour> {
       final groupId = groups.first.id;
       if (!mounted) return _cleanup();
       router.push(AppRoutes.groupDetailPath(groupId));
-      await _waitUntilIdle(max: 12000);
+      await _waitUntilIdle(
+        max: 24000,
+      ); // sections + carousel browse + rate sheet
 
       // Tasting (HOST / SHARE) — drill into the group's first tasting.
       final tastingId = await _firstTastingId(groupId);

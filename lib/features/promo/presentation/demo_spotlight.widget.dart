@@ -17,6 +17,12 @@ final ValueNotifier<int?> demoDetailBeat = ValueNotifier<int?>(null);
 /// away, so timing isn't hard-coded in two places.
 final ValueNotifier<bool> demoScreenBusy = ValueNotifier<bool>(false);
 
+/// Target page for a demo-driven horizontal carousel (group shared-wines).
+/// The carousel's [PageController] animates to this index when it changes;
+/// `null` = no demo scroll. Lets a screen director browse the cards
+/// hands-free before opening one. No-op in prod.
+final ValueNotifier<int?> demoCarouselPage = ValueNotifier<int?>(null);
+
 /// Wraps a detail-screen feature so it pops forward when it's the active
 /// [beat] and dims when a *different* feature is active. No-op in prod.
 class DemoBeatHighlight extends StatelessWidget {

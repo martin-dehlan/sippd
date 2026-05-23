@@ -12,9 +12,11 @@ import '../../../../../core/routes/app.routes.dart';
 import '../../../../auth/controller/auth.provider.dart';
 import '../../../../promo/promo.config.dart';
 import '../../../../promo/presentation/demo_spotlight.widget.dart';
+import '../../../../wines/domain/entities/wine.entity.dart';
 import '../../../controller/group.provider.dart';
 import '../../../domain/entities/group.entity.dart';
 import 'widgets/edit_group_sheet.widget.dart';
+import 'widgets/group_wine_rating_sheet.widget.dart';
 import 'widgets/invite_share_sheet.widget.dart';
 import 'widgets/members_strip.widget.dart';
 import 'widgets/shared_wines_carousel.widget.dart';
@@ -104,38 +106,97 @@ class _BodyState extends ConsumerState<_Body> {
     demoScreenBusy.value = true;
     await Future<void>.delayed(const Duration(milliseconds: 1400));
 
-    final sections = <(GlobalKey, int)>[
-      (_membersKey, 0),
-      (_sharedWinesKey, 1),
-      (_tastingsKey, 2),
-    ];
-    for (final (key, beat) in sections) {
-      if (!mounted) return _endDemoBeats();
-      final ctx = key.currentContext;
-      if (ctx != null && ctx.mounted) {
-        await Scrollable.ensureVisible(
-          ctx,
-          duration: const Duration(milliseconds: 600),
-          curve: Curves.easeOutCubic,
-          alignment: 0.2,
-        );
-      }
-      if (!mounted) return _endDemoBeats();
-      demoDetailBeat.value = beat;
-      await Future<void>.delayed(const Duration(milliseconds: 2000));
-    }
+    // Members.
+    await _spotlight(_membersKey, 0, hold: 2000);
+    if (!mounted) return _endDemoBeats();
+
+    // Shared wines: spotlight, browse the cards, then open one wine's
+    // rating sheet so the member bars fill and the slider sweeps.
+    await _spotlight(_sharedWinesKey, 1, hold: 1200);
+    if (!mounted) return _endDemoBeats();
+    await _browseSharedWines();
+    if (!mounted) return _endDemoBeats();
+
+    // Tastings.
+    await _spotlight(_tastingsKey, 2, hold: 2000);
 
     _endDemoBeats();
   }
 
+  /// Scroll a section into view, then spotlight it for [hold] ms.
+  Future<void> _spotlight(GlobalKey key, int beat, {required int hold}) async {
+    final ctx = key.currentContext;
+    if (ctx != null && ctx.mounted) {
+      await Scrollable.ensureVisible(
+        ctx,
+        duration: const Duration(milliseconds: 600),
+        curve: Curves.easeOutCubic,
+        alignment: 0.2,
+      );
+    }
+    if (!mounted) return;
+    demoDetailBeat.value = beat;
+    await Future<void>.delayed(Duration(milliseconds: hold));
+  }
+
+  /// Browse the carousel ~2 cards right, settle back on the top wine, then
+  /// open its rating sheet (bars fill from zero, slider sweeps) and close —
+  /// never saving.
+  Future<void> _browseSharedWines() async {
+    for (final page in const [1, 2, 0]) {
+      if (!mounted) return;
+      demoCarouselPage.value = page;
+      await Future<void>.delayed(const Duration(milliseconds: 1000));
+    }
+    demoCarouselPage.value = null;
+
+    final wine = _topSharedWine();
+    if (wine == null || !mounted) return;
+    final sheet = showGroupWineRatingSheet(
+      context: context,
+      groupId: widget.group.id,
+      wine: wine,
+      demoAnimate: true,
+    );
+    await Future<void>.delayed(const Duration(milliseconds: 4200));
+    _closeSheet();
+    await sheet;
+    await Future<void>.delayed(const Duration(milliseconds: 400));
+  }
+
+  /// Top-ranked shared wine, sorted the same way the carousel orders cards.
+  WineEntity? _topSharedWine() {
+    final wines = ref.read(groupWinesProvider(widget.group.id)).valueOrNull;
+    if (wines == null || wines.isEmpty) return null;
+    final ranks =
+        ref.read(groupWineRanksProvider(widget.group.id)).valueOrNull ??
+        const <String, int>{};
+    final sorted = [...wines]
+      ..sort((a, b) {
+        final ra = ranks[a.canonicalWineId ?? a.id];
+        final rb = ranks[b.canonicalWineId ?? b.id];
+        if (ra == null && rb == null) return 0;
+        if (ra == null) return 1;
+        if (rb == null) return -1;
+        return ra.compareTo(rb);
+      });
+    return sorted.first;
+  }
+
+  void _closeSheet() {
+    if (mounted && Navigator.of(context).canPop()) Navigator.of(context).pop();
+  }
+
   void _endDemoBeats() {
     if (mounted) demoDetailBeat.value = null;
+    demoCarouselPage.value = null;
     demoScreenBusy.value = false;
   }
 
   @override
   void dispose() {
     demoDetailBeat.value = null;
+    demoCarouselPage.value = null;
     demoScreenBusy.value = false;
     _scroll.dispose();
     super.dispose();
