@@ -16,7 +16,6 @@ Future<void> showTastingRateSheet({
   required String tastingId,
   required WineEntity wine,
   double initial = 7.0,
-  bool demoAnimate = false,
 }) async {
   // Prefill the sheet with the user's existing rating (if any) so
   // re-opening shows their last value rather than the default seed.
@@ -31,7 +30,6 @@ Future<void> showTastingRateSheet({
     initial: prior ?? initial,
     ratingContext: 'tasting',
     tastingId: tastingId,
-    demoAnimate: demoAnimate,
     onSave: (rating) async {
       await ref
           .read(tastingsControllerProvider.notifier)

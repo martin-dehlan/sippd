@@ -75,11 +75,6 @@ dependencies:
   # Share-card image rendering
   screenshot: ^3.0.0
 
-  # Promo video assets (PromoShowcaseScreen — kIsPromo builds only).
-  # NOTE: this is a native plugin, so it links into prod binaries too;
-  # only the Dart promo UI is excluded via kIsPromo tree-shaking.
-  widget_recorder_plus: ^1.0.4
-
   # Utils
   uuid: ^4.5.1
   intl: ^0.20.2
