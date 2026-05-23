@@ -13,6 +13,7 @@ import '../../../../../core/routes/app.routes.dart';
 import '../../../../profile/controller/profile.provider.dart';
 import '../../../../profile/presentation/widgets/language_picker.widget.dart';
 import '../../../../profile/presentation/widgets/profile_avatar.widget.dart';
+import '../../../../promo/presentation/demo_spotlight.widget.dart';
 import '../../../../push/controller/push.provider.dart';
 import '../../../../taste_match/presentation/widgets/wine_personality_hero.widget.dart';
 import '../../../../wines/controller/wine.provider.dart';
@@ -95,7 +96,10 @@ class ProfileScreen extends ConsumerWidget {
             // Identity zone — wine personality + traits.
             // Numerical stats live on the dedicated stats screen.
             if (user != null) ...[
-              WinePersonalityHero(userId: user.id, showShareCta: true),
+              DemoBeatHighlight(
+                beat: 0,
+                child: WinePersonalityHero(userId: user.id, showShareCta: true),
+              ),
               SizedBox(height: context.s),
               _ViewStatsLink(),
               SizedBox(height: context.l),

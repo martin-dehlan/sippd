@@ -19,6 +19,9 @@ import '../../../../friends/presentation/widgets/friend_multi_picker.widget.dart
 import '../../../../groups/presentation/widgets/share_wine_sheet.dart';
 import '../../../../paywall/controller/paywall.provider.dart';
 import '../../../../profile/controller/profile.provider.dart';
+import '../../../../promo/promo.config.dart';
+import '../../../../promo/presentation/demo_reveal.widget.dart';
+import '../../../../promo/presentation/demo_spotlight.widget.dart';
 import '../../../../share_cards/controller/share_card.provider.dart';
 import '../../../controller/wine.provider.dart';
 import '../../../domain/entities/wine.entity.dart';
@@ -119,6 +122,14 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
   late final Animation<double> _fadeIn;
   late final Animation<Offset> _slideUp;
 
+  // Demo only: scroll + spotlight the lower detail sections.
+  final ScrollController _scroll = ScrollController();
+  final GlobalKey _notesKey = GlobalKey();
+  final GlobalKey _expertKey = GlobalKey();
+  final GlobalKey _friendsKey = GlobalKey();
+  final GlobalKey _momentsKey = GlobalKey();
+  final GlobalKey _placeKey = GlobalKey();
+
   @override
   void initState() {
     super.initState();
@@ -132,10 +143,130 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
           CurvedAnimation(parent: _animController, curve: Curves.easeOutCubic),
         );
     _animController.forward();
+    if (kIsDemo) _runDemoBeats();
+  }
+
+  /// Demo only: walk the hero features one at a time — highlight each, then
+  /// open its editor and show the value being changed, then close and move
+  /// on. image → rating (sheet) → price (sheet) → origin (country + region
+  /// pickers). The busy flag keeps the auto-tour from navigating away
+  /// mid-sequence.
+  Future<void> _runDemoBeats() async {
+    demoScreenBusy.value = true;
+    await Future<void>.delayed(const Duration(milliseconds: 1400));
+
+    // Image.
+    if (!mounted) return _endDemoBeats();
+    demoDetailBeat.value = 0;
+    await Future<void>.delayed(const Duration(milliseconds: 1500));
+
+    if (!widget.isOwner) return _endDemoBeats();
+
+    // Rating: highlight, open sheet, adjust, close.
+    if (!mounted) return _endDemoBeats();
+    demoDetailBeat.value = 1;
+    await Future<void>.delayed(const Duration(milliseconds: 900));
+    final ratingFuture = showWineRatingSheet(
+      // ignore: use_build_context_synchronously
+      context: context,
+      initial: widget.wine.rating,
+      ratingContext: 'personal',
+      wine: widget.wine,
+      wineType: widget.wine.type,
+      demoAnimate: true,
+    );
+    await Future<void>.delayed(const Duration(milliseconds: 3900));
+    _closeSheet();
+    await ratingFuture;
+    await Future<void>.delayed(const Duration(milliseconds: 500));
+
+    // Price: highlight, open sheet, adjust, close.
+    if (!mounted) return _endDemoBeats();
+    demoDetailBeat.value = 2;
+    await Future<void>.delayed(const Duration(milliseconds: 900));
+    final priceFuture = showPriceInputSheet(
+      // ignore: use_build_context_synchronously
+      context: context,
+      initial: widget.wine.price,
+      demoAutoFill: true,
+    );
+    await Future<void>.delayed(const Duration(milliseconds: 3900));
+    _closeSheet();
+    await priceFuture;
+    await Future<void>.delayed(const Duration(milliseconds: 500));
+
+    // Origin: highlight, then reveal the country picker, then the region.
+    if (!mounted) return _endDemoBeats();
+    demoDetailBeat.value = 3;
+    await Future<void>.delayed(const Duration(milliseconds: 900));
+    final country = widget.wine.country;
+    if (country != null) {
+      showWineCountryPicker(
+        // ignore: use_build_context_synchronously
+        context: context,
+        selected: country,
+        onChanged: (_) {},
+      );
+      await Future<void>.delayed(const Duration(milliseconds: 2200));
+      _closeSheet();
+      // Let the country sheet fully settle out before the region slides in.
+      await Future<void>.delayed(const Duration(milliseconds: 800));
+      if (!mounted) return _endDemoBeats();
+      showWineRegionPicker(
+        // ignore: use_build_context_synchronously
+        context: context,
+        country: country,
+        selected: widget.wine.region,
+        onChanged: (_) {},
+      );
+      await Future<void>.delayed(const Duration(milliseconds: 2200));
+      _closeSheet();
+      await Future<void>.delayed(const Duration(milliseconds: 400));
+    }
+
+    // Lower sections: scroll down and spotlight each in turn (notes, expert
+    // tasting, friend ratings, moments, place). Keys that aren't rendered for
+    // this wine are skipped.
+    final lower = <(GlobalKey, int)>[
+      (_notesKey, 4),
+      (_expertKey, 5),
+      (_friendsKey, 6),
+      (_momentsKey, 7),
+      (_placeKey, 8),
+    ];
+    for (final (key, beat) in lower) {
+      if (!mounted) return _endDemoBeats();
+      final ctx = key.currentContext;
+      if (ctx != null && ctx.mounted) {
+        await Scrollable.ensureVisible(
+          ctx,
+          duration: const Duration(milliseconds: 600),
+          curve: Curves.easeOutCubic,
+          alignment: 0.2,
+        );
+      }
+      if (!mounted) return _endDemoBeats();
+      demoDetailBeat.value = beat;
+      await Future<void>.delayed(const Duration(milliseconds: 2000));
+    }
+
+    _endDemoBeats();
+  }
+
+  void _closeSheet() {
+    if (mounted && Navigator.of(context).canPop()) Navigator.of(context).pop();
+  }
+
+  void _endDemoBeats() {
+    if (mounted) demoDetailBeat.value = null;
+    demoScreenBusy.value = false;
   }
 
   @override
   void dispose() {
+    demoDetailBeat.value = null;
+    demoScreenBusy.value = false;
+    _scroll.dispose();
     _animController.dispose();
     super.dispose();
   }
@@ -151,6 +282,7 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
         child: SlideTransition(
           position: _slideUp,
           child: ListView(
+            controller: _scroll,
             padding: EdgeInsets.zero,
             children: [
               SizedBox(height: context.xl * 1.5),
@@ -233,7 +365,15 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
                     children: [
                       Expanded(
                         flex: 5,
-                        child: WineDetailImage(wine: widget.wine),
+                        child: DemoBeatHighlight(
+                          beat: 0,
+                          activeScale: 1.1,
+                          child: DemoReveal(
+                            delay: const Duration(milliseconds: 520),
+                            fromScale: 0.82,
+                            child: WineDetailImage(wine: widget.wine),
+                          ),
+                        ),
                       ),
                       Expanded(
                         flex: 4,
@@ -258,41 +398,77 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
                   label: AppLocalizations.of(context).winesDetailSectionNotes,
                 ),
                 SizedBox(height: context.m),
-                _NotesBlock(notes: widget.wine.notes!),
+                KeyedSubtree(
+                  key: _notesKey,
+                  child: DemoBeatHighlight(
+                    beat: 4,
+                    child: _NotesBlock(notes: widget.wine.notes!),
+                  ),
+                ),
               ],
               if (widget.wine.canonicalWineId != null) ...[
                 SizedBox(height: context.xl),
                 // Read-only display of the user's own expert tasting
                 // dimensions for this wine. Renders nothing when empty,
                 // so non-Pro / unfilled wines stay clean.
-                ExpertTastingSummary(
-                  canonicalWineId: widget.wine.canonicalWineId!,
-                  onEdit: () {
-                    final isPro = ref.read(isProProvider);
-                    if (!isPro) {
-                      context.push(
-                        AppRoutes.paywall,
-                        extra: const {'source': 'expert_tasting_summary'},
-                      );
-                      return;
-                    }
-                    showExpertTastingSheet(context: context, wine: widget.wine);
-                  },
+                KeyedSubtree(
+                  key: _expertKey,
+                  child: DemoBeatHighlight(
+                    beat: 5,
+                    child: ExpertTastingSummary(
+                      canonicalWineId: widget.wine.canonicalWineId!,
+                      onEdit: () {
+                        final isPro = ref.read(isProProvider);
+                        if (!isPro) {
+                          context.push(
+                            AppRoutes.paywall,
+                            extra: const {'source': 'expert_tasting_summary'},
+                          );
+                          return;
+                        }
+                        showExpertTastingSheet(
+                          context: context,
+                          wine: widget.wine,
+                        );
+                      },
+                    ),
+                  ),
                 ),
                 SizedBox(height: context.l),
-                FriendRatingsStrip(
-                  canonicalWineId: widget.wine.canonicalWineId!,
+                KeyedSubtree(
+                  key: _friendsKey,
+                  child: DemoBeatHighlight(
+                    beat: 6,
+                    child: FriendRatingsStrip(
+                      canonicalWineId: widget.wine.canonicalWineId!,
+                    ),
+                  ),
                 ),
               ],
-              _MemoriesSection(wine: widget.wine),
+              KeyedSubtree(
+                key: _momentsKey,
+                child: DemoBeatHighlight(
+                  beat: 7,
+                  child: _MemoriesSection(wine: widget.wine),
+                ),
+              ),
               SizedBox(height: context.xl),
               WineDetailSectionHeader(
                 label: AppLocalizations.of(context).winesDetailSectionPlace,
               ),
               SizedBox(height: context.s),
-              SizedBox(
-                height: context.h * 0.28,
-                child: _PlaceSection(wine: widget.wine, hasCoords: hasCoords),
+              KeyedSubtree(
+                key: _placeKey,
+                child: DemoBeatHighlight(
+                  beat: 8,
+                  child: SizedBox(
+                    height: context.h * 0.28,
+                    child: _PlaceSection(
+                      wine: widget.wine,
+                      hasCoords: hasCoords,
+                    ),
+                  ),
+                ),
               ),
               SizedBox(height: context.xxl * 1.5),
             ],
@@ -546,6 +722,8 @@ class _StatsColumn extends ConsumerWidget {
             value: wine.rating.toStringAsFixed(1),
             unit: l10n.winesDetailStatRatingUnit,
             onTap: isOwner ? () => _editRating(context, ref) : null,
+            revealDelay: const Duration(milliseconds: 700),
+            beat: 1,
           ),
           SizedBox(height: context.l),
           if (wine.price != null) ...[
@@ -554,6 +732,8 @@ class _StatsColumn extends ConsumerWidget {
               value: formatPrice(wine.price!),
               unit: wine.currency,
               onTap: isOwner ? () => _editPrice(context, ref) : null,
+              revealDelay: const Duration(milliseconds: 820),
+              beat: 2,
             ),
             SizedBox(height: context.l),
           ] else if (isOwner) ...[
@@ -571,6 +751,8 @@ class _StatsColumn extends ConsumerWidget {
               value: wine.region!,
               isText: true,
               onTap: isOwner ? () => _editOrigin(context, ref) : null,
+              revealDelay: const Duration(milliseconds: 940),
+              beat: 3,
             )
           else if (wine.country != null)
             _StatItem(
@@ -578,6 +760,8 @@ class _StatsColumn extends ConsumerWidget {
               value: wine.country!,
               isText: true,
               onTap: isOwner ? () => _editOrigin(context, ref) : null,
+              revealDelay: const Duration(milliseconds: 940),
+              beat: 3,
             )
           else if (isOwner)
             _StatItem(
@@ -599,12 +783,21 @@ class _StatItem extends StatelessWidget {
   final bool isText;
   final VoidCallback? onTap;
 
+  /// Demo-only: staggers this stat's pop-in so rating/price/region
+  /// highlight one after another. Ignored in production.
+  final Duration revealDelay;
+
+  /// Demo-only: the tour's feature-beat index this stat lights up on.
+  final int? beat;
+
   const _StatItem({
     required this.label,
     required this.value,
     this.unit,
     this.isText = false,
     this.onTap,
+    this.revealDelay = Duration.zero,
+    this.beat,
   });
 
   @override
@@ -661,15 +854,20 @@ class _StatItem extends StatelessWidget {
           ),
       ],
     );
-    if (onTap == null) return column;
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(context.w * 0.02),
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: context.xs),
-        child: column,
-      ),
-    );
+    final result = onTap == null
+        ? column
+        : InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(context.w * 0.02),
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: context.xs),
+              child: column,
+            ),
+          );
+    final highlighted = beat == null
+        ? result
+        : DemoBeatHighlight(beat: beat!, child: result);
+    return DemoReveal(delay: revealDelay, child: highlighted);
   }
 }
 

@@ -30,10 +30,21 @@ import 'features/push/controller/push.provider.dart';
 import 'features/push/data/push_handler.service.dart';
 import 'features/wines/controller/wine.provider.dart';
 import 'features/tastings/controller/tastings.provider.dart';
+import 'features/promo/promo.config.dart';
+import 'features/promo/presentation/promo_app.dart';
 import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Promo asset builds (`--dart-define=PROMO=true`) boot a self-contained
+  // showcase app and skip all production init — no Supabase, Firebase,
+  // analytics or paywall. In normal builds `kIsPromo` is a const false so
+  // the whole branch (and the promo UI it reaches) is tree-shaken out.
+  if (kIsPromo) {
+    runApp(const PromoApp());
+    return;
+  }
 
   await dotenv.load();
 
@@ -72,6 +83,10 @@ void main() async {
         sharedPreferencesProvider.overrideWithValue(prefs),
         analyticsProvider.overrideWithValue(analytics),
         paywallProvider.overrideWithValue(paywall),
+        // Demo builds unlock Pro so every Pro-gated widget renders in the
+        // flow video. A demo build auto-runs the tour and fakes interactions,
+        // so it's non-shippable — this can't unlock Pro in the real app.
+        if (kIsDemo) isProProvider.overrideWith((ref) => true),
       ],
       child: const SippdApp(),
     ),

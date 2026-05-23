@@ -1033,6 +1033,8 @@
   "@groupInviteActionShare": {},
   "groupInviteFriendsEmpty": "No friends available to invite.",
   "@groupInviteFriendsEmpty": {},
+  "groupInviteFriendsAllInvited": "All your friends are already in this group or invited.",
+  "@groupInviteFriendsAllInvited": {},
   "groupInviteFriendsErrorLoad": "Couldn't load friends",
   "@groupInviteFriendsErrorLoad": {},
   "groupInviteFriendFallback": "friend",

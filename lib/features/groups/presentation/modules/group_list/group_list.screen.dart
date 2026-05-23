@@ -13,6 +13,7 @@ import '../../../../../common/widgets/error_view.widget.dart';
 import '../../../../../common/widgets/inline_error.widget.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../../paywall/controller/paywall.provider.dart';
+import '../../../../promo/presentation/demo_spotlight.widget.dart';
 import '../../../controller/group.provider.dart';
 import '../../../domain/entities/group.entity.dart';
 import '../../widgets/group_invitations_inbox.widget.dart';
@@ -127,7 +128,10 @@ class GroupListScreen extends ConsumerWidget {
                     ),
                     itemCount: sorted.length,
                     separatorBuilder: (_, _) => SizedBox(height: context.s),
-                    itemBuilder: (_, index) => _GroupCard(group: sorted[index]),
+                    itemBuilder: (_, index) => DemoBeatHighlight(
+                      beat: index,
+                      child: _GroupCard(group: sorted[index]),
+                    ),
                   );
                 },
                 loading: () => const Center(child: CircularProgressIndicator()),

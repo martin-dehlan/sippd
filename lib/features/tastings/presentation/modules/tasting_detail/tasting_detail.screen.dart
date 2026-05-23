@@ -18,6 +18,8 @@ import '../../../../groups/controller/group.provider.dart';
 import '../../../../wines/controller/wine.provider.dart';
 import '../../../../wines/domain/entities/wine.entity.dart';
 import '../../../../wines/presentation/widgets/wine_card.widget.dart';
+import '../../../../promo/promo.config.dart';
+import '../../../../promo/presentation/demo_spotlight.widget.dart';
 import '../../../controller/tastings.provider.dart';
 import '../../../domain/entities/tasting.entity.dart';
 import '../../../domain/entities/tasting_attendee.entity.dart';
@@ -124,12 +126,131 @@ class _BackFab extends StatelessWidget {
   }
 }
 
-class _Body extends ConsumerWidget {
+class _Body extends ConsumerStatefulWidget {
   final TastingEntity tasting;
   const _Body({required this.tasting});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_Body> createState() => _BodyState();
+}
+
+class _BodyState extends ConsumerState<_Body> {
+  // Demo only: scroll + spotlight the host/share story sections.
+  final ScrollController _scroll = ScrollController();
+  final GlobalKey _headerKey = GlobalKey();
+  final GlobalKey _bannerKey = GlobalKey();
+  final GlobalKey _peopleKey = GlobalKey();
+  final GlobalKey _lineupKey = GlobalKey();
+
+  TastingEntity get tasting => widget.tasting;
+
+  @override
+  void initState() {
+    super.initState();
+    if (kIsDemo) _runDemoBeats();
+  }
+
+  /// Demo only: walk the host/share story one section at a time so a
+  /// screen recording reads cleanly with no editing. Header (the tasting's
+  /// identity) → lifecycle banner (upcoming/live/concluded) → attendees
+  /// (the "who's coming" social proof) → wines lineup or recap leaderboard
+  /// (whichever this state renders). If the tasting is live/concluded and
+  /// has at least one wine, it also opens the inline rate sheet with the
+  /// demo sweep and closes it WITHOUT saving — nothing is persisted. The
+  /// busy flag keeps the auto-tour from navigating away mid-sequence and
+  /// always clears (here, on every early-return, and in dispose).
+  Future<void> _runDemoBeats() async {
+    demoScreenBusy.value = true;
+    await Future<void>.delayed(const Duration(milliseconds: 1400));
+
+    // Header: the tasting's identity (title + when).
+    if (!mounted) return _endDemoBeats();
+    demoDetailBeat.value = 0;
+    await Future<void>.delayed(const Duration(milliseconds: 1600));
+
+    // Lifecycle banner: upcoming / live / concluded status.
+    if (!mounted) return _endDemoBeats();
+    demoDetailBeat.value = 1;
+    await Future<void>.delayed(const Duration(milliseconds: 1800));
+
+    // People: who's coming (avatars + RSVP breakdown).
+    if (!mounted) return _endDemoBeats();
+    final peopleCtx = _peopleKey.currentContext;
+    if (peopleCtx != null && peopleCtx.mounted) {
+      await Scrollable.ensureVisible(
+        peopleCtx,
+        duration: const Duration(milliseconds: 600),
+        curve: Curves.easeOutCubic,
+        alignment: 0.2,
+      );
+    }
+    if (!mounted) return _endDemoBeats();
+    demoDetailBeat.value = 2;
+    await Future<void>.delayed(const Duration(milliseconds: 2000));
+
+    // Lineup or recap (whichever this lifecycle state renders).
+    if (!mounted) return _endDemoBeats();
+    final lineupCtx = _lineupKey.currentContext;
+    if (lineupCtx != null && lineupCtx.mounted) {
+      await Scrollable.ensureVisible(
+        lineupCtx,
+        duration: const Duration(milliseconds: 600),
+        curve: Curves.easeOutCubic,
+        alignment: 0.1,
+      );
+    }
+    if (!mounted) return _endDemoBeats();
+    demoDetailBeat.value = 3;
+    await Future<void>.delayed(const Duration(milliseconds: 2200));
+
+    // Inline rating: only when ratings are open (live/concluded) and the
+    // lineup has at least one wine. Opens the rate sheet with the demo
+    // sweep, then closes without committing.
+    final canRate =
+        tasting.state == TastingState.active ||
+        tasting.state == TastingState.concluded;
+    if (canRate) {
+      final wines =
+          ref.read(tastingWinesProvider(tasting.id)).valueOrNull ?? const [];
+      if (wines.isNotEmpty) {
+        await Future<void>.delayed(const Duration(milliseconds: 500));
+        if (!mounted) return _endDemoBeats();
+        final rateFuture = showTastingRateSheet(
+          context: context,
+          ref: ref,
+          tastingId: tasting.id,
+          wine: wines.first,
+          demoAnimate: true,
+        );
+        await Future<void>.delayed(const Duration(milliseconds: 3900));
+        _closeSheet();
+        await rateFuture;
+        await Future<void>.delayed(const Duration(milliseconds: 400));
+      }
+    }
+
+    _endDemoBeats();
+  }
+
+  void _closeSheet() {
+    if (mounted && Navigator.of(context).canPop()) Navigator.of(context).pop();
+  }
+
+  void _endDemoBeats() {
+    if (mounted) demoDetailBeat.value = null;
+    demoScreenBusy.value = false;
+  }
+
+  @override
+  void dispose() {
+    demoDetailBeat.value = null;
+    demoScreenBusy.value = false;
+    _scroll.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context);
     final currentUid = ref.watch(currentUserIdProvider);
@@ -137,100 +258,121 @@ class _Body extends ConsumerWidget {
     final local = tasting.scheduledAt.toLocal();
 
     return ListView(
+      controller: _scroll,
       padding: EdgeInsets.zero,
       children: [
         SizedBox(height: context.xl * 1.5),
-        Padding(
-          padding: EdgeInsets.only(
-            left: context.paddingH * 1.3,
-            right: context.paddingH * 0.8,
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Expanded(
-                child: Text(
-                  tasting.title.toUpperCase(),
-                  style: GoogleFonts.playfairDisplay(
-                    fontSize: context.titleFont * 1.2,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: -0.5,
-                    height: 1.05,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
+        KeyedSubtree(
+          key: _headerKey,
+          child: DemoBeatHighlight(
+            beat: 0,
+            child: Padding(
+              padding: EdgeInsets.only(
+                left: context.paddingH * 1.3,
+                right: context.paddingH * 0.8,
               ),
-              OverflowMenu(
-                circleBackground: true,
-                groups: [
-                  [
-                    OverflowMenuItem(
-                      icon: PhosphorIconsRegular.calendarBlank,
-                      label: l10n.tastingDetailMenuAddToCalendar,
-                      onTap: () => addTastingToCalendar(
-                        context: context,
-                        tasting: tasting,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          tasting.title.toUpperCase(),
+                          style: GoogleFonts.playfairDisplay(
+                            fontSize: context.titleFont * 1.2,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: -0.5,
+                            height: 1.05,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
-                    ),
-                    OverflowMenuItem(
-                      icon: PhosphorIconsRegular.shareNetwork,
-                      label: l10n.tastingDetailMenuShare,
-                      onTap: () => Share.share(
-                        '${tasting.title}\n\n${DeepLinkService.tastingHttpsUri(tasting.id)}',
-                        subject: tasting.title,
-                        sharePositionOrigin: shareOriginFor(context),
+                      OverflowMenu(
+                        circleBackground: true,
+                        groups: [
+                          [
+                            OverflowMenuItem(
+                              icon: PhosphorIconsRegular.calendarBlank,
+                              label: l10n.tastingDetailMenuAddToCalendar,
+                              onTap: () => addTastingToCalendar(
+                                context: context,
+                                tasting: tasting,
+                              ),
+                            ),
+                            OverflowMenuItem(
+                              icon: PhosphorIconsRegular.shareNetwork,
+                              label: l10n.tastingDetailMenuShare,
+                              onTap: () => Share.share(
+                                '${tasting.title}\n\n${DeepLinkService.tastingHttpsUri(tasting.id)}',
+                                subject: tasting.title,
+                                sharePositionOrigin: shareOriginFor(context),
+                              ),
+                            ),
+                          ],
+                          if (isOwner)
+                            [
+                              OverflowMenuItem(
+                                icon: PhosphorIconsRegular.pencilSimple,
+                                label: l10n.tastingDetailMenuEdit,
+                                onTap: () => context.push(
+                                  AppRoutes.tastingEditPath(tasting.id),
+                                ),
+                              ),
+                              OverflowMenuItem(
+                                icon: PhosphorIconsRegular.calendarX,
+                                label: l10n.tastingDetailMenuCancel,
+                                destructive: true,
+                                onTap: () =>
+                                    _confirmDelete(context, ref, tasting),
+                              ),
+                            ],
+                        ],
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: context.s),
+                  _WhenRow(when: local),
+                  if (tasting.description != null &&
+                      tasting.description!.isNotEmpty) ...[
+                    SizedBox(height: context.s),
+                    Text(
+                      tasting.description!,
+                      style: TextStyle(
+                        fontSize: context.bodyFont,
+                        color: cs.onSurface,
+                        height: 1.5,
                       ),
                     ),
                   ],
-                  if (isOwner)
-                    [
-                      OverflowMenuItem(
-                        icon: PhosphorIconsRegular.pencilSimple,
-                        label: l10n.tastingDetailMenuEdit,
-                        onTap: () =>
-                            context.push(AppRoutes.tastingEditPath(tasting.id)),
-                      ),
-                      OverflowMenuItem(
-                        icon: PhosphorIconsRegular.calendarX,
-                        label: l10n.tastingDetailMenuCancel,
-                        destructive: true,
-                        onTap: () => _confirmDelete(context, ref, tasting),
-                      ),
-                    ],
                 ],
-              ),
-            ],
-          ),
-        ),
-        SizedBox(height: context.s),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
-          child: _WhenRow(when: local),
-        ),
-        if (tasting.description != null && tasting.description!.isNotEmpty) ...[
-          SizedBox(height: context.s),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
-            child: Text(
-              tasting.description!,
-              style: TextStyle(
-                fontSize: context.bodyFont,
-                color: cs.onSurface,
-                height: 1.5,
               ),
             ),
           ),
-        ],
-        SizedBox(height: context.l),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
-          child: _PhaseBanner(tasting: tasting, isOwner: isOwner),
         ),
         SizedBox(height: context.l),
-        _Section(
-          label: l10n.tastingDetailSectionPeople,
-          child: _AttendeesCard(tasting: tasting),
+        KeyedSubtree(
+          key: _bannerKey,
+          child: DemoBeatHighlight(
+            beat: 1,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
+              child: _PhaseBanner(tasting: tasting, isOwner: isOwner),
+            ),
+          ),
+        ),
+        SizedBox(height: context.l),
+        KeyedSubtree(
+          key: _peopleKey,
+          child: DemoBeatHighlight(
+            beat: 2,
+            child: _Section(
+              label: l10n.tastingDetailSectionPeople,
+              child: _AttendeesCard(tasting: tasting),
+            ),
+          ),
         ),
         SizedBox(height: context.l),
         _RsvpBar(tasting: tasting),
@@ -249,10 +391,15 @@ class _Body extends ConsumerWidget {
             _PlaceStrip(location: tasting.location!),
           SizedBox(height: context.l),
         ],
-        if (tasting.state == TastingState.concluded)
-          _RecapSwitcher(tasting: tasting)
-        else
-          _WinesSection(tasting: tasting, isOwner: isOwner),
+        KeyedSubtree(
+          key: _lineupKey,
+          child: DemoBeatHighlight(
+            beat: 3,
+            child: tasting.state == TastingState.concluded
+                ? _RecapSwitcher(tasting: tasting)
+                : _WinesSection(tasting: tasting, isOwner: isOwner),
+          ),
+        ),
         SizedBox(height: context.xl * 2),
       ],
     );

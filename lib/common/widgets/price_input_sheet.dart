@@ -14,6 +14,7 @@ Future<String?> showPriceInputSheet({
   double? initial,
   String currencySymbol = '€',
   String currencyCode = 'EUR',
+  bool demoAutoFill = false,
 }) {
   return showModalBottomSheet<String>(
     context: context,
@@ -28,6 +29,7 @@ Future<String?> showPriceInputSheet({
       initial: initial,
       currencySymbol: currencySymbol,
       currencyCode: currencyCode,
+      demoAutoFill: demoAutoFill,
     ),
   );
 }
@@ -36,10 +38,12 @@ class _PriceInputSheet extends StatefulWidget {
   final double? initial;
   final String currencySymbol;
   final String currencyCode;
+  final bool demoAutoFill;
   const _PriceInputSheet({
     required this.initial,
     required this.currencySymbol,
     required this.currencyCode,
+    this.demoAutoFill = false,
   });
 
   @override
@@ -64,6 +68,20 @@ class _PriceInputSheetState extends State<_PriceInputSheet> {
     );
     _focusNode = FocusNode();
     _controller.addListener(_onChanged);
+    if (widget.demoAutoFill) _runDemoFill();
+  }
+
+  /// Demo only: tap through a few preset chips so the price reads as being
+  /// chosen, not typed (each pick highlights its chip). Not persisted — the
+  /// tour closes without saving.
+  Future<void> _runDemoFill() async {
+    await Future<void>.delayed(const Duration(milliseconds: 900));
+    const picks = [15, 30, 50];
+    for (final p in picks) {
+      if (!mounted) return;
+      _applyPreset(p);
+      await Future<void>.delayed(const Duration(milliseconds: 900));
+    }
   }
 
   @override

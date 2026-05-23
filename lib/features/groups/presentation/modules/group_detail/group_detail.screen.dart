@@ -10,6 +10,8 @@ import '../../../../../common/widgets/error_view.widget.dart';
 import '../../../../../common/widgets/overflow_menu.widget.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../../auth/controller/auth.provider.dart';
+import '../../../../promo/promo.config.dart';
+import '../../../../promo/presentation/demo_spotlight.widget.dart';
 import '../../../controller/group.provider.dart';
 import '../../../domain/entities/group.entity.dart';
 import 'widgets/edit_group_sheet.widget.dart';
@@ -72,18 +74,83 @@ class _FloatingBackButton extends StatelessWidget {
   }
 }
 
-class _Body extends ConsumerWidget {
+class _Body extends ConsumerStatefulWidget {
   final GroupEntity group;
   const _Body({required this.group});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_Body> createState() => _BodyState();
+}
+
+class _BodyState extends ConsumerState<_Body> {
+  // Demo only: scroll + spotlight the three group sections in turn.
+  final ScrollController _scroll = ScrollController();
+  final GlobalKey _membersKey = GlobalKey();
+  final GlobalKey _sharedWinesKey = GlobalKey();
+  final GlobalKey _tastingsKey = GlobalKey();
+
+  @override
+  void initState() {
+    super.initState();
+    if (kIsDemo) _runDemoBeats();
+  }
+
+  /// Demo only: walk the group's three sections one at a time — members,
+  /// shared wines, then tastings. Each section is scrolled into view, then
+  /// spotlighted (it pops, the rest dim) for a brief hold. Purely visual —
+  /// no group data is created, shared, left, or deleted. The busy flag keeps
+  /// the auto-tour from navigating away mid-sequence.
+  Future<void> _runDemoBeats() async {
+    demoScreenBusy.value = true;
+    await Future<void>.delayed(const Duration(milliseconds: 1400));
+
+    final sections = <(GlobalKey, int)>[
+      (_membersKey, 0),
+      (_sharedWinesKey, 1),
+      (_tastingsKey, 2),
+    ];
+    for (final (key, beat) in sections) {
+      if (!mounted) return _endDemoBeats();
+      final ctx = key.currentContext;
+      if (ctx != null && ctx.mounted) {
+        await Scrollable.ensureVisible(
+          ctx,
+          duration: const Duration(milliseconds: 600),
+          curve: Curves.easeOutCubic,
+          alignment: 0.2,
+        );
+      }
+      if (!mounted) return _endDemoBeats();
+      demoDetailBeat.value = beat;
+      await Future<void>.delayed(const Duration(milliseconds: 2000));
+    }
+
+    _endDemoBeats();
+  }
+
+  void _endDemoBeats() {
+    if (mounted) demoDetailBeat.value = null;
+    demoScreenBusy.value = false;
+  }
+
+  @override
+  void dispose() {
+    demoDetailBeat.value = null;
+    demoScreenBusy.value = false;
+    _scroll.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final group = widget.group;
     final currentUid = ref.watch(currentUserIdProvider);
     final isOwner = currentUid == group.createdBy;
     final padH = context.paddingH * 1.3;
     final l10n = AppLocalizations.of(context);
 
     return ListView(
+      controller: _scroll,
       padding: EdgeInsets.zero,
       children: [
         SizedBox(height: context.xl * 1.5),
@@ -116,44 +183,74 @@ class _Body extends ConsumerWidget {
           ),
         ),
         SizedBox(height: context.l),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: padH),
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: MembersStrip(
-              groupId: group.id,
-              ownerId: group.createdBy,
-              onInviteTap: () => InviteShareSheet.show(
-                context,
-                code: group.inviteCode,
-                groupId: group.id,
-                groupName: group.name,
+        KeyedSubtree(
+          key: _membersKey,
+          child: DemoBeatHighlight(
+            beat: 0,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: padH),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: MembersStrip(
+                  groupId: group.id,
+                  ownerId: group.createdBy,
+                  onInviteTap: () => InviteShareSheet.show(
+                    context,
+                    code: group.inviteCode,
+                    groupId: group.id,
+                    groupName: group.name,
+                  ),
+                ),
               ),
             ),
           ),
         ),
         SizedBox(height: context.l),
-        _SectionHeader(
-          label: l10n.groupDetailSectionSharedWines,
-          action: _SectionAction(
-            icon: PhosphorIconsRegular.plus,
-            label: l10n.groupDetailActionShare,
-            onTap: () => WinePickerSheet.show(context, groupId: group.id),
+        KeyedSubtree(
+          key: _sharedWinesKey,
+          child: DemoBeatHighlight(
+            beat: 1,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _SectionHeader(
+                  label: l10n.groupDetailSectionSharedWines,
+                  action: _SectionAction(
+                    icon: PhosphorIconsRegular.plus,
+                    label: l10n.groupDetailActionShare,
+                    onTap: () =>
+                        WinePickerSheet.show(context, groupId: group.id),
+                  ),
+                ),
+                SizedBox(height: context.s),
+                SharedWinesCarousel(groupId: group.id),
+              ],
+            ),
           ),
         ),
-        SizedBox(height: context.s),
-        SharedWinesCarousel(groupId: group.id),
         SizedBox(height: context.l),
-        _SectionHeader(
-          label: l10n.groupDetailSectionTastings,
-          action: _SectionAction(
-            icon: PhosphorIconsRegular.plus,
-            label: l10n.groupDetailActionPlan,
-            onTap: () => context.push(AppRoutes.tastingCreatePath(group.id)),
+        KeyedSubtree(
+          key: _tastingsKey,
+          child: DemoBeatHighlight(
+            beat: 2,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _SectionHeader(
+                  label: l10n.groupDetailSectionTastings,
+                  action: _SectionAction(
+                    icon: PhosphorIconsRegular.plus,
+                    label: l10n.groupDetailActionPlan,
+                    onTap: () =>
+                        context.push(AppRoutes.tastingCreatePath(group.id)),
+                  ),
+                ),
+                SizedBox(height: context.s),
+                TastingsCalendar(groupId: group.id),
+              ],
+            ),
           ),
         ),
-        SizedBox(height: context.s),
-        TastingsCalendar(groupId: group.id),
         SizedBox(height: context.xl * 2),
       ],
     );

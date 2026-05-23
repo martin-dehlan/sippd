@@ -10,6 +10,7 @@ import '../../../../../../common/utils/responsive.dart';
 import '../../../../../../common/utils/share_origin.dart';
 import '../../../../../../common/widgets/error_view.widget.dart';
 import '../../../../../../common/widgets/inline_error.widget.dart';
+import '../../../../../friends/controller/friends.provider.dart';
 import '../../../../../friends/domain/entities/friend_profile.entity.dart';
 import '../../../../../friends/presentation/widgets/friend_avatar.widget.dart';
 import '../../../../controller/group_invitation.provider.dart';
@@ -271,10 +272,18 @@ class _FriendList extends ConsumerWidget {
     return friendsAsync.when(
       data: (friends) {
         if (friends.isEmpty) {
+          // Distinguish "you have no friends yet" from "all your friends are
+          // already in this group or have a pending invite" — the invitable
+          // list filters out both members and pending invitees.
+          final hasAnyFriends =
+              (ref.watch(friendsListProvider).valueOrNull ?? const [])
+                  .isNotEmpty;
           return Padding(
             padding: EdgeInsets.symmetric(vertical: context.m),
             child: Text(
-              l10n.groupInviteFriendsEmpty,
+              hasAnyFriends
+                  ? l10n.groupInviteFriendsAllInvited
+                  : l10n.groupInviteFriendsEmpty,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: context.bodyFont * 0.95,
