@@ -2174,6 +2174,10 @@ class AppLocalizationsIt extends AppLocalizations {
   String get groupInviteFriendsEmpty => 'Nessun amico disponibile da invitare.';
 
   @override
+  String get groupInviteFriendsAllInvited =>
+      'Tutti i tuoi amici sono già in questo gruppo o invitati.';
+
+  @override
   String get groupInviteFriendsErrorLoad => 'Impossibile caricare gli amici';
 
   @override

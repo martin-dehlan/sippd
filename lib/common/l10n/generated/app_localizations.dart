@@ -4118,6 +4118,12 @@ abstract class AppLocalizations {
   /// **'No friends available to invite.'**
   String get groupInviteFriendsEmpty;
 
+  /// No description provided for @groupInviteFriendsAllInvited.
+  ///
+  /// In en, this message translates to:
+  /// **'All your friends are already in this group or invited.'**
+  String get groupInviteFriendsAllInvited;
+
   /// No description provided for @groupInviteFriendsErrorLoad.
   ///
   /// In en, this message translates to:
