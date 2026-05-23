@@ -94,7 +94,9 @@ class _Content extends StatelessWidget {
             label: l10n.winesStatsSpendingMostExpensive,
             wine: spend.mostExpensive!,
             valueFormatter: (w) => fmt.format(w.price ?? 0),
-            valueDetail: null,
+            valueDetail: spend.mostExpensive!.rating > 0
+                ? '★ ${spend.mostExpensive!.rating.toStringAsFixed(1)}'
+                : null,
             cs: cs,
             delay: 100,
           ),
