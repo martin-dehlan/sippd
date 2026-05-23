@@ -9,6 +9,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../common/l10n/generated/app_localizations.dart';
 import '../../common/services/analytics/analytics.provider.dart';
+import '../../common/services/motion/motion.provider.dart';
 import '../../common/widgets/offline_indicator.widget.dart';
 import '../../common/widgets/splash.screen.dart';
 import '../../features/auth/controller/auth.provider.dart';
@@ -24,6 +25,7 @@ import '../../features/paywall/presentation/modules/subscription/subscription.sc
 import '../../features/profile/controller/profile.provider.dart';
 import '../../features/profile/presentation/modules/choose_username/choose_username.screen.dart';
 import '../../features/profile/presentation/modules/edit_profile/edit_profile.screen.dart';
+import '../../features/profile/presentation/modules/animation_settings/animation_settings.screen.dart';
 import '../../features/profile/presentation/modules/notification_settings/notification_settings.screen.dart';
 import '../../features/wines/presentation/modules/wine_cleanup/wine_cleanup.screen.dart';
 import '../../features/friends/presentation/modules/friend_profile/friend_profile.screen.dart';
@@ -42,7 +44,6 @@ import '../../features/wines/presentation/modules/wine_detail/wine_detail.screen
 import '../../features/wines/presentation/modules/wine_edit/wine_edit.screen.dart';
 import '../../features/wines/presentation/modules/wine_compare/wine_compare.screen.dart';
 import '../../features/wines/presentation/modules/wine_compare/wine_compare_picker.screen.dart';
-import '../../features/promo/presentation/demo_transitions.dart';
 import 'app.routes.dart';
 
 part 'route_config.g.dart';
@@ -312,7 +313,7 @@ GoRouter goRouter(GoRouterRef ref) {
           return WineComparePickerScreen(excludeId: q['excludeId']);
         },
       ),
-      demoRoute(
+      GoRoute(
         path: AppRoutes.wineDetail,
         builder: (context, state) {
           final id = state.pathParameters['id']!;
@@ -332,7 +333,7 @@ GoRouter goRouter(GoRouterRef ref) {
       ),
 
       // Group detail
-      demoRoute(
+      GoRoute(
         path: AppRoutes.groupDetail,
         builder: (context, state) =>
             GroupDetailScreen(groupId: state.pathParameters['id']!),
@@ -359,7 +360,7 @@ GoRouter goRouter(GoRouterRef ref) {
       ),
 
       // Tasting detail
-      demoRoute(
+      GoRoute(
         path: AppRoutes.tastingDetail,
         builder: (context, state) =>
             TastingDetailScreen(tastingId: state.pathParameters['id']!),
@@ -380,6 +381,10 @@ GoRouter goRouter(GoRouterRef ref) {
       GoRoute(
         path: AppRoutes.profileNotifications,
         builder: (context, state) => const NotificationSettingsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.profileAnimations,
+        builder: (context, state) => const AnimationSettingsScreen(),
       ),
       GoRoute(
         path: AppRoutes.wineCleanup,
@@ -404,7 +409,7 @@ GoRouter goRouter(GoRouterRef ref) {
         path: AppRoutes.friends,
         builder: (context, state) => const FriendsScreen(),
       ),
-      demoRoute(
+      GoRoute(
         path: AppRoutes.friendProfile,
         builder: (context, state) =>
             FriendProfileScreen(friendId: state.pathParameters['id']!),
@@ -496,13 +501,21 @@ class MainShell extends ConsumerWidget {
     final h = MediaQuery.of(context).size.height;
     final pendingInvites =
         ref.watch(myGroupInvitationsProvider).valueOrNull?.length ?? 0;
+    final crossfade = ref.motionOn(MotionFeature.tabCrossfade, context);
 
     return Scaffold(
       extendBody: true,
       body: Column(
         children: [
           const OfflineIndicator(),
-          Expanded(child: navigationShell),
+          Expanded(
+            child: crossfade
+                ? _TabCrossfade(
+                    index: navigationShell.currentIndex,
+                    child: navigationShell,
+                  )
+                : navigationShell,
+          ),
         ],
       ),
       bottomNavigationBar: SafeArea(
@@ -585,6 +598,33 @@ class MainShell extends ConsumerWidget {
     navigationShell.goBranch(
       index,
       initialLocation: index == navigationShell.currentIndex,
+    );
+  }
+}
+
+/// Soft fade applied to the shell body whenever the active branch changes.
+///
+/// The shell's `navigationShell` is a single [StatefulNavigationShell] keyed by
+/// a [GlobalKey], with all branches kept alive inside an internal IndexedStack.
+/// Mounting two copies of it (as a literal AnimatedSwitcher cross-fade would)
+/// duplicates that GlobalKey and crashes, so we keep exactly ONE live instance
+/// — state (scroll, nav stack) is fully preserved — and re-trigger a short
+/// fade-in over it each time [index] changes. The keyed [TweenAnimationBuilder]
+/// restarts from 0 → 1 on every branch switch.
+class _TabCrossfade extends StatelessWidget {
+  final int index;
+  final Widget child;
+  const _TabCrossfade({required this.index, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return TweenAnimationBuilder<double>(
+      key: ValueKey<int>(index),
+      tween: Tween<double>(begin: 0, end: 1),
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeOut,
+      builder: (context, value, child) => Opacity(opacity: value, child: child),
+      child: child,
     );
   }
 }

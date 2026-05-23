@@ -12,8 +12,6 @@ import '../../../../../common/widgets/review_prompt.widget.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../../auth/controller/auth.provider.dart';
 import '../../../../locations/domain/entities/location.entity.dart';
-import '../../../../promo/presentation/demo_spotlight.widget.dart';
-import '../../../../promo/promo.config.dart';
 import '../../../../share_cards/presentation/widgets/wine_share_prompt_sheet.dart';
 import '../../../controller/expert_tasting.provider.dart';
 import '../../../controller/wine.provider.dart';
@@ -43,84 +41,6 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
   // uploaded to storage immediately on pick (orphaned on full cancel
   // — covered by the post-launch storage sweep).
   final List<MemoryDraft> _drafts = [];
-
-  @override
-  void initState() {
-    super.initState();
-    if (kIsDemo) _runDemoBeats();
-  }
-
-  @override
-  void dispose() {
-    demoDetailBeat.value = null;
-    demoScreenBusy.value = false;
-    super.dispose();
-  }
-
-  /// Demo only: walk the add-wine form for a hands-free promo recording.
-  /// Fills the headline fields one at a time (name → type → winery), then
-  /// spotlights the rating stat and opens the rating sheet so it can
-  /// animate, then closes and highlights origin. Purely visual: only
-  /// local form state is touched and the rating sheet is opened — the
-  /// save action is never called, so no wine is created. The busy flag
-  /// keeps the central auto-tour from navigating away mid-sequence.
-  Future<void> _runDemoBeats() async {
-    demoScreenBusy.value = true;
-    // Let the screen's first frame settle so the form key is attached.
-    await Future<void>.delayed(const Duration(milliseconds: 1200));
-
-    final form = _formKey.currentState;
-    if (!mounted || form == null) return _endDemoBeats();
-
-    // Name: spotlight, then type it in.
-    demoDetailBeat.value = 0;
-    await Future<void>.delayed(const Duration(milliseconds: 700));
-    form.demoSetName('Château Margaux');
-    await Future<void>.delayed(const Duration(milliseconds: 1300));
-
-    // Type: spotlight, then pick "red".
-    if (!mounted) return _endDemoBeats();
-    demoDetailBeat.value = 1;
-    await Future<void>.delayed(const Duration(milliseconds: 700));
-    _formKey.currentState?.demoSetType(WineType.red);
-    await Future<void>.delayed(const Duration(milliseconds: 1100));
-
-    // Winery (lead chip in the chips row): spotlight, then fill.
-    if (!mounted) return _endDemoBeats();
-    demoDetailBeat.value = 4;
-    await Future<void>.delayed(const Duration(milliseconds: 700));
-    _formKey.currentState?.demoSetWinery('Bordeaux Estate');
-    await Future<void>.delayed(const Duration(milliseconds: 1300));
-
-    // Origin: spotlight the country/region stat (no sheet — keep it brief).
-    if (!mounted) return _endDemoBeats();
-    demoDetailBeat.value = 3;
-    await Future<void>.delayed(const Duration(milliseconds: 1300));
-
-    // Rating: spotlight, open the sheet, let it auto-animate, then close.
-    if (!mounted) return _endDemoBeats();
-    demoDetailBeat.value = 2;
-    await Future<void>.delayed(const Duration(milliseconds: 900));
-    final ratingState = _formKey.currentState;
-    if (!mounted || ratingState == null) return _endDemoBeats();
-    final ratingFuture = ratingState.demoOpenRatingSheet();
-    await Future<void>.delayed(const Duration(milliseconds: 3900));
-    _closeSheet();
-    await ratingFuture;
-    if (!mounted) return _endDemoBeats();
-    await Future<void>.delayed(const Duration(milliseconds: 500));
-
-    _endDemoBeats();
-  }
-
-  void _closeSheet() {
-    if (mounted && Navigator.of(context).canPop()) Navigator.of(context).pop();
-  }
-
-  void _endDemoBeats() {
-    if (mounted) demoDetailBeat.value = null;
-    demoScreenBusy.value = false;
-  }
 
   bool get _isDirty {
     final d = _current;

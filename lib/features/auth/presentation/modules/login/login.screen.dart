@@ -284,12 +284,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                     SizedBox(height: context.s),
                   ],
+                  // No `error:` here on purpose: the failure is already
+                  // shown by [InlineFieldError] above. Keeping the button
+                  // in its normal state (not the red "Couldn't save · Retry"
+                  // morph) lets the user just tap again to retry.
                   RetryActionButton(
                     idleLabel: _isSignUp
                         ? l10n.authLoginCreateAccountButton
                         : l10n.authLoginSignInButton,
                     loading: isLoading,
-                    error: _submitError,
                     onPressed: _submit,
                   ),
                   SizedBox(height: context.m),

@@ -5,12 +5,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../../common/l10n/generated/app_localizations.dart';
+import '../../../../../common/services/motion/motion.provider.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/error_view.widget.dart';
 import '../../../../../common/widgets/stats_card.widget.dart';
 import '../../../../groups/presentation/widgets/friend_actions_sheet.widget.dart';
-import '../../../../promo/promo.config.dart';
-import '../../../../promo/presentation/demo_spotlight.widget.dart';
 import '../../../../taste_match/presentation/widgets/friend_taste_match_section.widget.dart';
 import '../../../../taste_match/presentation/widgets/wine_personality_hero.widget.dart';
 import '../../../../wines/controller/wine.provider.dart';
@@ -81,132 +80,87 @@ class _BackFab extends StatelessWidget {
   }
 }
 
-class _Body extends StatefulWidget {
+class _Body extends ConsumerStatefulWidget {
   final FriendProfileEntity profile;
   final AsyncValue<List<WineEntity>> winesAsync;
   const _Body({required this.profile, required this.winesAsync});
 
   @override
-  State<_Body> createState() => _BodyState();
+  ConsumerState<_Body> createState() => _BodyState();
 }
 
-class _BodyState extends State<_Body> {
-  // Demo only: scroll + spotlight the key social/taste sections.
-  final ScrollController _scroll = ScrollController();
-  final GlobalKey _identityKey = GlobalKey();
-  final GlobalKey _personalityKey = GlobalKey();
-  final GlobalKey _matchKey = GlobalKey();
-  final GlobalKey _momentsKey = GlobalKey();
+class _BodyState extends ConsumerState<_Body>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _animController;
+  late final Animation<double> _fadeIn;
+  late final Animation<Offset> _slideUp;
 
   @override
   void initState() {
     super.initState();
-    if (kIsDemo) _runDemoBeats();
-  }
-
-  /// Demo only: walk a friend's profile to sell the taste-match / social
-  /// story — identity header → taste personality (compass + archetype) →
-  /// taste-match score (Match % + shared bottles) → shared moments. Each
-  /// section scrolls into view and pops; sections that don't render for
-  /// this friend (no shared bottles / moments) are skipped. Purely
-  /// visual: nothing is mutated, no friend/unfriend, no requests. The
-  /// busy flag keeps the auto-tour from navigating away mid-sequence.
-  Future<void> _runDemoBeats() async {
-    demoScreenBusy.value = true;
-    await Future<void>.delayed(const Duration(milliseconds: 1400));
-
-    // identity header → personality → taste-match → shared moments.
-    final beats = <(GlobalKey, int)>[
-      (_identityKey, 0),
-      (_personalityKey, 1),
-      (_matchKey, 2),
-      (_momentsKey, 3),
-    ];
-    for (final (key, beat) in beats) {
-      if (!mounted) return _endDemoBeats();
-      final ctx = key.currentContext;
-      if (ctx != null && ctx.mounted) {
-        await Scrollable.ensureVisible(
-          ctx,
-          duration: const Duration(milliseconds: 600),
-          curve: Curves.easeOutCubic,
-          alignment: 0.15,
+    _animController = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    );
+    _fadeIn = CurvedAnimation(parent: _animController, curve: Curves.easeOut);
+    _slideUp = Tween<Offset>(begin: const Offset(0, 0.06), end: Offset.zero)
+        .animate(
+          CurvedAnimation(parent: _animController, curve: Curves.easeOutCubic),
         );
-      }
-      if (!mounted) return _endDemoBeats();
-      demoDetailBeat.value = beat;
-      await Future<void>.delayed(const Duration(milliseconds: 2200));
+    if (ref.motionOnNow(MotionFeature.screenTransitions)) {
+      _animController.forward();
+    } else {
+      // Motion off — jump straight to the final state, no animation.
+      _animController.value = 1;
     }
-
-    _endDemoBeats();
-  }
-
-  void _endDemoBeats() {
-    if (mounted) demoDetailBeat.value = null;
-    demoScreenBusy.value = false;
   }
 
   @override
   void dispose() {
-    demoDetailBeat.value = null;
-    demoScreenBusy.value = false;
-    _scroll.dispose();
+    _animController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final profile = widget.profile;
-    final winesAsync = widget.winesAsync;
     final l10n = AppLocalizations.of(context);
     final padH = context.paddingH * 1.3;
-    return ListView(
-      controller: _scroll,
-      padding: EdgeInsets.zero,
-      children: [
-        SizedBox(height: context.xl * 1.2),
-        KeyedSubtree(
-          key: _identityKey,
-          child: DemoBeatHighlight(
-            beat: 0,
-            child: _HeroHeader(profile: profile),
-          ),
-        ),
-        // Stats live right under the header — count + avg + countries
-        // function as the at-a-glance "size" of this person's wine
-        // life, before the editorial identity layers kick in.
-        SizedBox(height: context.l),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: padH),
-          child: winesAsync.when(
-            data: (wines) => StatsCard(stats: _statsFor(wines, l10n)),
-            loading: () => StatsCard(stats: _statsFor(const [], l10n)),
-            error: (_, _) => const SizedBox.shrink(),
-          ),
-        ),
-        // Identity zone — who this person is, before how we relate to
-        // them. Personality hero owns its own traits expansion (taps
-        // the chevron on the hero); we don't embed TasteTraits as a
-        // sibling because it would render twice — once collapsed +
-        // once expanded — once the user opens the hero.
-        SizedBox(height: context.l),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: padH),
-          child: KeyedSubtree(
-            key: _personalityKey,
-            child: DemoBeatHighlight(
-              beat: 1,
+    final profile = widget.profile;
+    final winesAsync = widget.winesAsync;
+    return FadeTransition(
+      opacity: _fadeIn,
+      child: SlideTransition(
+        position: _slideUp,
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            SizedBox(height: context.xl * 1.2),
+            _HeroHeader(profile: profile),
+            // Stats live right under the header — count + avg + countries
+            // function as the at-a-glance "size" of this person's wine
+            // life, before the editorial identity layers kick in.
+            SizedBox(height: context.l),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: padH),
+              child: winesAsync.when(
+                data: (wines) => StatsCard(stats: _statsFor(wines, l10n)),
+                loading: () => StatsCard(stats: _statsFor(const [], l10n)),
+                error: (_, _) => const SizedBox.shrink(),
+              ),
+            ),
+            // Identity zone — who this person is, before how we relate to
+            // them. Personality hero owns its own traits expansion (taps
+            // the chevron on the hero); we don't embed TasteTraits as a
+            // sibling because it would render twice — once collapsed +
+            // once expanded — once the user opens the hero.
+            SizedBox(height: context.l),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: padH),
               child: WinePersonalityHero(userId: profile.id),
             ),
-          ),
-        ),
-        SizedBox(height: context.l),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: padH),
-          child: KeyedSubtree(
-            key: _matchKey,
-            child: DemoBeatHighlight(
-              beat: 2,
+            SizedBox(height: context.l),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: padH),
               child: FriendTasteMatchSection(
                 friendId: profile.id,
                 friendDisplayName:
@@ -215,44 +169,38 @@ class _BodyState extends State<_Body> {
                     l10n.friendsProfileNameFallback,
               ),
             ),
-          ),
-        ),
-        SizedBox(height: context.l),
-        KeyedSubtree(
-          key: _momentsKey,
-          child: DemoBeatHighlight(
-            beat: 3,
-            child: _SharedMomentsSection(friendId: profile.id),
-          ),
-        ),
-        SizedBox(height: context.xl),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: padH),
-          child: Text(
-            l10n.friendsProfileRecentWinesHeader,
-            style: TextStyle(
-              fontSize: context.captionFont * 0.9,
-              fontWeight: FontWeight.w700,
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-              letterSpacing: 1.2,
+            SizedBox(height: context.l),
+            _SharedMomentsSection(friendId: profile.id),
+            SizedBox(height: context.xl),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: padH),
+              child: Text(
+                l10n.friendsProfileRecentWinesHeader,
+                style: TextStyle(
+                  fontSize: context.captionFont * 0.9,
+                  fontWeight: FontWeight.w700,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  letterSpacing: 1.2,
+                ),
+              ),
             ),
-          ),
+            SizedBox(height: context.s),
+            winesAsync.when(
+              data: (wines) => _WinesList(wines: wines),
+              loading: () => Padding(
+                padding: EdgeInsets.all(context.l),
+                child: const Center(child: CircularProgressIndicator()),
+              ),
+              error: (e, _) => ErrorView(
+                title: l10n.friendsProfileWinesErrorLoad,
+                compact: true,
+                error: e,
+              ),
+            ),
+            SizedBox(height: context.xl * 2),
+          ],
         ),
-        SizedBox(height: context.s),
-        winesAsync.when(
-          data: (wines) => _WinesList(wines: wines),
-          loading: () => Padding(
-            padding: EdgeInsets.all(context.l),
-            child: const Center(child: CircularProgressIndicator()),
-          ),
-          error: (e, _) => ErrorView(
-            title: l10n.friendsProfileWinesErrorLoad,
-            compact: true,
-            error: e,
-          ),
-        ),
-        SizedBox(height: context.xl * 2),
-      ],
+      ),
     );
   }
 }

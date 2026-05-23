@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../../../common/errors/app_error.dart';
 import '../../../../../../common/l10n/generated/app_localizations.dart';
+import '../../../../../../common/services/motion/motion.provider.dart';
 import '../../../../../../common/utils/responsive.dart';
 import '../../../../../../core/routes/app.routes.dart';
 import '../../../../../auth/controller/auth.provider.dart';
@@ -69,6 +70,11 @@ class _SheetState extends ConsumerState<_Sheet> {
   // every collapse/re-expand re-pulls from the server and overwrites the
   // user's locally-typed dimensions before they hit Save.
   bool _expertLoaded = false;
+  // Cached "does the user already have a rating row" — read from the last
+  // non-null ratings load. Querying ratingsAsync.valueOrNull directly made
+  // the Remove button blink out during a save reload (provider briefly emits
+  // a plain loading state), which shifted the whole sheet up and down.
+  bool _hadMyRating = false;
 
   @override
   void initState() {
@@ -180,7 +186,10 @@ class _SheetState extends ConsumerState<_Sheet> {
             rating: _myRating!,
             notes: notes.isEmpty ? null : notes,
           );
-      ref.invalidate(groupWineRatingsProvider(widget.groupId, canonicalId));
+      // No explicit groupWineRatings invalidate here: it caused the ranking
+      // list to repaint several times per save (it already reloads via the
+      // wineController watch for the owner row, and via the realtime channel
+      // for the just-written row) — the overlapping reloads were the flicker.
       // Expert dims piggyback on the same save tap. Persisted only when
       // the user expanded the panel during this sheet open — collapsed
       // means "didn't engage with expert", same convention as the
@@ -285,6 +294,7 @@ class _SheetState extends ConsumerState<_Sheet> {
     final ratingsAsync = ref.watch(
       groupWineRatingsProvider(widget.groupId, canonicalId),
     );
+    final animate = ref.motionOn(MotionFeature.valueAnimations, context);
 
     if (!_loaded) {
       if (userId == widget.wine.userId) {
@@ -311,9 +321,11 @@ class _SheetState extends ConsumerState<_Sheet> {
       }
     }
 
-    final hasExistingRating =
-        _loaded &&
-        ratingsAsync.valueOrNull?.any((r) => r.userId == userId) == true;
+    final ratingsValue = ratingsAsync.valueOrNull;
+    if (ratingsValue != null) {
+      _hadMyRating = ratingsValue.any((r) => r.userId == userId);
+    }
+    final hasExistingRating = _loaded && _hadMyRating;
 
     final isDirty =
         _myRating != null &&
@@ -349,7 +361,11 @@ class _SheetState extends ConsumerState<_Sheet> {
             SizedBox(height: context.m),
             const _SectionDivider(),
             SizedBox(height: context.m),
-            _GroupZone(ratingsAsync: ratingsAsync, currentUserId: userId),
+            _GroupZone(
+              ratingsAsync: ratingsAsync,
+              currentUserId: userId,
+              animate: animate,
+            ),
             SizedBox(height: context.m),
             const _SectionDivider(),
             SizedBox(height: context.m),
@@ -707,16 +723,54 @@ class _RemoveButton extends StatelessWidget {
   }
 }
 
-class _GroupZone extends StatelessWidget {
+class _GroupZone extends StatefulWidget {
   final AsyncValue<List<GroupWineRatingEntity>> ratingsAsync;
   final String? currentUserId;
-  const _GroupZone({required this.ratingsAsync, required this.currentUserId});
+  final bool animate;
+  const _GroupZone({
+    required this.ratingsAsync,
+    required this.currentUserId,
+    required this.animate,
+  });
+
+  @override
+  State<_GroupZone> createState() => _GroupZoneState();
+}
+
+class _GroupZoneState extends State<_GroupZone> {
+  // Cache the last non-null ratings. A save reloads the provider, which
+  // briefly emits a plain loading state (no previous value, so the skip
+  // flags don't apply) — rendering straight from `ratingsAsync` would blank
+  // the bars back to a spinner. Holding the last list keeps the bars on
+  // screen so their TweenAnimationBuilder animates to the new value instead.
+  List<GroupWineRatingEntity> _last = const [];
+  bool _everLoaded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _capture();
+  }
+
+  @override
+  void didUpdateWidget(_GroupZone old) {
+    super.didUpdateWidget(old);
+    _capture();
+  }
+
+  void _capture() {
+    final v = widget.ratingsAsync.valueOrNull;
+    if (v != null) {
+      _last = v;
+      _everLoaded = true;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final raw = ratingsAsync.valueOrNull ?? const <GroupWineRatingEntity>[];
-    final sorted = [...raw]..sort((a, b) => b.rating.compareTo(a.rating));
+    final currentUserId = widget.currentUserId;
+    final sorted = [..._last]..sort((a, b) => b.rating.compareTo(a.rating));
     final isSoloMe =
         sorted.length == 1 &&
         currentUserId != null &&
@@ -725,6 +779,8 @@ class _GroupZone extends StatelessWidget {
     final avg = sorted.isEmpty
         ? null
         : sorted.map((r) => r.rating).reduce((a, b) => a + b) / sorted.length;
+    // Spinner only before any data has ever arrived — never on a reload.
+    final firstLoading = !_everLoaded && widget.ratingsAsync.isLoading;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -767,60 +823,54 @@ class _GroupZone extends StatelessWidget {
           ],
         ),
         SizedBox(height: context.s * 1.4),
-        ratingsAsync.when(
-          skipLoadingOnReload: true,
-          skipLoadingOnRefresh: true,
-          data: (_) {
-            if (sorted.isEmpty) {
-              return Padding(
-                padding: EdgeInsets.symmetric(vertical: context.s),
-                child: Text(
-                  'Be the first to rate',
-                  style: TextStyle(
-                    fontSize: context.captionFont,
-                    color: cs.outline,
-                  ),
-                ),
-              );
-            }
-            if (!showBars) {
-              return Padding(
-                padding: EdgeInsets.symmetric(vertical: context.s),
-                child: Text(
-                  "You're the first · invite others to rate",
-                  style: TextStyle(
-                    fontSize: context.captionFont,
-                    color: cs.outline,
-                  ),
-                ),
-              );
-            }
-            return ConstrainedBox(
-              constraints: BoxConstraints(maxHeight: context.h * 0.32),
-              child: ListView.separated(
-                shrinkWrap: true,
-                padding: EdgeInsets.zero,
-                itemCount: sorted.length,
-                separatorBuilder: (_, _) => SizedBox(height: context.s * 1.4),
-                itemBuilder: (_, i) => _RankingBar(
-                  key: ValueKey(sorted[i].userId),
-                  r: sorted[i],
-                  isMe: sorted[i].userId == currentUserId,
-                  isFirst: i == 0,
-                ),
-              ),
-            );
-          },
-          loading: () => Padding(
+        if (firstLoading)
+          Padding(
             padding: EdgeInsets.symmetric(vertical: context.s),
             child: SizedBox(
               height: context.w * 0.05,
               width: context.w * 0.05,
               child: const CircularProgressIndicator(strokeWidth: 2),
             ),
+          )
+        else if (sorted.isEmpty)
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: context.s),
+            child: Text(
+              'Be the first to rate',
+              style: TextStyle(
+                fontSize: context.captionFont,
+                color: cs.outline,
+              ),
+            ),
+          )
+        else if (!showBars)
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: context.s),
+            child: Text(
+              "You're the first · invite others to rate",
+              style: TextStyle(
+                fontSize: context.captionFont,
+                color: cs.outline,
+              ),
+            ),
+          )
+        else
+          ConstrainedBox(
+            constraints: BoxConstraints(maxHeight: context.h * 0.32),
+            child: ListView.separated(
+              shrinkWrap: true,
+              padding: EdgeInsets.zero,
+              itemCount: sorted.length,
+              separatorBuilder: (_, _) => SizedBox(height: context.s * 1.4),
+              itemBuilder: (_, i) => _RankingBar(
+                key: ValueKey(sorted[i].userId),
+                r: sorted[i],
+                isMe: sorted[i].userId == currentUserId,
+                isFirst: i == 0,
+                animate: widget.animate,
+              ),
+            ),
           ),
-          error: (_, _) => const SizedBox.shrink(),
-        ),
       ],
     );
   }
@@ -830,11 +880,13 @@ class _RankingBar extends StatelessWidget {
   final GroupWineRatingEntity r;
   final bool isMe;
   final bool isFirst;
+  final bool animate;
   const _RankingBar({
     super.key,
     required this.r,
     required this.isMe,
     required this.isFirst,
+    required this.animate,
   });
 
   @override
@@ -857,7 +909,9 @@ class _RankingBar extends StatelessWidget {
             builder: (_, c) {
               final trackW = c.maxWidth;
               return TweenAnimationBuilder<double>(
-                duration: const Duration(milliseconds: 550),
+                duration: animate
+                    ? const Duration(milliseconds: 550)
+                    : Duration.zero,
                 curve: Curves.easeOutCubic,
                 tween: Tween(begin: 0.0, end: pct),
                 builder: (_, animPct, _) {

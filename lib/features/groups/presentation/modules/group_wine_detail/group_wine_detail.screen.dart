@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../../common/l10n/generated/app_localizations.dart';
+import '../../../../../common/services/motion/motion.provider.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../friends/domain/entities/friend_profile.entity.dart';
 import '../../../../friends/presentation/widgets/friend_avatar.widget.dart';
@@ -50,15 +51,53 @@ class GroupWineDetailScreen extends ConsumerWidget {
   }
 }
 
-class _Body extends ConsumerWidget {
+class _Body extends ConsumerStatefulWidget {
   final WineEntity wine;
   final String groupId;
 
   const _Body({required this.wine, required this.groupId});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_Body> createState() => _BodyState();
+}
+
+class _BodyState extends ConsumerState<_Body>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _animController;
+  late final Animation<double> _fadeIn;
+  late final Animation<Offset> _slideUp;
+
+  @override
+  void initState() {
+    super.initState();
+    _animController = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    );
+    _fadeIn = CurvedAnimation(parent: _animController, curve: Curves.easeOut);
+    _slideUp = Tween<Offset>(begin: const Offset(0, 0.06), end: Offset.zero)
+        .animate(
+          CurvedAnimation(parent: _animController, curve: Curves.easeOutCubic),
+        );
+    if (ref.motionOnNow(MotionFeature.screenTransitions)) {
+      _animController.forward();
+    } else {
+      // Motion off — jump straight to the final state, no animation.
+      _animController.value = 1;
+    }
+  }
+
+  @override
+  void dispose() {
+    _animController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final wine = widget.wine;
+    final groupId = widget.groupId;
     final canonicalId = wine.canonicalWineId ?? wine.id;
     final ratingsAsync = ref.watch(
       groupWineRatingsProvider(groupId, canonicalId),
@@ -68,68 +107,76 @@ class _Body extends ConsumerWidget {
     );
 
     return SafeArea(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: [
-          SizedBox(height: context.xl * 1.5),
-          WineDetailTitle(name: wine.name),
-          SizedBox(height: context.s),
-          WineDetailMetaLine(
-            type: wine.type,
-            winery: wine.winery,
-            vintage: wine.vintage,
-            canonicalGrapeId: wine.canonicalGrapeId,
-            grapeFreetext: wine.grapeFreetext,
-            legacyGrape: wine.grape,
-          ),
-          SizedBox(height: context.xl),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: context.paddingH),
-            // Lower-bound the row height so the wine image always
-            // gets enough room, but let the stats column shrink the
-            // upper bound to its natural size on tall phones.
-            // IntrinsicHeight prevents the small-viewport overflow
-            // where a fixed h * 0.32 (=192px on iPhone SE 1st gen)
-            // wasn't enough room for three StatItems + spacing.
-            child: ConstrainedBox(
-              constraints: BoxConstraints(minHeight: context.h * 0.28),
-              child: IntrinsicHeight(
-                child: Row(
-                  children: [
-                    Expanded(flex: 5, child: WineDetailImage(wine: wine)),
-                    Expanded(
-                      flex: 4,
-                      child: _GroupStatsColumn(
-                        wine: wine,
-                        ratings: ratingsAsync.valueOrNull ?? const [],
-                      ),
+      child: FadeTransition(
+        opacity: _fadeIn,
+        child: SlideTransition(
+          position: _slideUp,
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              SizedBox(height: context.xl * 1.5),
+              WineDetailTitle(name: wine.name),
+              SizedBox(height: context.s),
+              WineDetailMetaLine(
+                type: wine.type,
+                winery: wine.winery,
+                vintage: wine.vintage,
+                canonicalGrapeId: wine.canonicalGrapeId,
+                grapeFreetext: wine.grapeFreetext,
+                legacyGrape: wine.grape,
+              ),
+              SizedBox(height: context.xl),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: context.paddingH),
+                // Lower-bound the row height so the wine image always
+                // gets enough room, but let the stats column shrink the
+                // upper bound to its natural size on tall phones.
+                // IntrinsicHeight prevents the small-viewport overflow
+                // where a fixed h * 0.32 (=192px on iPhone SE 1st gen)
+                // wasn't enough room for three StatItems + spacing.
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: context.h * 0.28),
+                  child: IntrinsicHeight(
+                    child: Row(
+                      children: [
+                        Expanded(flex: 5, child: WineDetailImage(wine: wine)),
+                        Expanded(
+                          flex: 4,
+                          child: _GroupStatsColumn(
+                            wine: wine,
+                            ratings: ratingsAsync.valueOrNull ?? const [],
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ),
-            ),
+              SizedBox(height: context.xl),
+              shareAsync.when(
+                data: (share) => share == null
+                    ? const SizedBox.shrink()
+                    : _SharedByBlock(share: share),
+                loading: () => const SizedBox.shrink(),
+                error: (_, _) => const SizedBox.shrink(),
+              ),
+              SizedBox(height: context.xl),
+              WineDetailSectionHeader(
+                label: l10n.groupWineDetailSectionRatings,
+              ),
+              SizedBox(height: context.m),
+              ratingsAsync.when(
+                data: (ratings) => _RatingsList(ratings: ratings),
+                loading: () => const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 24),
+                  child: Center(child: CircularProgressIndicator()),
+                ),
+                error: (_, _) => const _EmptyRatings(),
+              ),
+              SizedBox(height: context.xxl * 1.5),
+            ],
           ),
-          SizedBox(height: context.xl),
-          shareAsync.when(
-            data: (share) => share == null
-                ? const SizedBox.shrink()
-                : _SharedByBlock(share: share),
-            loading: () => const SizedBox.shrink(),
-            error: (_, _) => const SizedBox.shrink(),
-          ),
-          SizedBox(height: context.xl),
-          WineDetailSectionHeader(label: l10n.groupWineDetailSectionRatings),
-          SizedBox(height: context.m),
-          ratingsAsync.when(
-            data: (ratings) => _RatingsList(ratings: ratings),
-            loading: () => const Padding(
-              padding: EdgeInsets.symmetric(vertical: 24),
-              child: Center(child: CircularProgressIndicator()),
-            ),
-            error: (_, _) => const _EmptyRatings(),
-          ),
-          SizedBox(height: context.xxl * 1.5),
-        ],
+        ),
       ),
     );
   }

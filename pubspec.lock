@@ -1866,14 +1866,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.3"
-  widget_recorder_plus:
-    dependency: "direct main"
-    description:
-      name: widget_recorder_plus
-      sha256: ae72455dcd43a243a30ab0ace3fd02e4bb32e36a80dad4a6683a6e9485cc0846
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.4"
   win32:
     dependency: transitive
     description:

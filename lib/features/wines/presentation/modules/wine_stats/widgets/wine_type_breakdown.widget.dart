@@ -5,76 +5,23 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../../common/utils/responsive.dart';
 import '../../../../../../common/widgets/skeleton.widget.dart';
-import '../../../../../promo/promo.config.dart';
-import '../../../../../promo/presentation/demo_spotlight.widget.dart';
 import '../../../../controller/wine_stats.provider.dart';
 import '../../../../domain/entities/wine.entity.dart';
 
-class WineTypeBreakdown extends StatefulWidget {
+class WineTypeBreakdown extends StatelessWidget {
   final List<TypeBreakdown> data;
-
-  /// Demo only: when this feature beat activates, a few type counts tick up
-  /// (+1..+3) to simulate live stats while the chart is highlighted. Null =
-  /// static (production and the isolated promo showcase).
-  final int? demoBeat;
-
-  const WineTypeBreakdown({super.key, required this.data, this.demoBeat});
-
-  @override
-  State<WineTypeBreakdown> createState() => _WineTypeBreakdownState();
-}
-
-class _WineTypeBreakdownState extends State<WineTypeBreakdown> {
-  late List<TypeBreakdown> _data = widget.data;
-  bool _bumped = false;
-
-  @override
-  void initState() {
-    super.initState();
-    if (kIsDemo && widget.demoBeat != null) {
-      demoDetailBeat.addListener(_onBeat);
-    }
-  }
-
-  void _onBeat() {
-    if (!_bumped && demoDetailBeat.value == widget.demoBeat) {
-      _bumped = true;
-      _runBump();
-    }
-  }
-
-  @override
-  void dispose() {
-    demoDetailBeat.removeListener(_onBeat);
-    super.dispose();
-  }
-
-  /// Tick a few type counts up over ~1s so the chart visibly updates while
-  /// it's spotlighted. Not persisted — purely a demo flourish.
-  Future<void> _runBump() async {
-    const deltas = [2, 1, 3, 1];
-    final base = widget.data;
-    for (var step = 1; step <= 3; step++) {
-      await Future<void>.delayed(const Duration(milliseconds: 420));
-      if (!mounted) return;
-      setState(() {
-        _data = [
-          for (var i = 0; i < base.length; i++)
-            TypeBreakdown(
-              type: base[i].type,
-              count: base[i].count + step.clamp(0, deltas[i % deltas.length]),
-              avgRating: base[i].avgRating,
-            ),
-        ];
-      });
-    }
-  }
+  final bool animate;
+  const WineTypeBreakdown({
+    super.key,
+    required this.data,
+    required this.animate,
+  });
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context);
-    final total = _data.fold<int>(0, (acc, t) => acc + t.count);
+    final total = data.fold<int>(0, (acc, t) => acc + t.count);
 
     final card = Container(
       padding: EdgeInsets.all(context.w * 0.045),
@@ -97,8 +44,8 @@ class _WineTypeBreakdownState extends State<WineTypeBreakdown> {
     int total,
     AppLocalizations l10n,
   ) {
-    final mostDrunk = _data.reduce((a, b) => a.count >= b.count ? a : b);
-    final ratedTypes = _data.where((t) => t.count > 0).toList()
+    final mostDrunk = data.reduce((a, b) => a.count >= b.count ? a : b);
+    final ratedTypes = data.where((t) => t.count > 0).toList()
       ..sort((a, b) => b.avgRating.compareTo(a.avgRating));
     final topRated = ratedTypes.first;
     // With <3 wines or when both highlights resolve to the same type the
@@ -115,7 +62,7 @@ class _WineTypeBreakdownState extends State<WineTypeBreakdown> {
               children: [
                 Expanded(
                   flex: 4,
-                  child: _Donut(data: _data, total: total),
+                  child: _Donut(data: data, total: total, animate: animate),
                 ),
                 SizedBox(width: context.w * 0.04),
                 Expanded(
@@ -145,14 +92,15 @@ class _WineTypeBreakdownState extends State<WineTypeBreakdown> {
           ),
           SizedBox(height: context.l),
         ],
-        for (int i = 0; i < _data.length; i++) ...[
+        for (int i = 0; i < data.length; i++) ...[
           if (i > 0) SizedBox(height: context.m),
           _TypeRow(
-            data: _data[i],
-            color: _colorFor(_data[i].type, cs),
-            label: _label(_data[i].type, l10n),
+            data: data[i],
+            color: _colorFor(data[i].type, cs),
+            label: _label(data[i].type, l10n),
             total: total,
             delay: 80 * i,
+            animate: animate,
           ),
         ],
       ],
@@ -189,7 +137,12 @@ class _WineTypeBreakdownState extends State<WineTypeBreakdown> {
 class _Donut extends StatelessWidget {
   final List<TypeBreakdown> data;
   final int total;
-  const _Donut({required this.data, required this.total});
+  final bool animate;
+  const _Donut({
+    required this.data,
+    required this.total,
+    required this.animate,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -202,7 +155,7 @@ class _Donut extends StatelessWidget {
       children: [
         TweenAnimationBuilder<double>(
           tween: Tween(begin: 0, end: 1),
-          duration: const Duration(milliseconds: 900),
+          duration: animate ? const Duration(milliseconds: 900) : Duration.zero,
           curve: Curves.easeOutCubic,
           builder: (_, t, _) {
             return PieChart(
@@ -228,7 +181,9 @@ class _Donut extends StatelessWidget {
           children: [
             TweenAnimationBuilder<double>(
               tween: Tween(begin: 0, end: total.toDouble()),
-              duration: const Duration(milliseconds: 1100),
+              duration: animate
+                  ? const Duration(milliseconds: 1100)
+                  : Duration.zero,
               curve: Curves.easeOutCubic,
               builder: (_, v, _) => Text(
                 v.toStringAsFixed(0),
@@ -280,6 +235,7 @@ class _TypeRow extends StatelessWidget {
   final String label;
   final int total;
   final int delay;
+  final bool animate;
 
   const _TypeRow({
     required this.data,
@@ -287,6 +243,7 @@ class _TypeRow extends StatelessWidget {
     required this.label,
     required this.total,
     required this.delay,
+    required this.animate,
   });
 
   @override
@@ -387,7 +344,9 @@ class _TypeRow extends StatelessWidget {
                     begin: 0,
                     end: empty ? 0.0 : ratio.clamp(0.04, 1.0),
                   ),
-                  duration: Duration(milliseconds: 700 + delay),
+                  duration: animate
+                      ? Duration(milliseconds: 700 + delay)
+                      : Duration.zero,
                   curve: Curves.easeOutCubic,
                   builder: (_, v, _) => FractionallySizedBox(
                     widthFactor: v,

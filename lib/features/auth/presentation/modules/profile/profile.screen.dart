@@ -13,7 +13,6 @@ import '../../../../../core/routes/app.routes.dart';
 import '../../../../profile/controller/profile.provider.dart';
 import '../../../../profile/presentation/widgets/language_picker.widget.dart';
 import '../../../../profile/presentation/widgets/profile_avatar.widget.dart';
-import '../../../../promo/presentation/demo_spotlight.widget.dart';
 import '../../../../push/controller/push.provider.dart';
 import '../../../../taste_match/presentation/widgets/wine_personality_hero.widget.dart';
 import '../../../../wines/controller/wine.provider.dart';
@@ -96,10 +95,7 @@ class ProfileScreen extends ConsumerWidget {
             // Identity zone — wine personality + traits.
             // Numerical stats live on the dedicated stats screen.
             if (user != null) ...[
-              DemoBeatHighlight(
-                beat: 0,
-                child: WinePersonalityHero(userId: user.id, showShareCta: true),
-              ),
+              WinePersonalityHero(userId: user.id, showShareCta: true),
               SizedBox(height: context.s),
               _ViewStatsLink(),
               SizedBox(height: context.l),
@@ -122,6 +118,11 @@ class ProfileScreen extends ConsumerWidget {
                 icon: PhosphorIconsRegular.bell,
                 label: l10n.authProfileNotifications,
                 onTap: () => context.push(AppRoutes.profileNotifications),
+              ),
+              _MenuItem(
+                icon: PhosphorIconsRegular.sparkle,
+                label: l10n.authProfileAnimations,
+                onTap: () => context.push(AppRoutes.profileAnimations),
               ),
               _MenuItem(
                 icon: PhosphorIconsRegular.translate,
