@@ -158,7 +158,8 @@ class _BodyState extends ConsumerState<_Body> {
       wine: wine,
       demoAnimate: true,
     );
-    await Future<void>.delayed(const Duration(milliseconds: 4200));
+    // Cover the sweep + real save + the ranking bar re-animating to it.
+    await Future<void>.delayed(const Duration(milliseconds: 6500));
     _closeSheet();
     await sheet;
     await Future<void>.delayed(const Duration(milliseconds: 400));

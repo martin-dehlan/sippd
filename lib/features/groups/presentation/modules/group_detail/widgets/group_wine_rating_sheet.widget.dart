@@ -89,17 +89,19 @@ class _SheetState extends ConsumerState<_Sheet> {
     if (mounted) setState(() {});
   }
 
-  /// Demo only: gently sweep the "your rating" slider so a screen recording
-  /// shows it moving. Mirrors the unified wine rating sheet — a sine dip and
-  /// recover around the current value. The member ranking bars already fill
-  /// from zero on open (TweenAnimationBuilder), so the whole rating block
-  /// reads as live. Never persists.
+  /// Demo only: sweep the "your rating" slider, settle on a fresh value, and
+  /// actually save it — so the member ranking bar animates to the new rating
+  /// (the bar's TweenAnimationBuilder re-tweens to the changed value after the
+  /// ratings provider refreshes). Mirrors the unified rating sheet's sweep,
+  /// then commits. Writes a real row — demo builds only.
   Future<void> _runDemoSweep() async {
     await Future<void>.delayed(const Duration(milliseconds: 900));
     final base = _myRating ?? 7.5;
     if (mounted) setState(() => _myRating = base);
+
+    // Sine dip-and-recover around the current value.
     const dip = 3.0;
-    const totalMs = 2400;
+    const totalMs = 2000;
     const stepMs = 16;
     final steps = totalMs ~/ stepMs;
     for (var i = 0; i <= steps; i++) {
@@ -108,7 +110,29 @@ class _SheetState extends ConsumerState<_Sheet> {
       setState(() => _myRating = (base - dip * f).clamp(0.0, 10.0));
       await Future<void>.delayed(const Duration(milliseconds: stepMs));
     }
-    if (mounted) setState(() => _myRating = base);
+
+    // Land on a value that differs from the current one (ping-pong, so the
+    // saved rating always changes and the bar visibly re-animates), then save.
+    final target = base >= 8.5 ? 7.5 : 9.0;
+    await _animateMyRatingTo(target);
+    if (!mounted) return;
+    await _save();
+    // Let the refreshed ranking bar animate to the saved value.
+    await Future<void>.delayed(const Duration(milliseconds: 1100));
+  }
+
+  /// Smoothly slide [_myRating] from its current value to [target].
+  Future<void> _animateMyRatingTo(double target) async {
+    final from = _myRating ?? target;
+    const ms = 450;
+    const stepMs = 16;
+    final steps = ms ~/ stepMs;
+    for (var i = 1; i <= steps; i++) {
+      if (!mounted) return;
+      setState(() => _myRating = from + (target - from) * (i / steps));
+      await Future<void>.delayed(const Duration(milliseconds: stepMs));
+    }
+    if (mounted) setState(() => _myRating = target);
   }
 
   @override
