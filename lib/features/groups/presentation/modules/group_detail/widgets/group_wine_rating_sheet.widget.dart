@@ -69,6 +69,11 @@ class _SheetState extends ConsumerState<_Sheet> {
   // every collapse/re-expand re-pulls from the server and overwrites the
   // user's locally-typed dimensions before they hit Save.
   bool _expertLoaded = false;
+  // Cached "does the user already have a rating row" — read from the last
+  // non-null ratings load. Querying ratingsAsync.valueOrNull directly made
+  // the Remove button blink out during a save reload (provider briefly emits
+  // a plain loading state), which shifted the whole sheet up and down.
+  bool _hadMyRating = false;
 
   @override
   void initState() {
@@ -314,9 +319,11 @@ class _SheetState extends ConsumerState<_Sheet> {
       }
     }
 
-    final hasExistingRating =
-        _loaded &&
-        ratingsAsync.valueOrNull?.any((r) => r.userId == userId) == true;
+    final ratingsValue = ratingsAsync.valueOrNull;
+    if (ratingsValue != null) {
+      _hadMyRating = ratingsValue.any((r) => r.userId == userId);
+    }
+    final hasExistingRating = _loaded && _hadMyRating;
 
     final isDirty =
         _myRating != null &&
