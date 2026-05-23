@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../../../common/l10n/generated/app_localizations.dart';
+import '../../../../../../common/services/motion/motion.provider.dart';
 import '../../../../../../common/utils/responsive.dart';
 import '../../../../../../common/widgets/skeleton.widget.dart';
 import '../../../../controller/wine_stats.provider.dart';
@@ -18,6 +19,7 @@ class SpendingSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
     final spend = ref.watch(statsSpendingProvider);
+    final animate = ref.motionOn(MotionFeature.valueAnimations, context);
 
     return Container(
       padding: EdgeInsets.all(context.w * 0.045),
@@ -28,7 +30,7 @@ class SpendingSection extends ConsumerWidget {
       ),
       child: spend.pricedCount == 0
           ? const _Empty()
-          : _Content(spend: spend, cs: cs),
+          : _Content(spend: spend, cs: cs, animate: animate),
     );
   }
 }
@@ -36,7 +38,12 @@ class SpendingSection extends ConsumerWidget {
 class _Content extends StatelessWidget {
   final StatsSpending spend;
   final ColorScheme cs;
-  const _Content({required this.spend, required this.cs});
+  final bool animate;
+  const _Content({
+    required this.spend,
+    required this.cs,
+    required this.animate,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +67,9 @@ class _Content extends StatelessWidget {
           children: [
             TweenAnimationBuilder<double>(
               tween: Tween(begin: 0, end: spend.total),
-              duration: const Duration(milliseconds: 1100),
+              duration: animate
+                  ? const Duration(milliseconds: 1100)
+                  : Duration.zero,
               curve: Curves.easeOutCubic,
               builder: (_, v, _) => Text(
                 fmt.format(v),

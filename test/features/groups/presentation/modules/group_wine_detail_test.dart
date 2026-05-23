@@ -10,9 +10,18 @@ import 'package:sippd/features/groups/domain/entities/group_wine_rating.entity.d
 import 'package:sippd/features/groups/domain/entities/group_wine_share.entity.dart';
 import 'package:sippd/features/groups/presentation/modules/group_wine_detail/group_wine_detail.screen.dart';
 import 'package:sippd/features/friends/domain/entities/friend_profile.entity.dart';
+import 'package:sippd/features/onboarding/controller/onboarding.provider.dart';
 import 'package:sippd/features/wines/domain/entities/wine.entity.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  late SharedPreferences prefs;
+
+  setUp(() async {
+    SharedPreferences.setMockInitialValues({});
+    prefs = await SharedPreferences.getInstance();
+  });
+
   WineEntity sampleWine() => WineEntity(
     id: 'cw-1',
     name: 'Brunello',
@@ -61,6 +70,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           groupWinesProvider('g-1').overrideWith((ref) async => [sampleWine()]),
           groupWineRatingsProvider(
             'g-1',
@@ -167,6 +177,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           groupWinesProvider('g-1').overrideWith((ref) async => [sampleWine()]),
           groupWineRatingsProvider(
             'g-1',
@@ -206,6 +217,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           groupWinesProvider('g-1').overrideWith((ref) => pending.future),
           groupWineRatingsProvider(
             'g-1',

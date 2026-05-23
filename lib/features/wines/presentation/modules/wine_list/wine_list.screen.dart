@@ -4,8 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../../common/l10n/generated/app_localizations.dart';
+import '../../../../../common/services/motion/motion.provider.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/error_view.widget.dart';
+import '../../../../../common/widgets/staggered_list_entrance.widget.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../controller/wine.provider.dart';
 import '../../../domain/entities/wine.entity.dart';
@@ -73,6 +75,7 @@ class _WineListScreenState extends ConsumerState<WineListScreen>
     final searchQuery = ref.watch(wineSearchQueryProvider).trim().toLowerCase();
     final cs = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context);
+    final animateEntrances = ref.motionOn(MotionFeature.listEntrances, context);
 
     ref.listen<bool>(wineSearchBarVisibleProvider, (_, next) {
       if (next) {
@@ -274,8 +277,9 @@ class _WineListScreenState extends ConsumerState<WineListScreen>
                     sliver: SliverList.separated(
                       itemCount: sorted.length,
                       separatorBuilder: (_, _) => SizedBox(height: context.s),
-                      itemBuilder: (context, index) => AnimatedWineCard(
+                      itemBuilder: (context, index) => StaggeredListEntrance(
                         index: index,
+                        enabled: animateEntrances,
                         child: WineCardWidget(
                           wine: sorted[index],
                           rank: rankById[sorted[index].id] ?? index + 1,
@@ -346,58 +350,6 @@ class _HeaderIconButton extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-class AnimatedWineCard extends StatefulWidget {
-  final int index;
-  final Widget child;
-
-  const AnimatedWineCard({super.key, required this.index, required this.child});
-
-  @override
-  State<AnimatedWineCard> createState() => _AnimatedWineCardState();
-}
-
-class _AnimatedWineCardState extends State<AnimatedWineCard>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
-  late final Animation<double> _fadeAnimation;
-  late final Animation<Offset> _slideAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 400),
-      vsync: this,
-    );
-    _fadeAnimation = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeOut,
-    );
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.15),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
-
-    Future.delayed(Duration(milliseconds: 60 * widget.index), () {
-      if (mounted) _controller.forward();
-    });
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FadeTransition(
-      opacity: _fadeAnimation,
-      child: SlideTransition(position: _slideAnimation, child: widget.child),
     );
   }
 }

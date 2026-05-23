@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../../../common/l10n/generated/app_localizations.dart';
+import '../../../../../../common/services/motion/motion.provider.dart';
 import '../../../../../../common/utils/responsive.dart';
 import '../../../../../../common/widgets/skeleton.widget.dart';
 import '../../../../controller/wine_stats.provider.dart';
@@ -22,6 +23,7 @@ class StatsHero extends ConsumerWidget {
     final summaryAsync = ref.watch(userRatingSummaryProvider);
     final cs = Theme.of(context).colorScheme;
     final hasLocalWines = localHero.totalWines > 0;
+    final animate = ref.motionOn(MotionFeature.valueAnimations, context);
 
     return Animate(
       effects: [
@@ -53,6 +55,7 @@ class StatsHero extends ConsumerWidget {
                   groupCount: summary.groupCount,
                   tastingCount: summary.tastingCount,
                   cs: cs,
+                  animate: animate,
                 ),
                 // Loading: pre-fill with personal sync data so the avg
                 // doesn't flash to "—" between RPC fires. Group/tasting
@@ -63,6 +66,7 @@ class StatsHero extends ConsumerWidget {
                   groupCount: 0,
                   tastingCount: 0,
                   cs: cs,
+                  animate: animate,
                 ),
                 // Error: still show personal-only so the screen never
                 // feels broken. RPC retries on next invalidation.
@@ -72,6 +76,7 @@ class StatsHero extends ConsumerWidget {
                   groupCount: 0,
                   tastingCount: 0,
                   cs: cs,
+                  animate: animate,
                 ),
               )
             : const _EmptyContent(),
@@ -86,6 +91,7 @@ class _RatedContent extends StatelessWidget {
   final int groupCount;
   final int tastingCount;
   final ColorScheme cs;
+  final bool animate;
 
   const _RatedContent({
     required this.avgRating,
@@ -93,6 +99,7 @@ class _RatedContent extends StatelessWidget {
     required this.groupCount,
     required this.tastingCount,
     required this.cs,
+    required this.animate,
   });
 
   @override
@@ -127,7 +134,9 @@ class _RatedContent extends StatelessWidget {
             SizedBox(width: context.xs),
             TweenAnimationBuilder<double>(
               tween: Tween(begin: 0, end: avgRating),
-              duration: const Duration(milliseconds: 1100),
+              duration: animate
+                  ? const Duration(milliseconds: 1100)
+                  : Duration.zero,
               curve: Curves.easeOutCubic,
               builder: (_, v, _) => Text(
                 v.toStringAsFixed(1),
@@ -165,7 +174,9 @@ class _RatedContent extends StatelessWidget {
               ),
               TweenAnimationBuilder<double>(
                 tween: Tween(begin: 0, end: ratio),
-                duration: const Duration(milliseconds: 1100),
+                duration: animate
+                    ? const Duration(milliseconds: 1100)
+                    : Duration.zero,
                 curve: Curves.easeOutCubic,
                 builder: (_, v, _) => FractionallySizedBox(
                   widthFactor: v,

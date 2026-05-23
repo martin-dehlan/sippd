@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../../common/l10n/generated/app_localizations.dart';
+import '../../../../../common/services/motion/motion.provider.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../../paywall/controller/paywall.provider.dart';
@@ -41,6 +42,7 @@ class WineStatsScreen extends ConsumerWidget {
     final hasPriced = ref.watch(
       statsSpendingProvider.select((s) => s.pricedCount > 0),
     );
+    final animate = ref.motionOn(MotionFeature.valueAnimations, context);
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
@@ -94,7 +96,7 @@ class WineStatsScreen extends ConsumerWidget {
                   title: l10n.winesStatsSectionTypeBreakdown,
                   subtitle: l10n.winesStatsSectionTypeBreakdownSubtitle,
                   delay: 100,
-                  child: WineTypeBreakdown(data: breakdown),
+                  child: WineTypeBreakdown(data: breakdown, animate: animate),
                 ),
                 SliverToBoxAdapter(child: SizedBox(height: context.m)),
 
@@ -112,8 +114,8 @@ class WineStatsScreen extends ConsumerWidget {
                     subtitle: l10n.winesStatsSectionTimelineSubtitle,
                     delay: 175,
                     child: hasWines
-                        ? WineTimeline(months: timeline)
-                        : const WineTimeline(months: []),
+                        ? WineTimeline(months: timeline, animate: animate)
+                        : WineTimeline(months: const [], animate: animate),
                   ),
                   SliverToBoxAdapter(child: SizedBox(height: context.m)),
 

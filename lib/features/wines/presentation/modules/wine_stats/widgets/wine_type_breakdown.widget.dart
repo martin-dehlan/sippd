@@ -10,7 +10,12 @@ import '../../../../domain/entities/wine.entity.dart';
 
 class WineTypeBreakdown extends StatelessWidget {
   final List<TypeBreakdown> data;
-  const WineTypeBreakdown({super.key, required this.data});
+  final bool animate;
+  const WineTypeBreakdown({
+    super.key,
+    required this.data,
+    required this.animate,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +62,7 @@ class WineTypeBreakdown extends StatelessWidget {
               children: [
                 Expanded(
                   flex: 4,
-                  child: _Donut(data: data, total: total),
+                  child: _Donut(data: data, total: total, animate: animate),
                 ),
                 SizedBox(width: context.w * 0.04),
                 Expanded(
@@ -95,6 +100,7 @@ class WineTypeBreakdown extends StatelessWidget {
             label: _label(data[i].type, l10n),
             total: total,
             delay: 80 * i,
+            animate: animate,
           ),
         ],
       ],
@@ -131,7 +137,12 @@ class WineTypeBreakdown extends StatelessWidget {
 class _Donut extends StatelessWidget {
   final List<TypeBreakdown> data;
   final int total;
-  const _Donut({required this.data, required this.total});
+  final bool animate;
+  const _Donut({
+    required this.data,
+    required this.total,
+    required this.animate,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -144,7 +155,7 @@ class _Donut extends StatelessWidget {
       children: [
         TweenAnimationBuilder<double>(
           tween: Tween(begin: 0, end: 1),
-          duration: const Duration(milliseconds: 900),
+          duration: animate ? const Duration(milliseconds: 900) : Duration.zero,
           curve: Curves.easeOutCubic,
           builder: (_, t, _) {
             return PieChart(
@@ -170,7 +181,9 @@ class _Donut extends StatelessWidget {
           children: [
             TweenAnimationBuilder<double>(
               tween: Tween(begin: 0, end: total.toDouble()),
-              duration: const Duration(milliseconds: 1100),
+              duration: animate
+                  ? const Duration(milliseconds: 1100)
+                  : Duration.zero,
               curve: Curves.easeOutCubic,
               builder: (_, v, _) => Text(
                 v.toStringAsFixed(0),
@@ -222,6 +235,7 @@ class _TypeRow extends StatelessWidget {
   final String label;
   final int total;
   final int delay;
+  final bool animate;
 
   const _TypeRow({
     required this.data,
@@ -229,6 +243,7 @@ class _TypeRow extends StatelessWidget {
     required this.label,
     required this.total,
     required this.delay,
+    required this.animate,
   });
 
   @override
@@ -329,7 +344,9 @@ class _TypeRow extends StatelessWidget {
                     begin: 0,
                     end: empty ? 0.0 : ratio.clamp(0.04, 1.0),
                   ),
-                  duration: Duration(milliseconds: 700 + delay),
+                  duration: animate
+                      ? Duration(milliseconds: 700 + delay)
+                      : Duration.zero,
                   curve: Curves.easeOutCubic,
                   builder: (_, v, _) => FractionallySizedBox(
                     widthFactor: v,

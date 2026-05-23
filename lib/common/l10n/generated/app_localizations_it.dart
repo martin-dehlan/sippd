@@ -598,6 +598,50 @@ class AppLocalizationsIt extends AppLocalizations {
   String get authProfileNotifications => 'Notifiche';
 
   @override
+  String get authProfileAnimations => 'Animazioni';
+
+  @override
+  String get animationsTitle => 'Animazioni';
+
+  @override
+  String get animationsMasterLabel => 'Animazioni';
+
+  @override
+  String get animationsMasterSubtitle => 'Movimento discreto in tutta l\'app';
+
+  @override
+  String get animationsScreenTransitionsLabel => 'Transizioni schermo';
+
+  @override
+  String get animationsScreenTransitionsSubtitle =>
+      'Le pagine compaiono in dissolvenza e scorrimento';
+
+  @override
+  String get animationsListEntrancesLabel => 'Ingresso liste e schede';
+
+  @override
+  String get animationsListEntrancesSubtitle =>
+      'Le schede compaiono sfalsate con delicatezza';
+
+  @override
+  String get animationsTabCrossfadeLabel => 'Dissolvenza tra schede';
+
+  @override
+  String get animationsTabCrossfadeSubtitle =>
+      'Dissolvenza morbida al cambio scheda';
+
+  @override
+  String get animationsValueAnimationsLabel => 'Numeri e barre';
+
+  @override
+  String get animationsValueAnimationsSubtitle =>
+      'Statistiche e valutazioni si animano fino al valore';
+
+  @override
+  String get animationsReducedBySystemNote =>
+      'La riduzione del movimento del dispositivo è attiva, quindi le animazioni restano disattivate.';
+
+  @override
   String get authProfileCleanupDuplicates => 'Pulisci duplicati';
 
   @override

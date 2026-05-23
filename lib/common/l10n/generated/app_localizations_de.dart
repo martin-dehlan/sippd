@@ -605,6 +605,49 @@ class AppLocalizationsDe extends AppLocalizations {
   String get authProfileNotifications => 'Benachrichtigungen';
 
   @override
+  String get authProfileAnimations => 'Animationen';
+
+  @override
+  String get animationsTitle => 'Animationen';
+
+  @override
+  String get animationsMasterLabel => 'Animationen';
+
+  @override
+  String get animationsMasterSubtitle => 'Dezente Bewegung in der ganzen App';
+
+  @override
+  String get animationsScreenTransitionsLabel => 'Seitenübergänge';
+
+  @override
+  String get animationsScreenTransitionsSubtitle =>
+      'Seiten faden und gleiten beim Öffnen rein';
+
+  @override
+  String get animationsListEntrancesLabel => 'Listen- & Karten-Eingang';
+
+  @override
+  String get animationsListEntrancesSubtitle =>
+      'Karten erscheinen sanft gestaffelt';
+
+  @override
+  String get animationsTabCrossfadeLabel => 'Tab-Überblendung';
+
+  @override
+  String get animationsTabCrossfadeSubtitle => 'Weiches Faden beim Tab-Wechsel';
+
+  @override
+  String get animationsValueAnimationsLabel => 'Zahlen & Balken';
+
+  @override
+  String get animationsValueAnimationsSubtitle =>
+      'Statistiken und Bewertungen zählen hoch';
+
+  @override
+  String get animationsReducedBySystemNote =>
+      'Die Bewegungsreduzierung deines Geräts ist an, daher bleiben In-App-Animationen aus.';
+
+  @override
   String get authProfileCleanupDuplicates => 'Duplikate aufräumen';
 
   @override

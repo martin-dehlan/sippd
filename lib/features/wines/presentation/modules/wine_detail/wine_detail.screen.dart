@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 import '../../../../../common/l10n/generated/app_localizations.dart';
+import '../../../../../common/services/motion/motion.provider.dart';
 import '../../../../../common/utils/price_format.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/error_view.widget.dart';
@@ -131,7 +132,12 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
         .animate(
           CurvedAnimation(parent: _animController, curve: Curves.easeOutCubic),
         );
-    _animController.forward();
+    if (ref.motionOnNow(MotionFeature.screenTransitions)) {
+      _animController.forward();
+    } else {
+      // Motion off — jump straight to the final state, no animation.
+      _animController.value = 1;
+    }
   }
 
   @override

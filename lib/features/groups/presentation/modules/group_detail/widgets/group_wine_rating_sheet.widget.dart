@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../../../common/errors/app_error.dart';
 import '../../../../../../common/l10n/generated/app_localizations.dart';
+import '../../../../../../common/services/motion/motion.provider.dart';
 import '../../../../../../common/utils/responsive.dart';
 import '../../../../../../core/routes/app.routes.dart';
 import '../../../../../auth/controller/auth.provider.dart';
@@ -293,6 +294,7 @@ class _SheetState extends ConsumerState<_Sheet> {
     final ratingsAsync = ref.watch(
       groupWineRatingsProvider(widget.groupId, canonicalId),
     );
+    final animate = ref.motionOn(MotionFeature.valueAnimations, context);
 
     if (!_loaded) {
       if (userId == widget.wine.userId) {
@@ -359,7 +361,11 @@ class _SheetState extends ConsumerState<_Sheet> {
             SizedBox(height: context.m),
             const _SectionDivider(),
             SizedBox(height: context.m),
-            _GroupZone(ratingsAsync: ratingsAsync, currentUserId: userId),
+            _GroupZone(
+              ratingsAsync: ratingsAsync,
+              currentUserId: userId,
+              animate: animate,
+            ),
             SizedBox(height: context.m),
             const _SectionDivider(),
             SizedBox(height: context.m),
@@ -720,7 +726,12 @@ class _RemoveButton extends StatelessWidget {
 class _GroupZone extends StatefulWidget {
   final AsyncValue<List<GroupWineRatingEntity>> ratingsAsync;
   final String? currentUserId;
-  const _GroupZone({required this.ratingsAsync, required this.currentUserId});
+  final bool animate;
+  const _GroupZone({
+    required this.ratingsAsync,
+    required this.currentUserId,
+    required this.animate,
+  });
 
   @override
   State<_GroupZone> createState() => _GroupZoneState();
@@ -856,6 +867,7 @@ class _GroupZoneState extends State<_GroupZone> {
                 r: sorted[i],
                 isMe: sorted[i].userId == currentUserId,
                 isFirst: i == 0,
+                animate: widget.animate,
               ),
             ),
           ),
@@ -868,11 +880,13 @@ class _RankingBar extends StatelessWidget {
   final GroupWineRatingEntity r;
   final bool isMe;
   final bool isFirst;
+  final bool animate;
   const _RankingBar({
     super.key,
     required this.r,
     required this.isMe,
     required this.isFirst,
+    required this.animate,
   });
 
   @override
@@ -895,7 +909,9 @@ class _RankingBar extends StatelessWidget {
             builder: (_, c) {
               final trackW = c.maxWidth;
               return TweenAnimationBuilder<double>(
-                duration: const Duration(milliseconds: 550),
+                duration: animate
+                    ? const Duration(milliseconds: 550)
+                    : Duration.zero,
                 curve: Curves.easeOutCubic,
                 tween: Tween(begin: 0.0, end: pct),
                 builder: (_, animPct, _) {

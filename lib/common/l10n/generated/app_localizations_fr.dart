@@ -609,6 +609,50 @@ class AppLocalizationsFr extends AppLocalizations {
   String get authProfileNotifications => 'Notifications';
 
   @override
+  String get authProfileAnimations => 'Animations';
+
+  @override
+  String get animationsTitle => 'Animations';
+
+  @override
+  String get animationsMasterLabel => 'Animations';
+
+  @override
+  String get animationsMasterSubtitle => 'Mouvements subtils dans toute l\'app';
+
+  @override
+  String get animationsScreenTransitionsLabel => 'Transitions d\'écran';
+
+  @override
+  String get animationsScreenTransitionsSubtitle =>
+      'Les pages apparaissent en fondu et glissé';
+
+  @override
+  String get animationsListEntrancesLabel => 'Entrée des listes et cartes';
+
+  @override
+  String get animationsListEntrancesSubtitle =>
+      'Les cartes apparaissent en décalé en douceur';
+
+  @override
+  String get animationsTabCrossfadeLabel => 'Fondu entre onglets';
+
+  @override
+  String get animationsTabCrossfadeSubtitle =>
+      'Fondu doux au changement d\'onglet';
+
+  @override
+  String get animationsValueAnimationsLabel => 'Chiffres et barres';
+
+  @override
+  String get animationsValueAnimationsSubtitle =>
+      'Les stats et notes s\'animent jusqu\'à leur valeur';
+
+  @override
+  String get animationsReducedBySystemNote =>
+      'La réduction de mouvement de ton appareil est activée, les animations restent donc désactivées.';
+
+  @override
   String get authProfileCleanupDuplicates => 'Nettoyer les doublons';
 
   @override
