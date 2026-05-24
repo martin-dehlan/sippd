@@ -103,7 +103,10 @@ class _WineTypeBreakdownState extends State<WineTypeBreakdown> {
     final topRated = ratedTypes.first;
     // With <3 wines or when both highlights resolve to the same type the
     // donut + dual highlights row is just noise — show only the rows.
-    final showHero = total >= 3 && mostDrunk.type != topRated.type;
+    // Demo always shows the donut so the circular diagram is guaranteed in
+    // the promo recording regardless of the data.
+    final showHero =
+        total >= 3 && (kIsDemo || mostDrunk.type != topRated.type);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
