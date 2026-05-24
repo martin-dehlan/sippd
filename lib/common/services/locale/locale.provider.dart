@@ -13,6 +13,8 @@ const supportedAppLocales = <Locale>[
   Locale('es'),
   Locale('it'),
   Locale('fr'),
+  Locale('pt'),
+  Locale('nl'),
 ];
 
 @riverpod
