@@ -83,15 +83,6 @@ class _DemoTourState extends ConsumerState<DemoTour> {
     demoSpotlightId.value = null;
     await _wait(300);
 
-    // Add & rate (RATE) — open the add-wine flow; its director fills the
-    // form and opens the rating sheet without ever saving a real wine.
-    if (!mounted) return _cleanup();
-    router.push(AppRoutes.wineAdd);
-    await _waitUntilIdle(max: 22000);
-    if (!mounted) return _cleanup();
-    if (router.canPop()) router.pop();
-    await _wait(900);
-
     // Deep-dive the top wine — its detail spotlights each feature once
     // (image → rating → price → origin), so nothing is shown twice.
     demoSpotlightId.value = shown.first.id;
