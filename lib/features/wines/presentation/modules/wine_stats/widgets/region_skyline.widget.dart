@@ -145,7 +145,7 @@ class _BarCaption extends StatelessWidget {
             width: context.w * 0.16,
             child: Text(
               item.label,
-              maxLines: 2,
+              maxLines: 1,
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.center,
               style: TextStyle(
