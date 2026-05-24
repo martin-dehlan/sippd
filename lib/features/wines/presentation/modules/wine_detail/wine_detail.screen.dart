@@ -148,8 +148,8 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
 
   /// Demo only: walk the hero features one at a time — highlight each, then
   /// open its editor and show the value being changed, then close and move
-  /// on. image → rating (sheet) → price (sheet) → origin (country + region
-  /// pickers). The busy flag keeps the auto-tour from navigating away
+  /// on. image → rating (sheet) → price (sheet) → origin (country picker).
+  /// The busy flag keeps the auto-tour from navigating away
   /// mid-sequence.
   Future<void> _runDemoBeats() async {
     demoScreenBusy.value = true;
@@ -195,7 +195,7 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
     await priceFuture;
     await Future<void>.delayed(const Duration(milliseconds: 500));
 
-    // Origin: highlight, then reveal the country picker, then the region.
+    // Origin: highlight, then reveal the country picker (region left out for now).
     if (!mounted) return _endDemoBeats();
     demoDetailBeat.value = 3;
     await Future<void>.delayed(const Duration(milliseconds: 900));
@@ -205,18 +205,6 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
         // ignore: use_build_context_synchronously
         context: context,
         selected: country,
-        onChanged: (_) {},
-      );
-      await Future<void>.delayed(const Duration(milliseconds: 2200));
-      _closeSheet();
-      // Let the country sheet fully settle out before the region slides in.
-      await Future<void>.delayed(const Duration(milliseconds: 800));
-      if (!mounted) return _endDemoBeats();
-      showWineRegionPicker(
-        // ignore: use_build_context_synchronously
-        context: context,
-        country: country,
-        selected: widget.wine.region,
         onChanged: (_) {},
       );
       await Future<void>.delayed(const Duration(milliseconds: 2200));

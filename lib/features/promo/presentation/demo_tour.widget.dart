@@ -74,14 +74,15 @@ class _DemoTourState extends ConsumerState<DemoTour> {
     // Let the staggered list entrance finish.
     await _wait(2400);
 
-    // Browse: pop each tile in turn so the list reads as interactive.
+    // Main screen: highlight the first three wines one after another so the
+    // home list reads as a real, browsable collection.
     for (final wine in shown) {
       if (!mounted) return _cleanup();
       demoSpotlightId.value = wine.id;
-      await _wait(950);
+      await _wait(1300);
     }
     demoSpotlightId.value = null;
-    await _wait(300);
+    await _wait(400);
 
     // Deep-dive the top wine — its detail spotlights each feature once
     // (image → rating → price → origin), so nothing is shown twice.
