@@ -159,28 +159,27 @@ class WineDetailImage extends StatelessWidget {
           ),
         ),
         wine.imageUrl != null
-            ? ClipRRect(
-                borderRadius: BorderRadius.circular(context.w * 0.05),
-                child: SizedBox.expand(
-                  child: Image.network(
-                    wine.imageUrl!,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, _, _) => Icon(
-                      PhosphorIconsRegular.wine,
-                      size: context.w * 0.25,
-                      color: typeColor.withValues(alpha: 0.6),
-                    ),
-                    frameBuilder: (_, child, frame, wasSync) {
-                      if (frame == null && !wasSync) {
-                        return Icon(
-                          PhosphorIconsRegular.wine,
-                          size: context.w * 0.25,
-                          color: typeColor.withValues(alpha: 0.6),
-                        );
-                      }
-                      return child;
-                    },
+            ? ClipOval(
+                child: Image.network(
+                  wine.imageUrl!,
+                  width: context.w * 0.35,
+                  height: context.w * 0.35,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, _, _) => Icon(
+                    PhosphorIconsRegular.wine,
+                    size: context.w * 0.25,
+                    color: typeColor.withValues(alpha: 0.6),
                   ),
+                  frameBuilder: (_, child, frame, wasSync) {
+                    if (frame == null && !wasSync) {
+                      return Icon(
+                        PhosphorIconsRegular.wine,
+                        size: context.w * 0.25,
+                        color: typeColor.withValues(alpha: 0.6),
+                      );
+                    }
+                    return child;
+                  },
                 ),
               )
             : Icon(
