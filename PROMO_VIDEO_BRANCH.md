@@ -26,6 +26,11 @@ cherry-picked, or pushed into `main`.**
 
 ## How to run
 
+> ⚠️ After checking out this branch, run **`flutter pub get`** first — it has the
+> `widget_recorder_plus` dependency that `main` does not, and branch switches do
+> not re-resolve packages. Since it's a native plugin, do a **full restart**
+> (stop + re-run), not a hot-restart.
+
 - **Demo over the real app:** `flutter run --dart-define=DEMO=true`
   (or the **"sippd DEMO (real app, debug)"** launch config), then log in as the
   promo account `testo`. Pro is auto-unlocked and flow-video flourishes are on.
