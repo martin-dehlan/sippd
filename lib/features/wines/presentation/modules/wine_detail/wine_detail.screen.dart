@@ -195,22 +195,10 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
     await priceFuture;
     await Future<void>.delayed(const Duration(milliseconds: 500));
 
-    // Origin: highlight, then reveal the country picker (region left out for now).
+    // Origin: brief highlight only — no country/region select in this flow.
     if (!mounted) return _endDemoBeats();
     demoDetailBeat.value = 3;
-    await Future<void>.delayed(const Duration(milliseconds: 900));
-    final country = widget.wine.country;
-    if (country != null) {
-      showWineCountryPicker(
-        // ignore: use_build_context_synchronously
-        context: context,
-        selected: country,
-        onChanged: (_) {},
-      );
-      await Future<void>.delayed(const Duration(milliseconds: 2200));
-      _closeSheet();
-      await Future<void>.delayed(const Duration(milliseconds: 400));
-    }
+    await Future<void>.delayed(const Duration(milliseconds: 1500));
 
     // Lower sections: scroll down and spotlight each in turn (notes, expert
     // tasting, friend ratings, moments, place). Keys that aren't rendered for
