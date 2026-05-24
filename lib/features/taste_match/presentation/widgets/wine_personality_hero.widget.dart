@@ -16,6 +16,8 @@ import '../../domain/entities/taste_compass.entity.dart';
 import '../../domain/entities/user_style_dna.entity.dart';
 import 'dna_shape.widget.dart';
 import 'taste_traits.widget.dart';
+import '../../../promo/promo.config.dart';
+import '../../../promo/presentation/demo_spotlight.widget.dart';
 
 /// Compact-by-default identity block on the user's profile. Collapsed
 /// state shows the archetype name + a meta line; tap expands inline to
@@ -44,6 +46,30 @@ class WinePersonalityHero extends ConsumerStatefulWidget {
 
 class _WinePersonalityHeroState extends ConsumerState<WinePersonalityHero> {
   bool _expanded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Demo only: the auto-tour drives demoDetailBeat to open this hero
+    // (and walk its trait rows) hands-free. Scoped to the own-profile hero
+    // (showShareCta) so a friend-profile embed doesn't react to the beat.
+    if (kIsDemo && widget.showShareCta) {
+      demoDetailBeat.addListener(_onDemoBeat);
+    }
+  }
+
+  @override
+  void dispose() {
+    if (kIsDemo && widget.showShareCta) {
+      demoDetailBeat.removeListener(_onDemoBeat);
+    }
+    super.dispose();
+  }
+
+  void _onDemoBeat() {
+    if (!mounted) return;
+    setState(() => _expanded = demoDetailBeat.value != null);
+  }
 
   @override
   Widget build(BuildContext context) {

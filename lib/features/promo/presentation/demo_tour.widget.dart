@@ -177,13 +177,19 @@ class _DemoTourState extends ConsumerState<DemoTour> {
       await _wait(800);
     }
 
-    // Taste profile (your palate) — tab switch, then spotlight the
-    // wine-personality hero.
+    // Taste profile (your palate) — tab switch, then open the personality
+    // hero and walk its top trait points one at a time. A non-null beat
+    // expands the hero; each value highlights the matching trait row.
     if (!mounted) return _cleanup();
     router.go(AppRoutes.profile);
     await _wait(1100);
-    demoDetailBeat.value = 0;
-    await _wait(3200);
+    demoDetailBeat.value = 0; // expands the hero + highlights the first trait
+    await _wait(1700);
+    for (var i = 1; i <= 2; i++) {
+      if (!mounted) return _cleanup();
+      demoDetailBeat.value = i;
+      await _wait(1500);
+    }
     demoDetailBeat.value = null;
     await _wait(500);
 

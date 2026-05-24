@@ -10,6 +10,8 @@ import '../../../paywall/controller/paywall.provider.dart';
 import '../../controller/taste_match.provider.dart';
 import '../../domain/entities/user_style_dna.entity.dart';
 import '../../domain/trait_descriptors.dart';
+import '../../../promo/promo.config.dart';
+import '../../../promo/presentation/demo_spotlight.widget.dart';
 
 /// Editorial trait table beneath the personality hero. The two
 /// strongest axes (largest distance from neutral) are shown for free;
@@ -63,8 +65,8 @@ class _Body extends ConsumerWidget {
             ),
           ),
           SizedBox(height: context.m),
-          for (final e in entries.take(2))
-            _TraitRow(axis: e.$1, value: e.$2, locked: false),
+          for (final (i, e) in entries.take(2).indexed)
+            _TraitRow(axis: e.$1, value: e.$2, locked: false, demoIndex: i),
           SizedBox(height: context.s),
           _ProDivider(isPro: isPro),
           SizedBox(height: context.s),
@@ -103,18 +105,22 @@ class _TraitRow extends StatelessWidget {
     required this.axis,
     required this.value,
     required this.locked,
+    this.demoIndex,
   });
 
   final String axis;
   final double value;
   final bool locked;
 
+  /// Demo only: index the auto-tour uses to highlight this row in turn.
+  final int? demoIndex;
+
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final l = AppLocalizations.of(context);
     final pct = (value * 100).round();
-    return Padding(
+    final row = Padding(
       padding: EdgeInsets.symmetric(vertical: context.xs * 1.4),
       child: Row(
         children: [
@@ -158,6 +164,26 @@ class _TraitRow extends StatelessWidget {
           ),
         ],
       ),
+    );
+    if (!kIsDemo || demoIndex == null) return row;
+    // Demo: tint this row while the auto-tour is highlighting it.
+    return ValueListenableBuilder<int?>(
+      valueListenable: demoDetailBeat,
+      builder: (context, beat, child) {
+        final active = beat == demoIndex;
+        return AnimatedContainer(
+          duration: const Duration(milliseconds: 260),
+          curve: Curves.easeOut,
+          decoration: BoxDecoration(
+            color: active
+                ? cs.primary.withValues(alpha: 0.08)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(context.w * 0.02),
+          ),
+          child: child,
+        );
+      },
+      child: row,
     );
   }
 }
@@ -232,8 +258,8 @@ class _LockedSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final rows = Column(
       children: [
-        for (final e in entries)
-          _TraitRow(axis: e.$1, value: e.$2, locked: !isPro),
+        for (final (i, e) in entries.indexed)
+          _TraitRow(axis: e.$1, value: e.$2, locked: !isPro, demoIndex: i + 2),
       ],
     );
     if (isPro) return rows;
