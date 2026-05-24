@@ -214,11 +214,20 @@ class _DemoTourState extends ConsumerState<DemoTour> {
     }
   }
 
-  /// Id of the user's first friend, or `null` if none / load fails.
+  /// Id of the friend to spotlight, or `null` if none / load fails.
+  ///
+  /// Demo: prefer the curated promo friend "lukas" (clean photos) over
+  /// real accounts that carry hand-set placeholder pictures; fall back to
+  /// the first friend.
   Future<String?> _firstFriendId() async {
     try {
       final friends = await ref.read(friendsListProvider.future);
-      return friends.isEmpty ? null : friends.first.id;
+      if (friends.isEmpty) return null;
+      final preferred = friends.firstWhere(
+        (f) => f.username == 'lukas',
+        orElse: () => friends.first,
+      );
+      return preferred.id;
     } catch (_) {
       return null;
     }
