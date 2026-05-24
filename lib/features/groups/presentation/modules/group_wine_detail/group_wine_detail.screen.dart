@@ -96,7 +96,10 @@ class _Body extends ConsumerWidget {
               child: IntrinsicHeight(
                 child: Row(
                   children: [
-                    Expanded(flex: 5, child: WineDetailImage(wine: wine)),
+                    Expanded(
+                      flex: 5,
+                      child: WineDetailImage(wine: wine, circular: true),
+                    ),
                     Expanded(
                       flex: 4,
                       child: _GroupStatsColumn(

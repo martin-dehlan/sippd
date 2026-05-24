@@ -126,7 +126,11 @@ class WineDetailMetaLine extends ConsumerWidget {
 
 class WineDetailImage extends StatelessWidget {
   final WineEntity wine;
-  const WineDetailImage({super.key, required this.wine});
+
+  /// The group wine details card wants a round avatar; the personal wine
+  /// detail keeps the original rounded-rectangle that fills its slot.
+  final bool circular;
+  const WineDetailImage({super.key, required this.wine, this.circular = false});
 
   @override
   Widget build(BuildContext context) {
@@ -158,35 +162,61 @@ class WineDetailImage extends StatelessWidget {
             ),
           ),
         ),
-        wine.imageUrl != null
-            ? ClipOval(
-                child: Image.network(
-                  wine.imageUrl!,
-                  width: context.w * 0.35,
-                  height: context.w * 0.35,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, _, _) => Icon(
-                    PhosphorIconsRegular.wine,
-                    size: context.w * 0.25,
-                    color: typeColor.withValues(alpha: 0.6),
-                  ),
-                  frameBuilder: (_, child, frame, wasSync) {
-                    if (frame == null && !wasSync) {
-                      return Icon(
-                        PhosphorIconsRegular.wine,
-                        size: context.w * 0.25,
-                        color: typeColor.withValues(alpha: 0.6),
-                      );
-                    }
-                    return child;
-                  },
-                ),
-              )
-            : Icon(
+        if (wine.imageUrl == null)
+          Icon(
+            PhosphorIconsRegular.wine,
+            size: context.w * 0.25,
+            color: typeColor.withValues(alpha: 0.6),
+          )
+        else if (circular)
+          ClipOval(
+            child: Image.network(
+              wine.imageUrl!,
+              width: context.w * 0.35,
+              height: context.w * 0.35,
+              fit: BoxFit.cover,
+              errorBuilder: (_, _, _) => Icon(
                 PhosphorIconsRegular.wine,
                 size: context.w * 0.25,
                 color: typeColor.withValues(alpha: 0.6),
               ),
+              frameBuilder: (_, child, frame, wasSync) {
+                if (frame == null && !wasSync) {
+                  return Icon(
+                    PhosphorIconsRegular.wine,
+                    size: context.w * 0.25,
+                    color: typeColor.withValues(alpha: 0.6),
+                  );
+                }
+                return child;
+              },
+            ),
+          )
+        else
+          ClipRRect(
+            borderRadius: BorderRadius.circular(context.w * 0.05),
+            child: SizedBox.expand(
+              child: Image.network(
+                wine.imageUrl!,
+                fit: BoxFit.cover,
+                errorBuilder: (_, _, _) => Icon(
+                  PhosphorIconsRegular.wine,
+                  size: context.w * 0.25,
+                  color: typeColor.withValues(alpha: 0.6),
+                ),
+                frameBuilder: (_, child, frame, wasSync) {
+                  if (frame == null && !wasSync) {
+                    return Icon(
+                      PhosphorIconsRegular.wine,
+                      size: context.w * 0.25,
+                      color: typeColor.withValues(alpha: 0.6),
+                    );
+                  }
+                  return child;
+                },
+              ),
+            ),
+          ),
       ],
     );
   }
