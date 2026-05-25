@@ -164,6 +164,7 @@
   "authLoginEnterValidEmailFirst": "Introduz primeiro um e-mail válido acima.",
   "authLoginSignUpFailedFallback": "Não foi possível criar a conta. Tenta novamente.",
   "authLoginSignInFailedFallback": "Falha ao iniciar sessão. Verifica os teus dados.",
+  "authLoginEmailAlreadyRegistered": "Este e-mail já está registado. Inicia sessão.",
   "authLoginCreateAccountButton": "Criar conta",
   "authLoginSignInButton": "Iniciar sessão",
   "authLoginToggleHaveAccount": "Já tens conta? Inicia sessão",

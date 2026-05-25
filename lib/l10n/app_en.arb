@@ -210,6 +210,7 @@
   "authLoginEnterValidEmailFirst": "Enter a valid email above first.",
   "authLoginSignUpFailedFallback": "Couldn't create account. Try again.",
   "authLoginSignInFailedFallback": "Sign-in failed. Check your details.",
+  "authLoginEmailAlreadyRegistered": "This email is already registered. Log in instead.",
   "authLoginCreateAccountButton": "Create Account",
   "authLoginSignInButton": "Sign In",
   "authLoginToggleHaveAccount": "Already have an account? Sign In",

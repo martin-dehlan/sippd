@@ -11,7 +11,12 @@ import '../../wines/controller/wine.provider.dart';
 
 part 'auth.provider.g.dart';
 
-enum SignUpOutcome { signedIn, confirmationRequired, failed }
+enum SignUpOutcome {
+  signedIn,
+  confirmationRequired,
+  emailAlreadyRegistered,
+  failed,
+}
 
 @riverpod
 SupabaseClient supabaseClient(SupabaseClientRef ref) {
@@ -47,6 +52,22 @@ class AuthController extends _$AuthController {
         data: displayName != null ? {'display_name': displayName} : null,
         emailRedirectTo: 'io.sippd://login-callback/',
       );
+      // Supabase anti-enumeration: when the email is already registered and
+      // email confirmation is on, signUp succeeds with an obfuscated user
+      // whose `identities` list is empty (and no session). Detect that so
+      // the UI can steer the user to log in instead of waiting for a
+      // confirmation mail that never arrives.
+      final identities = response.user?.identities;
+      if (identities != null && identities.isEmpty) {
+        state = const AsyncValue.data(null);
+        ref
+            .read(analyticsProvider)
+            .capture(
+              'auth_signup',
+              properties: const {'email_already_registered': true},
+            );
+        return SignUpOutcome.emailAlreadyRegistered;
+      }
       if (response.session == null) {
         state = const AsyncValue.data(null);
         ref

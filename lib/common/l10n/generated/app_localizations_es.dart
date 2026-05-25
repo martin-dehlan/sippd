@@ -488,6 +488,10 @@ class AppLocalizationsEs extends AppLocalizations {
       'Error al iniciar sesión. Revisa tus datos.';
 
   @override
+  String get authLoginEmailAlreadyRegistered =>
+      'Este correo ya está registrado. Inicia sesión.';
+
+  @override
   String get authLoginCreateAccountButton => 'Crear cuenta';
 
   @override
