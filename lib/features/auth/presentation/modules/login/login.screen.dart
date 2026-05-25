@@ -143,12 +143,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final isLoading = authState.isLoading;
 
     if (!_displayNameHydrated) {
-      final onboardingName =
-          ref.read(onboardingAnswersControllerProvider).displayName?.trim();
-      if (onboardingName != null && onboardingName.isNotEmpty) {
-        _displayNameController.text = onboardingName;
-      }
       _displayNameHydrated = true;
+      // Best-effort prefill: never let an unavailable onboarding store
+      // (e.g. SharedPreferences not initialized in tests) break login.
+      try {
+        final onboardingName = ref
+            .read(onboardingAnswersControllerProvider)
+            .displayName
+            ?.trim();
+        if (onboardingName != null && onboardingName.isNotEmpty) {
+          _displayNameController.text = onboardingName;
+        }
+      } catch (_) {
+        // Prefill is cosmetic; fall back to an empty field.
+      }
     }
 
     return Scaffold(

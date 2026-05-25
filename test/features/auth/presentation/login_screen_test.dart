@@ -5,6 +5,8 @@ import 'package:sippd/common/l10n/generated/app_localizations.dart';
 import 'package:sippd/common/services/connectivity/connectivity.provider.dart';
 import 'package:sippd/features/auth/controller/auth.provider.dart';
 import 'package:sippd/features/auth/presentation/modules/login/login.screen.dart';
+import 'package:sippd/features/onboarding/controller/onboarding.provider.dart';
+import 'package:sippd/features/onboarding/domain/onboarding_answers.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' show User;
 
 /// Recording fake — captures signIn / signUp calls so the widget test
@@ -56,6 +58,15 @@ class _FakeConn extends ConnectivityState {
   Future<bool> build() async => _online;
 }
 
+/// Returns canned onboarding answers so the login screen can prefill the
+/// display name without a real SharedPreferences store.
+class _FakeOnboardingAnswers extends OnboardingAnswersController {
+  _FakeOnboardingAnswers(this._answers);
+  final OnboardingAnswers _answers;
+  @override
+  OnboardingAnswers build() => _answers;
+}
+
 void main() {
   void useIPhoneViewport(WidgetTester tester) {
     tester.view.physicalSize = const Size(390 * 2, 844 * 2);
@@ -67,6 +78,8 @@ void main() {
   Future<_RecordingAuth> pumpLogin(
     WidgetTester tester, {
     Object? signInThrows,
+    bool initialSignUp = false,
+    List<Override> extraOverrides = const [],
   }) async {
     useIPhoneViewport(tester);
     final fake = _RecordingAuth(signInThrows: signInThrows);
@@ -75,9 +88,10 @@ void main() {
         overrides: [
           authControllerProvider.overrideWith(() => fake),
           connectivityStateProvider.overrideWith(() => _FakeConn(true)),
+          ...extraOverrides,
         ],
         child: MaterialApp(
-          home: const LoginScreen(),
+          home: LoginScreen(initialSignUp: initialSignUp),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
         ),
@@ -188,5 +202,42 @@ void main() {
 
     expect(fake.signUpCalls, 1);
     expect(fake.signInCalls, 0);
+  });
+
+  testWidgets('prefills the display name from onboarding answers', (
+    tester,
+  ) async {
+    await pumpLogin(
+      tester,
+      initialSignUp: true,
+      extraOverrides: [
+        onboardingAnswersControllerProvider.overrideWith(
+          () => _FakeOnboardingAnswers(
+            const OnboardingAnswers(displayName: 'Martin'),
+          ),
+        ),
+      ],
+    );
+
+    expect(find.text('Create your account'), findsOneWidget);
+    // The display-name field is seeded with the onboarding answer.
+    expect(find.widgetWithText(TextFormField, 'Martin'), findsOneWidget);
+  });
+
+  testWidgets('display name stays empty without onboarding answers', (
+    tester,
+  ) async {
+    await pumpLogin(
+      tester,
+      initialSignUp: true,
+      extraOverrides: [
+        onboardingAnswersControllerProvider.overrideWith(
+          () => _FakeOnboardingAnswers(const OnboardingAnswers()),
+        ),
+      ],
+    );
+
+    expect(find.text('Create your account'), findsOneWidget);
+    expect(find.widgetWithText(TextFormField, 'Martin'), findsNothing);
   });
 }
