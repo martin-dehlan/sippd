@@ -270,6 +270,8 @@ class _AmountDisplay extends StatelessWidget {
         ),
         decoration: InputDecoration(
           isCollapsed: true,
+          filled: false,
+          fillColor: Colors.transparent,
           hintText: '0',
           hintStyle: TextStyle(
             fontSize: amountSize,
