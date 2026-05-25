@@ -8,6 +8,7 @@ import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/app_logo.widget.dart';
 import '../../../../../common/widgets/inline_error.widget.dart';
 import '../../../../../core/routes/app.routes.dart';
+import '../../../../onboarding/controller/onboarding.provider.dart';
 import '../../../controller/auth.provider.dart';
 import '../../widgets/google_sign_in_button.widget.dart';
 import '../../widgets/or_divider.widget.dart';
@@ -36,6 +37,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   late bool _isSignUp = widget.initialSignUp;
   final _displayNameController = TextEditingController();
   Object? _submitError;
+
+  // Prefill the signup display name from the onboarding answer so users
+  // who already typed their name during onboarding don't have to re-enter
+  // it on the "Create your account" screen. Hydrated once on first build,
+  // mirroring NamePage's pattern. No-op for direct /login arrivals (no
+  // onboarding answer in scope).
+  bool _displayNameHydrated = false;
 
   // Conservative RFC-ish: local@domain.tld, no whitespace, requires a TLD.
   // Stricter than GoTrue's permissive `^[^\s@]+@[^\s@]+$`, which accepts
@@ -133,6 +141,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final l10n = AppLocalizations.of(context);
     final authState = ref.watch(authControllerProvider);
     final isLoading = authState.isLoading;
+
+    if (!_displayNameHydrated) {
+      final onboardingName =
+          ref.read(onboardingAnswersControllerProvider).displayName?.trim();
+      if (onboardingName != null && onboardingName.isNotEmpty) {
+        _displayNameController.text = onboardingName;
+      }
+      _displayNameHydrated = true;
+    }
 
     return Scaffold(
       body: SafeArea(
