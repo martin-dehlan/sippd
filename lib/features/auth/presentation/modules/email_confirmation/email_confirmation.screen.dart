@@ -90,10 +90,10 @@ class _EmailConfirmationScreenState
   }
 
   Future<void> _openMailApp() async {
-    final uri = Uri.parse('mailto:');
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri);
-    }
+    await launchUrl(
+      Uri.parse('mailto:'),
+      mode: LaunchMode.externalApplication,
+    );
   }
 
   void _backToLogin() => context.go(AppRoutes.login);
