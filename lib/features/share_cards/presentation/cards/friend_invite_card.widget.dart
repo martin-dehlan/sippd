@@ -257,13 +257,18 @@ class _Footer extends StatelessWidget {
                 ),
               ],
             ),
-            Text(
-              l.shareFooterJoinAt(shareCardUrl),
-              style: TextStyle(
-                fontSize: 28,
-                color: _onBg,
-                fontWeight: FontWeight.w500,
-                letterSpacing: 0.4,
+            Flexible(
+              child: Text(
+                l.shareFooterJoinAt(shareCardUrl),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.right,
+                style: TextStyle(
+                  fontSize: 28,
+                  color: _onBg,
+                  fontWeight: FontWeight.w500,
+                  letterSpacing: 0.4,
+                ),
               ),
             ),
           ],
