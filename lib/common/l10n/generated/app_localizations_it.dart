@@ -529,6 +529,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get authConfOpenMailApp => 'Apri app mail';
 
   @override
+  String get authConfNoMailApps => 'No mail app found on this device';
+
+  @override
   String get authConfResendEmail => 'Rinvia e-mail';
 
   @override

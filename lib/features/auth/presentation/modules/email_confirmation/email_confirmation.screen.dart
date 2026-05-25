@@ -1,5 +1,8 @@
 import 'dart:async';
+import 'dart:io' show Platform;
 
+import 'package:android_intent_plus/android_intent.dart';
+import 'package:android_intent_plus/flag.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -90,7 +93,32 @@ class _EmailConfirmationScreenState
   }
 
   Future<void> _openMailApp() async {
-    await launchUrl(Uri.parse('mailto:'), mode: LaunchMode.externalApplication);
+    final l10n = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    // Open the mail app's INBOX so the user can wait for the confirmation
+    // email — not a compose window (`mailto:` only ever opened a draft).
+    try {
+      if (Platform.isAndroid) {
+        // ACTION_MAIN + CATEGORY_APP_EMAIL launches the default mail app,
+        // or lets Android show its chooser when several are installed.
+        const intent = AndroidIntent(
+          action: 'android.intent.action.MAIN',
+          category: 'android.intent.category.APP_EMAIL',
+          flags: <int>[Flag.FLAG_ACTIVITY_NEW_TASK],
+        );
+        await intent.launch();
+      } else {
+        // iOS: open Apple Mail's inbox.
+        final opened = await launchUrl(
+          Uri.parse('message://'),
+          mode: LaunchMode.externalApplication,
+        );
+        if (!opened) throw Exception('no mail app');
+      }
+    } catch (_) {
+      if (!mounted) return;
+      messenger.showSnackBar(SnackBar(content: Text(l10n.authConfNoMailApps)));
+    }
   }
 
   void _backToLogin() => context.go(AppRoutes.login);

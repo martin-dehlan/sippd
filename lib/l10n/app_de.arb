@@ -179,6 +179,7 @@
   "authConfOutroReset": ".\nTipp drauf, um ein neues Passwort zu setzen.",
   "authConfOutroSignup": ".\nTipp drauf, um dein Konto zu aktivieren.",
   "authConfOpenMailApp": "Mail-App öffnen",
+  "authConfNoMailApps": "Keine Mail-App auf diesem Gerät gefunden",
   "authConfResendEmail": "E-Mail erneut senden",
   "authConfResendSending": "Senden…",
   "authConfResendIn": "Erneut in {seconds}s",

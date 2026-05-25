@@ -1,7 +1,7 @@
 name: sippd
 description: "Wine ranking & sharing app"
 publish_to: 'none'
-version: 0.1.22+26
+version: 0.1.22+27
 
 environment:
   sdk: ^3.11.4
@@ -87,6 +87,7 @@ dependencies:
   app_links: ^6.3.0
   shared_preferences: ^2.3.3
   connectivity_plus: ^7.1.1
+  android_intent_plus: ^6.0.0
 
 dev_dependencies:
   flutter_test:
