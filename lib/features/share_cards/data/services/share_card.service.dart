@@ -253,14 +253,32 @@ class ShareCardService {
 
   /// Renders [card] off-screen at the share-card dimensions and saves
   /// the resulting PNG to a temp file. Returns null on failure.
+  ///
+  /// The card is wrapped in its own [Localizations] scope: `screenshot`
+  /// renders into a detached tree that copies inherited Themes and
+  /// MediaQuery but *not* `Localizations` (a plain InheritedWidget), so
+  /// the cards' `AppLocalizations.of(context)` / `Localizations.localeOf`
+  /// lookups would otherwise throw and Flutter would paint a grey
+  /// ErrorWidget in release — the "grey share image" bug. The gen_l10n
+  /// delegates resolve synchronously (SynchronousFuture), so the child
+  /// still paints in the first captured frame.
   Future<File?> _renderToFile({
     required BuildContext context,
     required Widget card,
     required String filenamePrefix,
   }) async {
+    final locale = Localizations.localeOf(context);
     final controller = ScreenshotController();
     final bytes = await controller.captureFromWidget(
-      SizedBox(width: shareCardWidth, height: shareCardHeight, child: card),
+      Localizations(
+        locale: locale,
+        delegates: AppLocalizations.localizationsDelegates,
+        child: SizedBox(
+          width: shareCardWidth,
+          height: shareCardHeight,
+          child: card,
+        ),
+      ),
       context: context,
       pixelRatio: 1,
       delay: const Duration(milliseconds: 80),
