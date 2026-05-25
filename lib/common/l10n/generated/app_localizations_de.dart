@@ -488,6 +488,10 @@ class AppLocalizationsDe extends AppLocalizations {
       'Anmeldung fehlgeschlagen. Prüf deine Daten.';
 
   @override
+  String get authLoginEmailAlreadyRegistered =>
+      'Diese E-Mail ist bereits registriert. Melde dich stattdessen an.';
+
+  @override
   String get authLoginCreateAccountButton => 'Konto erstellen';
 
   @override

@@ -492,6 +492,10 @@ class AppLocalizationsFr extends AppLocalizations {
       'Connexion échouée. Vérifie tes infos.';
 
   @override
+  String get authLoginEmailAlreadyRegistered =>
+      'Cet e-mail est déjà enregistré. Connecte-toi plutôt.';
+
+  @override
   String get authLoginCreateAccountButton => 'Créer le compte';
 
   @override

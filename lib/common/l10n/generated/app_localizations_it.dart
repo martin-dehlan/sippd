@@ -487,6 +487,10 @@ class AppLocalizationsIt extends AppLocalizations {
       'Accesso fallito. Controlla i dati.';
 
   @override
+  String get authLoginEmailAlreadyRegistered =>
+      'Questa email è già registrata. Accedi invece.';
+
+  @override
   String get authLoginCreateAccountButton => 'Crea account';
 
   @override

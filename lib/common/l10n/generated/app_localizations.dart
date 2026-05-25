@@ -1002,6 +1002,12 @@ abstract class AppLocalizations {
   /// **'Sign-in failed. Check your details.'**
   String get authLoginSignInFailedFallback;
 
+  /// No description provided for @authLoginEmailAlreadyRegistered.
+  ///
+  /// In en, this message translates to:
+  /// **'This email is already registered. Log in instead.'**
+  String get authLoginEmailAlreadyRegistered;
+
   /// No description provided for @authLoginCreateAccountButton.
   ///
   /// In en, this message translates to:

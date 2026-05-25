@@ -164,6 +164,7 @@
   "authLoginEnterValidEmailFirst": "Gib oben zuerst eine gültige E-Mail ein.",
   "authLoginSignUpFailedFallback": "Konto konnte nicht erstellt werden. Versuch's nochmal.",
   "authLoginSignInFailedFallback": "Anmeldung fehlgeschlagen. Prüf deine Daten.",
+  "authLoginEmailAlreadyRegistered": "Diese E-Mail ist bereits registriert. Melde dich stattdessen an.",
   "authLoginCreateAccountButton": "Konto erstellen",
   "authLoginSignInButton": "Anmelden",
   "authLoginToggleHaveAccount": "Schon ein Konto? Anmelden",

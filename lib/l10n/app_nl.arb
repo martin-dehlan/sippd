@@ -164,6 +164,7 @@
   "authLoginEnterValidEmailFirst": "Voer eerst een geldig e-mailadres in hierboven.",
   "authLoginSignUpFailedFallback": "Kon account niet aanmaken. Probeer het opnieuw.",
   "authLoginSignInFailedFallback": "Inloggen mislukt. Controleer je gegevens.",
+  "authLoginEmailAlreadyRegistered": "Dit e-mailadres is al geregistreerd. Log in plaats daarvan in.",
   "authLoginCreateAccountButton": "Account aanmaken",
   "authLoginSignInButton": "Inloggen",
   "authLoginToggleHaveAccount": "Heb je al een account? Log in",

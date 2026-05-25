@@ -487,6 +487,10 @@ class AppLocalizationsNl extends AppLocalizations {
       'Inloggen mislukt. Controleer je gegevens.';
 
   @override
+  String get authLoginEmailAlreadyRegistered =>
+      'Dit e-mailadres is al geregistreerd. Log in plaats daarvan in.';
+
+  @override
   String get authLoginCreateAccountButton => 'Account aanmaken';
 
   @override

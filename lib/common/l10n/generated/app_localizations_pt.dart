@@ -487,6 +487,10 @@ class AppLocalizationsPt extends AppLocalizations {
       'Falha ao iniciar sessão. Verifica os teus dados.';
 
   @override
+  String get authLoginEmailAlreadyRegistered =>
+      'Este e-mail já está registado. Inicia sessão.';
+
+  @override
   String get authLoginCreateAccountButton => 'Criar conta';
 
   @override

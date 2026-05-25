@@ -38,6 +38,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _displayNameController = TextEditingController();
   Object? _submitError;
 
+  // Shown when a signup hits an email that's already registered. Supabase
+  // hides this server-side (anti-enumeration), so we surface it ourselves
+  // and flip the form to Sign In. If the user then edits the email we flip
+  // back to Sign Up — see [_onEmailChanged].
+  String? _emailTakenMessage;
+  bool _flippedToSignInForTakenEmail = false;
+
   // Prefill the signup display name from the onboarding answer so users
   // who already typed their name during onboarding don't have to re-enter
   // it on the "Create your account" screen. Hydrated once on first build,
@@ -53,7 +60,26 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   );
 
   @override
+  void initState() {
+    super.initState();
+    _emailController.addListener(_onEmailChanged);
+  }
+
+  // After an "email already registered" flip to Sign In, the moment the user
+  // changes the email they're likely trying a different address — flip back
+  // to Sign Up and clear the notice.
+  void _onEmailChanged() {
+    if (!_flippedToSignInForTakenEmail) return;
+    setState(() {
+      _isSignUp = true;
+      _flippedToSignInForTakenEmail = false;
+      _emailTakenMessage = null;
+    });
+  }
+
+  @override
   void dispose() {
+    _emailController.removeListener(_onEmailChanged);
     _emailController.dispose();
     _passwordController.dispose();
     _passwordConfirmController.dispose();
@@ -63,7 +89,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
-    setState(() => _submitError = null);
+    setState(() {
+      _submitError = null;
+      _emailTakenMessage = null;
+    });
 
     final auth = ref.read(authControllerProvider.notifier);
 
@@ -84,6 +113,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
 
     if (!mounted) return;
+
+    if (signUpOutcome == SignUpOutcome.emailAlreadyRegistered) {
+      setState(() {
+        _isSignUp = false;
+        _flippedToSignInForTakenEmail = true;
+        _emailTakenMessage = AppLocalizations.of(
+          context,
+        ).authLoginEmailAlreadyRegistered;
+        _passwordConfirmController.clear();
+      });
+      return;
+    }
 
     if (signUpOutcome == SignUpOutcome.confirmationRequired) {
       context.go(
@@ -300,7 +341,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                   SizedBox(height: _isSignUp ? context.xl : context.s),
 
-                  if (_submitError != null) ...[
+                  if (_emailTakenMessage != null) ...[
+                    InlineFieldError(message: _emailTakenMessage),
+                    SizedBox(height: context.s),
+                  ] else if (_submitError != null) ...[
                     InlineFieldError(
                       error: _submitError,
                       fallback: _isSignUp
@@ -333,6 +377,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       _isSignUp = !_isSignUp;
                       _passwordConfirmController.clear();
                       _submitError = null;
+                      _emailTakenMessage = null;
+                      _flippedToSignInForTakenEmail = false;
                     }),
                     child: Text(
                       _isSignUp

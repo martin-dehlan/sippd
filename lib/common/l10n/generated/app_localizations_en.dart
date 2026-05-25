@@ -484,6 +484,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Sign-in failed. Check your details.';
 
   @override
+  String get authLoginEmailAlreadyRegistered =>
+      'This email is already registered. Log in instead.';
+
+  @override
   String get authLoginCreateAccountButton => 'Create Account';
 
   @override
