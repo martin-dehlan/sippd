@@ -1086,6 +1086,12 @@ abstract class AppLocalizations {
   /// **'Open mail app'**
   String get authConfOpenMailApp;
 
+  /// No description provided for @authConfNoMailApps.
+  ///
+  /// In en, this message translates to:
+  /// **'No mail app found on this device'**
+  String get authConfNoMailApps;
+
   /// No description provided for @authConfResendEmail.
   ///
   /// In en, this message translates to:

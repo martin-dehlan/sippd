@@ -531,6 +531,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get authConfOpenMailApp => 'Abrir app de correo';
 
   @override
+  String get authConfNoMailApps => 'No mail app found on this device';
+
+  @override
   String get authConfResendEmail => 'Reenviar correo';
 
   @override

@@ -225,6 +225,7 @@
   "authConfOutroReset": ".\nTap it to set a new password.",
   "authConfOutroSignup": ".\nTap it to activate your account.",
   "authConfOpenMailApp": "Open mail app",
+  "authConfNoMailApps": "No mail app found on this device",
   "authConfResendEmail": "Resend email",
   "authConfResendSending": "Sending…",
   "authConfResendIn": "Resend in {seconds}s",
