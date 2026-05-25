@@ -89,66 +89,93 @@ class _PhotoLayout extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    l.shareRatedOn(_formatRated(wine.createdAt, context)),
-                    style: TextStyle(
-                      fontSize: 24,
-                      color: _onBgMuted,
-                      letterSpacing: 4,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 18),
-                  _NameBlock(wine: wine, maxLines: 2, fontSize: 110),
-                  if (origin != null && origin.isNotEmpty) ...[
-                    const SizedBox(height: 14),
-                    _OriginRow(origin: origin),
-                  ],
-                  const SizedBox(height: 60),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Icon(PhosphorIconsFill.star, color: _primary, size: 110),
-                      const SizedBox(width: 12),
-                      Text(
-                        wine.rating.toStringAsFixed(1),
-                        style: GoogleFonts.playfairDisplay(
-                          fontSize: 180,
-                          fontWeight: FontWeight.w900,
-                          color: _onBg,
-                          height: 0.95,
-                          letterSpacing: -7,
+                  // Scales the meta block down if its natural height
+                  // exceeds the space the photo leaves — keeps rich
+                  // wines (2-line name + winery + origin + notes) from
+                  // overflowing in any language. SizedBox bounds the
+                  // width so the text column lays out to a finite height
+                  // before FittedBox measures it.
+                  Expanded(
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.topLeft,
+                      child: SizedBox(
+                        width: shareCardWidth - 160,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              l.shareRatedOn(
+                                _formatRated(wine.createdAt, context),
+                              ),
+                              style: TextStyle(
+                                fontSize: 24,
+                                color: _onBgMuted,
+                                letterSpacing: 4,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            const SizedBox(height: 18),
+                            _NameBlock(wine: wine, maxLines: 2, fontSize: 110),
+                            if (origin != null && origin.isNotEmpty) ...[
+                              const SizedBox(height: 14),
+                              _OriginRow(origin: origin),
+                            ],
+                            const SizedBox(height: 60),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  PhosphorIconsFill.star,
+                                  color: _primary,
+                                  size: 110,
+                                ),
+                                const SizedBox(width: 12),
+                                Text(
+                                  wine.rating.toStringAsFixed(1),
+                                  style: GoogleFonts.playfairDisplay(
+                                    fontSize: 180,
+                                    fontWeight: FontWeight.w900,
+                                    color: _onBg,
+                                    height: 0.95,
+                                    letterSpacing: -7,
+                                  ),
+                                ),
+                                const SizedBox(width: 14),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 60),
+                                  child: Text(
+                                    l.shareRatingDenominator,
+                                    style: TextStyle(
+                                      fontSize: 50,
+                                      color: _onBgMuted,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            if (notesTeaser != null) ...[
+                              const SizedBox(height: 22),
+                              Text(
+                                '“$notesTeaser”',
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.playfairDisplay(
+                                  fontSize: 32,
+                                  color: _onBg,
+                                  fontStyle: FontStyle.italic,
+                                  height: 1.25,
+                                ),
+                              ),
+                            ],
+                          ],
                         ),
                       ),
-                      const SizedBox(width: 14),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 60),
-                        child: Text(
-                          l.shareRatingDenominator,
-                          style: TextStyle(
-                            fontSize: 50,
-                            color: _onBgMuted,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  if (notesTeaser != null) ...[
-                    const SizedBox(height: 22),
-                    Text(
-                      '“$notesTeaser”',
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.playfairDisplay(
-                        fontSize: 32,
-                        color: _onBg,
-                        fontStyle: FontStyle.italic,
-                        height: 1.25,
-                      ),
                     ),
-                  ],
-                  const Spacer(),
+                  ),
+                  const SizedBox(height: 30),
                   _Footer(),
                 ],
               ),
@@ -423,13 +450,18 @@ class _Footer extends StatelessWidget {
                 height: 1,
               ),
             ),
-            Text(
-              l.shareFooterRateYours(shareCardUrl),
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.w600,
-                color: _onBgMuted,
-                letterSpacing: 0.4,
+            Flexible(
+              child: Text(
+                l.shareFooterRateYours(shareCardUrl),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.right,
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w600,
+                  color: _onBgMuted,
+                  letterSpacing: 0.4,
+                ),
               ),
             ),
           ],
