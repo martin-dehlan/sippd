@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -88,20 +87,6 @@ class InlineFieldError extends ConsumerWidget {
               ),
             ),
           ),
-          if (kDebugMode && error != null) ...[
-            SizedBox(width: context.xs),
-            Flexible(
-              child: Text(
-                '· ${error.toString()}',
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: context.captionFont * 0.8,
-                  color: cs.outline,
-                  fontFamily: 'monospace',
-                ),
-              ),
-            ),
-          ],
         ],
       ),
     );
