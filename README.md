@@ -18,6 +18,8 @@ Built after a trip through South African wine country, after one too many ad-stu
 ![Dart](https://img.shields.io/badge/Dart-3.x-0175C2?logo=dart)
 ![Riverpod](https://img.shields.io/badge/State-Riverpod-7c4dff)
 ![License](https://img.shields.io/badge/license-Apache--2.0-blue)
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/13065/badge)](https://www.bestpractices.dev/projects/13065)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/martin-dehlan/sippd/badge)](https://scorecard.dev/viewer/?uri=github.com/martin-dehlan/sippd)
 
 ---
 
