@@ -928,7 +928,7 @@ class _AttendeesCard extends ConsumerWidget {
 }
 
 void _showAttendeesSheet(BuildContext context, List<_AttendeeEntry> all) {
-  showModalBottomSheet(
+  showModalBottomSheet<void>(
     context: context,
     backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
     isScrollControlled: true,

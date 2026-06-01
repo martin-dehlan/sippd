@@ -77,22 +77,28 @@ class LocationSearchService {
   }
 
   LocationEntity _toEntity(NominatimResponse result) {
+    final address = result.address;
     return LocationEntity(
       lat: double.tryParse(result.lat ?? '0'),
       lng: double.tryParse(result.lon ?? '0'),
       locationName: _extractName(result),
-      road: result.address?['road'] ?? '',
-      houseNumber: result.address?['house_number'] ?? '',
-      postcode: result.address?['postcode'] ?? '',
-      borough: result.address?['borough'] ?? result.address?['suburb'] ?? '',
-      city:
-          result.address?['city'] ??
-          result.address?['town'] ??
-          result.address?['village'] ??
-          '',
-      country: result.address?['country'] ?? '',
+      road: _str(address?['road']),
+      houseNumber: _str(address?['house_number']),
+      postcode: _str(address?['postcode']),
+      borough: _str(address?['borough']).isNotEmpty
+          ? _str(address?['borough'])
+          : _str(address?['suburb']),
+      city: [
+        _str(address?['city']),
+        _str(address?['town']),
+        _str(address?['village']),
+      ].firstWhere((v) => v.isNotEmpty, orElse: () => ''),
+      country: _str(address?['country']),
     );
   }
+
+  // Nominatim's `address` map carries dynamic values; coerce to a String.
+  String _str(Object? value) => value is String ? value : '';
 
   String _extractName(NominatimResponse result) {
     const nameKeys = [
@@ -104,9 +110,10 @@ class LocationSearchService {
       'historic',
     ];
 
+    final address = result.address;
     for (final key in nameKeys) {
-      final name = result.address?[key];
-      if (name != null && name.isNotEmpty) return name;
+      final name = address?[key];
+      if (name is String && name.isNotEmpty) return name;
     }
 
     return result.name ?? result.displayName ?? '';

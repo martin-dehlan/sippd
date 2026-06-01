@@ -85,7 +85,7 @@ class _Sheet extends StatelessWidget {
     String friendId,
     String friendDisplayName,
   ) {
-    showModalBottomSheet(
+    showModalBottomSheet<void>(
       context: context,
       backgroundColor: Theme.of(context).colorScheme.surface,
       isScrollControlled: true,

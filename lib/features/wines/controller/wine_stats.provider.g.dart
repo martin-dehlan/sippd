@@ -128,7 +128,7 @@ final statsSpendingProvider = AutoDisposeProvider<StatsSpending>.internal(
 // ignore: unused_element
 typedef StatsSpendingRef = AutoDisposeProviderRef<StatsSpending>;
 String _$statsDrinkingPartnersHash() =>
-    r'c71cc26263e28d3a23db28c1d86b00a7cc759670';
+    r'bccc2b7be61f4cfb5c034c80d49255708ca011c9';
 
 /// Top users the caller has co-rated wines with inside shared groups.
 /// Source is `group_wine_ratings` only — solo (private) wines never count
@@ -188,7 +188,7 @@ final statsTypeBreakdownProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef StatsTypeBreakdownRef = AutoDisposeProviderRef<List<TypeBreakdown>>;
-String _$userRatingSummaryHash() => r'247be51584fa481d9ed2779d3c3a36807e0eb949';
+String _$userRatingSummaryHash() => r'833158a06b294661a87cf61c5e753efda078af11';
 
 /// Server-aggregated rating summary unified across personal + group +
 /// tasting contexts, deduped latest-wins per canonical_wine_id. Powers the

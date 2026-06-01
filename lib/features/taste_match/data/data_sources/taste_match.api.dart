@@ -12,7 +12,7 @@ class TasteMatchApi {
   final SupabaseClient _client;
 
   Future<TasteCompassModel> getCompass(String userId) async {
-    final raw = await _client.rpc(
+    final raw = await _client.rpc<dynamic>(
       'get_taste_compass',
       params: {'p_user_id': userId},
     );
@@ -26,7 +26,7 @@ class TasteMatchApi {
     String userId, {
     int limit = 7,
   }) async {
-    final raw = await _client.rpc(
+    final raw = await _client.rpc<dynamic>(
       'get_user_top_grapes',
       params: {'p_user_id': userId, 'p_limit': limit},
     );
@@ -46,7 +46,7 @@ class TasteMatchApi {
   }
 
   Future<UserStyleDna> getStyleDna(String userId) async {
-    final raw = await _client.rpc(
+    final raw = await _client.rpc<dynamic>(
       'get_user_style_dna',
       params: {'p_user_id': userId},
     );
@@ -74,7 +74,7 @@ class TasteMatchApi {
   }
 
   Future<List<SharedBottleModel>> getSharedBottles(String otherUserId) async {
-    final raw = await _client.rpc(
+    final raw = await _client.rpc<dynamic>(
       'get_shared_bottles',
       params: {'p_other_user_id': otherUserId},
     );
@@ -88,7 +88,7 @@ class TasteMatchApi {
   }
 
   Future<TasteMatchModel> getMatch(String otherUserId) async {
-    final raw = await _client.rpc(
+    final raw = await _client.rpc<dynamic>(
       'get_taste_match',
       params: {'p_other_user_id': otherUserId},
     );

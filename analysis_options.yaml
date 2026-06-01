@@ -10,11 +10,33 @@
 include: package:flutter_lints/flutter.yaml
 
 analyzer:
+  # Dart strict mode — be maximally strict with warnings (OpenSSF
+  # warnings_strict). Implicit casts, untyped inference, and raw generic
+  # types become analyzer findings instead of being silently allowed.
+  language:
+    strict-casts: true
+    strict-inference: true
+    strict-raw-types: true
   errors:
     invalid_annotation_target: ignore
+  # Generated code is not hand-maintained — don't hold it to the strict bar.
+  exclude:
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+    - "**/*.mocks.dart"
 
 linter:
-  rules: []
+  rules:
+    # Resource-leak catchers — the bugs strict typing won't surface. The
+    # codebase is already clean against these, so they stay green and guard
+    # against regressions.
+    cancel_subscriptions: true
+    close_sinks: true
+    # NOTE: unawaited_futures, avoid_dynamic_calls, and prefer_const_constructors
+    # were evaluated and surface ~180 pre-existing advisory findings. Rather
+    # than dump them as permanently-ignored infos, they're deferred to a
+    # dedicated burn-down (tracked separately) so each can be reviewed and
+    # fixed rather than rubber-stamped.
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options

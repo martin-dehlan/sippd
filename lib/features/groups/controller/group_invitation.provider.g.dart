@@ -353,7 +353,7 @@ class _InvitableFriendsForGroupProviderElement
 }
 
 String _$myGroupInvitationsHash() =>
-    r'147d6eeb4e60912c28a72c388c687e4803fcda97';
+    r'6378f321b379775f6cbc171f7dea61239d5f9e6d';
 
 /// Pending invitations addressed to the current user, enriched with
 /// group + inviter info for display in the inbox.

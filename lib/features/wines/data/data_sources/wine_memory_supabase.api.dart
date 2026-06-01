@@ -13,7 +13,9 @@ class WineMemorySupabaseApi {
         .eq('wine_id', wineId)
         .order('created_at', ascending: true);
 
-    return (data as List).map((row) => WineMemoryModel.fromJson(row)).toList();
+    return (data as List<dynamic>)
+        .map((row) => WineMemoryModel.fromJson(row as Map<String, dynamic>))
+        .toList();
   }
 
   Future<void> upsertMemory(WineMemoryModel memory) async {
@@ -37,6 +39,8 @@ class WineMemorySupabaseApi {
       'get_shared_moments',
       params: {'p_other_user_id': otherUserId},
     );
-    return data.map((row) => WineMemoryModel.fromJson(row)).toList();
+    return data
+        .map((row) => WineMemoryModel.fromJson(row as Map<String, dynamic>))
+        .toList();
   }
 }

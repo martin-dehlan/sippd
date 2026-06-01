@@ -24,7 +24,7 @@ final groupImageServiceProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef GroupImageServiceRef = AutoDisposeProviderRef<GroupImageService>;
-String _$groupControllerHash() => r'258309d1aee3a525086f262f31f33cc1f68fab24';
+String _$groupControllerHash() => r'bc794c41a910ede9f43b07798a9f32e8b4ffbe28';
 
 /// See also [GroupController].
 @ProviderFor(GroupController)

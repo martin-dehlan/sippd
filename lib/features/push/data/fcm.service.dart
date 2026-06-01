@@ -92,14 +92,14 @@ class FcmService {
     if (token == null && !kIsWeb) {
       for (var i = 0; token == null && i < 5; i++) {
         debugPrint('FCM: $_platform getToken null, retrying in 3s…');
-        await Future.delayed(const Duration(seconds: 3));
+        await Future<void>.delayed(const Duration(seconds: 3));
         token = await _currentToken();
       }
     }
     if (token == null) return;
 
     try {
-      await _client.rpc(
+      await _client.rpc<dynamic>(
         'register_user_device',
         params: {'p_token': token, 'p_platform': _platform},
       );
