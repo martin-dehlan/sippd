@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [main]
 
+# Least privilege: the read-only default token is all this workflow needs
+# (checkout + analyze + test). No job widens it.
+permissions:
+  contents: read
+
 # Cancel superseded runs on the same ref so a fresh push doesn't sit
 # behind a stale older one.
 concurrency:
@@ -18,10 +23,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
       - name: set up flutter
-        uses: subosito/flutter-action@v2
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
         with:
           channel: stable
           flutter-version: 3.41.6
