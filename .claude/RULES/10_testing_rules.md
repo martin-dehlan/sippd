@@ -1,5 +1,9 @@
 # Testing Rules
 
+> **Policy:** This file is the test *strategy*. The public test *policy
+> commitment* (tests required for new behaviour, regression tests for fixes)
+> lives in [`CONTRIBUTING.md`](../../CONTRIBUTING.md#testing-policy).
+
 **TL;DR:** Three-tier test pyramid: unit (fast, most), widget (medium), integration (slow, few). Use Mocktail for mocks. Override Riverpod providers with `ProviderScope`. Keep tests in `test/` mirroring `lib/` structure.
 
 ---
