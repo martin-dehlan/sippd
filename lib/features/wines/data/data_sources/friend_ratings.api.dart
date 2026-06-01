@@ -14,7 +14,7 @@ class FriendRatingsApi {
     String canonicalWineId, {
     int limit = 10,
   }) async {
-    final raw = await _client.rpc(
+    final raw = await _client.rpc<dynamic>(
       'get_friend_ratings_for_canonical_wine',
       params: {'p_canonical_wine_id': canonicalWineId, 'p_limit': limit},
     );

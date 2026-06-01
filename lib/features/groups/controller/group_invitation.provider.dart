@@ -156,8 +156,11 @@ Future<List<GroupInvitationInboxItem>> myGroupInvitations(
       .eq('status', 'pending')
       .order('created_at', ascending: false);
 
-  final invitations = (rows as List)
-      .map((r) => GroupInvitationModel.fromJson(r).toEntity())
+  final invitations = (rows as List<dynamic>)
+      .map(
+        (r) =>
+            GroupInvitationModel.fromJson(r as Map<String, dynamic>).toEntity(),
+      )
       .toList();
   if (invitations.isEmpty) return const [];
 

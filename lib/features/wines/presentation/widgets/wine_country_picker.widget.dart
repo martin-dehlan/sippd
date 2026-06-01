@@ -82,7 +82,7 @@ void showWineCountryPicker({
   final searchController = TextEditingController();
   var filter = '';
 
-  showModalBottomSheet(
+  showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
     backgroundColor: cs.surface,

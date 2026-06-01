@@ -12,7 +12,7 @@ import '../../controller/location.provider.dart';
 import '../../domain/entities/location.entity.dart';
 
 class LocationSearchWidget extends ConsumerStatefulWidget {
-  final Function(LocationEntity) onLocationSelected;
+  final void Function(LocationEntity) onLocationSelected;
   final String? initialValue;
 
   const LocationSearchWidget({

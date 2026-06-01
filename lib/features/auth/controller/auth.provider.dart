@@ -30,9 +30,10 @@ class AuthController extends _$AuthController {
     final client = ref.watch(supabaseClientProvider);
     final user = client.auth.currentUser;
 
-    final StreamSubscription sub = client.auth.onAuthStateChange.listen((data) {
-      state = AsyncValue.data(data.session?.user);
-    });
+    final StreamSubscription<AuthState> sub = client.auth.onAuthStateChange
+        .listen((data) {
+          state = AsyncValue.data(data.session?.user);
+        });
     ref.onDispose(sub.cancel);
 
     return AsyncValue.data(user);
@@ -188,11 +189,12 @@ class PasswordRecoveryController extends _$PasswordRecoveryController {
   @override
   bool build() {
     final client = ref.watch(supabaseClientProvider);
-    final StreamSubscription sub = client.auth.onAuthStateChange.listen((data) {
-      if (data.event == AuthChangeEvent.passwordRecovery) {
-        state = true;
-      }
-    });
+    final StreamSubscription<AuthState> sub = client.auth.onAuthStateChange
+        .listen((data) {
+          if (data.event == AuthChangeEvent.passwordRecovery) {
+            state = true;
+          }
+        });
     ref.onDispose(sub.cancel);
     return false;
   }

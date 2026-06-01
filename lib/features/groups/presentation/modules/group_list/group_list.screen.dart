@@ -175,7 +175,7 @@ class GroupListScreen extends ConsumerWidget {
   }
 
   void _showCreateSheet(BuildContext context, WidgetRef ref) {
-    showModalBottomSheet(
+    showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       useRootNavigator: true,
@@ -201,7 +201,7 @@ class GroupListScreen extends ConsumerWidget {
 
   void _showJoinSheet(BuildContext context, WidgetRef ref) {
     final controller = TextEditingController();
-    showModalBottomSheet(
+    showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       useRootNavigator: true,

@@ -16,7 +16,7 @@ class CanonicalWineApi {
     String? winery,
     int? vintage,
   }) async {
-    final data = await _client.rpc(
+    final data = await _client.rpc<dynamic>(
       'suggest_canonical_match',
       params: {'p_name': name, 'p_winery': winery, 'p_vintage': vintage},
     );
@@ -44,7 +44,7 @@ class CanonicalWineApi {
     required String candidateId,
     required bool linked,
   }) async {
-    await _client.rpc(
+    await _client.rpc<dynamic>(
       'record_canonical_match_decision',
       params: {
         'p_input_name': inputName,
@@ -72,7 +72,7 @@ class CanonicalWineApi {
     String? canonicalGrapeId,
     required String userId,
   }) async {
-    final id = await _client.rpc(
+    final id = await _client.rpc<dynamic>(
       'resolve_canonical_wine',
       params: {
         'p_name': name,
@@ -94,7 +94,7 @@ class CanonicalWineApi {
     double minSimilarity = 0.6,
     int limit = 50,
   }) async {
-    final data = await _client.rpc(
+    final data = await _client.rpc<dynamic>(
       'find_canonical_merge_candidates',
       params: {'p_min_similarity': minSimilarity, 'p_limit': limit},
     );
@@ -123,7 +123,7 @@ class CanonicalWineApi {
     required String loserId,
     required String winnerId,
   }) async {
-    await _client.rpc(
+    await _client.rpc<dynamic>(
       'merge_canonical_wines',
       params: {'p_loser_id': loserId, 'p_winner_id': winnerId},
     );

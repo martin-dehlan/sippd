@@ -42,7 +42,7 @@ class DeepLinkService {
     }
     _sub = _appLinks.uriLinkStream.listen(
       _emit,
-      onError: (e) => debugPrint('DeepLink stream error: $e'),
+      onError: (Object e) => debugPrint('DeepLink stream error: $e'),
     );
   }
 

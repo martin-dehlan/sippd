@@ -47,10 +47,10 @@ void main() {
         'personal_count': 0,
         'group_count': 0,
         'tasting_count': 0,
-        'by_type': [],
-        'by_month': [],
-        'by_country': [],
-        'by_region': [],
+        'by_type': <dynamic>[],
+        'by_month': <dynamic>[],
+        'by_country': <dynamic>[],
+        'by_region': <dynamic>[],
       };
       final m = RatingSummaryModel.fromJson(payload);
       expect(m.avgRating, isNull);
@@ -72,8 +72,8 @@ void main() {
         'by_month': [
           {'month': '2026-05', 'count': 1, 'avg': 8},
         ],
-        'by_country': [],
-        'by_region': [],
+        'by_country': <dynamic>[],
+        'by_region': <dynamic>[],
       };
       final m = RatingSummaryModel.fromJson(payload);
       expect(m.avgRating, 8.0);

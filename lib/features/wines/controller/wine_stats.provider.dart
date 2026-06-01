@@ -70,7 +70,7 @@ class UserRatingSummary extends _$UserRatingSummary {
     final client = ref.read(supabaseClientProvider);
 
     try {
-      final raw = await client.rpc(
+      final raw = await client.rpc<dynamic>(
         'get_user_rating_summary',
         params: {'p_user_id': userId},
       );
@@ -264,7 +264,7 @@ Future<List<DrinkingPartnerEntity>> statsDrinkingPartners(
   final isAuth = ref.watch(isAuthenticatedProvider);
   if (!isAuth) return const [];
   final client = ref.read(supabaseClientProvider);
-  final raw = await client.rpc(
+  final raw = await client.rpc<dynamic>(
     'get_top_drinking_partners',
     params: {'p_limit': 5},
   );
