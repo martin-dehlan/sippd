@@ -25,9 +25,6 @@ const _googleIosClientId =
 const _googleWebClientId =
     '1063134331798-uddscjps15f47qn1al66rsc0dheklqua.apps.googleusercontent.com';
 
-// GoogleSignIn.instance.initialize must run once per app lifecycle.
-bool _googleSignInInitialized = false;
-
 enum SignUpOutcome {
   signedIn,
   confirmationRequired,
@@ -148,14 +145,20 @@ class AuthController extends _$AuthController {
   }
 
   Future<void> _signInWithGoogleNative(SupabaseClient client) async {
+    // The google_sign_in iOS plugin embeds the nonce it was given at init time
+    // into the returned ID token. If we don't supply one, GIDSignIn still emits
+    // a token nonce we can't see, and GoTrue rejects the token with "nonce ...
+    // should either both exist or not". So, Apple-style: pass the hashed nonce
+    // to Google (re-init per attempt so it's fresh) and the raw nonce to
+    // Supabase, which hashes it and matches against the token's nonce claim.
+    final rawNonce = _generateNonce();
+    final hashedNonce = sha256.convert(utf8.encode(rawNonce)).toString();
     final signIn = GoogleSignIn.instance;
-    if (!_googleSignInInitialized) {
-      await signIn.initialize(
-        clientId: _googleIosClientId,
-        serverClientId: _googleWebClientId,
-      );
-      _googleSignInInitialized = true;
-    }
+    await signIn.initialize(
+      clientId: _googleIosClientId,
+      serverClientId: _googleWebClientId,
+      nonce: hashedNonce,
+    );
     final account = await signIn.authenticate();
     final idToken = account.authentication.idToken;
     if (idToken == null) {
@@ -164,6 +167,7 @@ class AuthController extends _$AuthController {
     await client.auth.signInWithIdToken(
       provider: OAuthProvider.google,
       idToken: idToken,
+      nonce: rawNonce,
     );
     ref
         .read(analyticsProvider)
