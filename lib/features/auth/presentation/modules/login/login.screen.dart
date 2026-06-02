@@ -1,3 +1,5 @@
+import 'dart:io' show Platform;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -10,6 +12,7 @@ import '../../../../../common/widgets/inline_error.widget.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../../onboarding/controller/onboarding.provider.dart';
 import '../../../controller/auth.provider.dart';
+import '../../widgets/apple_sign_in_button.widget.dart';
 import '../../widgets/google_sign_in_button.widget.dart';
 import '../../widgets/or_divider.widget.dart';
 import '../email_confirmation/email_confirmation.screen.dart';
@@ -368,6 +371,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                   const OrDivider(),
                   SizedBox(height: context.m),
+                  // Sign in with Apple first (iOS only) — App Store guideline
+                  // 4.8 requires it to be offered as prominently as Google.
+                  if (Platform.isIOS) ...[
+                    const AppleSignInButton(),
+                    SizedBox(height: context.m),
+                  ],
                   const GoogleSignInButton(),
                   SizedBox(height: context.m),
 

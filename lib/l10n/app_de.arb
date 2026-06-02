@@ -172,6 +172,8 @@
   "authOrDivider": "oder",
   "authGoogleContinue": "Mit Google fortfahren",
   "authGoogleFailed": "Google-Anmeldung fehlgeschlagen. Bitte erneut versuchen.",
+  "authAppleContinue": "Mit Apple fortfahren",
+  "authAppleFailed": "Apple-Anmeldung fehlgeschlagen. Bitte erneut versuchen.",
 
   "authConfTitleReset": "Reset-Link gesendet",
   "authConfTitleSignup": "Check dein Postfach",

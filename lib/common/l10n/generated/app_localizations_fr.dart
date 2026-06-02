@@ -517,6 +517,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get authGoogleFailed => 'Connexion Google échouée. Réessaie.';
 
   @override
+  String get authAppleContinue => 'Continuer avec Apple';
+
+  @override
+  String get authAppleFailed => 'Connexion Apple échouée. Réessaie.';
+
+  @override
   String get authConfTitleReset => 'Lien de réinitialisation envoyé';
 
   @override

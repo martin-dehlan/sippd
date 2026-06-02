@@ -26,6 +26,8 @@
 		<string>????</string>
 		<key>FlutterDeepLinkingEnabled</key>
 		<true/>
+		<key>GIDClientID</key>
+		<string>1063134331798-pki7uhuaqgsc9qj6cpdgrfmccs2ao4b4.apps.googleusercontent.com</string>
 		<key>CFBundleURLTypes</key>
 		<array>
 			<dict>
@@ -34,6 +36,14 @@
 				<key>CFBundleURLSchemes</key>
 				<array>
 					<string>io.sippd</string>
+				</array>
+			</dict>
+			<dict>
+				<key>CFBundleTypeRole</key>
+				<string>Editor</string>
+				<key>CFBundleURLSchemes</key>
+				<array>
+					<string>com.googleusercontent.apps.1063134331798-pki7uhuaqgsc9qj6cpdgrfmccs2ao4b4</string>
 				</array>
 			</dict>
 		</array>

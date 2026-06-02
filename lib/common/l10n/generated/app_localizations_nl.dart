@@ -513,6 +513,13 @@ class AppLocalizationsNl extends AppLocalizations {
       'Inloggen met Google mislukt. Probeer het opnieuw.';
 
   @override
+  String get authAppleContinue => 'Doorgaan met Apple';
+
+  @override
+  String get authAppleFailed =>
+      'Inloggen met Apple mislukt. Probeer het opnieuw.';
+
+  @override
   String get authConfTitleReset => 'Reset-link verstuurd';
 
   @override

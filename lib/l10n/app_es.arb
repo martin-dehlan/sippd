@@ -172,6 +172,8 @@
   "authOrDivider": "o",
   "authGoogleContinue": "Continuar con Google",
   "authGoogleFailed": "Error al iniciar con Google. Inténtalo de nuevo.",
+  "authAppleContinue": "Continuar con Apple",
+  "authAppleFailed": "Error al iniciar sesión con Apple. Inténtalo de nuevo.",
 
   "authConfTitleReset": "Enlace enviado",
   "authConfTitleSignup": "Revisa tu bandeja",

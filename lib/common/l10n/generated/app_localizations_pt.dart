@@ -513,6 +513,13 @@ class AppLocalizationsPt extends AppLocalizations {
       'Falha ao iniciar sessão com o Google. Tenta novamente.';
 
   @override
+  String get authAppleContinue => 'Continuar com a Apple';
+
+  @override
+  String get authAppleFailed =>
+      'Falha ao iniciar sessão com a Apple. Tenta novamente.';
+
+  @override
   String get authConfTitleReset => 'Link enviado';
 
   @override

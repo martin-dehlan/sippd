@@ -172,6 +172,8 @@
   "authOrDivider": "of",
   "authGoogleContinue": "Doorgaan met Google",
   "authGoogleFailed": "Inloggen met Google mislukt. Probeer het opnieuw.",
+  "authAppleContinue": "Doorgaan met Apple",
+  "authAppleFailed": "Inloggen met Apple mislukt. Probeer het opnieuw.",
 
   "authConfTitleReset": "Reset-link verstuurd",
   "authConfTitleSignup": "Check je inbox",
