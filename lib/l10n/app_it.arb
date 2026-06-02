@@ -172,6 +172,8 @@
   "authOrDivider": "oppure",
   "authGoogleContinue": "Continua con Google",
   "authGoogleFailed": "Accesso con Google fallito. Riprova.",
+  "authAppleContinue": "Continua con Apple",
+  "authAppleFailed": "Accesso con Apple fallito. Riprova.",
 
   "authConfTitleReset": "Link di reset inviato",
   "authConfTitleSignup": "Controlla la tua casella",

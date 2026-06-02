@@ -172,6 +172,8 @@
   "authOrDivider": "ou",
   "authGoogleContinue": "Continuer avec Google",
   "authGoogleFailed": "Connexion Google échouée. Réessaie.",
+  "authAppleContinue": "Continuer avec Apple",
+  "authAppleFailed": "Connexion Apple échouée. Réessaie.",
 
   "authConfTitleReset": "Lien de réinitialisation envoyé",
   "authConfTitleSignup": "Regarde ta boîte mail",

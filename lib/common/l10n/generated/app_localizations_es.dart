@@ -514,6 +514,13 @@ class AppLocalizationsEs extends AppLocalizations {
       'Error al iniciar con Google. Inténtalo de nuevo.';
 
   @override
+  String get authAppleContinue => 'Continuar con Apple';
+
+  @override
+  String get authAppleFailed =>
+      'Error al iniciar sesión con Apple. Inténtalo de nuevo.';
+
+  @override
   String get authConfTitleReset => 'Enlace enviado';
 
   @override

@@ -512,6 +512,12 @@ class AppLocalizationsIt extends AppLocalizations {
   String get authGoogleFailed => 'Accesso con Google fallito. Riprova.';
 
   @override
+  String get authAppleContinue => 'Continua con Apple';
+
+  @override
+  String get authAppleFailed => 'Accesso con Apple fallito. Riprova.';
+
+  @override
   String get authConfTitleReset => 'Link di reset inviato';
 
   @override

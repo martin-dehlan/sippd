@@ -514,6 +514,13 @@ class AppLocalizationsDe extends AppLocalizations {
       'Google-Anmeldung fehlgeschlagen. Bitte erneut versuchen.';
 
   @override
+  String get authAppleContinue => 'Mit Apple fortfahren';
+
+  @override
+  String get authAppleFailed =>
+      'Apple-Anmeldung fehlgeschlagen. Bitte erneut versuchen.';
+
+  @override
   String get authConfTitleReset => 'Reset-Link gesendet';
 
   @override
