@@ -19,8 +19,12 @@ class BadgeCard extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
     final accent = badgeAccent(badge.category, cs);
     final earned = badge.earned;
-    final iconColor = earned ? accent : cs.onSurfaceVariant.withValues(alpha: 0.55);
-    final ringColor = earned ? accent.withValues(alpha: 0.16) : cs.surfaceContainer;
+    final iconColor = earned
+        ? accent
+        : cs.onSurfaceVariant.withValues(alpha: 0.55);
+    final ringColor = earned
+        ? accent.withValues(alpha: 0.16)
+        : cs.surfaceContainer;
 
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
@@ -38,7 +42,9 @@ class BadgeCard extends StatelessWidget {
                   color: ringColor,
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: earned ? accent.withValues(alpha: 0.5) : cs.outlineVariant,
+                    color: earned
+                        ? accent.withValues(alpha: 0.5)
+                        : cs.outlineVariant,
                     width: 0.5,
                   ),
                 ),
@@ -106,7 +112,9 @@ class _ProgressBar extends StatelessWidget {
         value: fraction,
         minHeight: context.h * 0.005,
         backgroundColor: cs.surfaceContainerHighest,
-        valueColor: AlwaysStoppedAnimation<Color>(accent.withValues(alpha: 0.7)),
+        valueColor: AlwaysStoppedAnimation<Color>(
+          accent.withValues(alpha: 0.7),
+        ),
       ),
     );
   }

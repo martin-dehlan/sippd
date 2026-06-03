@@ -37,8 +37,9 @@ void main() {
   tearDown(() => db.close());
 
   test('getProgress caches the payload on success', () async {
-    when(() => api.getProgress('u1'))
-        .thenAnswer((_) async => [_model('first_sip', earned: true)]);
+    when(
+      () => api.getProgress('u1'),
+    ).thenAnswer((_) async => [_model('first_sip', earned: true)]);
 
     final result = await repo.getProgress('u1');
 
@@ -50,8 +51,9 @@ void main() {
 
   test('getProgress falls back to cached payload on RPC failure', () async {
     // Prime the cache with a successful call.
-    when(() => api.getProgress('u1'))
-        .thenAnswer((_) async => [_model('wine_explorer', current: 30)]);
+    when(
+      () => api.getProgress('u1'),
+    ).thenAnswer((_) async => [_model('wine_explorer', current: 30)]);
     await repo.getProgress('u1');
 
     // Next call fails — repo must serve the cached payload, not throw.
@@ -62,17 +64,21 @@ void main() {
     expect(result.single.current, 30);
   });
 
-  test('getProgress rethrows when failure has no cache to fall back to',
-      () async {
-    when(() => api.getProgress('u2')).thenThrow(Exception('offline'));
-    expect(() => repo.getProgress('u2'), throwsException);
-  });
+  test(
+    'getProgress rethrows when failure has no cache to fall back to',
+    () async {
+      when(() => api.getProgress('u2')).thenThrow(Exception('offline'));
+      expect(() => repo.getProgress('u2'), throwsException);
+    },
+  );
 
   test('getEarned returns only earned badges as earned entities', () async {
-    when(() => api.getProgress('u1')).thenAnswer((_) async => [
-          _model('first_sip', earned: true),
-          _model('connoisseur', current: 3),
-        ]);
+    when(() => api.getProgress('u1')).thenAnswer(
+      (_) async => [
+        _model('first_sip', earned: true),
+        _model('connoisseur', current: 3),
+      ],
+    );
 
     final earned = await repo.getEarned('u1');
 

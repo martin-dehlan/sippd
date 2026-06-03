@@ -11,7 +11,9 @@ class BadgesApi {
   List<BadgeModel> _parseList(dynamic raw) {
     if (raw is! List) return const [];
     return raw
-        .map((row) => BadgeModel.fromJson(Map<String, dynamic>.from(row as Map)))
+        .map(
+          (row) => BadgeModel.fromJson(Map<String, dynamic>.from(row as Map)),
+        )
         .toList(growable: false);
   }
 
@@ -34,10 +36,7 @@ class BadgesApi {
   /// Marks the given badges seen so they stop surfacing in the celebration.
   Future<void> markSeen(List<String> badgeIds) async {
     if (badgeIds.isEmpty) return;
-    await _client.rpc<dynamic>(
-      'mark_badges_seen',
-      params: {'p_ids': badgeIds},
-    );
+    await _client.rpc<dynamic>('mark_badges_seen', params: {'p_ids': badgeIds});
   }
 
   /// Manual re-evaluation (server recomputes from authoritative data). Returns

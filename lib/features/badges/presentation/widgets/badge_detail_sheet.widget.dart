@@ -52,7 +52,9 @@ class _BadgeDetailSheet extends StatelessWidget {
                     : cs.surfaceContainer,
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: badge.earned ? accent.withValues(alpha: 0.5) : cs.outlineVariant,
+                  color: badge.earned
+                      ? accent.withValues(alpha: 0.5)
+                      : cs.outlineVariant,
                 ),
               ),
               child: Icon(
@@ -116,7 +118,11 @@ class _EarnedRow extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(PhosphorIconsFill.checkCircle, size: context.bodyFont, color: accent),
+        Icon(
+          PhosphorIconsFill.checkCircle,
+          size: context.bodyFont,
+          color: accent,
+        ),
         SizedBox(width: context.w * 0.02),
         Text(
           label,

@@ -31,11 +31,14 @@ class _BadgeUnlockGateState extends ConsumerState<BadgeUnlockGate> {
     final analytics = ref.read(analyticsProvider);
     for (final badge in badges) {
       if (!mounted) break;
-      analytics.capture('badge_unlocked', properties: {
-        'badge_id': badge.id,
-        'category': badge.category,
-        'tier': badge.tier,
-      });
+      analytics.capture(
+        'badge_unlocked',
+        properties: {
+          'badge_id': badge.id,
+          'category': badge.category,
+          'tier': badge.tier,
+        },
+      );
       await _showBadgeUnlockDialog(context, badge);
     }
     if (mounted) {
@@ -101,7 +104,11 @@ class _UnlockCard extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(PhosphorIconsRegular.confetti, size: context.w * 0.08, color: accent),
+                Icon(
+                  PhosphorIconsRegular.confetti,
+                  size: context.w * 0.08,
+                  color: accent,
+                ),
                 SizedBox(height: context.s),
                 Text(
                   l10n.badgesUnlockedHeadline,
@@ -121,7 +128,11 @@ class _UnlockCard extends StatelessWidget {
                     shape: BoxShape.circle,
                     border: Border.all(color: accent.withValues(alpha: 0.5)),
                   ),
-                  child: Icon(badgeIcon(badge.icon), size: context.w * 0.12, color: accent),
+                  child: Icon(
+                    badgeIcon(badge.icon),
+                    size: context.w * 0.12,
+                    color: accent,
+                  ),
                 ),
                 SizedBox(height: context.m),
                 Text(

@@ -28,8 +28,11 @@ class BadgesRepositoryImpl implements BadgesRepository {
       if (cached != null) {
         final list = jsonDecode(cached.payload) as List<dynamic>;
         return list
-            .map((e) => BadgeModel.fromJson(Map<String, dynamic>.from(e as Map))
-                .toEntity())
+            .map(
+              (e) => BadgeModel.fromJson(
+                Map<String, dynamic>.from(e as Map),
+              ).toEntity(),
+            )
             .toList(growable: false);
       }
       rethrow;

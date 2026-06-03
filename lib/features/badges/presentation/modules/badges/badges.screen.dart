@@ -11,7 +11,14 @@ import '../../../domain/entities/badge.entity.dart';
 import '../../widgets/badge_card.widget.dart';
 import '../../widgets/badge_detail_sheet.widget.dart';
 
-const _categoryOrder = ['volume', 'type', 'geo', 'grape', 'social', 'engagement'];
+const _categoryOrder = [
+  'volume',
+  'type',
+  'geo',
+  'grape',
+  'social',
+  'engagement',
+];
 
 class BadgesScreen extends ConsumerStatefulWidget {
   const BadgesScreen({super.key});
@@ -150,10 +157,12 @@ class _BadgeGrid extends ConsumerWidget {
         return BadgeCard(
           badge: badge,
           onTap: () {
-            ref.read(analyticsProvider).capture(
-              'badge_detail_viewed',
-              properties: {'badge_id': badge.id},
-            );
+            ref
+                .read(analyticsProvider)
+                .capture(
+                  'badge_detail_viewed',
+                  properties: {'badge_id': badge.id},
+                );
             showBadgeDetailSheet(context, badge);
           },
         );
@@ -213,7 +222,11 @@ class _EmptyState extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(PhosphorIconsFill.trophy, size: context.w * 0.18, color: cs.outline),
+            Icon(
+              PhosphorIconsFill.trophy,
+              size: context.w * 0.18,
+              color: cs.outline,
+            ),
             SizedBox(height: context.m),
             Text(
               l10n.badgesEmptyTitle,
@@ -228,7 +241,10 @@ class _EmptyState extends StatelessWidget {
             Text(
               l10n.badgesEmptyBody,
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: context.captionFont, color: cs.onSurfaceVariant),
+              style: TextStyle(
+                fontSize: context.captionFont,
+                color: cs.onSurfaceVariant,
+              ),
             ),
           ],
         ),
@@ -250,7 +266,11 @@ class _ErrorState extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(PhosphorIconsRegular.arrowClockwise, size: context.w * 0.1, color: cs.outline),
+          Icon(
+            PhosphorIconsRegular.arrowClockwise,
+            size: context.w * 0.1,
+            color: cs.outline,
+          ),
           SizedBox(height: context.m),
           TextButton(onPressed: onRetry, child: Text(l10n.badgesRetry)),
         ],

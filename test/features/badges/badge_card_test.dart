@@ -5,27 +5,27 @@ import 'package:sippd/features/badges/domain/entities/badge.entity.dart';
 import 'package:sippd/features/badges/presentation/widgets/badge_card.widget.dart';
 
 BadgeEntity _badge({required bool earned, int current = 0}) => BadgeEntity(
-      id: 'wine_explorer',
-      category: 'volume',
-      tier: 3,
-      title: 'Wine Explorer',
-      description: 'Rate 50 wines',
-      icon: 'wine_explorer',
-      earned: earned,
-      current: current,
-      target: 50,
-    );
+  id: 'wine_explorer',
+  category: 'volume',
+  tier: 3,
+  title: 'Wine Explorer',
+  description: 'Rate 50 wines',
+  icon: 'wine_explorer',
+  earned: earned,
+  current: current,
+  target: 50,
+);
 
 Widget _host(BadgeEntity badge) => MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: SizedBox(
-            width: 100,
-            child: BadgeCard(badge: badge, onTap: () {}),
-          ),
-        ),
+  home: Scaffold(
+    body: Center(
+      child: SizedBox(
+        width: 100,
+        child: BadgeCard(badge: badge, onTap: () {}),
       ),
-    );
+    ),
+  ),
+);
 
 void main() {
   testWidgets('locked badge shows a lock and no earned check', (tester) async {
@@ -48,14 +48,19 @@ void main() {
 
   testWidgets('tapping the card fires onTap', (tester) async {
     var tapped = false;
-    await tester.pumpWidget(MaterialApp(
-      home: Scaffold(
-        body: SizedBox(
-          width: 100,
-          child: BadgeCard(badge: _badge(earned: true), onTap: () => tapped = true),
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: SizedBox(
+            width: 100,
+            child: BadgeCard(
+              badge: _badge(earned: true),
+              onTap: () => tapped = true,
+            ),
+          ),
         ),
       ),
-    ));
+    );
 
     await tester.tap(find.byType(BadgeCard));
     expect(tapped, isTrue);

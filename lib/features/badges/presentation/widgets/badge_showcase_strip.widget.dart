@@ -66,9 +66,16 @@ class BadgeShowcaseStrip extends ConsumerWidget {
                       decoration: BoxDecoration(
                         color: accent.withValues(alpha: 0.16),
                         shape: BoxShape.circle,
-                        border: Border.all(color: accent.withValues(alpha: 0.5), width: 0.5),
+                        border: Border.all(
+                          color: accent.withValues(alpha: 0.5),
+                          width: 0.5,
+                        ),
                       ),
-                      child: Icon(badgeIcon(b.icon), color: accent, size: context.w * 0.065),
+                      child: Icon(
+                        badgeIcon(b.icon),
+                        color: accent,
+                        size: context.w * 0.065,
+                      ),
                     ),
                   );
                 },
