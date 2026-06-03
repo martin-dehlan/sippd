@@ -47,6 +47,7 @@ class _AppleSignInButtonState extends ConsumerState<AppleSignInButton> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final cs = Theme.of(context).colorScheme;
 
     return SizedBox(
       width: double.infinity,
@@ -58,6 +59,11 @@ class _AppleSignInButtonState extends ConsumerState<AppleSignInButton> {
           backgroundColor: Colors.black,
           foregroundColor: Colors.white,
           disabledBackgroundColor: Colors.black,
+          // Visible outline so the (black) button clearly reads as a button on
+          // the dark theme background — Apple guideline 4. `cs.outline` is a
+          // mid-grey that stands out against both the black fill and the
+          // near-black scaffold.
+          side: BorderSide(color: cs.outline),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(context.w * 0.02),
           ),
