@@ -77,6 +77,8 @@ function prefColumnForPushType(type: string | undefined): string | null {
       return 'group_activity';
     case 'group_wine_shared':
       return 'group_wine_shared';
+    case 'badge_unlocked':
+      return 'badges';
     default:
       return null;
   }
@@ -244,6 +246,23 @@ async function resolvePush(
       data: { type: 'group_joined', group_id: gm.group_id },
       tag: `group_joined:${gm.group_id}`,
       threadId: `group:${gm.group_id}`,
+    };
+  }
+
+  if (table === 'user_badges') {
+    const { data: badge } = await admin
+      .from('badge_definitions')
+      .select('id, title, description')
+      .eq('id', pk.badge_id)
+      .maybeSingle();
+    if (!badge) return null;
+    return {
+      recipients: [pk.user_id as string],
+      title: 'Badge unlocked! 🏅',
+      body: `${badge.title} — ${badge.description}`,
+      data: { type: 'badge_unlocked', badge_id: badge.id as string },
+      tag: `badge:${badge.id}`,
+      threadId: 'badges',
     };
   }
 

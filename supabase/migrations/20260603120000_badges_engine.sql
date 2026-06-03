@@ -243,7 +243,12 @@ $$;
 -- ─── 4. evaluate_user_badges — award newly-qualified badges (idempotent) ──
 -- Returns the badge_ids awarded THIS call (empty on a repeat call).
 
-create or replace function public.evaluate_user_badges(p_user_id uuid)
+-- p_mark_seen=true inserts rows already seen (used by backfill) so neither
+-- the celebration UI nor the push trigger fire for historical awards.
+create or replace function public.evaluate_user_badges(
+  p_user_id uuid,
+  p_mark_seen boolean default false
+)
 returns setof text
 language plpgsql
 volatile security definer
@@ -264,8 +269,9 @@ begin
           >= (d.criterion ->> 'gte')::numeric
   ),
   inserted as (
-    insert into public.user_badges (user_id, badge_id)
-    select p_user_id, q.id from qualifying q
+    insert into public.user_badges (user_id, badge_id, seen_at)
+    select p_user_id, q.id, case when p_mark_seen then now() else null end
+    from qualifying q
     on conflict (user_id, badge_id) do nothing
     returning badge_id
   )
@@ -452,9 +458,8 @@ as $$
 declare r record;
 begin
   for r in select id from public.profiles loop
-    perform public.evaluate_user_badges(r.id);
+    perform public.evaluate_user_badges(r.id, true);  -- mark seen → no storm
   end loop;
-  update public.user_badges set seen_at = now() where seen_at is null;
 end;
 $$;
 
