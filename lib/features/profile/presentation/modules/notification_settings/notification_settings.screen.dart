@@ -115,6 +115,16 @@ class _Body extends StatelessWidget {
           value: prefs.groupWineShared,
           onChanged: controller.setGroupWineShared,
         ),
+        SizedBox(height: context.l),
+
+        _SectionLabel(l10n.badgesTitle),
+        _ToggleTile(
+          icon: PhosphorIconsFill.trophy,
+          label: l10n.tileBadgesLabel,
+          subtitle: l10n.tileBadgesSubtitle,
+          value: prefs.badges,
+          onChanged: controller.setBadges,
+        ),
         if (kDebugMode) ...[
           SizedBox(height: context.xl),
           const PushDiagnosticPanel(),

@@ -2233,5 +2233,9 @@
   "badgesUnlockedHeadline": "BADGE UNLOCKED",
   "@badgesUnlockedHeadline": { "description": "Celebration overlay headline." },
   "badgesNice": "Nice",
-  "@badgesNice": { "description": "Dismiss button on the badge unlock celebration." }
+  "@badgesNice": { "description": "Dismiss button on the badge unlock celebration." },
+  "tileBadgesLabel": "Badge unlocks",
+  "@tileBadgesLabel": { "description": "Notification settings toggle label for badge unlock pushes." },
+  "tileBadgesSubtitle": "Get notified when you earn a new badge",
+  "@tileBadgesSubtitle": { "description": "Notification settings toggle subtitle for badge unlock pushes." }
 }

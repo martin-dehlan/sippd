@@ -3140,6 +3140,19 @@ class $NotificationPrefsTableTable extends NotificationPrefsTable
     ),
     defaultValue: const Constant(true),
   );
+  static const VerificationMeta _badgesMeta = const VerificationMeta('badges');
+  @override
+  late final GeneratedColumn<bool> badges = GeneratedColumn<bool>(
+    'badges',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("badges" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
   static const VerificationMeta _updatedAtMeta = const VerificationMeta(
     'updatedAt',
   );
@@ -3160,6 +3173,7 @@ class $NotificationPrefsTableTable extends NotificationPrefsTable
     friendActivity,
     groupActivity,
     groupWineShared,
+    badges,
     updatedAt,
   ];
   @override
@@ -3227,6 +3241,12 @@ class $NotificationPrefsTableTable extends NotificationPrefsTable
         ),
       );
     }
+    if (data.containsKey('badges')) {
+      context.handle(
+        _badgesMeta,
+        badges.isAcceptableOrUnknown(data['badges']!, _badgesMeta),
+      );
+    }
     if (data.containsKey('updated_at')) {
       context.handle(
         _updatedAtMeta,
@@ -3269,6 +3289,10 @@ class $NotificationPrefsTableTable extends NotificationPrefsTable
         DriftSqlType.bool,
         data['${effectivePrefix}group_wine_shared'],
       )!,
+      badges: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}badges'],
+      )!,
       updatedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}updated_at'],
@@ -3290,6 +3314,7 @@ class NotificationPrefsTableData extends DataClass
   final bool friendActivity;
   final bool groupActivity;
   final bool groupWineShared;
+  final bool badges;
   final DateTime updatedAt;
   const NotificationPrefsTableData({
     required this.userId,
@@ -3298,6 +3323,7 @@ class NotificationPrefsTableData extends DataClass
     required this.friendActivity,
     required this.groupActivity,
     required this.groupWineShared,
+    required this.badges,
     required this.updatedAt,
   });
   @override
@@ -3309,6 +3335,7 @@ class NotificationPrefsTableData extends DataClass
     map['friend_activity'] = Variable<bool>(friendActivity);
     map['group_activity'] = Variable<bool>(groupActivity);
     map['group_wine_shared'] = Variable<bool>(groupWineShared);
+    map['badges'] = Variable<bool>(badges);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
   }
@@ -3321,6 +3348,7 @@ class NotificationPrefsTableData extends DataClass
       friendActivity: Value(friendActivity),
       groupActivity: Value(groupActivity),
       groupWineShared: Value(groupWineShared),
+      badges: Value(badges),
       updatedAt: Value(updatedAt),
     );
   }
@@ -3339,6 +3367,7 @@ class NotificationPrefsTableData extends DataClass
       friendActivity: serializer.fromJson<bool>(json['friendActivity']),
       groupActivity: serializer.fromJson<bool>(json['groupActivity']),
       groupWineShared: serializer.fromJson<bool>(json['groupWineShared']),
+      badges: serializer.fromJson<bool>(json['badges']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
   }
@@ -3352,6 +3381,7 @@ class NotificationPrefsTableData extends DataClass
       'friendActivity': serializer.toJson<bool>(friendActivity),
       'groupActivity': serializer.toJson<bool>(groupActivity),
       'groupWineShared': serializer.toJson<bool>(groupWineShared),
+      'badges': serializer.toJson<bool>(badges),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
   }
@@ -3363,6 +3393,7 @@ class NotificationPrefsTableData extends DataClass
     bool? friendActivity,
     bool? groupActivity,
     bool? groupWineShared,
+    bool? badges,
     DateTime? updatedAt,
   }) => NotificationPrefsTableData(
     userId: userId ?? this.userId,
@@ -3371,6 +3402,7 @@ class NotificationPrefsTableData extends DataClass
     friendActivity: friendActivity ?? this.friendActivity,
     groupActivity: groupActivity ?? this.groupActivity,
     groupWineShared: groupWineShared ?? this.groupWineShared,
+    badges: badges ?? this.badges,
     updatedAt: updatedAt ?? this.updatedAt,
   );
   NotificationPrefsTableData copyWithCompanion(
@@ -3393,6 +3425,7 @@ class NotificationPrefsTableData extends DataClass
       groupWineShared: data.groupWineShared.present
           ? data.groupWineShared.value
           : this.groupWineShared,
+      badges: data.badges.present ? data.badges.value : this.badges,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
   }
@@ -3406,6 +3439,7 @@ class NotificationPrefsTableData extends DataClass
           ..write('friendActivity: $friendActivity, ')
           ..write('groupActivity: $groupActivity, ')
           ..write('groupWineShared: $groupWineShared, ')
+          ..write('badges: $badges, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
         .toString();
@@ -3419,6 +3453,7 @@ class NotificationPrefsTableData extends DataClass
     friendActivity,
     groupActivity,
     groupWineShared,
+    badges,
     updatedAt,
   );
   @override
@@ -3431,6 +3466,7 @@ class NotificationPrefsTableData extends DataClass
           other.friendActivity == this.friendActivity &&
           other.groupActivity == this.groupActivity &&
           other.groupWineShared == this.groupWineShared &&
+          other.badges == this.badges &&
           other.updatedAt == this.updatedAt);
 }
 
@@ -3442,6 +3478,7 @@ class NotificationPrefsTableCompanion
   final Value<bool> friendActivity;
   final Value<bool> groupActivity;
   final Value<bool> groupWineShared;
+  final Value<bool> badges;
   final Value<DateTime> updatedAt;
   final Value<int> rowid;
   const NotificationPrefsTableCompanion({
@@ -3451,6 +3488,7 @@ class NotificationPrefsTableCompanion
     this.friendActivity = const Value.absent(),
     this.groupActivity = const Value.absent(),
     this.groupWineShared = const Value.absent(),
+    this.badges = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -3461,6 +3499,7 @@ class NotificationPrefsTableCompanion
     this.friendActivity = const Value.absent(),
     this.groupActivity = const Value.absent(),
     this.groupWineShared = const Value.absent(),
+    this.badges = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : userId = Value(userId);
@@ -3471,6 +3510,7 @@ class NotificationPrefsTableCompanion
     Expression<bool>? friendActivity,
     Expression<bool>? groupActivity,
     Expression<bool>? groupWineShared,
+    Expression<bool>? badges,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
   }) {
@@ -3482,6 +3522,7 @@ class NotificationPrefsTableCompanion
       if (friendActivity != null) 'friend_activity': friendActivity,
       if (groupActivity != null) 'group_activity': groupActivity,
       if (groupWineShared != null) 'group_wine_shared': groupWineShared,
+      if (badges != null) 'badges': badges,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
     });
@@ -3494,6 +3535,7 @@ class NotificationPrefsTableCompanion
     Value<bool>? friendActivity,
     Value<bool>? groupActivity,
     Value<bool>? groupWineShared,
+    Value<bool>? badges,
     Value<DateTime>? updatedAt,
     Value<int>? rowid,
   }) {
@@ -3504,6 +3546,7 @@ class NotificationPrefsTableCompanion
       friendActivity: friendActivity ?? this.friendActivity,
       groupActivity: groupActivity ?? this.groupActivity,
       groupWineShared: groupWineShared ?? this.groupWineShared,
+      badges: badges ?? this.badges,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
     );
@@ -3530,6 +3573,9 @@ class NotificationPrefsTableCompanion
     if (groupWineShared.present) {
       map['group_wine_shared'] = Variable<bool>(groupWineShared.value);
     }
+    if (badges.present) {
+      map['badges'] = Variable<bool>(badges.value);
+    }
     if (updatedAt.present) {
       map['updated_at'] = Variable<DateTime>(updatedAt.value);
     }
@@ -3548,6 +3594,7 @@ class NotificationPrefsTableCompanion
           ..write('friendActivity: $friendActivity, ')
           ..write('groupActivity: $groupActivity, ')
           ..write('groupWineShared: $groupWineShared, ')
+          ..write('badges: $badges, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -7011,6 +7058,7 @@ typedef $$NotificationPrefsTableTableCreateCompanionBuilder =
       Value<bool> friendActivity,
       Value<bool> groupActivity,
       Value<bool> groupWineShared,
+      Value<bool> badges,
       Value<DateTime> updatedAt,
       Value<int> rowid,
     });
@@ -7022,6 +7070,7 @@ typedef $$NotificationPrefsTableTableUpdateCompanionBuilder =
       Value<bool> friendActivity,
       Value<bool> groupActivity,
       Value<bool> groupWineShared,
+      Value<bool> badges,
       Value<DateTime> updatedAt,
       Value<int> rowid,
     });
@@ -7062,6 +7111,11 @@ class $$NotificationPrefsTableTableFilterComposer
 
   ColumnFilters<bool> get groupWineShared => $composableBuilder(
     column: $table.groupWineShared,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get badges => $composableBuilder(
+    column: $table.badges,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -7110,6 +7164,11 @@ class $$NotificationPrefsTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<bool> get badges => $composableBuilder(
+    column: $table.badges,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
     column: $table.updatedAt,
     builder: (column) => ColumnOrderings(column),
@@ -7152,6 +7211,9 @@ class $$NotificationPrefsTableTableAnnotationComposer
     column: $table.groupWineShared,
     builder: (column) => column,
   );
+
+  GeneratedColumn<bool> get badges =>
+      $composableBuilder(column: $table.badges, builder: (column) => column);
 
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
@@ -7209,6 +7271,7 @@ class $$NotificationPrefsTableTableTableManager
                 Value<bool> friendActivity = const Value.absent(),
                 Value<bool> groupActivity = const Value.absent(),
                 Value<bool> groupWineShared = const Value.absent(),
+                Value<bool> badges = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => NotificationPrefsTableCompanion(
@@ -7218,6 +7281,7 @@ class $$NotificationPrefsTableTableTableManager
                 friendActivity: friendActivity,
                 groupActivity: groupActivity,
                 groupWineShared: groupWineShared,
+                badges: badges,
                 updatedAt: updatedAt,
                 rowid: rowid,
               ),
@@ -7229,6 +7293,7 @@ class $$NotificationPrefsTableTableTableManager
                 Value<bool> friendActivity = const Value.absent(),
                 Value<bool> groupActivity = const Value.absent(),
                 Value<bool> groupWineShared = const Value.absent(),
+                Value<bool> badges = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => NotificationPrefsTableCompanion.insert(
@@ -7238,6 +7303,7 @@ class $$NotificationPrefsTableTableTableManager
                 friendActivity: friendActivity,
                 groupActivity: groupActivity,
                 groupWineShared: groupWineShared,
+                badges: badges,
                 updatedAt: updatedAt,
                 rowid: rowid,
               ),

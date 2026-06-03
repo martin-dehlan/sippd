@@ -128,13 +128,13 @@ class _BadgesBody extends StatelessWidget {
   }
 }
 
-class _BadgeGrid extends StatelessWidget {
+class _BadgeGrid extends ConsumerWidget {
   const _BadgeGrid({required this.badges});
 
   final List<BadgeEntity> badges;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -149,7 +149,13 @@ class _BadgeGrid extends StatelessWidget {
         final badge = badges[i];
         return BadgeCard(
           badge: badge,
-          onTap: () => showBadgeDetailSheet(context, badge),
+          onTap: () {
+            ref.read(analyticsProvider).capture(
+              'badge_detail_viewed',
+              properties: {'badge_id': badge.id},
+            );
+            showBadgeDetailSheet(context, badge);
+          },
         );
       },
     );

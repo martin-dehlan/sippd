@@ -58,7 +58,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -84,8 +84,21 @@ class AppDatabase extends _$AppDatabase {
       if (from < 5) {
         await _migrateToV5();
       }
+      if (from < 6) {
+        await _migrateToV6();
+      }
     },
   );
+
+  /// v6 adds the `badges` notification opt-out (constant default → safe ADD
+  /// COLUMN). Idempotent via PRAGMA check.
+  Future<void> _migrateToV6() async {
+    await _addColumnSafe(
+      'notification_prefs',
+      'badges',
+      'INTEGER NOT NULL DEFAULT 1',
+    );
+  }
 
   /// v5 adds the badge progress cache (JSON payload per user). Idempotent —
   /// PRAGMA-checked so a re-run on a partially-migrated DB no-ops.

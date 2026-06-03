@@ -7091,6 +7091,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Nice'**
   String get badgesNice;
+
+  /// Notification settings toggle label for badge unlock pushes.
+  ///
+  /// In en, this message translates to:
+  /// **'Badge unlocks'**
+  String get tileBadgesLabel;
+
+  /// Notification settings toggle subtitle for badge unlock pushes.
+  ///
+  /// In en, this message translates to:
+  /// **'Get notified when you earn a new badge'**
+  String get tileBadgesSubtitle;
 }
 
 class _AppLocalizationsDelegate

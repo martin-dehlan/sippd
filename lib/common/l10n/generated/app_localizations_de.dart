@@ -3935,4 +3935,10 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get badgesNice => 'Nice';
+
+  @override
+  String get tileBadgesLabel => 'Badge unlocks';
+
+  @override
+  String get tileBadgesSubtitle => 'Get notified when you earn a new badge';
 }
