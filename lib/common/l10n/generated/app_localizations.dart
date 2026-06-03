@@ -7001,6 +7001,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Page not found: {uri}'**
   String routeNotFound(String uri);
+
+  /// Badges screen / section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Badges'**
+  String get badgesTitle;
+
+  /// Header showing how many badges are unlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'{earned} of {total} earned'**
+  String badgesEarnedCount(int earned, int total);
+
+  /// Badge category: volume of wines rated.
+  ///
+  /// In en, this message translates to:
+  /// **'Milestones'**
+  String get badgesCategoryVolume;
+
+  /// Badge category: wine type.
+  ///
+  /// In en, this message translates to:
+  /// **'Wine Styles'**
+  String get badgesCategoryType;
+
+  /// Badge category: geography.
+  ///
+  /// In en, this message translates to:
+  /// **'Around the World'**
+  String get badgesCategoryGeo;
+
+  /// Badge category: grape varieties.
+  ///
+  /// In en, this message translates to:
+  /// **'Grapes'**
+  String get badgesCategoryGrape;
+
+  /// Badge category: social activity.
+  ///
+  /// In en, this message translates to:
+  /// **'Social'**
+  String get badgesCategorySocial;
+
+  /// Badge category: engagement / quality.
+  ///
+  /// In en, this message translates to:
+  /// **'Connoisseurship'**
+  String get badgesCategoryEngagement;
+
+  /// Empty-state title on the badges screen.
+  ///
+  /// In en, this message translates to:
+  /// **'No badges yet'**
+  String get badgesEmptyTitle;
+
+  /// Empty-state body on the badges screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Start rating wines to earn your first badge.'**
+  String get badgesEmptyBody;
+
+  /// Retry button on the badges error state.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get badgesRetry;
+
+  /// Label shown on an earned badge with no date.
+  ///
+  /// In en, this message translates to:
+  /// **'Earned'**
+  String get badgesEarnedLabel;
+
+  /// Label showing when a badge was earned.
+  ///
+  /// In en, this message translates to:
+  /// **'Earned {date}'**
+  String badgesEarnedOn(String date);
+
+  /// Celebration overlay headline.
+  ///
+  /// In en, this message translates to:
+  /// **'BADGE UNLOCKED'**
+  String get badgesUnlockedHeadline;
+
+  /// Dismiss button on the badge unlock celebration.
+  ///
+  /// In en, this message translates to:
+  /// **'Nice'**
+  String get badgesNice;
 }
 
 class _AppLocalizationsDelegate

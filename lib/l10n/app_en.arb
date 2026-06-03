@@ -2192,5 +2192,46 @@
         "example": "/unknown-path"
       }
     }
-  }
+  },
+  "badgesTitle": "Badges",
+  "@badgesTitle": { "description": "Badges screen / section title." },
+  "badgesEarnedCount": "{earned} of {total} earned",
+  "@badgesEarnedCount": {
+    "description": "Header showing how many badges are unlocked.",
+    "placeholders": {
+      "earned": { "type": "int", "example": "12" },
+      "total": { "type": "int", "example": "25" }
+    }
+  },
+  "badgesCategoryVolume": "Milestones",
+  "@badgesCategoryVolume": { "description": "Badge category: volume of wines rated." },
+  "badgesCategoryType": "Wine Styles",
+  "@badgesCategoryType": { "description": "Badge category: wine type." },
+  "badgesCategoryGeo": "Around the World",
+  "@badgesCategoryGeo": { "description": "Badge category: geography." },
+  "badgesCategoryGrape": "Grapes",
+  "@badgesCategoryGrape": { "description": "Badge category: grape varieties." },
+  "badgesCategorySocial": "Social",
+  "@badgesCategorySocial": { "description": "Badge category: social activity." },
+  "badgesCategoryEngagement": "Connoisseurship",
+  "@badgesCategoryEngagement": { "description": "Badge category: engagement / quality." },
+  "badgesEmptyTitle": "No badges yet",
+  "@badgesEmptyTitle": { "description": "Empty-state title on the badges screen." },
+  "badgesEmptyBody": "Start rating wines to earn your first badge.",
+  "@badgesEmptyBody": { "description": "Empty-state body on the badges screen." },
+  "badgesRetry": "Retry",
+  "@badgesRetry": { "description": "Retry button on the badges error state." },
+  "badgesEarnedLabel": "Earned",
+  "@badgesEarnedLabel": { "description": "Label shown on an earned badge with no date." },
+  "badgesEarnedOn": "Earned {date}",
+  "@badgesEarnedOn": {
+    "description": "Label showing when a badge was earned.",
+    "placeholders": {
+      "date": { "type": "String", "example": "March 5, 2026" }
+    }
+  },
+  "badgesUnlockedHeadline": "BADGE UNLOCKED",
+  "@badgesUnlockedHeadline": { "description": "Celebration overlay headline." },
+  "badgesNice": "Nice",
+  "@badgesNice": { "description": "Dismiss button on the badge unlock celebration." }
 }

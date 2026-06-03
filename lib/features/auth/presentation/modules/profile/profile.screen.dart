@@ -115,6 +115,11 @@ class ProfileScreen extends ConsumerWidget {
                 onTap: () => context.push(AppRoutes.friends),
               ),
               _MenuItem(
+                icon: PhosphorIconsFill.trophy,
+                label: l10n.badgesTitle,
+                onTap: () => context.push(AppRoutes.badges),
+              ),
+              _MenuItem(
                 icon: PhosphorIconsRegular.bell,
                 label: l10n.authProfileNotifications,
                 onTap: () => context.push(AppRoutes.profileNotifications),

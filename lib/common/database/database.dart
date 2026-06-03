@@ -10,6 +10,7 @@ import 'tables/canonical_grape.table.dart';
 import 'tables/profiles.table.dart';
 import 'tables/pending_image_uploads.table.dart';
 import 'tables/rating_summary_cache.table.dart';
+import 'tables/badge_progress_cache.table.dart';
 import 'daos/wines.dao.dart';
 import 'daos/wine_memories.dao.dart';
 import 'daos/wine_memory_photos.dao.dart';
@@ -19,6 +20,7 @@ import 'daos/canonical_grape.dao.dart';
 import 'daos/profiles.dao.dart';
 import 'daos/pending_image_uploads.dao.dart';
 import 'daos/rating_summary_cache.dao.dart';
+import 'daos/badge_progress_cache.dao.dart';
 
 part 'database.g.dart';
 
@@ -33,6 +35,7 @@ part 'database.g.dart';
     ProfilesTable,
     PendingImageUploadsTable,
     RatingSummaryCacheTable,
+    BadgeProgressCacheTable,
   ],
   daos: [
     WinesDao,
@@ -44,6 +47,7 @@ part 'database.g.dart';
     ProfilesDao,
     PendingImageUploadsDao,
     RatingSummaryCacheDao,
+    BadgeProgressCacheDao,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -54,7 +58,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -77,8 +81,24 @@ class AppDatabase extends _$AppDatabase {
       if (from < 4) {
         await _migrateToV4();
       }
+      if (from < 5) {
+        await _migrateToV5();
+      }
     },
   );
+
+  /// v5 adds the badge progress cache (JSON payload per user). Idempotent —
+  /// PRAGMA-checked so a re-run on a partially-migrated DB no-ops.
+  Future<void> _migrateToV5() async {
+    if (!await _tableExists('badge_progress_cache')) {
+      await customStatement(
+        'CREATE TABLE badge_progress_cache ('
+        'user_id TEXT NOT NULL PRIMARY KEY, '
+        'payload TEXT NOT NULL, '
+        'fetched_at INTEGER NOT NULL)',
+      );
+    }
+  }
 
   Future<void> _migrateToV4() async {
     // From v1 — defensive in case the broken v3 upgrade created it already.
