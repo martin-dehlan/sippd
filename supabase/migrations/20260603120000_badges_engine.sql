@@ -279,7 +279,7 @@ begin
 end;
 $$;
 
-revoke all on function public.evaluate_user_badges(uuid) from public, anon, authenticated;
+revoke all on function public.evaluate_user_badges(uuid, boolean) from public, anon, authenticated;
 
 
 -- Self-serve wrapper for the client's manual refresh / celebration flow.
