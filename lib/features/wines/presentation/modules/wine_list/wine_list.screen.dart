@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -31,6 +32,41 @@ class _WineListScreenState extends ConsumerState<WineListScreen>
 
   late final AnimationController _revealController;
   bool _pullTriggered = false;
+  // Long-press a tile to enter delete mode: every tile reveals a × badge
+  // and taps stop navigating so a stray tap can't open a wine mid-delete.
+  bool _deleteMode = false;
+
+  void _exitDeleteMode() {
+    if (_deleteMode) setState(() => _deleteMode = false);
+  }
+
+  Future<void> _confirmDelete(WineEntity wine) async {
+    final l10n = AppLocalizations.of(context);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.winesDetailDeleteTitle),
+        content: Text(l10n.winesDetailDeleteBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.winesDetailDeleteCancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(
+              l10n.winesDetailDeleteConfirm,
+              style: TextStyle(color: Theme.of(ctx).colorScheme.error),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      await ref.read(wineControllerProvider.notifier).deleteWine(wine.id);
+      _exitDeleteMode();
+    }
+  }
 
   @override
   void initState() {
@@ -93,227 +129,256 @@ class _WineListScreenState extends ConsumerState<WineListScreen>
       }
     });
 
-    return Scaffold(
-      body: SafeArea(
-        child: NotificationListener<ScrollNotification>(
-          onNotification: _handleScroll,
-          child: CustomScrollView(
-            restorationId: 'wine_list_scroll',
-            physics: const BouncingScrollPhysics(
-              parent: AlwaysScrollableScrollPhysics(),
-            ),
-            slivers: [
-              SliverToBoxAdapter(child: SizedBox(height: context.xl)),
+    return PopScope(
+      canPop: !_deleteMode,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _exitDeleteMode();
+      },
+      child: Scaffold(
+        body: SafeArea(
+          child: NotificationListener<ScrollNotification>(
+            onNotification: _handleScroll,
+            child: CustomScrollView(
+              restorationId: 'wine_list_scroll',
+              physics: const BouncingScrollPhysics(
+                parent: AlwaysScrollableScrollPhysics(),
+              ),
+              slivers: [
+                SliverToBoxAdapter(child: SizedBox(height: context.xl)),
 
-              // Header
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: context.paddingH * 1.3,
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'SIPPD',
-                              style: GoogleFonts.playfairDisplay(
-                                fontSize: context.titleFont * 1.3,
-                                fontWeight: FontWeight.w800,
-                                letterSpacing: -0.5,
-                                height: 1.05,
+                // Header
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: context.paddingH * 1.3,
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'SIPPD',
+                                style: GoogleFonts.playfairDisplay(
+                                  fontSize: context.titleFont * 1.3,
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: -0.5,
+                                  height: 1.05,
+                                ),
                               ),
-                            ),
-                            SizedBox(height: context.xs),
-                            Text(
-                              l10n.winesListSubtitle,
-                              style: TextStyle(
-                                fontSize: context.captionFont,
+                              SizedBox(height: context.xs),
+                              Text(
+                                l10n.winesListSubtitle,
+                                style: TextStyle(
+                                  fontSize: context.captionFont,
+                                  color: cs.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Tooltip(
+                          message: switch (sortMode) {
+                            WineSortMode.rating => l10n.winesListSortRating,
+                            WineSortMode.recent => l10n.winesListSortRecent,
+                            WineSortMode.name => l10n.winesListSortName,
+                          },
+                          child: GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onTap: () =>
+                                ref.read(wineSortProvider.notifier).toggle(),
+                            child: Padding(
+                              padding: EdgeInsets.all(context.w * 0.02),
+                              child: Icon(
+                                // One icon per sort mode so the toggle
+                                // visibly shifts on each tap (rating ↔ recent
+                                // ↔ name had only two icons before).
+                                switch (sortMode) {
+                                  WineSortMode.rating =>
+                                    PhosphorIconsRegular.star,
+                                  WineSortMode.recent =>
+                                    PhosphorIconsRegular.clock,
+                                  WineSortMode.name =>
+                                    PhosphorIconsRegular.textAa,
+                                },
+                                size: context.w * 0.055,
                                 color: cs.onSurfaceVariant,
                               ),
                             ),
-                          ],
-                        ),
-                      ),
-                      Tooltip(
-                        message: switch (sortMode) {
-                          WineSortMode.rating => l10n.winesListSortRating,
-                          WineSortMode.recent => l10n.winesListSortRecent,
-                          WineSortMode.name => l10n.winesListSortName,
-                        },
-                        child: GestureDetector(
-                          behavior: HitTestBehavior.opaque,
-                          onTap: () =>
-                              ref.read(wineSortProvider.notifier).toggle(),
-                          child: Padding(
-                            padding: EdgeInsets.all(context.w * 0.02),
-                            child: Icon(
-                              // One icon per sort mode so the toggle
-                              // visibly shifts on each tap (rating ↔ recent
-                              // ↔ name had only two icons before).
-                              switch (sortMode) {
-                                WineSortMode.rating =>
-                                  PhosphorIconsRegular.star,
-                                WineSortMode.recent =>
-                                  PhosphorIconsRegular.clock,
-                                WineSortMode.name =>
-                                  PhosphorIconsRegular.textAa,
-                              },
-                              size: context.w * 0.055,
-                              color: cs.onSurfaceVariant,
-                            ),
                           ),
                         ),
-                      ),
-                      SizedBox(width: context.w * 0.01),
-                      _HeaderIconButton(
-                        icon: PhosphorIconsRegular.chartBar,
-                        onTap: () => context.push(AppRoutes.wineStats),
-                        tooltip: l10n.winesListTooltipStats,
-                      ),
-                      SizedBox(width: context.w * 0.01),
-                      _HeaderIconButton(
-                        icon: PhosphorIconsRegular.plus,
-                        onTap: () => context.push(AppRoutes.wineAdd),
-                        tooltip: l10n.winesListTooltipAddWine,
-                      ),
-                    ],
+                        SizedBox(width: context.w * 0.01),
+                        if (_deleteMode)
+                          _HeaderIconButton(
+                            icon: PhosphorIconsRegular.check,
+                            onTap: _exitDeleteMode,
+                            tooltip: l10n.winesListDeleteDone,
+                          )
+                        else ...[
+                          _HeaderIconButton(
+                            icon: PhosphorIconsRegular.scales,
+                            onTap: () => startCompareSelection(context),
+                            tooltip: l10n.winesListTooltipCompare,
+                          ),
+                          SizedBox(width: context.w * 0.01),
+                          _HeaderIconButton(
+                            icon: PhosphorIconsRegular.chartBar,
+                            onTap: () => context.push(AppRoutes.wineStats),
+                            tooltip: l10n.winesListTooltipStats,
+                          ),
+                          SizedBox(width: context.w * 0.01),
+                          _HeaderIconButton(
+                            icon: PhosphorIconsRegular.plus,
+                            onTap: () => context.push(AppRoutes.wineAdd),
+                            tooltip: l10n.winesListTooltipAddWine,
+                          ),
+                        ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
 
-              SliverToBoxAdapter(child: SizedBox(height: context.l)),
+                SliverToBoxAdapter(child: SizedBox(height: context.l)),
 
-              // Filter chips
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: context.paddingH * 1.3,
+                // Filter chips
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: context.paddingH * 1.3,
+                    ),
+                    child: const WineTypeFilterBar(),
                   ),
-                  child: const WineTypeFilterBar(),
                 ),
-              ),
 
-              // Pull-down search bar (revealed via overscroll above filters)
-              SliverToBoxAdapter(
-                child: AnimatedBuilder(
-                  animation: _revealController,
-                  builder: (context, child) {
-                    final t = _revealController.value;
-                    if (t == 0.0) return const SizedBox.shrink();
-                    return ClipRect(
-                      child: Align(
-                        alignment: Alignment.topCenter,
-                        heightFactor: t,
-                        child: Opacity(opacity: t, child: child),
+                // Pull-down search bar (revealed via overscroll above filters)
+                SliverToBoxAdapter(
+                  child: AnimatedBuilder(
+                    animation: _revealController,
+                    builder: (context, child) {
+                      final t = _revealController.value;
+                      if (t == 0.0) return const SizedBox.shrink();
+                      return ClipRect(
+                        child: Align(
+                          alignment: Alignment.topCenter,
+                          heightFactor: t,
+                          child: Opacity(opacity: t, child: child),
+                        ),
+                      );
+                    },
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(
+                        context.paddingH,
+                        context.m,
+                        context.paddingH,
+                        0,
+                      ),
+                      child: const WineSearchBar(),
+                    ),
+                  ),
+                ),
+
+                SliverToBoxAdapter(child: SizedBox(height: context.m)),
+
+                // Wine list
+                winesAsync.when(
+                  data: (wines) {
+                    var filtered = typeFilter == null
+                        ? wines
+                        : wines.where((w) => w.type == typeFilter).toList();
+
+                    if (searchQuery.isNotEmpty) {
+                      filtered = filtered.where((w) {
+                        final name = w.name.toLowerCase();
+                        final winery = (w.winery ?? '').toLowerCase();
+                        final region = (w.region ?? '').toLowerCase();
+                        return name.contains(searchQuery) ||
+                            winery.contains(searchQuery) ||
+                            region.contains(searchQuery);
+                      }).toList();
+                    }
+
+                    if (filtered.isEmpty) {
+                      return SliverFillRemaining(
+                        hasScrollBody: false,
+                        child: WineEmptyState(
+                          hasFilter:
+                              typeFilter != null || searchQuery.isNotEmpty,
+                        ),
+                      );
+                    }
+
+                    final byRating = List<WineEntity>.from(filtered)
+                      ..sort((a, b) => b.rating.compareTo(a.rating));
+                    final rankById = {
+                      for (var i = 0; i < byRating.length; i++)
+                        byRating[i].id: i + 1,
+                    };
+                    final sorted = switch (sortMode) {
+                      WineSortMode.rating => byRating,
+                      WineSortMode.recent => List<WineEntity>.from(
+                        filtered,
+                      )..sort((a, b) => b.createdAt.compareTo(a.createdAt)),
+                      WineSortMode.name =>
+                        List<WineEntity>.from(filtered)..sort(
+                          (a, b) => a.name.toLowerCase().compareTo(
+                            b.name.toLowerCase(),
+                          ),
+                        ),
+                    };
+
+                    return SliverPadding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: context.paddingH,
+                      ),
+                      sliver: SliverList.separated(
+                        itemCount: sorted.length,
+                        separatorBuilder: (_, _) => SizedBox(height: context.s),
+                        itemBuilder: (context, index) => StaggeredListEntrance(
+                          index: index,
+                          enabled: animateEntrances,
+                          child: WineCardWidget(
+                            wine: sorted[index],
+                            rank: rankById[sorted[index].id] ?? index + 1,
+                            compact: true,
+                            circularImage: false,
+                            inDeleteMode: _deleteMode,
+                            onDelete: () => _confirmDelete(sorted[index]),
+                            onTap: _deleteMode
+                                ? _exitDeleteMode
+                                : () => context.push(
+                                    AppRoutes.wineDetailPath(sorted[index].id),
+                                  ),
+                            onLongPress: _deleteMode
+                                ? null
+                                : () {
+                                    HapticFeedback.mediumImpact();
+                                    setState(() => _deleteMode = true);
+                                  },
+                          ),
+                        ),
                       ),
                     );
                   },
-                  child: Padding(
-                    padding: EdgeInsets.fromLTRB(
-                      context.paddingH,
-                      context.m,
-                      context.paddingH,
-                      0,
-                    ),
-                    child: const WineSearchBar(),
+                  loading: () => const SliverFillRemaining(
+                    child: Center(child: CircularProgressIndicator()),
                   ),
-                ),
-              ),
-
-              SliverToBoxAdapter(child: SizedBox(height: context.m)),
-
-              // Wine list
-              winesAsync.when(
-                data: (wines) {
-                  var filtered = typeFilter == null
-                      ? wines
-                      : wines.where((w) => w.type == typeFilter).toList();
-
-                  if (searchQuery.isNotEmpty) {
-                    filtered = filtered.where((w) {
-                      final name = w.name.toLowerCase();
-                      final winery = (w.winery ?? '').toLowerCase();
-                      final region = (w.region ?? '').toLowerCase();
-                      return name.contains(searchQuery) ||
-                          winery.contains(searchQuery) ||
-                          region.contains(searchQuery);
-                    }).toList();
-                  }
-
-                  if (filtered.isEmpty) {
-                    return SliverFillRemaining(
-                      hasScrollBody: false,
-                      child: WineEmptyState(
-                        hasFilter: typeFilter != null || searchQuery.isNotEmpty,
+                  error: (error, _) => SliverFillRemaining(
+                    child: Center(
+                      child: ErrorView(
+                        title: l10n.winesListErrorLoad,
+                        onRetry: () => ref.invalidate(wineControllerProvider),
+                        error: error,
                       ),
-                    );
-                  }
-
-                  final byRating = List<WineEntity>.from(filtered)
-                    ..sort((a, b) => b.rating.compareTo(a.rating));
-                  final rankById = {
-                    for (var i = 0; i < byRating.length; i++)
-                      byRating[i].id: i + 1,
-                  };
-                  final sorted = switch (sortMode) {
-                    WineSortMode.rating => byRating,
-                    WineSortMode.recent => List<WineEntity>.from(
-                      filtered,
-                    )..sort((a, b) => b.createdAt.compareTo(a.createdAt)),
-                    WineSortMode.name =>
-                      List<WineEntity>.from(filtered)..sort(
-                        (a, b) => a.name.toLowerCase().compareTo(
-                          b.name.toLowerCase(),
-                        ),
-                      ),
-                  };
-
-                  return SliverPadding(
-                    padding: EdgeInsets.symmetric(horizontal: context.paddingH),
-                    sliver: SliverList.separated(
-                      itemCount: sorted.length,
-                      separatorBuilder: (_, _) => SizedBox(height: context.s),
-                      itemBuilder: (context, index) => StaggeredListEntrance(
-                        index: index,
-                        enabled: animateEntrances,
-                        child: WineCardWidget(
-                          wine: sorted[index],
-                          rank: rankById[sorted[index].id] ?? index + 1,
-                          compact: true,
-                          circularImage: false,
-                          onTap: () => context.push(
-                            AppRoutes.wineDetailPath(sorted[index].id),
-                          ),
-                          onLongPress: () => startCompareFlow(
-                            context,
-                            sourceWineId: sorted[index].id,
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                },
-                loading: () => const SliverFillRemaining(
-                  child: Center(child: CircularProgressIndicator()),
-                ),
-                error: (error, _) => SliverFillRemaining(
-                  child: Center(
-                    child: ErrorView(
-                      title: l10n.winesListErrorLoad,
-                      onRetry: () => ref.invalidate(wineControllerProvider),
-                      error: error,
                     ),
                   ),
                 ),
-              ),
 
-              // Bottom padding
-              SliverToBoxAdapter(child: SizedBox(height: context.xl * 2)),
-            ],
+                // Bottom padding
+                SliverToBoxAdapter(child: SizedBox(height: context.xl * 2)),
+              ],
+            ),
           ),
         ),
       ),

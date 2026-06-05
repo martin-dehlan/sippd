@@ -238,6 +238,8 @@
   "winesListSortName": "Sorteer: naam",
   "winesListTooltipStats": "Jouw stats",
   "winesListTooltipAddWine": "Wijn toevoegen",
+  "winesListTooltipCompare": "Wijnen vergelijken",
+  "winesListDeleteDone": "Klaar",
   "winesListErrorLoad": "Kon wijnen niet laden",
   "winesEmptyTitle": "Nog geen wijnen",
   "winesEmptyFilteredTitle": "Geen wijnen voldoen aan filter",
@@ -298,6 +300,7 @@
 
   "winesCompareHeader": "VERGELIJKEN",
   "winesComparePickerSubtitle": "Kies de tweede wijn.",
+  "winesComparePickerFirstSubtitle": "Kies de eerste wijn.",
   "winesComparePickerEmptyTitle": "Nog geen andere wijnen",
   "winesComparePickerEmptyBody": "Voeg minstens één wijn meer toe om te vergelijken.",
   "winesComparePickerErrorFallback": "Kon wijnen niet laden.",
