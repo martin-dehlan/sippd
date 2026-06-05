@@ -749,6 +749,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get winesListTooltipAddWine => 'Add wine';
 
   @override
+  String get winesListTooltipCompare => 'Compare wines';
+
+  @override
+  String get winesListDeleteDone => 'Done';
+
+  @override
   String get winesListErrorLoad => 'Couldn\'t load wines';
 
   @override
@@ -925,6 +931,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get winesComparePickerSubtitle => 'Pick the second wine.';
+
+  @override
+  String get winesComparePickerFirstSubtitle => 'Pick the first wine.';
 
   @override
   String get winesComparePickerEmptyTitle => 'No other wines yet';

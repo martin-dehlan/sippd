@@ -1506,6 +1506,18 @@ abstract class AppLocalizations {
   /// **'Add wine'**
   String get winesListTooltipAddWine;
 
+  /// No description provided for @winesListTooltipCompare.
+  ///
+  /// In en, this message translates to:
+  /// **'Compare wines'**
+  String get winesListTooltipCompare;
+
+  /// No description provided for @winesListDeleteDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get winesListDeleteDone;
+
   /// No description provided for @winesListErrorLoad.
   ///
   /// In en, this message translates to:
@@ -1835,6 +1847,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Pick the second wine.'**
   String get winesComparePickerSubtitle;
+
+  /// No description provided for @winesComparePickerFirstSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick the first wine.'**
+  String get winesComparePickerFirstSubtitle;
 
   /// No description provided for @winesComparePickerEmptyTitle.
   ///

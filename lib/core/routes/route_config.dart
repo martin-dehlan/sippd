@@ -310,7 +310,10 @@ GoRouter goRouter(GoRouterRef ref) {
         path: AppRoutes.wineComparePicker,
         builder: (context, state) {
           final q = state.uri.queryParameters;
-          return WineComparePickerScreen(excludeId: q['excludeId']);
+          return WineComparePickerScreen(
+            excludeId: q['excludeId'],
+            firstPick: q['first'] == '1',
+          );
         },
       ),
       GoRoute(

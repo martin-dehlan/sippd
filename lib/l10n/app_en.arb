@@ -314,6 +314,8 @@
   "winesListSortName": "Sort: name",
   "winesListTooltipStats": "Your stats",
   "winesListTooltipAddWine": "Add wine",
+  "winesListTooltipCompare": "Compare wines",
+  "winesListDeleteDone": "Done",
   "winesListErrorLoad": "Couldn't load wines",
   "winesEmptyTitle": "No wines yet",
   "winesEmptyFilteredTitle": "No wines match filter",
@@ -400,6 +402,7 @@
 
   "winesCompareHeader": "COMPARE",
   "winesComparePickerSubtitle": "Pick the second wine.",
+  "winesComparePickerFirstSubtitle": "Pick the first wine.",
   "winesComparePickerEmptyTitle": "No other wines yet",
   "winesComparePickerEmptyBody": "Add at least one more wine to compare.",
   "winesComparePickerErrorFallback": "Couldn't load wines.",

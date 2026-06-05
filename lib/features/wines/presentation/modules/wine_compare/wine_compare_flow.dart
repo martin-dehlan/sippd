@@ -13,3 +13,14 @@ Future<void> startCompareFlow(
   if (!context.mounted) return;
   context.push(AppRoutes.wineComparePath(sourceWineId, picked));
 }
+
+/// Two-step compare entry used by the wine-list header icon: pick the first
+/// wine (no exclusion), then hand off to [startCompareFlow] to pick the second.
+Future<void> startCompareSelection(BuildContext context) async {
+  final first = await context.push<String?>(
+    '${AppRoutes.wineComparePicker}?first=1',
+  );
+  if (first == null || first.isEmpty) return;
+  if (!context.mounted) return;
+  await startCompareFlow(context, sourceWineId: first);
+}

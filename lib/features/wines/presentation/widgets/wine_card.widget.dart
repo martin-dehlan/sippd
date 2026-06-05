@@ -14,6 +14,11 @@ class WineCardWidget extends StatelessWidget {
   final bool compact;
   final double? ratingOverride;
   final bool hideRatingIfEmpty;
+  // Delete mode is opt-in so the shared card stays unchanged for the
+  // compare picker and the group/tasting pickers. The home wine list
+  // flips this on after a long-press to reveal a per-tile delete badge.
+  final bool inDeleteMode;
+  final VoidCallback? onDelete;
   // Photo shape inside the card. Default `null` defers to the
   // historical behaviour (compact → circle), so existing call sites
   // — including the group/tasting pickers that want avatar pins —
@@ -31,6 +36,8 @@ class WineCardWidget extends StatelessWidget {
     this.ratingOverride,
     this.hideRatingIfEmpty = false,
     this.circularImage,
+    this.inDeleteMode = false,
+    this.onDelete,
   });
 
   @override
@@ -38,8 +45,9 @@ class WineCardWidget extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
     final effectiveRating = ratingOverride ?? wine.rating;
     final showRating = !(hideRatingIfEmpty && effectiveRating <= 0);
+    final showDeleteBadge = inDeleteMode && onDelete != null;
 
-    return Material(
+    final card = Material(
       color: cs.surfaceContainer,
       borderRadius: BorderRadius.circular(context.w * 0.04),
       child: InkWell(
@@ -149,6 +157,35 @@ class WineCardWidget extends StatelessWidget {
           ),
         ),
       ),
+    );
+
+    if (!showDeleteBadge) return card;
+
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        card,
+        Positioned(
+          top: -context.xs,
+          right: -context.xs,
+          child: Material(
+            color: cs.error,
+            shape: const CircleBorder(),
+            clipBehavior: Clip.antiAlias,
+            child: InkWell(
+              onTap: onDelete,
+              child: Padding(
+                padding: EdgeInsets.all(context.w * 0.012),
+                child: Icon(
+                  PhosphorIconsBold.x,
+                  size: context.w * 0.045,
+                  color: cs.onError,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 

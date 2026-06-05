@@ -251,6 +251,8 @@
   "winesListSortName": "Ordina: nome",
   "winesListTooltipStats": "Le tue stats",
   "winesListTooltipAddWine": "Aggiungi vino",
+  "winesListTooltipCompare": "Confronta vini",
+  "winesListDeleteDone": "Fatto",
   "winesListErrorLoad": "Non sono riuscito a caricare i vini",
   "winesEmptyTitle": "Ancora nessun vino",
   "winesEmptyFilteredTitle": "Nessun vino corrisponde al filtro",
@@ -337,6 +339,7 @@
 
   "winesCompareHeader": "CONFRONTA",
   "winesComparePickerSubtitle": "Scegli il secondo vino.",
+  "winesComparePickerFirstSubtitle": "Scegli il primo vino.",
   "winesComparePickerEmptyTitle": "Ancora nessun altro vino",
   "winesComparePickerEmptyBody": "Aggiungi almeno un altro vino per confrontare.",
   "winesComparePickerErrorFallback": "Non sono riuscito a caricare i vini.",

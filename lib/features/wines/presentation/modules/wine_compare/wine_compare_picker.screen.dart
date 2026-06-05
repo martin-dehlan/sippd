@@ -13,8 +13,15 @@ import '../../widgets/wine_card.widget.dart';
 
 class WineComparePickerScreen extends ConsumerWidget {
   final String? excludeId;
+  // True when this is the first of the two picks (compare started from the
+  // list header rather than from a source wine) — only changes the subtitle.
+  final bool firstPick;
 
-  const WineComparePickerScreen({super.key, this.excludeId});
+  const WineComparePickerScreen({
+    super.key,
+    this.excludeId,
+    this.firstPick = false,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -34,7 +41,7 @@ class WineComparePickerScreen extends ConsumerWidget {
                     padding: EdgeInsets.symmetric(
                       horizontal: context.paddingH * 1.3,
                     ),
-                    child: const _Header(),
+                    child: _Header(firstPick: firstPick),
                   ),
                 ),
                 SliverToBoxAdapter(child: SizedBox(height: context.l)),
@@ -119,12 +126,16 @@ class WineComparePickerScreen extends ConsumerWidget {
 }
 
 class _Header extends StatelessWidget {
-  const _Header();
+  final bool firstPick;
+  const _Header({this.firstPick = false});
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context);
+    final subtitle = firstPick
+        ? l10n.winesComparePickerFirstSubtitle
+        : l10n.winesComparePickerSubtitle;
     return Animate(
       effects: [FadeEffect(duration: 360.ms)],
       child: Column(
@@ -142,7 +153,7 @@ class _Header extends StatelessWidget {
           ),
           SizedBox(height: context.xs),
           Text(
-            l10n.winesComparePickerSubtitle,
+            subtitle,
             style: TextStyle(
               fontSize: context.captionFont,
               color: cs.onSurfaceVariant,
