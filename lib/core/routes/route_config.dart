@@ -38,7 +38,9 @@ import '../../features/tastings/presentation/modules/tasting_detail/tasting_deta
 import '../../features/tastings/presentation/modules/tasting_edit/tasting_edit.screen.dart';
 import '../../features/wines/domain/entities/wine.entity.dart';
 import '../../features/wines/presentation/modules/wine_list/wine_list.screen.dart';
+import '../../features/scanner/presentation/modules/scan_capture/scan_capture.screen.dart';
 import '../../features/wines/presentation/modules/wine_add/wine_add.screen.dart';
+import '../../features/wines/presentation/widgets/wine_form.widget.dart';
 import '../../features/wines/presentation/modules/wine_stats/wine_stats.screen.dart';
 import '../../features/wines/presentation/modules/wine_detail/wine_detail.screen.dart';
 import '../../features/wines/presentation/modules/wine_edit/wine_edit.screen.dart';
@@ -297,7 +299,12 @@ GoRouter goRouter(GoRouterRef ref) {
       ),
       GoRoute(
         path: AppRoutes.wineAdd,
-        builder: (context, state) => const WineAddScreen(),
+        builder: (context, state) =>
+            WineAddScreen(initialData: state.extra as WineFormData?),
+      ),
+      GoRoute(
+        path: AppRoutes.wineScan,
+        builder: (context, state) => const ScanCaptureScreen(),
       ),
       GoRoute(
         path: AppRoutes.wineCompare,

@@ -23,6 +23,7 @@ class AppRoutes {
   static const String wineStats = '/wines/stats';
   static const String wineDetail = '/wines/:id';
   static const String wineAdd = '/wines/add';
+  static const String wineScan = '/wines/scan';
   static const String wineEdit = '/wines/:id/edit';
   static const String wineCompare = '/wines/compare';
   static const String wineComparePicker = '/wines/compare/pick';
