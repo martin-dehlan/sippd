@@ -13,6 +13,7 @@ import '../../../../common/data/wine_regions.dart';
 import '../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../common/utils/price_format.dart';
 import '../../../../common/utils/responsive.dart';
+import '../../../../common/widgets/number_picker_sheet.dart';
 import '../../../../common/widgets/price_input_sheet.dart';
 import '../../../../common/widgets/text_input_sheet.dart';
 import '../../../../common/widgets/year_picker_sheet.dart';
@@ -55,8 +56,6 @@ class WineFormData {
   final int? servingTempC;
   final int? decantMinutes;
   final double? abv;
-  final String? aroma;
-  final String? foodPairings;
 
   /// Pro expert tasting dimensions the user typed inside the rating
   /// sheet during *initial* wine creation. Null for edits and for
@@ -84,8 +83,6 @@ class WineFormData {
     this.servingTempC,
     this.decantMinutes,
     this.abv,
-    this.aroma,
-    this.foodPairings,
     this.pendingExpertTasting,
   });
 }
@@ -156,8 +153,6 @@ class WineFormState extends ConsumerState<WineForm>
   int? _servingTempC;
   int? _decantMinutes;
   double? _abv;
-  String? _aroma;
-  String? _foodPairings;
 
   String? _imageUrl;
   String? _localImagePath;
@@ -196,8 +191,6 @@ class WineFormState extends ConsumerState<WineForm>
       _servingTempC = init.servingTempC;
       _decantMinutes = init.decantMinutes;
       _abv = init.abv;
-      _aroma = init.aroma;
-      _foodPairings = init.foodPairings;
       _imageUrl = init.imageUrl;
       _localImagePath = init.localImagePath;
     }
@@ -270,8 +263,6 @@ class WineFormState extends ConsumerState<WineForm>
     servingTempC: _servingTempC,
     decantMinutes: _decantMinutes,
     abv: _abv,
-    aroma: _aroma,
-    foodPairings: _foodPairings,
     imageUrl: _imageUrl,
     localImagePath: _localImagePath,
     pendingExpertTasting: _pendingExpertTasting,
@@ -411,86 +402,52 @@ class WineFormState extends ConsumerState<WineForm>
   // into #185/#186.
   Future<void> _editServingTemp() async {
     FocusScope.of(context).unfocus();
-    final result = await showTextInputSheet(
+    final result = await showNumberPickerSheet(
       context: context,
-      title: 'Serving temperature (°C)',
-      initial: _servingTempC?.toString(),
-      hint: 'e.g. 10',
-      keyboardType: TextInputType.number,
-      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-      maxLength: 2,
+      title: 'Serving temperature',
+      min: 4,
+      max: 22,
+      step: 1,
+      initial: _servingTempC?.toDouble(),
+      unit: '°C',
     );
     if (!mounted || result == null) return;
-    setState(() => _servingTempC = int.tryParse(result.trim()));
+    setState(() => _servingTempC = result.value?.round());
     _scheduleAutoSave();
   }
 
   Future<void> _editDecant() async {
     FocusScope.of(context).unfocus();
-    final result = await showTextInputSheet(
+    final result = await showNumberPickerSheet(
       context: context,
-      title: 'Decant time (minutes)',
-      initial: _decantMinutes?.toString(),
-      hint: 'e.g. 30',
-      keyboardType: TextInputType.number,
-      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-      maxLength: 3,
+      title: 'Decant time',
+      min: 0,
+      max: 180,
+      step: 5,
+      initial: _decantMinutes?.toDouble(),
+      unit: ' min',
     );
     if (!mounted || result == null) return;
-    setState(() => _decantMinutes = int.tryParse(result.trim()));
+    setState(() => _decantMinutes = result.value?.round());
     _scheduleAutoSave();
   }
 
   Future<void> _editAbv() async {
     FocusScope.of(context).unfocus();
-    final result = await showTextInputSheet(
+    final result = await showNumberPickerSheet(
       context: context,
-      title: 'Alcohol (% vol)',
-      initial: _abv == null ? null : _fmtAbv(_abv!),
-      hint: 'e.g. 13.5',
-      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-      inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))],
-      maxLength: 4,
+      title: 'Alcohol',
+      min: 0,
+      max: 20,
+      step: 0.5,
+      initial: _abv,
+      unit: '%',
+      fractionDigits: 1,
     );
     if (!mounted || result == null) return;
-    setState(() => _abv = double.tryParse(result.trim()));
+    setState(() => _abv = result.value);
     _scheduleAutoSave();
   }
-
-  Future<void> _editAroma() async {
-    FocusScope.of(context).unfocus();
-    final result = await showTextInputSheet(
-      context: context,
-      title: 'Aroma',
-      initial: _aroma,
-      hint: 'e.g. green apple, citrus, floral',
-      maxLines: 2,
-      maxLength: 120,
-    );
-    if (!mounted || result == null) return;
-    setState(() => _aroma = result.trim().isEmpty ? null : result.trim());
-    _scheduleAutoSave();
-  }
-
-  Future<void> _editFoodPairings() async {
-    FocusScope.of(context).unfocus();
-    final result = await showTextInputSheet(
-      context: context,
-      title: 'Food pairings',
-      initial: _foodPairings,
-      hint: 'comma separated, e.g. fish, cheese',
-      maxLines: 2,
-      maxLength: 160,
-    );
-    if (!mounted || result == null) return;
-    setState(
-      () => _foodPairings = result.trim().isEmpty ? null : result.trim(),
-    );
-    _scheduleAutoSave();
-  }
-
-  static String _fmtAbv(double v) =>
-      v == v.roundToDouble() ? v.toStringAsFixed(0) : v.toStringAsFixed(1);
 
   Future<void> _editNotes() async {
     FocusScope.of(context).unfocus();
@@ -634,8 +591,6 @@ class WineFormState extends ConsumerState<WineForm>
           servingTempC: _servingTempC,
           decantMinutes: _decantMinutes,
           abv: _abv,
-          aroma: _aroma,
-          foodPairings: _foodPairings,
           onGrapeTap: _editGrape,
           onVintageTap: _editVintage,
           onNotesTap: _editNotes,
@@ -643,8 +598,6 @@ class WineFormState extends ConsumerState<WineForm>
           onServingTempTap: _editServingTemp,
           onDecantTap: _editDecant,
           onAbvTap: _editAbv,
-          onAromaTap: _editAroma,
-          onFoodPairingsTap: _editFoodPairings,
         ),
         if (widget.momentsHook != null) ...[
           SizedBox(height: context.l),
@@ -1049,8 +1002,6 @@ class WineFormChipsRow extends StatelessWidget {
   final int? servingTempC;
   final int? decantMinutes;
   final double? abv;
-  final String? aroma;
-  final String? foodPairings;
   final VoidCallback onGrapeTap;
   final VoidCallback onVintageTap;
   final VoidCallback onNotesTap;
@@ -1058,8 +1009,6 @@ class WineFormChipsRow extends StatelessWidget {
   final VoidCallback onServingTempTap;
   final VoidCallback onDecantTap;
   final VoidCallback onAbvTap;
-  final VoidCallback onAromaTap;
-  final VoidCallback onFoodPairingsTap;
 
   const WineFormChipsRow({
     super.key,
@@ -1070,8 +1019,6 @@ class WineFormChipsRow extends StatelessWidget {
     required this.servingTempC,
     required this.decantMinutes,
     required this.abv,
-    required this.aroma,
-    required this.foodPairings,
     required this.onGrapeTap,
     required this.onVintageTap,
     required this.onNotesTap,
@@ -1079,8 +1026,6 @@ class WineFormChipsRow extends StatelessWidget {
     required this.onServingTempTap,
     required this.onDecantTap,
     required this.onAbvTap,
-    required this.onAromaTap,
-    required this.onFoodPairingsTap,
   });
 
   static String _fmtAbv(double v) =>
@@ -1141,18 +1086,6 @@ class WineFormChipsRow extends StatelessWidget {
             label: abv != null ? '${_fmtAbv(abv!)}%' : 'ABV',
             isEmpty: abv == null,
             onTap: onAbvTap,
-          ),
-          WineFormFieldChip(
-            icon: PhosphorIconsRegular.flower,
-            label: 'Aroma',
-            isEmpty: aroma == null || aroma!.isEmpty,
-            onTap: onAromaTap,
-          ),
-          WineFormFieldChip(
-            icon: PhosphorIconsRegular.forkKnife,
-            label: 'Pairings',
-            isEmpty: foodPairings == null || foodPairings!.isEmpty,
-            onTap: onFoodPairingsTap,
           ),
         ],
       ),

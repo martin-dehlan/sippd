@@ -402,11 +402,7 @@ class _WineAttributesSection extends StatelessWidget {
         ),
     ];
 
-    final aroma = wine.aroma?.trim() ?? '';
-    final pairings = wine.foodPairings?.trim() ?? '';
-    if (chips.isEmpty && aroma.isEmpty && pairings.isEmpty) {
-      return const SizedBox.shrink();
-    }
+    if (chips.isEmpty) return const SizedBox.shrink();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -416,20 +412,10 @@ class _WineAttributesSection extends StatelessWidget {
         SizedBox(height: context.m),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (chips.isNotEmpty)
-                Wrap(spacing: context.s, runSpacing: context.s, children: chips),
-              if (aroma.isNotEmpty) ...[
-                SizedBox(height: context.m),
-                _AttrLine(label: l10n.winesAttrAromaLabel, value: aroma),
-              ],
-              if (pairings.isNotEmpty) ...[
-                SizedBox(height: context.s),
-                _AttrLine(label: l10n.winesAttrPairingsLabel, value: pairings),
-              ],
-            ],
+          child: Wrap(
+            spacing: context.s,
+            runSpacing: context.s,
+            children: chips,
           ),
         ),
       ],
@@ -467,32 +453,6 @@ class _AttrChip extends StatelessWidget {
               fontWeight: FontWeight.w500,
             ),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class _AttrLine extends StatelessWidget {
-  final String label;
-  final String value;
-  const _AttrLine({required this.label, required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return RichText(
-      text: TextSpan(
-        style: TextStyle(fontSize: context.captionFont, height: 1.45),
-        children: [
-          TextSpan(
-            text: '$label: ',
-            style: TextStyle(
-              color: cs.onSurfaceVariant,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          TextSpan(text: value, style: TextStyle(color: cs.onSurface)),
         ],
       ),
     );

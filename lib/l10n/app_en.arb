@@ -364,8 +364,6 @@
   "@winesAttrAbv": {
     "placeholders": { "abv": { "type": "String" } }
   },
-  "winesAttrAromaLabel": "Aroma",
-  "winesAttrPairingsLabel": "Pairs with",
   "winesDetailPlaceEmpty": "No place set",
   "winesDetailDeleteTitle": "Delete wine?",
   "winesDetailDeleteBody": "This cannot be undone.",

@@ -872,12 +872,6 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get winesAttrAromaLabel => 'Aroma';
-
-  @override
-  String get winesAttrPairingsLabel => 'Passt zu';
-
-  @override
   String get winesDetailPlaceEmpty => 'Kein Ort hinterlegt';
 
   @override

@@ -31,8 +31,6 @@ class WineEntity with _$WineEntity {
     int? servingTempC,
     int? decantMinutes,
     double? abv,
-    String? aroma,
-    String? foodPairings,
     String? nameNorm,
     required String userId,
     @Default('friends') String visibility,

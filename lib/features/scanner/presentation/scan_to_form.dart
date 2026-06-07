@@ -14,6 +14,13 @@ WineFormData scanToFormData(
   WineType type = WineType.red,
 }) {
   final grape = grapeDisplay ?? (r.grapes.isNotEmpty ? r.grapes.first : null);
+  // Aroma descriptors live under tasting notes (no standalone field) —
+  // fold FastCork's aroma into the notes prefill.
+  final notesParts = <String>[
+    if (r.tastingNotes != null && r.tastingNotes!.trim().isNotEmpty)
+      r.tastingNotes!.trim(),
+    if (r.aroma != null && r.aroma!.trim().isNotEmpty) r.aroma!.trim(),
+  ];
   return WineFormData(
     name: r.displayName ?? '',
     rating: 5.0,
@@ -25,11 +32,9 @@ WineFormData scanToFormData(
     winery: r.producer,
     country: r.country,
     region: r.region ?? r.appellation,
-    notes: r.tastingNotes,
+    notes: notesParts.isEmpty ? null : notesParts.join('\n'),
     servingTempC: r.servingTempC,
     decantMinutes: r.decantMinutes,
     abv: r.abv,
-    aroma: r.aroma,
-    foodPairings: r.foodPairings.isEmpty ? null : r.foodPairings.join(', '),
   );
 }

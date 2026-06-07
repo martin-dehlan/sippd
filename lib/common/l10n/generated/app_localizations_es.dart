@@ -869,12 +869,6 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String get winesAttrAromaLabel => 'Aroma';
-
-  @override
-  String get winesAttrPairingsLabel => 'Pairs with';
-
-  @override
   String get winesDetailPlaceEmpty => 'Sin lugar';
 
   @override

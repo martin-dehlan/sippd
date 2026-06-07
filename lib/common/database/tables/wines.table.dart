@@ -27,8 +27,6 @@ class WinesTable extends Table {
   IntColumn get servingTempC => integer().nullable()();
   IntColumn get decantMinutes => integer().nullable()();
   RealColumn get abv => real().nullable()();
-  TextColumn get aroma => text().nullable()();
-  TextColumn get foodPairings => text().nullable()();
   TextColumn get nameNorm => text().nullable()();
   TextColumn get userId => text()();
   TextColumn get visibility => text().withDefault(const Constant('friends'))();

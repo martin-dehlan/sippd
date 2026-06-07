@@ -253,8 +253,6 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
       servingTempC: data.servingTempC,
       decantMinutes: data.decantMinutes,
       abv: data.abv,
-      aroma: data.aroma,
-      foodPairings: data.foodPairings,
       imageUrl: data.imageUrl,
       localImagePath: data.localImagePath,
       userId: userId,

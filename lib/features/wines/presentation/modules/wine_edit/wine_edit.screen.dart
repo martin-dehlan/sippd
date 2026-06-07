@@ -81,8 +81,6 @@ class _WineEditScreenState extends ConsumerState<WineEditScreen> {
                   servingTempC: data.servingTempC,
                   decantMinutes: data.decantMinutes,
                   abv: data.abv,
-                  aroma: data.aroma,
-                  foodPairings: data.foodPairings,
                   imageUrl: data.imageUrl,
                   localImagePath: data.localImagePath,
                   updatedAt: DateTime.now(),
@@ -135,8 +133,6 @@ class _WineEditScreenState extends ConsumerState<WineEditScreen> {
       servingTempC: wine.servingTempC,
       decantMinutes: wine.decantMinutes,
       abv: wine.abv,
-      aroma: wine.aroma,
-      foodPairings: wine.foodPairings,
       imageUrl: wine.imageUrl,
       localImagePath: wine.localImagePath,
     );

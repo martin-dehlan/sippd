@@ -89,8 +89,6 @@ class AppDatabase extends _$AppDatabase {
     await _addColumnSafe('wines', 'serving_temp_c', 'INTEGER');
     await _addColumnSafe('wines', 'decant_minutes', 'INTEGER');
     await _addColumnSafe('wines', 'abv', 'REAL');
-    await _addColumnSafe('wines', 'aroma', 'TEXT');
-    await _addColumnSafe('wines', 'food_pairings', 'TEXT');
   }
 
   Future<void> _migrateToV4() async {

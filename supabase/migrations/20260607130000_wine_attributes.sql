@@ -8,5 +8,3 @@
 alter table public.wines add column if not exists serving_temp_c integer;
 alter table public.wines add column if not exists decant_minutes  integer;
 alter table public.wines add column if not exists abv             real;
-alter table public.wines add column if not exists aroma           text;
-alter table public.wines add column if not exists food_pairings   text;
