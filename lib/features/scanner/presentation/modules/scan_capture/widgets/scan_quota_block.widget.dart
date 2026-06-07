@@ -3,25 +3,39 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../../../common/utils/responsive.dart';
 
-/// Shown when the user has used today's 5 scans. The scanner is free for
-/// everyone, so there is no upsell — just a clear reset hint and a path
-/// to add the wine by hand right now.
+/// Shown when the user has used today's 5 free scans. Resets tomorrow;
+/// a decent (non-pushy) nudge to go Pro for more, plus the always-present
+/// manual-entry path.
 class ScanQuotaBlock extends StatelessWidget {
+  final VoidCallback onUpgrade;
   final VoidCallback onAddManually;
 
-  const ScanQuotaBlock({super.key, required this.onAddManually});
+  const ScanQuotaBlock({
+    super.key,
+    required this.onUpgrade,
+    required this.onAddManually,
+  });
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Icon(
-          PhosphorIconsRegular.clockCountdown,
-          size: context.w * 0.18,
-          color: cs.primary,
+        Center(
+          child: Container(
+            padding: EdgeInsets.all(context.w * 0.045),
+            decoration: BoxDecoration(
+              color: cs.primary.withValues(alpha: 0.12),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              PhosphorIconsRegular.sparkle,
+              size: context.w * 0.1,
+              color: cs.primary,
+            ),
+          ),
         ),
         SizedBox(height: context.l),
         Text(
@@ -35,20 +49,30 @@ class ScanQuotaBlock extends StatelessWidget {
         ),
         SizedBox(height: context.s),
         Text(
-          'Your scans reset tomorrow. You can still add this wine by hand.',
+          'They reset tomorrow. Want to keep scanning now? Go Pro for more.',
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: context.bodyFont,
+            height: 1.4,
             color: cs.onSurfaceVariant,
           ),
         ),
         SizedBox(height: context.xl),
-        FilledButton(
-          onPressed: onAddManually,
+        FilledButton.icon(
+          onPressed: onUpgrade,
+          icon: const Icon(PhosphorIconsRegular.sparkle),
+          label: const Text('Go Pro'),
           style: FilledButton.styleFrom(
             padding: EdgeInsets.symmetric(vertical: context.m),
           ),
-          child: const Text('Add by hand'),
+        ),
+        SizedBox(height: context.xs),
+        TextButton(
+          onPressed: onAddManually,
+          child: Text(
+            'Add by hand',
+            style: TextStyle(color: cs.onSurfaceVariant),
+          ),
         ),
       ],
     );

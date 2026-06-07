@@ -115,6 +115,11 @@ class _ScanCaptureScreenState extends ConsumerState<ScanCaptureScreen> {
     context.pushReplacement(AppRoutes.wineAdd, extra: formData);
   }
 
+  void _openPaywall() {
+    ref.read(analyticsProvider).capture('scan_quota_upgrade_tap');
+    context.push(AppRoutes.paywall, extra: const {'source': 'wine_scan_quota'});
+  }
+
   /// Escape hatch — always reachable: drop into the normal add-wine form
   /// with no prefill, skipping recognition entirely.
   void _addManually() {
@@ -161,7 +166,12 @@ class _ScanCaptureScreenState extends ConsumerState<ScanCaptureScreen> {
       error: (e, _) {
         if (e is ValidationError && e.field == 'scan_quota') {
           ref.read(analyticsProvider).capture('scan_quota_exceeded');
-          return _OverlayCard(child: ScanQuotaBlock(onAddManually: _addManually));
+          return _OverlayCard(
+            child: ScanQuotaBlock(
+              onUpgrade: _openPaywall,
+              onAddManually: _addManually,
+            ),
+          );
         }
         ref.read(analyticsProvider).capture('scan_failed');
         return _OverlayCard(
