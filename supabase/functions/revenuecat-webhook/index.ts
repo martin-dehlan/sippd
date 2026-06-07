@@ -31,12 +31,21 @@ const GRANT = new Set([
 ]);
 const REVOKE = new Set(['EXPIRATION']);
 
+// Constant-time string compare so the auth check can't be timing-probed.
+function safeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let r = 0;
+  for (let i = 0; i < a.length; i++) r |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return r === 0;
+}
+
 Deno.serve(async (req) => {
   if (req.method !== 'POST') {
     return new Response('method_not_allowed', { status: 405 });
   }
   // Auth: RevenueCat sends the exact Authorization header we configured.
-  if (!WEBHOOK_AUTH || req.headers.get('Authorization') !== WEBHOOK_AUTH) {
+  const auth = req.headers.get('Authorization') ?? '';
+  if (!WEBHOOK_AUTH || !safeEqual(auth, WEBHOOK_AUTH)) {
     return new Response('unauthorized', { status: 401 });
   }
 
