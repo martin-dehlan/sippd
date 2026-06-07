@@ -34,8 +34,10 @@ class ScanCaptureScreen extends ConsumerStatefulWidget {
 
 class _ScanCaptureScreenState extends ConsumerState<ScanCaptureScreen> {
   bool _handledResult = false;
+  String? _capturedImagePath;
 
   Future<void> _scan(File image, String source) async {
+    _capturedImagePath = image.path;
     ref
         .read(analyticsProvider)
         .capture('scan_started', properties: {'source': source});
@@ -107,6 +109,7 @@ class _ScanCaptureScreenState extends ConsumerState<ScanCaptureScreen> {
       canonicalGrapeId: canonicalGrapeId,
       grapeDisplay: grapeDisplay,
       type: type,
+      localImagePath: _capturedImagePath,
     );
     _reset();
     context.pushReplacement(AppRoutes.wineAdd, extra: formData);

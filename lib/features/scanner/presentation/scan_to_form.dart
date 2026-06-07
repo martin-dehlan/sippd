@@ -14,6 +14,7 @@ WineFormData scanToFormData(
   String? canonicalGrapeId,
   String? grapeDisplay,
   WineType type = WineType.red,
+  String? localImagePath,
 }) {
   final grape = grapeDisplay ?? (r.grapes.isNotEmpty ? r.grapes.first : null);
   // Aroma descriptors live under tasting notes (no standalone field) —
@@ -42,6 +43,8 @@ WineFormData scanToFormData(
     servingTempC: r.servingTempC,
     decantMinutes: r.decantMinutes,
     abv: r.abv,
+    localImagePath: localImagePath,
+    photoFromScan: localImagePath != null,
     pendingExpertTasting: aromaTags.isEmpty
         ? null
         : ExpertTastingEntity(aromaTags: aromaTags),

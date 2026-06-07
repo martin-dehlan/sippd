@@ -52,6 +52,10 @@ class WineFormData {
   final String? imageUrl;
   final String? localImagePath;
 
+  /// True when [localImagePath] is the photo captured during a label scan,
+  /// so the form can nudge the user to swap in a nicer shot.
+  final bool photoFromScan;
+
   // Scanner-recognized attributes (FastCork). Carried through to the wine.
   final int? servingTempC;
   final int? decantMinutes;
@@ -80,6 +84,7 @@ class WineFormData {
     this.notes,
     this.imageUrl,
     this.localImagePath,
+    this.photoFromScan = false,
     this.servingTempC,
     this.decantMinutes,
     this.abv,
@@ -156,6 +161,7 @@ class WineFormState extends ConsumerState<WineForm>
 
   String? _imageUrl;
   String? _localImagePath;
+  bool _photoFromScan = false;
   // Expert tasting typed during initial wine creation, persisted by the
   // host screen after canonical id resolves. Survives sheet re-opens.
   ExpertTastingEntity? _pendingExpertTasting;
@@ -194,6 +200,7 @@ class WineFormState extends ConsumerState<WineForm>
       _pendingExpertTasting = init.pendingExpertTasting;
       _imageUrl = init.imageUrl;
       _localImagePath = init.localImagePath;
+      _photoFromScan = init.photoFromScan && init.localImagePath != null;
     }
 
     _nameController.addListener(() {
@@ -553,6 +560,8 @@ class WineFormState extends ConsumerState<WineForm>
                       setState(() {
                         _imageUrl = v.imageUrl;
                         _localImagePath = v.localPath;
+                        // User swapped the photo → the scan nudge is done.
+                        _photoFromScan = false;
                       });
                       _scheduleAutoSave();
                     },
@@ -583,6 +592,10 @@ class WineFormState extends ConsumerState<WineForm>
             ],
           ),
         ),
+        if (_photoFromScan && _localImagePath != null) ...[
+          SizedBox(height: context.s),
+          const _ScanPhotoHint(),
+        ],
         SizedBox(height: context.l),
         WineFormChipsRow(
           grape: _resolvedGrapeLabel(),
@@ -988,6 +1001,37 @@ class WineFormCountryStat extends StatelessWidget {
             ),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ScanPhotoHint extends StatelessWidget {
+  const _ScanPhotoHint();
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: context.paddingH),
+      child: Row(
+        children: [
+          Icon(
+            PhosphorIconsRegular.sparkle,
+            size: context.bodyFont,
+            color: cs.primary,
+          ),
+          SizedBox(width: context.w * 0.02),
+          Expanded(
+            child: Text(
+              'Scanned photo — tap it to swap in a nicer one',
+              style: TextStyle(
+                fontSize: context.captionFont,
+                color: cs.onSurfaceVariant,
+              ),
+            ),
           ),
         ],
       ),
