@@ -503,7 +503,10 @@ class _TastingAromaSectionState extends State<TastingAromaSection> {
               if (widget.selected.isNotEmpty) ...[
                 SizedBox(width: context.xs),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 1,
+                  ),
                   decoration: BoxDecoration(
                     color: cs.primary.withValues(alpha: 0.18),
                     borderRadius: BorderRadius.circular(6),
@@ -585,7 +588,10 @@ class _TastingAromaSectionState extends State<TastingAromaSection> {
           ),
         ),
         SizedBox(height: context.m),
-        if (q.isEmpty) ..._browseGrouped(context, cs) else _filtered(context, cs, q),
+        if (q.isEmpty)
+          ..._browseGrouped(context, cs)
+        else
+          _filtered(context, cs, q),
       ],
     );
   }
@@ -597,7 +603,10 @@ class _TastingAromaSectionState extends State<TastingAromaSection> {
       if (selected.isNotEmpty) ...[
         _groupLabel(context, cs, 'Selected'),
         SizedBox(height: context.s),
-        _wrap([for (final t in kAromaTags.where(selected.contains)) _chip(context, cs, t)]),
+        _wrap([
+          for (final t in kAromaTags.where(selected.contains))
+            _chip(context, cs, t),
+        ]),
         SizedBox(height: context.m),
       ],
       for (final entry in kAromaGroups.entries) ...[
@@ -626,24 +635,30 @@ class _TastingAromaSectionState extends State<TastingAromaSection> {
   Widget _wrap(List<Widget> children) =>
       Wrap(spacing: context.s, runSpacing: context.s, children: children);
 
-  Widget _groupLabel(BuildContext context, ColorScheme cs, String label) => Text(
-    label.toUpperCase(),
-    style: TextStyle(
-      fontSize: context.captionFont * 0.78,
-      fontWeight: FontWeight.w700,
-      color: cs.onSurfaceVariant,
-      letterSpacing: 0.6,
-    ),
-  );
+  Widget _groupLabel(BuildContext context, ColorScheme cs, String label) =>
+      Text(
+        label.toUpperCase(),
+        style: TextStyle(
+          fontSize: context.captionFont * 0.78,
+          fontWeight: FontWeight.w700,
+          color: cs.onSurfaceVariant,
+          letterSpacing: 0.6,
+        ),
+      );
 
   Widget _chip(BuildContext context, ColorScheme cs, String tag) {
     final isOn = widget.selected.contains(tag);
     return GestureDetector(
       onTap: () => _toggle(tag),
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: context.w * 0.03, vertical: 7),
+        padding: EdgeInsets.symmetric(
+          horizontal: context.w * 0.03,
+          vertical: 7,
+        ),
         decoration: BoxDecoration(
-          color: isOn ? cs.primary.withValues(alpha: 0.18) : cs.surfaceContainer,
+          color: isOn
+              ? cs.primary.withValues(alpha: 0.18)
+              : cs.surfaceContainer,
           borderRadius: BorderRadius.circular(context.w * 0.04),
           border: Border.all(
             color: isOn ? cs.primary : Colors.transparent,

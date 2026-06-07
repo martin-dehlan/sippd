@@ -20,18 +20,12 @@ class ScannerApi {
 
   ScannerApi(this._client);
 
-  Future<ScanResponseModel> recognize(
-    File image, {
-    String lang = 'en',
-  }) async {
+  Future<ScanResponseModel> recognize(File image, {String lang = 'en'}) async {
     final bytes = await image.readAsBytes();
     try {
       final res = await _client.functions.invoke(
         'recognize-label',
-        body: {
-          'image_base64': base64Encode(bytes),
-          'lang': lang,
-        },
+        body: {'image_base64': base64Encode(bytes), 'lang': lang},
       );
       final data = res.data as Map<String, dynamic>;
       return ScanResponseModel.fromJson(data);

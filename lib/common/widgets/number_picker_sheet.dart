@@ -40,14 +40,19 @@ Future<NumberPickerResult?> showNumberPickerSheet({
     isScrollControlled: true,
     backgroundColor: Theme.of(context).colorScheme.surface,
     shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(context.w * 0.05)),
+      borderRadius: BorderRadius.vertical(
+        top: Radius.circular(context.w * 0.05),
+      ),
     ),
     builder: (ctx) {
       final cs = Theme.of(ctx).colorScheme;
       final l10n = AppLocalizations.of(ctx);
       return SafeArea(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: ctx.paddingH, vertical: ctx.m),
+          padding: EdgeInsets.symmetric(
+            horizontal: ctx.paddingH,
+            vertical: ctx.m,
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,

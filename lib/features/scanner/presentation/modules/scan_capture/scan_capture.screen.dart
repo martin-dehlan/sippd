@@ -220,10 +220,7 @@ class _ScanningOverlay extends StatelessWidget {
             SizedBox(height: context.l),
             Text(
               'Reading the label…',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: context.bodyFont,
-              ),
+              style: TextStyle(color: Colors.white, fontSize: context.bodyFont),
             ),
           ],
         ),

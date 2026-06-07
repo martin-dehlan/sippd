@@ -227,7 +227,10 @@ class _FramingGuide extends StatelessWidget {
         width: context.w * 0.7,
         height: context.h * 0.42,
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.white.withValues(alpha: 0.7), width: 2),
+          border: Border.all(
+            color: Colors.white.withValues(alpha: 0.7),
+            width: 2,
+          ),
           borderRadius: BorderRadius.circular(context.w * 0.04),
         ),
       ),
@@ -255,10 +258,7 @@ class _BottomControls extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _RoundButton(
-              icon: PhosphorIconsRegular.image,
-              onTap: onGallery,
-            ),
+            _RoundButton(icon: PhosphorIconsRegular.image, onTap: onGallery),
             SizedBox(width: context.w * 0.12),
             _ShutterButton(capturing: capturing, onTap: onCapture),
             SizedBox(width: context.w * 0.12),

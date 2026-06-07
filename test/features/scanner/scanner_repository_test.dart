@@ -45,9 +45,7 @@ void main() {
     test(
       'maps ScanQuotaExceeded to AppError.validation(field: scan_quota)',
       () async {
-        when(
-          () => api.recognize(any(), lang: any(named: 'lang')),
-        ).thenThrow(
+        when(() => api.recognize(any(), lang: any(named: 'lang'))).thenThrow(
           const ScanQuotaExceeded(
             ScanQuotaModel(used: 5, limit: 5, remaining: 0),
           ),
