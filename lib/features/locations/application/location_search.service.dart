@@ -50,6 +50,33 @@ class LocationSearchService {
       );
     }
 
+    return _resolveCurrentEntity(language: language);
+  }
+
+  /// Best-effort current location that NEVER prompts: returns it only when
+  /// permission is already granted and services are on, else null. Used to
+  /// silently prefill a new wine's place without nagging the user.
+  Future<LocationEntity?> resolveCurrentLocationIfPermitted({
+    String language = 'en-US,en;q=0.5',
+  }) async {
+    try {
+      if (!await Geolocator.isLocationServiceEnabled()) return null;
+      final permission = await Geolocator.checkPermission();
+      if (permission != LocationPermission.whileInUse &&
+          permission != LocationPermission.always) {
+        return null;
+      }
+      return _resolveCurrentEntity(language: language);
+    } catch (_) {
+      // Prefill is best-effort — a GPS/network hiccup must never break the
+      // form. The user can still set the place by hand.
+      return null;
+    }
+  }
+
+  Future<LocationEntity> _resolveCurrentEntity({
+    required String language,
+  }) async {
     final pos = await Geolocator.getCurrentPosition(
       locationSettings: const LocationSettings(
         accuracy: LocationAccuracy.high,

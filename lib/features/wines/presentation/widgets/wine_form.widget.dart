@@ -16,6 +16,7 @@ import '../../../../common/utils/responsive.dart';
 import '../../../../common/widgets/price_input_sheet.dart';
 import '../../../../common/widgets/text_input_sheet.dart';
 import '../../../../common/widgets/year_picker_sheet.dart';
+import '../../../locations/controller/location.provider.dart';
 import '../../../locations/domain/entities/location.entity.dart';
 import '../../../locations/presentation/widgets/location_search_sheet.dart';
 import '../../controller/wine.provider.dart';
@@ -184,6 +185,22 @@ class WineFormState extends ConsumerState<WineForm>
       }
       _scheduleAutoSave();
     });
+
+    // New wine with no place yet → silently drop in the current location
+    // when location permission is already granted (never prompts).
+    if (widget.wine == null && _location == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _autofillLocation());
+    }
+  }
+
+  Future<void> _autofillLocation() async {
+    final loc = await ref
+        .read(locationSearchServiceProvider)
+        .resolveCurrentLocationIfPermitted();
+    // Bail if the user already picked a place while we were resolving.
+    if (!mounted || loc == null || _location != null) return;
+    setState(() => _location = loc);
+    widget.onChanged?.call(_collect());
   }
 
   @override
