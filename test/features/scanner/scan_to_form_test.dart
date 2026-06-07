@@ -3,7 +3,6 @@ import 'package:sippd/features/scanner/domain/entities/scan_quota.entity.dart';
 import 'package:sippd/features/scanner/domain/entities/scan_result.entity.dart';
 import 'package:sippd/features/scanner/presentation/scan_to_form.dart';
 import 'package:sippd/features/wines/domain/entities/wine.entity.dart';
-import 'package:sippd/features/wines/presentation/widgets/wine_form.widget.dart';
 
 /// What these catch: how a recognized label becomes the add-wine prefill —
 /// name fallback, region←appellation fallback, and the canonical-vs-free-text
