@@ -155,13 +155,10 @@ class WineFormState extends ConsumerState<WineForm>
       vsync: this,
       duration: const Duration(milliseconds: 400),
     );
-    _nameController.addListener(() {
-      if (_nameError && _nameController.text.trim().isNotEmpty) {
-        setState(() => _nameError = false);
-      }
-      _scheduleAutoSave();
-    });
-
+    // Prefill BEFORE wiring the listener — setting `_nameController.text`
+    // notifies listeners, and `_scheduleAutoSave` calls `widget.onChanged`
+    // which `setState`s the host screen. Doing that during initState throws
+    // "setState() called during build". Seed state first, then listen.
     final init = widget.initial;
     if (init != null) {
       _nameController.text = init.name;
@@ -180,6 +177,13 @@ class WineFormState extends ConsumerState<WineForm>
       _imageUrl = init.imageUrl;
       _localImagePath = init.localImagePath;
     }
+
+    _nameController.addListener(() {
+      if (_nameError && _nameController.text.trim().isNotEmpty) {
+        setState(() => _nameError = false);
+      }
+      _scheduleAutoSave();
+    });
   }
 
   @override
