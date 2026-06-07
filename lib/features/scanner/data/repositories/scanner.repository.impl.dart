@@ -10,22 +10,18 @@ import '../models/scan_result.model.dart';
 class ScannerRepositoryImpl implements ScannerRepository {
   final ScannerApi _api;
 
-  /// Pro flag is resolved in the controller (RevenueCat lives client-side)
-  /// and threaded down so the Edge Function applies the right quota.
-  final bool Function() _isPro;
-
-  ScannerRepositoryImpl(this._api, this._isPro);
+  ScannerRepositoryImpl(this._api);
 
   @override
   Future<ScanResultEntity> recognize(File image, {String lang = 'en'}) async {
     try {
-      final model = await _api.recognize(image, lang: lang, isPro: _isPro());
+      final model = await _api.recognize(image, lang: lang);
       return model.toEntity();
     } on ScanQuotaExceeded {
-      // Surfaced as a typed validation error the UI keys on to route to
-      // the paywall (field == 'scan_quota').
+      // Surfaced as a typed validation error the UI keys on to show the
+      // daily-limit block + manual-entry fallback (field == 'scan_quota').
       throw const AppError.validation(
-        message: 'Scan limit reached.',
+        message: 'Daily scan limit reached.',
         field: 'scan_quota',
       );
     }
@@ -34,7 +30,7 @@ class ScannerRepositoryImpl implements ScannerRepository {
   @override
   Future<ScanQuotaEntity?> quotaStatus() async {
     try {
-      final model = await _api.quotaStatus(isPro: _isPro());
+      final model = await _api.quotaStatus();
       return model?.toEntity();
     } catch (_) {
       // Best-effort counter — offline / RPC failure just hides the badge.

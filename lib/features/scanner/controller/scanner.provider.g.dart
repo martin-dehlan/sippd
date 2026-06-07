@@ -6,7 +6,7 @@ part of 'scanner.provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$scannerApiHash() => r'92a964743a2922e27b0a3cc63fbb98bfb7ed9f29';
+String _$scannerApiHash() => r'60f579294d5d9e4fde7b9ca5b1e6ae38408bc5c4';
 
 /// See also [scannerApi].
 @ProviderFor(scannerApi)
@@ -23,7 +23,7 @@ final scannerApiProvider = AutoDisposeProvider<ScannerApi>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef ScannerApiRef = AutoDisposeProviderRef<ScannerApi>;
-String _$scannerRepositoryHash() => r'1b882d58e9f8640d2311cc6a169e551003cea8af';
+String _$scannerRepositoryHash() => r'1031c8740fea14dbd9760d7734aaf1366a66a553';
 
 /// See also [scannerRepository].
 @ProviderFor(scannerRepository)
@@ -41,7 +41,7 @@ final scannerRepositoryProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef ScannerRepositoryRef = AutoDisposeProviderRef<ScannerRepository>;
-String _$scanQuotaHash() => r'51e9dda1bdc837c02c7dedebe6fe61dd3a406dae';
+String _$scanQuotaHash() => r'860d1de3ae44d103d9ad07596d39da746c89506d';
 
 /// Remaining scans in the rolling window (read-only — does not consume).
 /// Powers the "N scans left" badge near the scan entry point.

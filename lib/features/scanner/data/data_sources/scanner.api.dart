@@ -5,8 +5,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../models/scan_result.model.dart';
 
-/// Raised when the user has no scans left in the rolling window. Carries
-/// the quota so the UI can show the exact limit + route to the paywall.
+/// Raised when the user has used today's scans. Carries the quota so the
+/// UI can show the exact limit and offer manual entry instead.
 class ScanQuotaExceeded implements Exception {
   final ScanQuotaModel quota;
   const ScanQuotaExceeded(this.quota);
@@ -23,7 +23,6 @@ class ScannerApi {
   Future<ScanResponseModel> recognize(
     File image, {
     String lang = 'en',
-    bool isPro = false,
   }) async {
     final bytes = await image.readAsBytes();
     try {
@@ -32,7 +31,6 @@ class ScannerApi {
         body: {
           'image_base64': base64Encode(bytes),
           'lang': lang,
-          'is_pro': isPro,
         },
       );
       final data = res.data as Map<String, dynamic>;
@@ -54,11 +52,8 @@ class ScannerApi {
   }
 
   /// Read-only remaining count (does not consume a scan).
-  Future<ScanQuotaModel?> quotaStatus({bool isPro = false}) async {
-    final data = await _client.rpc<dynamic>(
-      'scan_quota_status',
-      params: {'p_is_pro': isPro},
-    );
+  Future<ScanQuotaModel?> quotaStatus() async {
+    final data = await _client.rpc<dynamic>('scan_quota_status');
     final row = data is List && data.isNotEmpty ? data.first : data;
     if (row is! Map) return null;
     return ScanQuotaModel.fromJson(Map<String, dynamic>.from(row));

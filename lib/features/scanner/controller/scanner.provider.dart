@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../auth/controller/auth.provider.dart';
-import '../../paywall/controller/paywall.provider.dart';
 import '../data/data_sources/scanner.api.dart';
 import '../data/repositories/scanner.repository.impl.dart';
 import '../domain/entities/scan_quota.entity.dart';
@@ -19,10 +18,7 @@ ScannerApi scannerApi(ScannerApiRef ref) {
 
 @riverpod
 ScannerRepository scannerRepository(ScannerRepositoryRef ref) {
-  return ScannerRepositoryImpl(
-    ref.watch(scannerApiProvider),
-    () => ref.read(isProProvider),
-  );
+  return ScannerRepositoryImpl(ref.watch(scannerApiProvider));
 }
 
 /// Remaining scans in the rolling window (read-only — does not consume).
