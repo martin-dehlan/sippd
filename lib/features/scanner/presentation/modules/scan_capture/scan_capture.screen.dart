@@ -69,10 +69,12 @@ class _ScanCaptureScreenState extends ConsumerState<ScanCaptureScreen> {
         );
 
     // S1.6 — resolve the first recognized grape to a canonical id so it
-    // feeds taste-match, and infer wine type from the grape's color.
+    // feeds taste-match. Prefer FastCork's explicit wine_type; only infer
+    // type from the grape's color when FastCork didn't report one.
     String? canonicalGrapeId;
     String? grapeDisplay;
-    var type = WineType.red;
+    final fastcorkType = _wineTypeFromScan(result.wineType);
+    var type = fastcorkType ?? WineType.red;
     if (result.grapes.isNotEmpty) {
       grapeDisplay = result.grapes.first;
       try {
@@ -86,7 +88,9 @@ class _ScanCaptureScreenState extends ConsumerState<ScanCaptureScreen> {
           );
           canonicalGrapeId = exact.id;
           grapeDisplay = exact.name;
-          if (exact.color == GrapeColor.white) type = WineType.white;
+          if (fastcorkType == null && exact.color == GrapeColor.white) {
+            type = WineType.white;
+          }
         }
       } catch (_) {
         // Offline / sync miss — fall back to free-text grape.
@@ -105,8 +109,12 @@ class _ScanCaptureScreenState extends ConsumerState<ScanCaptureScreen> {
     context.pushReplacement(AppRoutes.wineAdd, extra: formData);
   }
 
-  void _openPaywall() {
-    context.push(AppRoutes.paywall, extra: const {'source': 'wine_scan_quota'});
+  /// Escape hatch — always reachable: drop into the normal add-wine form
+  /// with no prefill, skipping recognition entirely.
+  void _addManually() {
+    ref.read(analyticsProvider).capture('scan_manual_entry');
+    ref.read(scannerControllerProvider.notifier).reset();
+    context.pushReplacement(AppRoutes.wineAdd);
   }
 
   @override
@@ -114,10 +122,18 @@ class _ScanCaptureScreenState extends ConsumerState<ScanCaptureScreen> {
     final cs = Theme.of(context).colorScheme;
     final state = ref.watch(scannerControllerProvider);
 
-    // Navigate out of build once recognition lands.
+    // React once recognition lands: navigate only when FastCork actually
+    // returned usable fields. A 200-but-empty result is a non-match, not
+    // a hit — stay on-screen and show the "nothing found" state instead
+    // of opening an empty add-wine form.
     ref.listen(scannerControllerProvider, (_, next) {
       next.whenData((result) {
-        if (result != null) _onRecognized(result);
+        if (result == null) return;
+        if (result.hasContent) {
+          _onRecognized(result);
+        } else {
+          ref.read(analyticsProvider).capture('scan_no_match');
+        }
       });
     });
 
@@ -141,25 +157,97 @@ class _ScanCaptureScreenState extends ConsumerState<ScanCaptureScreen> {
             error: (e, _) {
               if (e is ValidationError && e.field == 'scan_quota') {
                 ref.read(analyticsProvider).capture('scan_quota_exceeded');
-                return ScanQuotaBlock(onUpgrade: _openPaywall);
+                return ScanQuotaBlock(onAddManually: _addManually);
               }
               ref.read(analyticsProvider).capture('scan_failed');
-              return ErrorView(
-                error: e,
-                title: 'Could not read the label',
-                subtitle: 'Try again with a clearer, well-lit shot.',
-                onRetry: () =>
-                    ref.read(scannerControllerProvider.notifier).reset(),
+              // Recognition failed — offer Retry, but always keep the
+              // manual escape hatch so a bad scan never blocks adding.
+              return Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ErrorView(
+                      error: e,
+                      title: 'Could not read the label',
+                      subtitle: 'Try again with a clearer, well-lit shot.',
+                      onRetry: () =>
+                          ref.read(scannerControllerProvider.notifier).reset(),
+                    ),
+                    TextButton(
+                      onPressed: _addManually,
+                      child: Text(
+                        'Skip — enter by hand',
+                        style: TextStyle(color: cs.onSurfaceVariant),
+                      ),
+                    ),
+                  ],
+                ),
               );
             },
-            data: (result) => ScanIntro(
-              remaining: quota?.remaining,
-              onCamera: () => _capture(ImageSource.camera),
-              onGallery: () => _capture(ImageSource.gallery),
-            ),
+            data: (result) {
+              // Recognition ran but found no usable wine fields.
+              if (result != null && !result.hasContent) {
+                return Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ErrorView(
+                        title: 'No wine found on that label',
+                        subtitle:
+                            'Try a clearer, straight-on photo — or add it '
+                            'by hand.',
+                        onRetry: () => ref
+                            .read(scannerControllerProvider.notifier)
+                            .reset(),
+                      ),
+                      TextButton(
+                        onPressed: _addManually,
+                        child: Text(
+                          'Skip — enter by hand',
+                          style: TextStyle(color: cs.onSurfaceVariant),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }
+              return ScanIntro(
+                remaining: quota?.remaining,
+                onCamera: () => _capture(ImageSource.camera),
+                onGallery: () => _capture(ImageSource.gallery),
+                onManual: _addManually,
+              );
+            },
           ),
         ),
       ),
     );
+  }
+}
+
+/// Map FastCork's free-form `wine_type` string onto the app's [WineType].
+/// Returns null when absent/unrecognized so the caller can fall back to
+/// grape-colour inference.
+WineType? _wineTypeFromScan(String? raw) {
+  switch (raw?.trim().toLowerCase()) {
+    case 'white':
+      return WineType.white;
+    case 'red':
+      return WineType.red;
+    case 'rose':
+    case 'rosé':
+    case 'rosado':
+    case 'rosato':
+      return WineType.rose;
+    case 'sparkling':
+    case 'champagne':
+    case 'cremant':
+    case 'crémant':
+    case 'sekt':
+    case 'prosecco':
+    case 'cava':
+      return WineType.sparkling;
+    default:
+      return null;
   }
 }

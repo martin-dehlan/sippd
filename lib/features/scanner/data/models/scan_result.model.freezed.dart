@@ -251,6 +251,7 @@ mixin _$ScanResultModel {
   int? get servingTempC => throw _privateConstructorUsedError;
   int? get decantMinutes => throw _privateConstructorUsedError;
   List<String> get foodPairings => throw _privateConstructorUsedError;
+  String? get wineType => throw _privateConstructorUsedError;
 
   /// Create a copy of ScanResultModel
   /// with the given fields replaced by the non-null parameter values.
@@ -278,6 +279,7 @@ abstract class $ScanResultModelCopyWith<$Res> {
     int? servingTempC,
     int? decantMinutes,
     List<String> foodPairings,
+    String? wineType,
   });
 }
 
@@ -307,6 +309,7 @@ class _$ScanResultModelCopyWithImpl<$Res, $Val extends ScanResultModel>
     Object? servingTempC = freezed,
     Object? decantMinutes = freezed,
     Object? foodPairings = null,
+    Object? wineType = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -354,6 +357,10 @@ class _$ScanResultModelCopyWithImpl<$Res, $Val extends ScanResultModel>
                 ? _value.foodPairings
                 : foodPairings // ignore: cast_nullable_to_non_nullable
                       as List<String>,
+            wineType: freezed == wineType
+                ? _value.wineType
+                : wineType // ignore: cast_nullable_to_non_nullable
+                      as String?,
           )
           as $Val,
     );
@@ -381,6 +388,7 @@ abstract class _$$ScanResultModelImplCopyWith<$Res>
     int? servingTempC,
     int? decantMinutes,
     List<String> foodPairings,
+    String? wineType,
   });
 }
 
@@ -409,6 +417,7 @@ class __$$ScanResultModelImplCopyWithImpl<$Res>
     Object? servingTempC = freezed,
     Object? decantMinutes = freezed,
     Object? foodPairings = null,
+    Object? wineType = freezed,
   }) {
     return _then(
       _$ScanResultModelImpl(
@@ -456,6 +465,10 @@ class __$$ScanResultModelImplCopyWithImpl<$Res>
             ? _value._foodPairings
             : foodPairings // ignore: cast_nullable_to_non_nullable
                   as List<String>,
+        wineType: freezed == wineType
+            ? _value.wineType
+            : wineType // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -476,6 +489,7 @@ class _$ScanResultModelImpl implements _ScanResultModel {
     this.servingTempC,
     this.decantMinutes,
     final List<String> foodPairings = const <String>[],
+    this.wineType,
   }) : _grapes = grapes,
        _foodPairings = foodPairings;
 
@@ -519,8 +533,11 @@ class _$ScanResultModelImpl implements _ScanResultModel {
   }
 
   @override
+  final String? wineType;
+
+  @override
   String toString() {
-    return 'ScanResultModel(producer: $producer, wineName: $wineName, vintage: $vintage, appellation: $appellation, country: $country, region: $region, grapes: $grapes, tastingNotes: $tastingNotes, servingTempC: $servingTempC, decantMinutes: $decantMinutes, foodPairings: $foodPairings)';
+    return 'ScanResultModel(producer: $producer, wineName: $wineName, vintage: $vintage, appellation: $appellation, country: $country, region: $region, grapes: $grapes, tastingNotes: $tastingNotes, servingTempC: $servingTempC, decantMinutes: $decantMinutes, foodPairings: $foodPairings, wineType: $wineType)';
   }
 
   @override
@@ -547,7 +564,9 @@ class _$ScanResultModelImpl implements _ScanResultModel {
             const DeepCollectionEquality().equals(
               other._foodPairings,
               _foodPairings,
-            ));
+            ) &&
+            (identical(other.wineType, wineType) ||
+                other.wineType == wineType));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -565,6 +584,7 @@ class _$ScanResultModelImpl implements _ScanResultModel {
     servingTempC,
     decantMinutes,
     const DeepCollectionEquality().hash(_foodPairings),
+    wineType,
   );
 
   /// Create a copy of ScanResultModel
@@ -592,6 +612,7 @@ abstract class _ScanResultModel implements ScanResultModel {
     final int? servingTempC,
     final int? decantMinutes,
     final List<String> foodPairings,
+    final String? wineType,
   }) = _$ScanResultModelImpl;
 
   factory _ScanResultModel.fromJson(Map<String, dynamic> json) =
@@ -619,6 +640,8 @@ abstract class _ScanResultModel implements ScanResultModel {
   int? get decantMinutes;
   @override
   List<String> get foodPairings;
+  @override
+  String? get wineType;
 
   /// Create a copy of ScanResultModel
   /// with the given fields replaced by the non-null parameter values.

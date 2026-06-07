@@ -29,6 +29,10 @@ mixin _$ScanResultEntity {
   int? get decantMinutes => throw _privateConstructorUsedError;
   List<String> get foodPairings => throw _privateConstructorUsedError;
 
+  /// FastCork's wine type string (red | white | rose | sparkling), used
+  /// to preselect the form's type instead of guessing from grape color.
+  String? get wineType => throw _privateConstructorUsedError;
+
   /// Quota state after this scan was consumed.
   ScanQuotaEntity get quota => throw _privateConstructorUsedError;
 
@@ -63,6 +67,7 @@ abstract class $ScanResultEntityCopyWith<$Res> {
     int? servingTempC,
     int? decantMinutes,
     List<String> foodPairings,
+    String? wineType,
     ScanQuotaEntity quota,
     bool isMock,
   });
@@ -96,6 +101,7 @@ class _$ScanResultEntityCopyWithImpl<$Res, $Val extends ScanResultEntity>
     Object? servingTempC = freezed,
     Object? decantMinutes = freezed,
     Object? foodPairings = null,
+    Object? wineType = freezed,
     Object? quota = null,
     Object? isMock = null,
   }) {
@@ -145,6 +151,10 @@ class _$ScanResultEntityCopyWithImpl<$Res, $Val extends ScanResultEntity>
                 ? _value.foodPairings
                 : foodPairings // ignore: cast_nullable_to_non_nullable
                       as List<String>,
+            wineType: freezed == wineType
+                ? _value.wineType
+                : wineType // ignore: cast_nullable_to_non_nullable
+                      as String?,
             quota: null == quota
                 ? _value.quota
                 : quota // ignore: cast_nullable_to_non_nullable
@@ -190,6 +200,7 @@ abstract class _$$ScanResultEntityImplCopyWith<$Res>
     int? servingTempC,
     int? decantMinutes,
     List<String> foodPairings,
+    String? wineType,
     ScanQuotaEntity quota,
     bool isMock,
   });
@@ -223,6 +234,7 @@ class __$$ScanResultEntityImplCopyWithImpl<$Res>
     Object? servingTempC = freezed,
     Object? decantMinutes = freezed,
     Object? foodPairings = null,
+    Object? wineType = freezed,
     Object? quota = null,
     Object? isMock = null,
   }) {
@@ -272,6 +284,10 @@ class __$$ScanResultEntityImplCopyWithImpl<$Res>
             ? _value._foodPairings
             : foodPairings // ignore: cast_nullable_to_non_nullable
                   as List<String>,
+        wineType: freezed == wineType
+            ? _value.wineType
+            : wineType // ignore: cast_nullable_to_non_nullable
+                  as String?,
         quota: null == quota
             ? _value.quota
             : quota // ignore: cast_nullable_to_non_nullable
@@ -300,6 +316,7 @@ class _$ScanResultEntityImpl extends _ScanResultEntity {
     this.servingTempC,
     this.decantMinutes,
     final List<String> foodPairings = const <String>[],
+    this.wineType,
     required this.quota,
     this.isMock = false,
   }) : _grapes = grapes,
@@ -342,6 +359,11 @@ class _$ScanResultEntityImpl extends _ScanResultEntity {
     return EqualUnmodifiableListView(_foodPairings);
   }
 
+  /// FastCork's wine type string (red | white | rose | sparkling), used
+  /// to preselect the form's type instead of guessing from grape color.
+  @override
+  final String? wineType;
+
   /// Quota state after this scan was consumed.
   @override
   final ScanQuotaEntity quota;
@@ -355,7 +377,7 @@ class _$ScanResultEntityImpl extends _ScanResultEntity {
 
   @override
   String toString() {
-    return 'ScanResultEntity(producer: $producer, wineName: $wineName, vintage: $vintage, appellation: $appellation, country: $country, region: $region, grapes: $grapes, tastingNotes: $tastingNotes, servingTempC: $servingTempC, decantMinutes: $decantMinutes, foodPairings: $foodPairings, quota: $quota, isMock: $isMock)';
+    return 'ScanResultEntity(producer: $producer, wineName: $wineName, vintage: $vintage, appellation: $appellation, country: $country, region: $region, grapes: $grapes, tastingNotes: $tastingNotes, servingTempC: $servingTempC, decantMinutes: $decantMinutes, foodPairings: $foodPairings, wineType: $wineType, quota: $quota, isMock: $isMock)';
   }
 
   @override
@@ -383,6 +405,8 @@ class _$ScanResultEntityImpl extends _ScanResultEntity {
               other._foodPairings,
               _foodPairings,
             ) &&
+            (identical(other.wineType, wineType) ||
+                other.wineType == wineType) &&
             (identical(other.quota, quota) || other.quota == quota) &&
             (identical(other.isMock, isMock) || other.isMock == isMock));
   }
@@ -401,6 +425,7 @@ class _$ScanResultEntityImpl extends _ScanResultEntity {
     servingTempC,
     decantMinutes,
     const DeepCollectionEquality().hash(_foodPairings),
+    wineType,
     quota,
     isMock,
   );
@@ -430,6 +455,7 @@ abstract class _ScanResultEntity extends ScanResultEntity {
     final int? servingTempC,
     final int? decantMinutes,
     final List<String> foodPairings,
+    final String? wineType,
     required final ScanQuotaEntity quota,
     final bool isMock,
   }) = _$ScanResultEntityImpl;
@@ -457,6 +483,11 @@ abstract class _ScanResultEntity extends ScanResultEntity {
   int? get decantMinutes;
   @override
   List<String> get foodPairings;
+
+  /// FastCork's wine type string (red | white | rose | sparkling), used
+  /// to preselect the form's type instead of guessing from grape color.
+  @override
+  String? get wineType;
 
   /// Quota state after this scan was consumed.
   @override

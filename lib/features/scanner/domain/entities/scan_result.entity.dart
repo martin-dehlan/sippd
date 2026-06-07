@@ -23,6 +23,10 @@ class ScanResultEntity with _$ScanResultEntity {
     int? decantMinutes,
     @Default(<String>[]) List<String> foodPairings,
 
+    /// FastCork's wine type string (red | white | rose | sparkling), used
+    /// to preselect the form's type instead of guessing from grape color.
+    String? wineType,
+
     /// Quota state after this scan was consumed.
     required ScanQuotaEntity quota,
 
@@ -36,4 +40,16 @@ class ScanResultEntity with _$ScanResultEntity {
 
   /// Best display name for the wine: explicit cuvée name, else producer.
   String? get displayName => wineName ?? producer;
+
+  /// Whether recognition actually returned something usable. A 200 from
+  /// FastCork with all-null fields (label unreadable / not a wine) must
+  /// NOT be treated as a hit — the UI shows a "nothing found" state
+  /// instead of silently opening an empty add-wine form.
+  bool get hasContent =>
+      (displayName?.trim().isNotEmpty ?? false) ||
+      producer != null ||
+      vintage != null ||
+      region != null ||
+      appellation != null ||
+      grapes.isNotEmpty;
 }

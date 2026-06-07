@@ -4,17 +4,21 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../../../../../common/utils/responsive.dart';
 
 /// Idle state: explains scan-to-add, shows remaining scans, and offers
-/// camera (primary) + gallery (secondary) capture — max two actions.
+/// camera (primary) + gallery (secondary) capture. A low-emphasis
+/// "enter by hand" link is always present so scanning is never the only
+/// way to add a wine.
 class ScanIntro extends StatelessWidget {
   final int? remaining;
   final VoidCallback onCamera;
   final VoidCallback onGallery;
+  final VoidCallback onManual;
 
   const ScanIntro({
     super.key,
     required this.remaining,
     required this.onCamera,
     required this.onGallery,
+    required this.onManual,
   });
 
   @override
@@ -53,8 +57,8 @@ class ScanIntro extends StatelessWidget {
           SizedBox(height: context.m),
           Text(
             remaining == 0
-                ? 'No scans left this month'
-                : '$remaining scan${remaining == 1 ? '' : 's'} left this month',
+                ? 'No scans left today'
+                : '$remaining scan${remaining == 1 ? '' : 's'} left today',
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: context.captionFont, color: cs.outline),
           ),
@@ -73,6 +77,14 @@ class ScanIntro extends StatelessWidget {
           onPressed: onGallery,
           icon: const Icon(PhosphorIconsRegular.image),
           label: const Text('Choose from gallery'),
+        ),
+        SizedBox(height: context.l),
+        TextButton(
+          onPressed: onManual,
+          child: Text(
+            'Skip — enter by hand',
+            style: TextStyle(color: cs.onSurfaceVariant),
+          ),
         ),
       ],
     );

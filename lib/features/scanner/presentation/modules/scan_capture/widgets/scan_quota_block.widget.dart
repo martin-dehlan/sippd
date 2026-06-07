@@ -3,12 +3,13 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../../../common/utils/responsive.dart';
 
-/// Shown when the user has used all their free scans this month. Single
-/// CTA to the paywall (Pro lifts the cap).
+/// Shown when the user has used today's 5 scans. The scanner is free for
+/// everyone, so there is no upsell — just a clear reset hint and a path
+/// to add the wine by hand right now.
 class ScanQuotaBlock extends StatelessWidget {
-  final VoidCallback onUpgrade;
+  final VoidCallback onAddManually;
 
-  const ScanQuotaBlock({super.key, required this.onUpgrade});
+  const ScanQuotaBlock({super.key, required this.onAddManually});
 
   @override
   Widget build(BuildContext context) {
@@ -18,13 +19,13 @@ class ScanQuotaBlock extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Icon(
-          PhosphorIconsRegular.sparkle,
+          PhosphorIconsRegular.clockCountdown,
           size: context.w * 0.18,
           color: cs.primary,
         ),
         SizedBox(height: context.l),
         Text(
-          'You\'ve used all your free scans',
+          'That\'s all 5 scans for today',
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: context.headingFont,
@@ -34,8 +35,7 @@ class ScanQuotaBlock extends StatelessWidget {
         ),
         SizedBox(height: context.s),
         Text(
-          'Upgrade to Pro for unlimited label scanning, or add this wine '
-          'by hand.',
+          'Your scans reset tomorrow. You can still add this wine by hand.',
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: context.bodyFont,
@@ -44,11 +44,11 @@ class ScanQuotaBlock extends StatelessWidget {
         ),
         SizedBox(height: context.xl),
         FilledButton(
-          onPressed: onUpgrade,
+          onPressed: onAddManually,
           style: FilledButton.styleFrom(
             padding: EdgeInsets.symmetric(vertical: context.m),
           ),
-          child: const Text('See Pro'),
+          child: const Text('Add by hand'),
         ),
       ],
     );
