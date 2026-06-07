@@ -27,6 +27,12 @@ class WineEntity with _$WineEntity {
     String? grapeFreetext,
     String? canonicalWineId,
     String? winery,
+    // Scanner-recognized attributes (FastCork). All optional.
+    int? servingTempC,
+    int? decantMinutes,
+    double? abv,
+    String? aroma,
+    String? foodPairings,
     String? nameNorm,
     required String userId,
     @Default('friends') String visibility,

@@ -22,6 +22,13 @@ class WinesTable extends Table {
   TextColumn get grapeFreetext => text().nullable()();
   TextColumn get canonicalWineId => text().nullable()();
   TextColumn get winery => text().nullable()();
+  // Wine attributes recognized by the label scanner (FastCork). All
+  // nullable / additive — see schema v5 migration.
+  IntColumn get servingTempC => integer().nullable()();
+  IntColumn get decantMinutes => integer().nullable()();
+  RealColumn get abv => real().nullable()();
+  TextColumn get aroma => text().nullable()();
+  TextColumn get foodPairings => text().nullable()();
   TextColumn get nameNorm => text().nullable()();
   TextColumn get userId => text()();
   TextColumn get visibility => text().withDefault(const Constant('friends'))();
