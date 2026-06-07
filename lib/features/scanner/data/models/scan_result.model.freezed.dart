@@ -252,6 +252,8 @@ mixin _$ScanResultModel {
   int? get decantMinutes => throw _privateConstructorUsedError;
   List<String> get foodPairings => throw _privateConstructorUsedError;
   String? get wineType => throw _privateConstructorUsedError;
+  String? get aroma => throw _privateConstructorUsedError;
+  double? get abv => throw _privateConstructorUsedError;
 
   /// Create a copy of ScanResultModel
   /// with the given fields replaced by the non-null parameter values.
@@ -280,6 +282,8 @@ abstract class $ScanResultModelCopyWith<$Res> {
     int? decantMinutes,
     List<String> foodPairings,
     String? wineType,
+    String? aroma,
+    double? abv,
   });
 }
 
@@ -310,6 +314,8 @@ class _$ScanResultModelCopyWithImpl<$Res, $Val extends ScanResultModel>
     Object? decantMinutes = freezed,
     Object? foodPairings = null,
     Object? wineType = freezed,
+    Object? aroma = freezed,
+    Object? abv = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -361,6 +367,14 @@ class _$ScanResultModelCopyWithImpl<$Res, $Val extends ScanResultModel>
                 ? _value.wineType
                 : wineType // ignore: cast_nullable_to_non_nullable
                       as String?,
+            aroma: freezed == aroma
+                ? _value.aroma
+                : aroma // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            abv: freezed == abv
+                ? _value.abv
+                : abv // ignore: cast_nullable_to_non_nullable
+                      as double?,
           )
           as $Val,
     );
@@ -389,6 +403,8 @@ abstract class _$$ScanResultModelImplCopyWith<$Res>
     int? decantMinutes,
     List<String> foodPairings,
     String? wineType,
+    String? aroma,
+    double? abv,
   });
 }
 
@@ -418,6 +434,8 @@ class __$$ScanResultModelImplCopyWithImpl<$Res>
     Object? decantMinutes = freezed,
     Object? foodPairings = null,
     Object? wineType = freezed,
+    Object? aroma = freezed,
+    Object? abv = freezed,
   }) {
     return _then(
       _$ScanResultModelImpl(
@@ -469,6 +487,14 @@ class __$$ScanResultModelImplCopyWithImpl<$Res>
             ? _value.wineType
             : wineType // ignore: cast_nullable_to_non_nullable
                   as String?,
+        aroma: freezed == aroma
+            ? _value.aroma
+            : aroma // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        abv: freezed == abv
+            ? _value.abv
+            : abv // ignore: cast_nullable_to_non_nullable
+                  as double?,
       ),
     );
   }
@@ -490,6 +516,8 @@ class _$ScanResultModelImpl implements _ScanResultModel {
     this.decantMinutes,
     final List<String> foodPairings = const <String>[],
     this.wineType,
+    this.aroma,
+    this.abv,
   }) : _grapes = grapes,
        _foodPairings = foodPairings;
 
@@ -534,10 +562,14 @@ class _$ScanResultModelImpl implements _ScanResultModel {
 
   @override
   final String? wineType;
+  @override
+  final String? aroma;
+  @override
+  final double? abv;
 
   @override
   String toString() {
-    return 'ScanResultModel(producer: $producer, wineName: $wineName, vintage: $vintage, appellation: $appellation, country: $country, region: $region, grapes: $grapes, tastingNotes: $tastingNotes, servingTempC: $servingTempC, decantMinutes: $decantMinutes, foodPairings: $foodPairings, wineType: $wineType)';
+    return 'ScanResultModel(producer: $producer, wineName: $wineName, vintage: $vintage, appellation: $appellation, country: $country, region: $region, grapes: $grapes, tastingNotes: $tastingNotes, servingTempC: $servingTempC, decantMinutes: $decantMinutes, foodPairings: $foodPairings, wineType: $wineType, aroma: $aroma, abv: $abv)';
   }
 
   @override
@@ -566,7 +598,9 @@ class _$ScanResultModelImpl implements _ScanResultModel {
               _foodPairings,
             ) &&
             (identical(other.wineType, wineType) ||
-                other.wineType == wineType));
+                other.wineType == wineType) &&
+            (identical(other.aroma, aroma) || other.aroma == aroma) &&
+            (identical(other.abv, abv) || other.abv == abv));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -585,6 +619,8 @@ class _$ScanResultModelImpl implements _ScanResultModel {
     decantMinutes,
     const DeepCollectionEquality().hash(_foodPairings),
     wineType,
+    aroma,
+    abv,
   );
 
   /// Create a copy of ScanResultModel
@@ -613,6 +649,8 @@ abstract class _ScanResultModel implements ScanResultModel {
     final int? decantMinutes,
     final List<String> foodPairings,
     final String? wineType,
+    final String? aroma,
+    final double? abv,
   }) = _$ScanResultModelImpl;
 
   factory _ScanResultModel.fromJson(Map<String, dynamic> json) =
@@ -642,6 +680,10 @@ abstract class _ScanResultModel implements ScanResultModel {
   List<String> get foodPairings;
   @override
   String? get wineType;
+  @override
+  String? get aroma;
+  @override
+  double? get abv;
 
   /// Create a copy of ScanResultModel
   /// with the given fields replaced by the non-null parameter values.

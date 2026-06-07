@@ -51,6 +51,13 @@ class WineFormData {
   final String? imageUrl;
   final String? localImagePath;
 
+  // Scanner-recognized attributes (FastCork). Carried through to the wine.
+  final int? servingTempC;
+  final int? decantMinutes;
+  final double? abv;
+  final String? aroma;
+  final String? foodPairings;
+
   /// Pro expert tasting dimensions the user typed inside the rating
   /// sheet during *initial* wine creation. Null for edits and for
   /// add-flows where the user never opened the tasting-notes panel.
@@ -74,6 +81,11 @@ class WineFormData {
     this.notes,
     this.imageUrl,
     this.localImagePath,
+    this.servingTempC,
+    this.decantMinutes,
+    this.abv,
+    this.aroma,
+    this.foodPairings,
     this.pendingExpertTasting,
   });
 }
@@ -141,6 +153,12 @@ class WineFormState extends ConsumerState<WineForm>
   LocationEntity? _location;
   String? _notes;
 
+  int? _servingTempC;
+  int? _decantMinutes;
+  double? _abv;
+  String? _aroma;
+  String? _foodPairings;
+
   String? _imageUrl;
   String? _localImagePath;
   // Expert tasting typed during initial wine creation, persisted by the
@@ -175,6 +193,11 @@ class WineFormState extends ConsumerState<WineForm>
       _region = init.region;
       _location = init.location;
       _notes = init.notes;
+      _servingTempC = init.servingTempC;
+      _decantMinutes = init.decantMinutes;
+      _abv = init.abv;
+      _aroma = init.aroma;
+      _foodPairings = init.foodPairings;
       _imageUrl = init.imageUrl;
       _localImagePath = init.localImagePath;
     }
@@ -244,6 +267,11 @@ class WineFormState extends ConsumerState<WineForm>
     region: _region,
     location: _location,
     notes: _notes,
+    servingTempC: _servingTempC,
+    decantMinutes: _decantMinutes,
+    abv: _abv,
+    aroma: _aroma,
+    foodPairings: _foodPairings,
     imageUrl: _imageUrl,
     localImagePath: _localImagePath,
     pendingExpertTasting: _pendingExpertTasting,

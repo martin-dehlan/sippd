@@ -62,6 +62,8 @@ interface NormalizedScan {
   // FastCork's `wine_type` (red | white | rose | sparkling) — lets the
   // client preselect the correct type instead of guessing from grape.
   wineType: string | null;
+  aroma: string | null;
+  abv: number | null;
 }
 
 function json(body: unknown, status = 200): Response {
@@ -141,6 +143,8 @@ function normalize(raw: any): NormalizedScan {
     decantMinutes: num(r.decanting_time_minutes ?? r.decanting_duration),
     foodPairings: list(r.food_pairing ?? r.food_pairings ?? r.pairings),
     wineType: clean(r.wine_type ?? r.type),
+    aroma: clean(r.aroma),
+    abv: num(r.alc_percentage ?? r.abv ?? r.alcohol),
   };
 }
 
@@ -159,6 +163,8 @@ function mockResult(): NormalizedScan {
     decantMinutes: 60,
     foodPairings: ['Lamb', 'Aged cheese'],
     wineType: 'red',
+    aroma: 'Blackcurrant, cedar, vanilla',
+    abv: 13.5,
   };
 }
 

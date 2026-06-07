@@ -26,5 +26,10 @@ WineFormData scanToFormData(
     country: r.country,
     region: r.region ?? r.appellation,
     notes: r.tastingNotes,
+    servingTempC: r.servingTempC,
+    decantMinutes: r.decantMinutes,
+    abv: r.abv,
+    aroma: r.aroma,
+    foodPairings: r.foodPairings.isEmpty ? null : r.foodPairings.join(', '),
   );
 }

@@ -35,6 +35,8 @@ _$ScanResultModelImpl _$$ScanResultModelImplFromJson(
           .toList() ??
       const <String>[],
   wineType: json['wineType'] as String?,
+  aroma: json['aroma'] as String?,
+  abv: (json['abv'] as num?)?.toDouble(),
 );
 
 _$ScanQuotaModelImpl _$$ScanQuotaModelImplFromJson(Map<String, dynamic> json) =>

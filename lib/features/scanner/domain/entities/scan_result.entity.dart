@@ -27,6 +27,11 @@ class ScanResultEntity with _$ScanResultEntity {
     /// to preselect the form's type instead of guessing from grape color.
     String? wineType,
 
+    /// Aroma descriptors + alcohol % (FastCork), surfaced as structured
+    /// wine attributes on the prefilled form.
+    String? aroma,
+    double? abv,
+
     /// Quota state after this scan was consumed.
     required ScanQuotaEntity quota,
 

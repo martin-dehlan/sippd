@@ -35,6 +35,8 @@ class ScanResultModel with _$ScanResultModel {
     int? decantMinutes,
     @Default(<String>[]) List<String> foodPairings,
     String? wineType,
+    String? aroma,
+    double? abv,
   }) = _ScanResultModel;
 
   factory ScanResultModel.fromJson(Map<String, dynamic> json) =>
@@ -72,6 +74,8 @@ extension ScanResponseModelX on ScanResponseModel {
     decantMinutes: result.decantMinutes,
     foodPairings: result.foodPairings,
     wineType: result.wineType,
+    aroma: result.aroma,
+    abv: result.abv,
     quota: quota.toEntity(),
     isMock: mock,
   );
