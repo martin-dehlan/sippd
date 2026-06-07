@@ -472,6 +472,13 @@ class _TastingAromaSectionState extends State<TastingAromaSection> {
   void _toggle(String tag) {
     HapticFeedback.selectionClick();
     widget.onToggleTag(tag);
+    // After picking from a search, clear the query and close the keyboard
+    // so the full list — with the Selected group on top — is visible again.
+    if (_query.isNotEmpty) {
+      _searchController.clear();
+      setState(() => _query = '');
+      FocusScope.of(context).unfocus();
+    }
   }
 
   @override
