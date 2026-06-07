@@ -29,6 +29,11 @@ import 'wine_country_picker.widget.dart';
 import 'wine_photo_picker.widget.dart';
 import 'wine_region_picker.widget.dart';
 
+/// Whether we've already shown the location-permission prompt this app
+/// session, so the add form asks at most once per run (and never again
+/// once permission is granted — the silent path takes over).
+bool _askedLocationThisSession = false;
+
 class WineFormData {
   final String name;
   final double rating;
@@ -218,9 +223,16 @@ class WineFormState extends ConsumerState<WineForm>
   }
 
   Future<void> _autofillLocation() async {
-    final loc = await ref
-        .read(locationSearchServiceProvider)
-        .resolveCurrentLocationIfPermitted();
+    final service = ref.read(locationSearchServiceProvider);
+    // Already granted → fill silently.
+    var loc = await service.resolveCurrentLocationIfPermitted();
+    // Not granted yet and we haven't asked this session → prompt once, so
+    // the prefill activates on the user's first add instead of requiring
+    // them to discover the place picker's GPS button.
+    if (loc == null && !_askedLocationThisSession) {
+      _askedLocationThisSession = true;
+      loc = await service.resolveCurrentLocationOrAsk();
+    }
     // Bail if the user already picked a place while we were resolving.
     if (!mounted || loc == null || _location != null) return;
     setState(() => _location = loc);
