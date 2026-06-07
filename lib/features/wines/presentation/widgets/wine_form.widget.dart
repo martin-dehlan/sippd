@@ -407,6 +407,91 @@ class WineFormState extends ConsumerState<WineForm>
     _scheduleAutoSave();
   }
 
+  // Scanner attribute editors. English-only copy for now — i18n batched
+  // into #185/#186.
+  Future<void> _editServingTemp() async {
+    FocusScope.of(context).unfocus();
+    final result = await showTextInputSheet(
+      context: context,
+      title: 'Serving temperature (°C)',
+      initial: _servingTempC?.toString(),
+      hint: 'e.g. 10',
+      keyboardType: TextInputType.number,
+      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+      maxLength: 2,
+    );
+    if (!mounted || result == null) return;
+    setState(() => _servingTempC = int.tryParse(result.trim()));
+    _scheduleAutoSave();
+  }
+
+  Future<void> _editDecant() async {
+    FocusScope.of(context).unfocus();
+    final result = await showTextInputSheet(
+      context: context,
+      title: 'Decant time (minutes)',
+      initial: _decantMinutes?.toString(),
+      hint: 'e.g. 30',
+      keyboardType: TextInputType.number,
+      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+      maxLength: 3,
+    );
+    if (!mounted || result == null) return;
+    setState(() => _decantMinutes = int.tryParse(result.trim()));
+    _scheduleAutoSave();
+  }
+
+  Future<void> _editAbv() async {
+    FocusScope.of(context).unfocus();
+    final result = await showTextInputSheet(
+      context: context,
+      title: 'Alcohol (% vol)',
+      initial: _abv == null ? null : _fmtAbv(_abv!),
+      hint: 'e.g. 13.5',
+      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+      inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))],
+      maxLength: 4,
+    );
+    if (!mounted || result == null) return;
+    setState(() => _abv = double.tryParse(result.trim()));
+    _scheduleAutoSave();
+  }
+
+  Future<void> _editAroma() async {
+    FocusScope.of(context).unfocus();
+    final result = await showTextInputSheet(
+      context: context,
+      title: 'Aroma',
+      initial: _aroma,
+      hint: 'e.g. green apple, citrus, floral',
+      maxLines: 2,
+      maxLength: 120,
+    );
+    if (!mounted || result == null) return;
+    setState(() => _aroma = result.trim().isEmpty ? null : result.trim());
+    _scheduleAutoSave();
+  }
+
+  Future<void> _editFoodPairings() async {
+    FocusScope.of(context).unfocus();
+    final result = await showTextInputSheet(
+      context: context,
+      title: 'Food pairings',
+      initial: _foodPairings,
+      hint: 'comma separated, e.g. fish, cheese',
+      maxLines: 2,
+      maxLength: 160,
+    );
+    if (!mounted || result == null) return;
+    setState(
+      () => _foodPairings = result.trim().isEmpty ? null : result.trim(),
+    );
+    _scheduleAutoSave();
+  }
+
+  static String _fmtAbv(double v) =>
+      v == v.roundToDouble() ? v.toStringAsFixed(0) : v.toStringAsFixed(1);
+
   Future<void> _editNotes() async {
     FocusScope.of(context).unfocus();
     final l10n = AppLocalizations.of(context);
@@ -546,10 +631,20 @@ class WineFormState extends ConsumerState<WineForm>
           vintage: _vintage,
           notes: _notes,
           winery: _winery,
+          servingTempC: _servingTempC,
+          decantMinutes: _decantMinutes,
+          abv: _abv,
+          aroma: _aroma,
+          foodPairings: _foodPairings,
           onGrapeTap: _editGrape,
           onVintageTap: _editVintage,
           onNotesTap: _editNotes,
           onWineryTap: _editWinery,
+          onServingTempTap: _editServingTemp,
+          onDecantTap: _editDecant,
+          onAbvTap: _editAbv,
+          onAromaTap: _editAroma,
+          onFoodPairingsTap: _editFoodPairings,
         ),
         if (widget.momentsHook != null) ...[
           SizedBox(height: context.l),
@@ -951,10 +1046,20 @@ class WineFormChipsRow extends StatelessWidget {
   final int? vintage;
   final String? notes;
   final String? winery;
+  final int? servingTempC;
+  final int? decantMinutes;
+  final double? abv;
+  final String? aroma;
+  final String? foodPairings;
   final VoidCallback onGrapeTap;
   final VoidCallback onVintageTap;
   final VoidCallback onNotesTap;
   final VoidCallback onWineryTap;
+  final VoidCallback onServingTempTap;
+  final VoidCallback onDecantTap;
+  final VoidCallback onAbvTap;
+  final VoidCallback onAromaTap;
+  final VoidCallback onFoodPairingsTap;
 
   const WineFormChipsRow({
     super.key,
@@ -962,11 +1067,24 @@ class WineFormChipsRow extends StatelessWidget {
     required this.vintage,
     required this.notes,
     required this.winery,
+    required this.servingTempC,
+    required this.decantMinutes,
+    required this.abv,
+    required this.aroma,
+    required this.foodPairings,
     required this.onGrapeTap,
     required this.onVintageTap,
     required this.onNotesTap,
     required this.onWineryTap,
+    required this.onServingTempTap,
+    required this.onDecantTap,
+    required this.onAbvTap,
+    required this.onAromaTap,
+    required this.onFoodPairingsTap,
   });
+
+  static String _fmtAbv(double v) =>
+      v == v.roundToDouble() ? v.toStringAsFixed(0) : v.toStringAsFixed(1);
 
   @override
   Widget build(BuildContext context) {
@@ -1002,6 +1120,39 @@ class WineFormChipsRow extends StatelessWidget {
                 : l10n.winesFormChipNotes,
             isEmpty: notes == null || notes!.isEmpty,
             onTap: onNotesTap,
+          ),
+          // Scanner attributes — English labels for now (i18n in #185/#186).
+          WineFormFieldChip(
+            icon: PhosphorIconsRegular.thermometer,
+            label: servingTempC != null ? '$servingTempC°C' : 'Serve temp',
+            isEmpty: servingTempC == null,
+            onTap: onServingTempTap,
+          ),
+          WineFormFieldChip(
+            icon: PhosphorIconsRegular.timer,
+            label: (decantMinutes != null && decantMinutes! > 0)
+                ? '${decantMinutes}min'
+                : 'Decant',
+            isEmpty: decantMinutes == null || decantMinutes! == 0,
+            onTap: onDecantTap,
+          ),
+          WineFormFieldChip(
+            icon: PhosphorIconsRegular.drop,
+            label: abv != null ? '${_fmtAbv(abv!)}%' : 'ABV',
+            isEmpty: abv == null,
+            onTap: onAbvTap,
+          ),
+          WineFormFieldChip(
+            icon: PhosphorIconsRegular.flower,
+            label: 'Aroma',
+            isEmpty: aroma == null || aroma!.isEmpty,
+            onTap: onAromaTap,
+          ),
+          WineFormFieldChip(
+            icon: PhosphorIconsRegular.forkKnife,
+            label: 'Pairings',
+            isEmpty: foodPairings == null || foodPairings!.isEmpty,
+            onTap: onFoodPairingsTap,
           ),
         ],
       ),
