@@ -4,18 +4,17 @@
 -- metered server-side BEFORE the Edge Function hits FastCork. This
 -- migration adds the usage ledger + an atomic claim RPC.
 --
--- Quota policy (rolling 30 days):
---   free tier : SCAN_FREE_LIMIT  (5)
---   pro tier  : SCAN_PRO_LIMIT   (300 — effectively unlimited for real
---               users, but a finite ceiling so a spoofed `p_is_pro`
---               client can't run up unbounded FastCork cost).
+-- Quota policy:
+--   everyone : 5 scans per rolling 24h.
 --
--- NOTE: Pro status currently lives only in RevenueCat (client-side).
--- Until a RevenueCat webhook mirrors entitlement into `profiles`
--- (follow-up), `p_is_pro` is supplied by the caller and is therefore
--- spoofable — the finite pro ceiling bounds the worst-case cost.
+-- The scanner is NOT a Pro perk — every signed-in user gets the same
+-- daily allowance. There is deliberately no `is_pro` input: the quota
+-- keys solely on `auth.uid()`, so there is nothing a client can set to
+-- lift its own cap (no spoof surface). The daily cap bounds worst-case
+-- FastCork cost to ~5 × $0.003 = $0.015 per user per day. Manual wine
+-- entry (no scan) is always available and never metered.
 --
--- Additive only: new table + new function, no changes to existing
+-- Additive only: new table + new functions, no changes to existing
 -- objects (migration-compat policy — must stay backward-compatible
 -- with the oldest live app).
 
@@ -38,17 +37,20 @@ create policy scan_usage_select_own
   for select
   using (auth.uid() = user_id);
 
--- Atomically check the rolling-window quota and, when allowed, record
--- one scan. Returns the post-claim remaining count so the client can
--- render the counter without a second round-trip.
+-- Drop the earlier pro-aware overloads (never shipped to prod). The
+-- scanner no longer takes an is_pro flag — see header note.
+drop function if exists public.check_and_consume_scan(boolean);
+drop function if exists public.scan_quota_status(boolean);
+
+-- Atomically check the rolling-24h quota and, when allowed, record one
+-- scan. Returns the post-claim remaining count so the client can render
+-- the counter without a second round-trip.
 --
 -- Concurrency: the count + insert run in a single statement-level
 -- transaction. Two simultaneous calls can in theory both read the same
 -- pre-count, so we re-check after insert and roll the row back when it
 -- would breach the cap — no double-spend past the limit.
-create or replace function public.check_and_consume_scan(
-  p_is_pro boolean default false
-)
+create or replace function public.check_and_consume_scan()
 returns table (allowed boolean, used integer, scan_limit integer, remaining integer)
 language plpgsql
 security definer
@@ -56,8 +58,8 @@ set search_path = public
 as $$
 declare
   v_uid      uuid := auth.uid();
-  v_limit    integer := case when p_is_pro then 300 else 5 end;
-  v_window   timestamptz := now() - interval '30 days';
+  v_limit    integer := 5;
+  v_window   timestamptz := now() - interval '1 day';
   v_used     integer;
 begin
   if v_uid is null then
@@ -97,14 +99,12 @@ begin
 end;
 $$;
 
-revoke all on function public.check_and_consume_scan(boolean) from public;
-grant execute on function public.check_and_consume_scan(boolean) to authenticated, service_role;
+revoke all on function public.check_and_consume_scan() from public;
+grant execute on function public.check_and_consume_scan() to authenticated, service_role;
 
 -- Read-only helper for the UI to show remaining scans without
 -- consuming one (e.g. when the scan entry button first renders).
-create or replace function public.scan_quota_status(
-  p_is_pro boolean default false
-)
+create or replace function public.scan_quota_status()
 returns table (used integer, scan_limit integer, remaining integer)
 language plpgsql
 security definer
@@ -112,8 +112,8 @@ set search_path = public
 as $$
 declare
   v_uid    uuid := auth.uid();
-  v_limit  integer := case when p_is_pro then 300 else 5 end;
-  v_window timestamptz := now() - interval '30 days';
+  v_limit  integer := 5;
+  v_window timestamptz := now() - interval '1 day';
   v_used   integer;
 begin
   if v_uid is null then
@@ -128,5 +128,5 @@ begin
 end;
 $$;
 
-revoke all on function public.scan_quota_status(boolean) from public;
-grant execute on function public.scan_quota_status(boolean) to authenticated, service_role;
+revoke all on function public.scan_quota_status() from public;
+grant execute on function public.scan_quota_status() to authenticated, service_role;
