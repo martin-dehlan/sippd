@@ -1,3 +1,5 @@
+import '../../wines/domain/aroma_vocabulary.dart';
+import '../../wines/domain/entities/expert_tasting.entity.dart';
 import '../../wines/domain/entities/wine.entity.dart';
 import '../../wines/presentation/widgets/wine_form.widget.dart';
 import '../domain/entities/scan_result.entity.dart';
@@ -21,6 +23,10 @@ WineFormData scanToFormData(
       r.tastingNotes!.trim(),
     if (r.aroma != null && r.aroma!.trim().isNotEmpty) r.aroma!.trim(),
   ];
+  // Map FastCork's free-text aroma onto our canonical tags so the expert
+  // tasting opens with them pre-selected (Pro). The raw aroma also stays in
+  // notes above, so free-tier users still see it.
+  final aromaTags = matchAromas(r.aroma);
   return WineFormData(
     name: r.displayName ?? '',
     rating: 5.0,
@@ -36,5 +42,8 @@ WineFormData scanToFormData(
     servingTempC: r.servingTempC,
     decantMinutes: r.decantMinutes,
     abv: r.abv,
+    pendingExpertTasting: aromaTags.isEmpty
+        ? null
+        : ExpertTastingEntity(aromaTags: aromaTags),
   );
 }

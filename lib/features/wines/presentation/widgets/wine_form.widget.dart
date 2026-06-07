@@ -191,6 +191,7 @@ class WineFormState extends ConsumerState<WineForm>
       _servingTempC = init.servingTempC;
       _decantMinutes = init.decantMinutes;
       _abv = init.abv;
+      _pendingExpertTasting = init.pendingExpertTasting;
       _imageUrl = init.imageUrl;
       _localImagePath = init.localImagePath;
     }

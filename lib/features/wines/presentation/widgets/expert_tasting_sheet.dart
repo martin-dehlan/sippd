@@ -9,6 +9,7 @@ import '../../../../common/widgets/inline_error.widget.dart';
 import '../../../auth/controller/auth.provider.dart';
 import '../../controller/expert_tasting.provider.dart';
 import '../../data/data_sources/expert_tasting.api.dart';
+import '../../domain/aroma_vocabulary.dart';
 import '../../domain/entities/expert_tasting.entity.dart';
 import '../../domain/entities/wine.entity.dart';
 
@@ -38,42 +39,6 @@ Future<void> showExpertTastingSheet({
     builder: (_) => _ExpertSheet(wine: wine),
   );
 }
-
-const _aromaTags = [
-  'cherry',
-  'raspberry',
-  'strawberry',
-  'plum',
-  'blackcurrant',
-  'blackberry',
-  'blueberry',
-  'lemon',
-  'lime',
-  'grapefruit',
-  'pineapple',
-  'mango',
-  'passion fruit',
-  'peach',
-  'apricot',
-  'rose',
-  'violet',
-  'honeysuckle',
-  'bell pepper',
-  'mint',
-  'eucalyptus',
-  'leather',
-  'tobacco',
-  'mushroom',
-  'black pepper',
-  'vanilla',
-  'clove',
-  'toast',
-  'smoke',
-  'cedar',
-  'honey',
-  'butter',
-  'mineral',
-];
 
 class _ExpertSheet extends ConsumerStatefulWidget {
   const _ExpertSheet({required this.wine});
@@ -546,7 +511,7 @@ class TastingAromaSection extends StatelessWidget {
               spacing: context.xs * 1.1,
               runSpacing: context.xs * 1.1,
               children: [
-                for (final tag in _aromaTags)
+                for (final tag in kAromaTags)
                   GestureDetector(
                     onTap: () {
                       HapticFeedback.selectionClick();
