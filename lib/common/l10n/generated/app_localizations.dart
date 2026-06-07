@@ -1686,6 +1686,42 @@ abstract class AppLocalizations {
   /// **'PLACES'**
   String get winesDetailSectionPlace;
 
+  /// No description provided for @winesDetailSectionAttributes.
+  ///
+  /// In en, this message translates to:
+  /// **'ATTRIBUTES'**
+  String get winesDetailSectionAttributes;
+
+  /// No description provided for @winesAttrServe.
+  ///
+  /// In en, this message translates to:
+  /// **'Serve {temp}°C'**
+  String winesAttrServe(int temp);
+
+  /// No description provided for @winesAttrDecant.
+  ///
+  /// In en, this message translates to:
+  /// **'Decant {minutes}min'**
+  String winesAttrDecant(int minutes);
+
+  /// No description provided for @winesAttrAbv.
+  ///
+  /// In en, this message translates to:
+  /// **'{abv}% vol'**
+  String winesAttrAbv(String abv);
+
+  /// No description provided for @winesAttrAromaLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Aroma'**
+  String get winesAttrAromaLabel;
+
+  /// No description provided for @winesAttrPairingsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Pairs with'**
+  String get winesAttrPairingsLabel;
+
   /// No description provided for @winesDetailPlaceEmpty.
   ///
   /// In en, this message translates to:
