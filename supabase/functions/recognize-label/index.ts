@@ -217,6 +217,20 @@ Deno.serve(async (req) => {
     return err('bad_request', 400, { message: 'missing image_base64' });
   }
 
+  // ─── DEV-ONLY MOCK ─────────────────────────────────────────────────
+  // Set secret FASTCORK_MOCK=on to return a deterministic result without
+  // spending a FastCork credit OR a quota slot — unlimited local testing.
+  // REMOVE this block (and mockResult() below) before shipping to prod to
+  // keep the function lean.
+  if (FASTCORK_MOCK === 'on' || FASTCORK_MOCK === 'force') {
+    return json({
+      result: mockResult(),
+      quota: { used: 0, limit: 5, remaining: 5 },
+      mock: true,
+    });
+  }
+  // ───────────────────────────────────────────────────────────────────
+
   // 1. Quota claim BEFORE any paid call. Keyed on auth.uid() inside the
   // SECURITY DEFINER RPC — no client-supplied input affects the cap.
   const { data: quotaRows, error: quotaErr } = await supabase.rpc(
