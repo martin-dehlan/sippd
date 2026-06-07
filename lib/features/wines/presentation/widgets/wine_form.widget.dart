@@ -158,6 +158,7 @@ class WineFormState extends ConsumerState<WineForm>
   String? _country;
   String? _region;
   LocationEntity? _location;
+  bool _resolvingLocation = false;
   String? _notes;
 
   int? _servingTempC;
@@ -224,19 +225,24 @@ class WineFormState extends ConsumerState<WineForm>
 
   Future<void> _autofillLocation() async {
     final service = ref.read(locationSearchServiceProvider);
-    // Already granted → fill silently.
-    var loc = await service.resolveCurrentLocationIfPermitted();
-    // Not granted yet and we haven't asked this session → prompt once, so
-    // the prefill activates on the user's first add instead of requiring
-    // them to discover the place picker's GPS button.
-    if (loc == null && !_askedLocationThisSession) {
-      _askedLocationThisSession = true;
-      loc = await service.resolveCurrentLocationOrAsk();
+    if (mounted) setState(() => _resolvingLocation = true);
+    try {
+      // Already granted → fill silently.
+      var loc = await service.resolveCurrentLocationIfPermitted();
+      // Not granted yet and we haven't asked this session → prompt once, so
+      // the prefill activates on the user's first add instead of requiring
+      // them to discover the place picker's GPS button.
+      if (loc == null && !_askedLocationThisSession) {
+        _askedLocationThisSession = true;
+        loc = await service.resolveCurrentLocationOrAsk();
+      }
+      // Bail if the user already picked a place while we were resolving.
+      if (!mounted || loc == null || _location != null) return;
+      setState(() => _location = loc);
+      widget.onChanged?.call(_collect());
+    } finally {
+      if (mounted) setState(() => _resolvingLocation = false);
     }
-    // Bail if the user already picked a place while we were resolving.
-    if (!mounted || loc == null || _location != null) return;
-    setState(() => _location = loc);
-    widget.onChanged?.call(_collect());
   }
 
   @override
@@ -647,7 +653,11 @@ class WineFormState extends ConsumerState<WineForm>
         SizedBox(height: context.m),
         SizedBox(
           height: context.h * 0.24,
-          child: WineFormPlaceMap(location: _location, onTap: _editPlace),
+          child: WineFormPlaceMap(
+            location: _location,
+            onTap: _editPlace,
+            loading: _resolvingLocation,
+          ),
         ),
         if (!widget.autoSave && widget.showInlineSubmit) ...[
           SizedBox(height: context.l),
@@ -1206,22 +1216,26 @@ class WineFormFieldChip extends StatelessWidget {
 class WineFormPlaceMap extends StatelessWidget {
   final LocationEntity? location;
   final VoidCallback onTap;
+  final bool loading;
 
   const WineFormPlaceMap({
     super.key,
     required this.location,
     required this.onTap,
+    this.loading = false,
   });
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final hasCoords = location?.lat != null && location?.lng != null;
+    // Show the loading state only while resolving with no place yet.
+    final showLoading = loading && !hasCoords;
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: context.paddingH),
       child: GestureDetector(
-        onTap: onTap,
+        onTap: showLoading ? null : onTap,
         child: Container(
           clipBehavior: Clip.antiAlias,
           decoration: BoxDecoration(
@@ -1233,6 +1247,8 @@ class WineFormPlaceMap extends StatelessWidget {
                   point: LatLng(location!.lat!, location!.lng!),
                   label: location!.shortDisplay,
                 )
+              : showLoading
+              ? _PlaceLoading()
               : Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -1254,6 +1270,33 @@ class WineFormPlaceMap extends StatelessWidget {
                   ),
                 ),
         ),
+      ),
+    );
+  }
+}
+
+class _PlaceLoading extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(
+            width: context.w * 0.07,
+            height: context.w * 0.07,
+            child: CircularProgressIndicator(strokeWidth: 2, color: cs.primary),
+          ),
+          SizedBox(height: context.m),
+          Text(
+            'Finding your location…',
+            style: TextStyle(
+              fontSize: context.captionFont,
+              color: cs.onSurfaceVariant,
+            ),
+          ),
+        ],
       ),
     );
   }
