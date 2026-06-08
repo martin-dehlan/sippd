@@ -400,8 +400,10 @@ class WineEmptyState extends StatelessWidget {
           ] else ...[
             SizedBox(height: context.l),
             FilledButton.icon(
-              onPressed: () => context.push(AppRoutes.wineAdd),
-              icon: const Icon(PhosphorIconsRegular.plus),
+              // Scanner is the single add entry (manual entry lives inside
+              // it); route the empty-state CTA there, not the bare form.
+              onPressed: () => context.push(AppRoutes.wineScan),
+              icon: const Icon(PhosphorIconsRegular.scan),
               label: Text(l10n.winesEmptyAddWineCta),
             ),
           ],
