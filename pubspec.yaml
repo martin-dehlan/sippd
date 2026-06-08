@@ -19,20 +19,20 @@ dependencies:
   phosphor_flutter: ^2.1.0
 
   # State Management
-  flutter_riverpod: ^2.6.1
-  riverpod_annotation: ^2.6.1
+  flutter_riverpod: ^3.1.0
+  riverpod_annotation: ^4.0.0
 
   # Data Classes
-  freezed_annotation: ^2.4.4
-  json_annotation: ^4.9.0
+  freezed_annotation: ^3.1.0
+  json_annotation: ^4.11.0
 
   # Database (Local-First)
-  drift: ^2.22.1
-  drift_flutter: ^0.2.4
-  sqlite3_flutter_libs: ^0.5.28
+  drift: ^2.33.0
+  drift_flutter: ^0.3.0
+  sqlite3_flutter_libs: ^0.6.0+eol
 
   # Backend (Sync)
-  supabase_flutter: ^2.8.3
+  supabase_flutter: ^2.14.1
 
   # Secure storage (PKCE code-verifier survives Android process death)
   flutter_secure_storage: ^9.2.2
@@ -40,8 +40,8 @@ dependencies:
   # Firebase / Push
   firebase_core: ^3.8.0
   firebase_messaging: ^15.1.5
-  flutter_local_notifications: ^18.0.1
-  timezone: ^0.10.0
+  flutter_local_notifications: ^22.0.0
+  timezone: ^0.11.0
 
   # Navigation
   go_router: ^14.8.1
@@ -63,7 +63,7 @@ dependencies:
   flutter_dotenv: ^5.2.1
 
   # Analytics
-  posthog_flutter: ^5.24.0
+  posthog_flutter: ^5.26.0
 
   # Paywall / IAP
   purchases_flutter: ^9.4.0
@@ -83,7 +83,7 @@ dependencies:
   share_plus: ^10.0.0
   url_launcher: ^6.3.0
   in_app_review: ^2.0.10
-  add_2_calendar: ^3.0.1
+  add_2_calendar: ^3.1.0
   app_links: ^6.3.0
   shared_preferences: ^2.3.3
   connectivity_plus: ^7.1.1
@@ -100,11 +100,11 @@ dev_dependencies:
   flutter_lints: ^6.0.0
 
   # Code Generation
-  build_runner: ^2.4.14
-  freezed: ^2.5.7
-  json_serializable: ^6.9.4
-  riverpod_generator: ^2.6.3
-  drift_dev: ^2.22.1
+  build_runner: ^2.15.0
+  freezed: ^3.2.6-dev.1
+  json_serializable: ^6.13.2
+  riverpod_generator: ^4.0.4-dev.1
+  drift_dev: ^2.33.0
 
   # Testing
   mocktail: ^1.0.4
