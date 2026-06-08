@@ -121,20 +121,9 @@ class _UnlockCardState extends State<_UnlockCard> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // The badge — single restrained accent moment.
-                Container(
-                  width: context.w * 0.22,
-                  height: context.w * 0.22,
-                  decoration: BoxDecoration(
-                    color: accent.withValues(alpha: 0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    badgeIcon(badge.icon),
-                    size: context.w * 0.1,
-                    color: accent,
-                  ),
-                ),
+                // Success burst: a gold ring sweeps to completion with a
+                // soft pulse — lean medal moment.
+                _SuccessRing(icon: badgeIcon(badge.icon), accent: accent),
                 SizedBox(height: context.l),
                 // Neutral eyebrow — no coloured/red headline.
                 Text(
@@ -236,6 +225,102 @@ class _UnlockCardState extends State<_UnlockCard> {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Lean success flourish around the badge: a gold ring sweeps to a full
+/// circle while a soft pulse expands outward once. Gold = the brand/medal
+/// tone; the glyph keeps its category accent and settles in.
+class _SuccessRing extends StatefulWidget {
+  const _SuccessRing({required this.icon, required this.accent});
+
+  final IconData icon;
+  final Color accent;
+
+  @override
+  State<_SuccessRing> createState() => _SuccessRingState();
+}
+
+class _SuccessRingState extends State<_SuccessRing>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _c;
+
+  @override
+  void initState() {
+    super.initState();
+    _c = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 950),
+    )..forward();
+  }
+
+  @override
+  void dispose() {
+    _c.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final w = context.w;
+    final gold = Theme.of(context).colorScheme.secondary;
+    return SizedBox(
+      width: w * 0.27,
+      height: w * 0.27,
+      child: AnimatedBuilder(
+        animation: _c,
+        builder: (context, _) {
+          final sweep = Curves.easeOutCubic.transform(_c.value);
+          final pulse = Curves.easeOut.transform(_c.value);
+          return Stack(
+            alignment: Alignment.center,
+            children: [
+              // Soft pulse expanding outward once, then gone.
+              Opacity(
+                opacity: (1 - pulse) * 0.4,
+                child: Transform.scale(
+                  scale: 0.85 + pulse * 0.7,
+                  child: Container(
+                    width: w * 0.22,
+                    height: w * 0.22,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: gold, width: 1.2),
+                    ),
+                  ),
+                ),
+              ),
+              // Gold ring sweeping to a full circle — the "completed" beat.
+              SizedBox.expand(
+                child: CircularProgressIndicator(
+                  value: sweep,
+                  strokeWidth: w * 0.008,
+                  color: gold,
+                  backgroundColor: gold.withValues(alpha: 0.12),
+                ),
+              ),
+              // Badge glyph settling in.
+              Transform.scale(
+                scale: 0.85 + sweep * 0.15,
+                child: Container(
+                  width: w * 0.2,
+                  height: w * 0.2,
+                  decoration: BoxDecoration(
+                    color: widget.accent.withValues(alpha: 0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    widget.icon,
+                    size: w * 0.095,
+                    color: widget.accent,
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
