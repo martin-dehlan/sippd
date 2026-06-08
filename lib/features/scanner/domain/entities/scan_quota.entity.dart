@@ -17,4 +17,8 @@ class ScanQuotaEntity with _$ScanQuotaEntity {
   const ScanQuotaEntity._();
 
   bool get isExhausted => remaining <= 0;
+
+  /// Pro users get the higher daily limit; free users get 5. Used to tailor
+  /// the exhausted-state copy (a Pro user shouldn't be nudged to "Go Pro").
+  bool get isPro => limit > 5;
 }
