@@ -5076,6 +5076,18 @@ abstract class AppLocalizations {
   /// **'Nose · body · tannins · finish.'**
   String get paywallBenefitNotesSubtitle;
 
+  /// No description provided for @paywallBenefitScanTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'More label scans'**
+  String get paywallBenefitScanTitle;
+
+  /// No description provided for @paywallBenefitScanSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan far more labels a day to add wines fast.'**
+  String get paywallBenefitScanSubtitle;
+
   /// No description provided for @paywallPlanMonthly.
   ///
   /// In en, this message translates to:

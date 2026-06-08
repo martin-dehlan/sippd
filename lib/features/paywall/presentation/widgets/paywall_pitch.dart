@@ -17,6 +17,11 @@ String proPitchSubhead(AppLocalizations l) => l.paywallPitchSubhead;
 
 List<PaywallBenefit> proPitchBenefits(AppLocalizations l) => [
   (
+    icon: PhosphorIconsRegular.scan,
+    title: l.paywallBenefitScanTitle,
+    subtitle: l.paywallBenefitScanSubtitle,
+  ),
+  (
     icon: PhosphorIconsRegular.usersThree,
     title: l.paywallBenefitFriendsTitle,
     subtitle: l.paywallBenefitFriendsSubtitle,

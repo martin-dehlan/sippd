@@ -115,9 +115,22 @@ class _ScanCaptureScreenState extends ConsumerState<ScanCaptureScreen> {
     context.pushReplacement(AppRoutes.wineAdd, extra: formData);
   }
 
-  void _openPaywall() {
+  Future<void> _openPaywall() async {
     ref.read(analyticsProvider).capture('scan_quota_upgrade_tap');
-    context.push(AppRoutes.paywall, extra: const {'source': 'wine_scan_quota'});
+    final purchased = await context.push<bool>(
+      AppRoutes.paywall,
+      extra: const {'source': 'wine_scan_quota'},
+    );
+    if (purchased != true || !mounted) return;
+    // Pro just unlocked: drop the quota block and refresh the count (now the
+    // higher daily limit). is_pro flips server-side via the RevenueCat
+    // webhook a beat after the client purchase, so re-check once more shortly
+    // after — otherwise the badge can still read the old free limit.
+    _reset();
+    ref.invalidate(scanQuotaProvider);
+    Future.delayed(const Duration(seconds: 3), () {
+      if (mounted) ref.invalidate(scanQuotaProvider);
+    });
   }
 
   /// Escape hatch — always reachable: drop into the normal add-wine form
