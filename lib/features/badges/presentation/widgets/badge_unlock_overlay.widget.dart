@@ -121,41 +121,18 @@ class _UnlockCardState extends State<_UnlockCard> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Reward moment: a fine accent ring sweeps to completion
-                // around the badge — "you earned it" — then settles.
-                SizedBox(
-                  width: context.w * 0.26,
-                  height: context.w * 0.26,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      TweenAnimationBuilder<double>(
-                        duration: const Duration(milliseconds: 850),
-                        curve: Curves.easeOutCubic,
-                        tween: Tween<double>(begin: 0, end: 1),
-                        builder: (context, value, _) => SizedBox.expand(
-                          child: CircularProgressIndicator(
-                            value: value,
-                            strokeWidth: context.w * 0.008,
-                            color: accent,
-                            backgroundColor: accent.withValues(alpha: 0.12),
-                          ),
-                        ),
-                      ),
-                      Container(
-                        width: context.w * 0.2,
-                        height: context.w * 0.2,
-                        decoration: BoxDecoration(
-                          color: accent.withValues(alpha: 0.1),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          badgeIcon(badge.icon),
-                          size: context.w * 0.095,
-                          color: accent,
-                        ),
-                      ),
-                    ],
+                // The badge — single restrained accent moment.
+                Container(
+                  width: context.w * 0.22,
+                  height: context.w * 0.22,
+                  decoration: BoxDecoration(
+                    color: accent.withValues(alpha: 0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    badgeIcon(badge.icon),
+                    size: context.w * 0.1,
+                    color: accent,
                   ),
                 ),
                 SizedBox(height: context.l),
@@ -191,7 +168,8 @@ class _UnlockCardState extends State<_UnlockCard> {
                   ),
                 ),
                 SizedBox(height: context.l),
-                // The count you just completed, ticking up — "1 / 1".
+                // Rounded progress bar filling to 100% + the count ticking
+                // to N/N — same language as the detail sheet.
                 TweenAnimationBuilder<double>(
                   duration: const Duration(milliseconds: 900),
                   curve: Curves.easeOutCubic,
@@ -201,14 +179,27 @@ class _UnlockCardState extends State<_UnlockCard> {
                       0,
                       badge.target,
                     );
-                    return Text(
-                      '$shown / ${badge.target}',
-                      style: TextStyle(
-                        fontSize: context.titleFont * 0.72,
-                        fontWeight: FontWeight.w800,
-                        color: cs.onSurface,
-                        letterSpacing: 0.5,
-                      ),
+                    return Column(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(context.w * 0.02),
+                          child: LinearProgressIndicator(
+                            value: value,
+                            minHeight: context.h * 0.011,
+                            backgroundColor: cs.surfaceContainerHighest,
+                            valueColor: AlwaysStoppedAnimation<Color>(accent),
+                          ),
+                        ),
+                        SizedBox(height: context.s),
+                        Text(
+                          '$shown / ${badge.target}',
+                          style: TextStyle(
+                            fontSize: context.captionFont,
+                            fontWeight: FontWeight.w700,
+                            color: cs.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
                     );
                   },
                 ),
