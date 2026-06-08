@@ -105,7 +105,6 @@ class _UnlockCardState extends State<_UnlockCard> {
     final cs = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context);
     final badge = widget.badge;
-    final accent = badgeAccent(badge.category, cs);
 
     return Center(
       child: Padding(
@@ -121,9 +120,8 @@ class _UnlockCardState extends State<_UnlockCard> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Success burst: a gold ring sweeps to completion with a
-                // soft pulse — lean medal moment.
-                _SuccessRing(icon: badgeIcon(badge.icon), accent: accent),
+                // Gold achievement medallion — stamps in, ring seals shut.
+                _SuccessRing(icon: badgeIcon(badge.icon)),
                 SizedBox(height: context.l),
                 // Neutral eyebrow — no coloured/red headline.
                 Text(
@@ -230,14 +228,13 @@ class _UnlockCardState extends State<_UnlockCard> {
   }
 }
 
-/// Lean success flourish around the badge: a gold ring sweeps to a full
-/// circle while a soft pulse expands outward once. Gold = the brand/medal
-/// tone; the glyph keeps its category accent and settles in.
+/// Lean gold medallion: two hairline gold rings (a wax-seal double line),
+/// the glyph in gold, stamping in while the outer ring sweeps shut. No
+/// tinted plate, no category colour — a clean achievement seal.
 class _SuccessRing extends StatefulWidget {
-  const _SuccessRing({required this.icon, required this.accent});
+  const _SuccessRing({required this.icon});
 
   final IconData icon;
-  final Color accent;
 
   @override
   State<_SuccessRing> createState() => _SuccessRingState();
@@ -266,62 +263,49 @@ class _SuccessRingState extends State<_SuccessRing>
   Widget build(BuildContext context) {
     final w = context.w;
     final gold = Theme.of(context).colorScheme.secondary;
-    return SizedBox(
-      width: w * 0.27,
-      height: w * 0.27,
-      child: AnimatedBuilder(
-        animation: _c,
-        builder: (context, _) {
-          final sweep = Curves.easeOutCubic.transform(_c.value);
-          final pulse = Curves.easeOut.transform(_c.value);
-          return Stack(
-            alignment: Alignment.center,
-            children: [
-              // Soft pulse expanding outward once, then gone.
-              Opacity(
-                opacity: (1 - pulse) * 0.4,
-                child: Transform.scale(
-                  scale: 0.85 + pulse * 0.7,
-                  child: Container(
-                    width: w * 0.22,
-                    height: w * 0.22,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: gold, width: 1.2),
+    final size = w * 0.27;
+    return AnimatedBuilder(
+      animation: _c,
+      builder: (context, _) {
+        final sweep = Curves.easeOutCubic.transform(_c.value);
+        // Stamps in like a wax seal — subtle settle, not a bounce.
+        final stamp = Curves.easeOutBack.transform(_c.value.clamp(0.0, 1.0));
+        return Transform.scale(
+          scale: 0.72 + 0.28 * stamp,
+          child: SizedBox(
+            width: size,
+            height: size,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                // Outer ring sweeping to a full circle — the achievement
+                // sealing shut.
+                SizedBox.expand(
+                  child: CircularProgressIndicator(
+                    value: sweep,
+                    strokeWidth: w * 0.006,
+                    color: gold,
+                    backgroundColor: gold.withValues(alpha: 0.1),
+                  ),
+                ),
+                // Inner hairline ring — the medal/seal double line.
+                Container(
+                  margin: EdgeInsets.all(w * 0.022),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: gold.withValues(alpha: 0.35),
+                      width: w * 0.003,
                     ),
                   ),
                 ),
-              ),
-              // Gold ring sweeping to a full circle — the "completed" beat.
-              SizedBox.expand(
-                child: CircularProgressIndicator(
-                  value: sweep,
-                  strokeWidth: w * 0.008,
-                  color: gold,
-                  backgroundColor: gold.withValues(alpha: 0.12),
-                ),
-              ),
-              // Badge glyph settling in.
-              Transform.scale(
-                scale: 0.85 + sweep * 0.15,
-                child: Container(
-                  width: w * 0.2,
-                  height: w * 0.2,
-                  decoration: BoxDecoration(
-                    color: widget.accent.withValues(alpha: 0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    widget.icon,
-                    size: w * 0.095,
-                    color: widget.accent,
-                  ),
-                ),
-              ),
-            ],
-          );
-        },
-      ),
+                // The glyph — gold, no tinted plate behind it.
+                Icon(widget.icon, size: w * 0.1, color: gold),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
