@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../common/l10n/generated/app_localizations.dart';
@@ -82,15 +83,28 @@ Future<void> _showBadgeUnlockDialog(BuildContext context, BadgeEntity badge) {
   );
 }
 
-class _UnlockCard extends StatelessWidget {
+class _UnlockCard extends StatefulWidget {
   const _UnlockCard({required this.badge});
 
   final BadgeEntity badge;
 
   @override
+  State<_UnlockCard> createState() => _UnlockCardState();
+}
+
+class _UnlockCardState extends State<_UnlockCard> {
+  @override
+  void initState() {
+    super.initState();
+    // A satisfying little tap the instant the reward lands.
+    HapticFeedback.mediumImpact();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context);
+    final badge = widget.badge;
     final accent = badgeAccent(badge.category, cs);
 
     return Center(
@@ -107,18 +121,41 @@ class _UnlockCard extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // The badge is the single accent moment — restrained tint.
-                Container(
-                  width: context.w * 0.22,
-                  height: context.w * 0.22,
-                  decoration: BoxDecoration(
-                    color: accent.withValues(alpha: 0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    badgeIcon(badge.icon),
-                    size: context.w * 0.1,
-                    color: accent,
+                // Reward moment: a fine accent ring sweeps to completion
+                // around the badge — "you earned it" — then settles.
+                SizedBox(
+                  width: context.w * 0.26,
+                  height: context.w * 0.26,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      TweenAnimationBuilder<double>(
+                        duration: const Duration(milliseconds: 850),
+                        curve: Curves.easeOutCubic,
+                        tween: Tween<double>(begin: 0, end: 1),
+                        builder: (context, value, _) => SizedBox.expand(
+                          child: CircularProgressIndicator(
+                            value: value,
+                            strokeWidth: context.w * 0.008,
+                            color: accent,
+                            backgroundColor: accent.withValues(alpha: 0.12),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        width: context.w * 0.2,
+                        height: context.w * 0.2,
+                        decoration: BoxDecoration(
+                          color: accent.withValues(alpha: 0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          badgeIcon(badge.icon),
+                          size: context.w * 0.095,
+                          color: accent,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 SizedBox(height: context.l),
