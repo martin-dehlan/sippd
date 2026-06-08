@@ -181,13 +181,21 @@ class _UnlockCardState extends State<_UnlockCard> {
                     );
                     return Column(
                       children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(context.w * 0.02),
-                          child: LinearProgressIndicator(
-                            value: value,
-                            minHeight: context.h * 0.011,
-                            backgroundColor: cs.surfaceContainerHighest,
-                            valueColor: AlwaysStoppedAnimation<Color>(accent),
+                        FractionallySizedBox(
+                          widthFactor: 0.55,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(
+                              context.w * 0.02,
+                            ),
+                            child: LinearProgressIndicator(
+                              value: value,
+                              minHeight: context.h * 0.011,
+                              backgroundColor: cs.surfaceContainerHighest,
+                              // Brand gold (logo tone), not category accent.
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                cs.secondary,
+                              ),
+                            ),
                           ),
                         ),
                         SizedBox(height: context.s),
