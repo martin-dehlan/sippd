@@ -2,7 +2,22 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "sippd (debug)",
+      "name": "sippd (release — iPhone/Wi-Fi)",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "flutterMode": "release",
+      "deviceId": "00008030-001C68280E46402E"
+    },
+    {
+      "name": "sippd (release — pick device)",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "flutterMode": "release"
+    },
+    {
+      "name": "sippd (debug — wired/simulator only)",
       "request": "launch",
       "type": "dart",
       "program": "lib/main.dart"
@@ -27,13 +42,6 @@
       "type": "dart",
       "program": "lib/main.dart",
       "flutterMode": "profile"
-    },
-    {
-      "name": "sippd (release)",
-      "request": "launch",
-      "type": "dart",
-      "program": "lib/main.dart",
-      "flutterMode": "release"
     }
   ]
 }
