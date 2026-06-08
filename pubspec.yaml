@@ -50,7 +50,7 @@ dependencies:
   dio: ^5.7.0
 
   # Image
-  image_picker: ^1.1.2
+  image_picker: ^1.2.2
   cached_network_image: ^3.4.1
 
   # Location / Maps
@@ -111,7 +111,7 @@ dev_dependencies:
 
   # Branding
   flutter_launcher_icons: ^0.14.1
-  flutter_native_splash: ^2.4.3
+  flutter_native_splash: ^2.4.8
 
 flutter:
   uses-material-design: true
