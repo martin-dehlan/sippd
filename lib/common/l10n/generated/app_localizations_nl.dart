@@ -3883,4 +3883,59 @@ class AppLocalizationsNl extends AppLocalizations {
   String routeNotFound(String uri) {
     return 'Pagina niet gevonden: $uri';
   }
+
+  @override
+  String get badgesTitle => 'Badges';
+
+  @override
+  String badgesEarnedCount(int earned, int total) {
+    return '$earned of $total earned';
+  }
+
+  @override
+  String get badgesCategoryVolume => 'Milestones';
+
+  @override
+  String get badgesCategoryType => 'Wine Styles';
+
+  @override
+  String get badgesCategoryGeo => 'Around the World';
+
+  @override
+  String get badgesCategoryGrape => 'Grapes';
+
+  @override
+  String get badgesCategorySocial => 'Social';
+
+  @override
+  String get badgesCategoryEngagement => 'Connoisseurship';
+
+  @override
+  String get badgesEmptyTitle => 'No badges yet';
+
+  @override
+  String get badgesEmptyBody => 'Start rating wines to earn your first badge.';
+
+  @override
+  String get badgesRetry => 'Retry';
+
+  @override
+  String get badgesEarnedLabel => 'Earned';
+
+  @override
+  String badgesEarnedOn(String date) {
+    return 'Earned $date';
+  }
+
+  @override
+  String get badgesUnlockedHeadline => 'BADGE UNLOCKED';
+
+  @override
+  String get badgesNice => 'Nice';
+
+  @override
+  String get tileBadgesLabel => 'Badge unlocks';
+
+  @override
+  String get tileBadgesSubtitle => 'Get notified when you earn a new badge';
 }

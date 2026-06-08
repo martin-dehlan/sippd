@@ -15,6 +15,7 @@ class NotificationPrefsModel with _$NotificationPrefsModel {
     @JsonKey(name: 'friend_activity') required bool friendActivity,
     @JsonKey(name: 'group_activity') required bool groupActivity,
     @JsonKey(name: 'group_wine_shared') required bool groupWineShared,
+    @JsonKey(name: 'badges') @Default(true) bool badges,
     @JsonKey(name: 'updated_at') required DateTime updatedAt,
   }) = _NotificationPrefsModel;
 
@@ -30,6 +31,7 @@ extension NotificationPrefsModelX on NotificationPrefsModel {
     friendActivity: friendActivity,
     groupActivity: groupActivity,
     groupWineShared: groupWineShared,
+    badges: badges,
     updatedAt: updatedAt,
   );
 }
@@ -42,6 +44,7 @@ extension NotificationPrefsEntityX on NotificationPrefsEntity {
     friendActivity: friendActivity,
     groupActivity: groupActivity,
     groupWineShared: groupWineShared,
+    badges: badges,
     updatedAt: updatedAt,
   );
 
@@ -52,6 +55,7 @@ extension NotificationPrefsEntityX on NotificationPrefsEntity {
     friendActivity: friendActivity,
     groupActivity: groupActivity,
     groupWineShared: groupWineShared,
+    badges: badges,
     updatedAt: updatedAt,
   );
 }
@@ -64,6 +68,7 @@ extension NotificationPrefsTableDataX on NotificationPrefsTableData {
     friendActivity: friendActivity,
     groupActivity: groupActivity,
     groupWineShared: groupWineShared,
+    badges: badges,
     updatedAt: updatedAt,
   );
 }

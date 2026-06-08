@@ -18,6 +18,8 @@ import '../../features/auth/presentation/modules/email_confirmation/email_confir
 import '../../features/auth/presentation/modules/login/login.screen.dart';
 import '../../features/auth/presentation/modules/password_recovery/password_recovery.screen.dart';
 import '../../features/auth/presentation/modules/profile/profile.screen.dart';
+import '../../features/badges/presentation/modules/badges/badges.screen.dart';
+import '../../features/badges/presentation/widgets/badge_unlock_overlay.widget.dart';
 import '../../features/onboarding/controller/onboarding.provider.dart';
 import '../../features/onboarding/presentation/modules/onboarding.screen.dart';
 import '../../features/paywall/presentation/modules/paywall/paywall.screen.dart';
@@ -298,6 +300,10 @@ GoRouter goRouter(GoRouterRef ref) {
         ),
       ),
       GoRoute(
+        path: AppRoutes.badges,
+        builder: (context, state) => const BadgesScreen(),
+      ),
+      GoRoute(
         path: AppRoutes.wineAdd,
         builder: (context, state) =>
             WineAddScreen(initialData: state.extra as WineFormData?),
@@ -512,18 +518,20 @@ class MainShell extends ConsumerWidget {
 
     return Scaffold(
       extendBody: true,
-      body: Column(
-        children: [
-          const OfflineIndicator(),
-          Expanded(
-            child: crossfade
-                ? _TabCrossfade(
-                    index: navigationShell.currentIndex,
-                    child: navigationShell,
-                  )
-                : navigationShell,
-          ),
-        ],
+      body: BadgeUnlockGate(
+        child: Column(
+          children: [
+            const OfflineIndicator(),
+            Expanded(
+              child: crossfade
+                  ? _TabCrossfade(
+                      index: navigationShell.currentIndex,
+                      child: navigationShell,
+                    )
+                  : navigationShell,
+            ),
+          ],
+        ),
       ),
       bottomNavigationBar: SafeArea(
         top: false,

@@ -11,6 +11,7 @@ class NotificationPrefsEntity with _$NotificationPrefsEntity {
     required bool friendActivity,
     required bool groupActivity,
     required bool groupWineShared,
+    @Default(true) bool badges,
     required DateTime updatedAt,
   }) = _NotificationPrefsEntity;
 
@@ -22,6 +23,7 @@ class NotificationPrefsEntity with _$NotificationPrefsEntity {
         friendActivity: true,
         groupActivity: true,
         groupWineShared: true,
+        badges: true,
         updatedAt: DateTime.now(),
       );
 }

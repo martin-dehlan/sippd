@@ -1,0 +1,490 @@
+================================================================================
+ Sippd — Hardening & badge answers (copy-paste)
+ OpenSSF Best Practices:  https://www.bestpractices.dev/en/projects/new
+ Hardenize:               https://www.hardenize.com  (scan domain: sippd.xyz)
+ Repo:                    https://github.com/martin-dehlan/sippd
+ Tracking milestone:      https://github.com/martin-dehlan/sippd/milestone/1
+ Last updated:            2026-06-01
+================================================================================
+
+STATUS — 2026-06-01
+  All eight milestone-1 issues are DONE and merged to main:
+    #107 license ........... PR #115  (Apache-2.0)            MERGED
+    #108 CONTRIBUTING ...... PR #116                          MERGED
+    #110 test policy ....... PR #116                          MERGED
+    #109 CHANGELOG ......... PR #117                          MERGED
+    #113 Scorecard ......... PR #118                          MERGED + first run green
+    #112 OSV-Scanner (SAST). PR #119                          MERGED
+    #114 strict analyzer ... PR #120                          MERGED
+    #111 git tag + Release . v0.1.23 + GitHub Release         DONE
+  Every criterion below is [✓ MET]. For each "(URL required)" criterion on the
+  bestpractices.dev form, the justification URL is included INSIDE the answer
+  text — paste the whole block into the box.
+
+LEGEND
+  [✓ MET]       criterion satisfied — copy the answer (URL included where the
+                form marks "URL required")
+  [N/A]         not applicable, with justification
+  [STATEMENT]   maintainer attestation — review and tick
+
+
+================================================================================
+ PROJECT METADATA
+================================================================================
+
+Project name:          Sippd
+Project homepage URL:  https://sippd.xyz
+Source repository URL: https://github.com/martin-dehlan/sippd
+Project description:
+  A local-first wine rating and group-tasting Flutter app. Drift (SQLite)
+  is the source of truth on device; Supabase syncs in the background.
+  Features include wine ranking, private groups, taste-match (compass),
+  share cards, and deep links.
+
+
+================================================================================
+ OPENSSF — BASICS
+================================================================================
+
+[✓ MET] description_good (MUST)
+  Sippd is a local-first Flutter wine-rating and group-tasting app. Users rate
+  wines, share them in private groups, and compare taste profiles via a
+  canonical-wine identity layer. Drift is the on-device source of truth;
+  Supabase provides background sync, auth, storage, and realtime.
+  URL: https://github.com/martin-dehlan/sippd#readme
+
+[✓ MET] interact (MUST)
+  README links to the homepage (sippd.xyz), GitHub Issues for feedback, and
+  SECURITY.md for vulnerability reports. CONTRIBUTING.md documents the
+  contribution workflow.
+  URL: https://github.com/martin-dehlan/sippd#readme
+
+[✓ MET] contribution (MUST) — URL required
+  CONTRIBUTING.md explains how to contribute — filing issues, branch naming,
+  Conventional Commits, local setup, git-hook install, PR review expectations,
+  and the test policy.
+  https://github.com/martin-dehlan/sippd/blob/main/CONTRIBUTING.md
+
+[✓ MET] contribution_requirements (SHOULD) — URL required
+  CONTRIBUTING.md states the requirements for acceptable contributions —
+  coding conventions (CLAUDE.md + .claude/RULES/*), Conventional-Commit format,
+  local checks (dart format, flutter analyze, flutter test), and the PR/test bar.
+  https://github.com/martin-dehlan/sippd/blob/main/CONTRIBUTING.md
+
+[✓ MET] floss_license (MUST) — URL required
+  Apache License 2.0 (OSI-approved). Full verbatim text in the top-level LICENSE
+  file; brand/trademark protection is split into TRADEMARKS.md so LICENSE is
+  pure OSI text.
+  https://github.com/martin-dehlan/sippd/blob/main/LICENSE
+
+[✓ MET] floss_license_osi (SUGGESTED)
+  Apache-2.0 is OSI-approved.
+  https://opensource.org/license/apache-2-0
+
+[✓ MET] license_location (MUST) — URL required
+  Top-level LICENSE file in the repository root.
+  https://github.com/martin-dehlan/sippd/blob/main/LICENSE
+
+[✓ MET] documentation_basics (MUST) — URL required
+  README documents purpose, architecture, tech stack, and setup. CLAUDE.md and
+  .claude/RULES/*.md document conventions (architecture, naming, responsive UI,
+  error handling, testing, navigation, versioning).
+  https://github.com/martin-dehlan/sippd#readme
+
+[✓ MET] documentation_interface (MUST) — URL required
+  The mobile app has no public REST API. Its external interface is the
+  io.sippd:// deep-link scheme and the https://sippd.xyz/* universal-link
+  surface, plus the RLS-guarded Supabase backend — all documented in
+  docs/INTERFACE.md.
+  https://github.com/martin-dehlan/sippd/blob/main/docs/INTERFACE.md
+
+[✓ MET] sites_https (MUST)
+  All project sites use HTTPS: github.com (repo) and sippd.xyz (homepage; HTTP
+  308-redirects to HTTPS, valid cert, HSTS enabled).
+  https://sippd.xyz
+
+[✓ MET] discussion (MUST) — URL required
+  GitHub Issues — searchable, public, archived.
+  https://github.com/martin-dehlan/sippd/issues
+
+[✓ MET] english (SHOULD)
+  All documentation, code comments, commit messages, and issue templates are in
+  English.
+
+[✓ MET] maintained (MUST)
+  Actively maintained — see recent commit activity on main. Project lead Martin
+  Dehlan responds to issues and ships to TestFlight / Play Store on a regular
+  cadence.
+  https://github.com/martin-dehlan/sippd/commits/main
+
+
+================================================================================
+ OPENSSF — CHANGE CONTROL
+================================================================================
+
+[✓ MET] repo_public (MUST) — URL required
+  Public Git repository on GitHub.
+  https://github.com/martin-dehlan/sippd
+
+[✓ MET] repo_track (MUST)
+  Git records every change with author identity and timestamp. Changes land on
+  main via pull request.
+  https://github.com/martin-dehlan/sippd/commits/main
+
+[✓ MET] repo_interim (MUST)
+  Every merge to main is an interim version; CI builds each push.
+
+[✓ MET] repo_distributed (SUGGESTED)
+  Git.
+
+[✓ MET] version_unique (MUST)
+  pubspec.yaml carries a unique MAJOR.MINOR.PATCH+BUILD identifier per shipped
+  version (see RULES/11_versioning_commits.md).
+  https://github.com/martin-dehlan/sippd/blob/main/.claude/RULES/11_versioning_commits.md
+
+[✓ MET] version_semver (SUGGESTED)
+  SemVer + build number — see RULES/11_versioning_commits.md.
+  https://github.com/martin-dehlan/sippd/blob/main/.claude/RULES/11_versioning_commits.md
+
+[✓ MET] version_tags (SUGGESTED)
+  Releases are tagged in git; v0.1.23 is tagged with a GitHub Release.
+  https://github.com/martin-dehlan/sippd/releases/tag/v0.1.23
+
+[✓ MET] release_notes (MUST) — URL required
+  CHANGELOG.md follows Keep a Changelog; each release also gets a GitHub
+  Release. v0.1.23 is the first tagged release.
+  https://github.com/martin-dehlan/sippd/blob/main/CHANGELOG.md
+
+[✓ MET] release_notes_vulns (MUST)
+  Every CHANGELOG release carries a Security subsection naming fixed
+  vulnerabilities (or stating "none"). See the 0.1.23 entry.
+  https://github.com/martin-dehlan/sippd/blob/main/CHANGELOG.md
+
+
+================================================================================
+ OPENSSF — REPORTING
+================================================================================
+
+[✓ MET] report_process (MUST) — URL required
+  Bugs: GitHub Issues. Security vulnerabilities: email security@sippd.xyz
+  (see SECURITY.md).
+  https://github.com/martin-dehlan/sippd/blob/main/SECURITY.md
+
+[✓ MET] report_tracker (SHOULD)
+  GitHub Issues.
+  https://github.com/martin-dehlan/sippd/issues
+
+[STATEMENT] report_responses (MUST)
+  Project lead acknowledges the majority of bug reports — see the closed-issue
+  history. SECURITY.md promises acknowledgement within 3 business days for
+  vulnerability reports.
+
+[STATEMENT] enhancement_responses (SHOULD)
+  Project lead responds to enhancement requests on GitHub Issues; acceptance
+  criteria are user-need + roadmap fit.
+
+[✓ MET] report_archive (MUST) — URL required
+  GitHub Issues — publicly archived and searchable.
+  https://github.com/martin-dehlan/sippd/issues
+
+[✓ MET] vulnerability_report_process (MUST) — URL required
+  Documented in SECURITY.md.
+  https://github.com/martin-dehlan/sippd/blob/main/SECURITY.md
+
+[✓ MET] vulnerability_report_private (MUST)
+  Private email channel: security@sippd.xyz (SECURITY.md).
+  https://github.com/martin-dehlan/sippd/blob/main/SECURITY.md
+
+[✓ MET] vulnerability_report_response (MUST)
+  SECURITY.md commits to acknowledgement within 3 business days — well under
+  the 14-day OpenSSF threshold.
+  https://github.com/martin-dehlan/sippd/blob/main/SECURITY.md
+
+
+================================================================================
+ OPENSSF — QUALITY
+================================================================================
+
+[✓ MET] build (MUST)
+  Flutter SDK builds the project. `flutter build apk`, `flutter build ipa`, and
+  `flutter build web` all work from a clean clone after `flutter pub get` and a
+  stubbed firebase_options.dart (template at lib/firebase_options.template.dart).
+
+[✓ MET] build_common_tools (SUGGESTED)
+  Flutter — a widely used, well-known FLOSS toolchain.
+
+[✓ MET] build_floss_tools (SHOULD)
+  Flutter, Dart, build_runner, Drift, Freezed, Riverpod — all FLOSS.
+
+[✓ MET] test (MUST) — URL required
+  Automated test suite under test/ (unit + widget tests using flutter_test +
+  mocktail). 193 tests pass as of 2026-06-01.
+  https://github.com/martin-dehlan/sippd/tree/main/test
+
+[✓ MET] test_invocation (SHOULD)
+  `flutter test` — standard Flutter convention.
+
+[STATEMENT] test_most (SUGGESTED)
+  Tests cover the repository/use-case layer, controllers, and selected widget
+  flows. See RULES/10_testing_rules.md for the pyramid.
+
+[✓ MET] test_continuous_integration (SUGGESTED) — URL required
+  CI runs format check, codegen-sync check, analyze, and the full test suite on
+  every push and PR to main.
+  https://github.com/martin-dehlan/sippd/blob/main/.github/workflows/ci.yml
+
+[✓ MET] test_policy (MUST) — URL required
+  CONTRIBUTING.md states: every PR adding behaviour must include a test; bug
+  fixes must include a regression test. Cross-linked from
+  RULES/10_testing_rules.md and enforced by the PR template checklist.
+  https://github.com/martin-dehlan/sippd/blob/main/CONTRIBUTING.md
+
+[STATEMENT] tests_are_added (MUST)
+  Recent commits adding repository or use-case behaviour include matching tests
+  (see the test/ directory).
+
+[✓ MET] tests_documented_added (SUGGESTED) — URL required
+  CONTRIBUTING.md documents the test policy; a PR template with a "tests added /
+  why not" checkbox enforces it at review.
+  https://github.com/martin-dehlan/sippd/blob/main/CONTRIBUTING.md
+
+[✓ MET] warnings (MUST) — URL required
+  `flutter analyze` runs in CI on every push and PR; the analyzer is in strict
+  mode (strict-casts/inference/raw-types).
+  https://github.com/martin-dehlan/sippd/blob/main/.github/workflows/ci.yml
+
+[✓ MET] warnings_fixed (MUST)
+  CI fails on new analyzer findings. main is analyzer-clean.
+
+[✓ MET] warnings_strict (SUGGESTED) — URL required
+  analysis_options.yaml enables Dart strict mode (strict-casts, strict-inference,
+  strict-raw-types) plus resource-leak lints. The 47 resulting type findings
+  were fixed; analyze is clean.
+  https://github.com/martin-dehlan/sippd/blob/main/analysis_options.yaml
+
+
+================================================================================
+ OPENSSF — SECURITY
+================================================================================
+
+[STATEMENT] know_secure_design (MUST)
+  The primary developer is familiar with secure design — least privilege
+  (Supabase RLS on every table/RPC), defence in depth (gitleaks pre-commit + CI,
+  OSV-Scanner SAST, OpenSSF Scorecard, Dependabot, signed release builds), input
+  validation (DB + UI caps), and responsible disclosure (SECURITY.md).
+
+[STATEMENT] know_common_errors (MUST)
+  Aware of OWASP Mobile Top 10 and OWASP Top 10 web. Mitigations applied in the
+  2026-05 security baseline (RLS audit, secret rotation, text-column input caps,
+  MIME and size caps on storage buckets).
+
+[✓ MET] crypto_published (MUST)
+  TLS for all network traffic. Auth handled by Supabase Auth (Argon2id). No
+  custom crypto.
+
+[✓ MET] crypto_call (SHOULD)
+  Crypto delegated to platform libraries (Supabase, Firebase, Apple/Google
+  sign-in). The app implements no crypto.
+
+[✓ MET] crypto_floss (MUST)
+  All client-side crypto primitives are FLOSS (Dart crypto, OpenSSL via the
+  Flutter engine, supabase_flutter).
+
+[✓ MET] crypto_keylength (MUST)
+  TLS endpoints negotiate >= TLS 1.2 with modern ciphers; sign-in tokens use
+  platform-default key strengths (RSA-2048+ / ECDSA P-256+).
+
+[✓ MET] crypto_working (MUST)
+  No MD5/SHA-1/DES/RC4 in app code. JWT signing delegated to Supabase. HTTPS-only.
+
+[✓ MET] crypto_weaknesses (SHOULD)
+  Modern algorithms only; TLS 1.0/1.1 excluded by platform defaults.
+
+[✓ MET] crypto_pfs (SHOULD)
+  Endpoints negotiate ECDHE ciphers (forward secrecy).
+
+[✓ MET] crypto_password_storage (MUST)
+  Passwords stored by Supabase Auth (iterated Argon2id, per-user salt). Sippd
+  never sees plaintext passwords.
+
+[✓ MET] crypto_random (MUST)
+  UUIDs generated server-side by Postgres gen_random_uuid() (pgcrypto). Client
+  ephemeral randomness uses Dart Random.secure().
+
+[✓ MET] delivery_mitm (MUST)
+  Source: HTTPS git clone. Binaries: App Store + Google Play (platform-signed).
+  Updates via the store channel.
+
+[✓ MET] delivery_unsigned (MUST)
+  All release artefacts ship through Apple/Google signing pipelines. No unsigned
+  hashes published over HTTP.
+
+[STATEMENT] vulnerabilities_fixed_60_days (MUST)
+  No known unpatched medium-or-higher vulnerabilities outstanding for >60 days.
+  Dependabot opens weekly PRs; OSV-Scanner runs in CI.
+
+[STATEMENT] vulnerabilities_critical_fixed (SHOULD)
+  Critical issues patched same-day — see the 2026-05-08 baseline.
+
+[✓ MET] no_leaked_credentials (MUST) — URL required
+  gitleaks runs as a pre-commit hook and a CI workflow. Historical leaks in
+  .gitleaksignore were rotated; the published values are inert.
+  https://github.com/martin-dehlan/sippd/blob/main/.github/workflows/secret-scan.yml
+
+
+================================================================================
+ OPENSSF — ANALYSIS
+================================================================================
+
+[✓ MET] static_analysis (MUST) — URL required
+  `flutter analyze` runs in CI on every push and PR. A codegen-sync check
+  ensures generated files match their annotated sources.
+  https://github.com/martin-dehlan/sippd/blob/main/.github/workflows/ci.yml
+
+[✓ MET] static_analysis_common_vulnerabilities (SUGGESTED) — URL required
+  OSV-Scanner runs in CI (PR scan + scheduled scan), reading pubspec.lock
+  against the OSV vulnerability database and uploading SARIF to the Security tab.
+  (CodeQL is not used — it has no Dart support.)
+  https://github.com/martin-dehlan/sippd/blob/main/.github/workflows/osv-scanner.yml
+
+[STATEMENT] static_analysis_fixed (MUST)
+  CI blocks merges with new analyzer findings — main is clean.
+
+[✓ MET] static_analysis_often (SUGGESTED)
+  Analyzer + OSV-Scanner run on every push/PR.
+
+[N/A] dynamic_analysis_unsafe (SUGGESTED)
+  Dart is memory-safe (bounds-checked, GC). The app code has no native (FFI)
+  memory-unsafe blocks.
+
+[STATEMENT] dynamic_analysis_enable_assertions (SUGGESTED)
+  Dart assert() is active in debug builds and exercised by tests.
+
+[STATEMENT] dynamic_analysis_fixed (MUST)
+  No medium-or-higher dynamic-analysis findings outstanding.
+
+
+================================================================================
+ OPENSSF — SUBMISSION CHECKLIST
+================================================================================
+
+  [x] All 8 milestone issues closed (#107–#114), #111 release tagged
+  [x] PRs #115–#120 merged to main; main CI green
+  [ ] Re-read every [STATEMENT] block and confirm it's still true
+  [ ] Submit at https://www.bestpractices.dev/en/projects/new
+  [ ] Add the badge + OpenSSF Scorecard badge to the README once granted
+
+
+================================================================================
+ HARDENIZE — domain posture for sippd.xyz
+ Scan it live at: https://www.hardenize.com/   (enter: sippd.xyz)
+ Probe taken 2026-06-01. sippd.xyz is fronted by Cloudflare.
+================================================================================
+
+LEGEND for this section
+  [PASS]   confirmed good by live probe on 2026-06-01
+  [FIX]    Hardenize will flag this — action + exact config given
+  [CHECK]  needs a manual look (selector/tooling required)
+
+
+--- WEB / TLS ---------------------------------------------------------------
+
+[PASS] HTTPS works — https://sippd.xyz returns HTTP/2 200, valid cert (Cloudflare).
+[PASS] HTTP -> HTTPS redirect — http://sippd.xyz returns 308 to https://.
+[PASS] HSTS present — strict-transport-security: max-age=63072000 (2 years).
+
+[FIX]  HSTS is missing `includeSubDomains` and `preload`.
+       Cloudflare -> SSL/TLS -> Edge Certificates -> HTTP Strict Transport
+       Security (HSTS): enable, set max-age >= 31536000, tick
+       "Apply HSTS to subdomains (includeSubDomains)" and "Preload".
+       Target header:
+         Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+       Then submit the apex to https://hstspreload.org once the header is live.
+
+
+--- WEB / SECURITY HEADERS (all currently ABSENT) ---------------------------
+
+[FIX] Content-Security-Policy — absent. Add a CSP. Start report-only, then
+      enforce. For a static marketing/landing site a tight baseline:
+         Content-Security-Policy: default-src 'self'; img-src 'self' data:
+           https:; style-src 'self' 'unsafe-inline'; script-src 'self';
+           object-src 'none'; base-uri 'self'; frame-ancestors 'none'
+[FIX] X-Content-Type-Options — absent. Add:  X-Content-Type-Options: nosniff
+[FIX] X-Frame-Options — absent. Add:  X-Frame-Options: DENY
+      (or rely on the CSP frame-ancestors 'none' above — set both).
+[FIX] Referrer-Policy — absent. Add:  Referrer-Policy: strict-origin-when-cross-origin
+[FIX] Permissions-Policy — absent. Lock unused sensor APIs:
+         Permissions-Policy: camera=(), microphone=(), geolocation=(),
+           interest-cohort=()
+
+      WHERE to set these (sippd.xyz is on Cloudflare):
+        Option A — Cloudflare Rules -> Transform Rules -> Modify Response Header
+                   (add each header at the edge; no redeploy needed).
+        Option B — if the origin is Vercel, add them in vercel.json "headers"
+                   (see prooved's vercel.json for a working CSP/HSTS example).
+        Prefer one source of truth so the two layers don't disagree.
+
+
+--- security.txt (RFC 9116) -------------------------------------------------
+
+[FIX] https://sippd.xyz/.well-known/security.txt returns 404. Publish it
+      (Hardenize + OpenSSF both reward this). Mirror prooved's file:
+         Contact: mailto:security@sippd.xyz
+         Expires: 2027-06-01T00:00:00.000Z
+         Preferred-Languages: en, de
+         Canonical: https://sippd.xyz/.well-known/security.txt
+         Policy: https://github.com/martin-dehlan/sippd/blob/main/SECURITY.md
+      Serve it at /.well-known/security.txt (Cloudflare static rule, Vercel
+      public/.well-known/, or Cloudflare Worker).
+
+
+--- DNS ---------------------------------------------------------------------
+
+[FIX] DNSSEC — not enabled (no `ad` flag / no RRSIG on probe). Turn it on:
+      Cloudflare -> DNS -> Settings -> DNSSEC -> Enable, then add the DS record
+      at the registrar (Namecheap, per the sippd domain note).
+[FIX] CAA — no CAA record. Pin issuance to your CA. For Cloudflare-managed
+      certs:
+         sippd.xyz.  CAA  0 issue "letsencrypt.org"
+         sippd.xyz.  CAA  0 issue "pki.goog"          # Google Trust (CF uses)
+         sippd.xyz.  CAA  0 issuewild ";"             # block wildcards if unused
+         sippd.xyz.  CAA  0 iodef "mailto:security@sippd.xyz"
+      (Confirm the exact issuer in Cloudflare -> SSL/TLS -> Edge Certificates
+      before locking CAA, or you can break renewals.)
+
+
+--- EMAIL -------------------------------------------------------------------
+
+[PASS] MX — Cloudflare Email Routing (route1/2/3.mx.cloudflare.net).
+[PASS] SPF — v=spf1 include:_spf.mx.cloudflare.net ~all  (present).
+[PASS] DMARC record present — v=DMARC1; p=none;
+
+[FIX] DMARC policy is monitor-only and has no reporting address. Strengthen:
+         _dmarc.sippd.xyz  TXT  "v=DMARC1; p=quarantine; rua=mailto:dmarc@sippd.xyz; fo=1; adkim=s; aspf=s"
+      Roll p=none -> p=quarantine -> p=reject after watching aggregate reports.
+[CHECK] DKIM — selector-specific, not checkable blind. Outbound mail goes
+      through Resend (per project notes), so confirm Resend's DKIM CNAMEs are
+      live (Resend dashboard -> Domains) and that Cloudflare Email Routing's
+      own DKIM is in place for forwarded mail.
+[FIX] MTA-STS — not configured. Add the policy host + TXT to enforce TLS on
+      inbound SMTP:
+         _mta-sts.sippd.xyz  TXT  "v=STSv1; id=20260601000000"
+         https://mta-sts.sippd.xyz/.well-known/mta-sts.txt  ->
+            version: STSv1
+            mode: enforce
+            mx: *.mx.cloudflare.net
+            max_age: 604800
+[FIX] TLS-RPT — add reporting for TLS negotiation failures:
+         _smtp._tls.sippd.xyz  TXT  "v=TLSRPTv1; rua=mailto:tls-reports@sippd.xyz"
+
+
+--- HARDENIZE PRIORITY ORDER (fastest wins first) ---------------------------
+
+  1. Add the 5 security headers + extend HSTS (one Cloudflare Transform Rule).
+  2. Publish /.well-known/security.txt.
+  3. Enable DNSSEC (Cloudflare toggle + DS at Namecheap).
+  4. Add CAA records.
+  5. Move DMARC to p=quarantine with rua reporting.
+  6. Add MTA-STS + TLS-RPT.
+  None of these touch the app binary — they are all Cloudflare/DNS config and
+  can be done without a release.

@@ -12,6 +12,7 @@ import '../../../../../common/widgets/stats_card.widget.dart';
 import '../../../../groups/presentation/widgets/friend_actions_sheet.widget.dart';
 import '../../../../taste_match/presentation/widgets/friend_taste_match_section.widget.dart';
 import '../../../../taste_match/presentation/widgets/wine_personality_hero.widget.dart';
+import '../../../../badges/presentation/widgets/badge_showcase_strip.widget.dart';
 import '../../../../wines/controller/wine.provider.dart';
 import '../../../../wines/domain/entities/wine.entity.dart';
 import '../../../../wines/domain/entities/wine_memory.entity.dart';
@@ -168,6 +169,11 @@ class _BodyState extends ConsumerState<_Body>
                     profile.username ??
                     l10n.friendsProfileNameFallback,
               ),
+            ),
+            SizedBox(height: context.l),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: padH),
+              child: BadgeShowcaseStrip(userId: profile.id),
             ),
             SizedBox(height: context.l),
             _SharedMomentsSection(friendId: profile.id),

@@ -117,7 +117,7 @@ final notificationPrefsRepositoryProvider =
 typedef NotificationPrefsRepositoryRef =
     AutoDisposeProviderRef<NotificationPrefsRepository>;
 String _$notificationPrefsControllerHash() =>
-    r'94ff2f7853c127631954a573eed3e740a8c88dce';
+    r'081463df29f27df9254036a1f6e976835fa61590';
 
 /// Streams the authenticated user's notification preferences. Emits a defaults
 /// entity until the first server sync completes so the UI never has to render

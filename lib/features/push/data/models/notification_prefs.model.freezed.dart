@@ -35,6 +35,8 @@ mixin _$NotificationPrefsModel {
   bool get groupActivity => throw _privateConstructorUsedError;
   @JsonKey(name: 'group_wine_shared')
   bool get groupWineShared => throw _privateConstructorUsedError;
+  @JsonKey(name: 'badges')
+  bool get badges => throw _privateConstructorUsedError;
   @JsonKey(name: 'updated_at')
   DateTime get updatedAt => throw _privateConstructorUsedError;
 
@@ -62,6 +64,7 @@ abstract class $NotificationPrefsModelCopyWith<$Res> {
     @JsonKey(name: 'friend_activity') bool friendActivity,
     @JsonKey(name: 'group_activity') bool groupActivity,
     @JsonKey(name: 'group_wine_shared') bool groupWineShared,
+    @JsonKey(name: 'badges') bool badges,
     @JsonKey(name: 'updated_at') DateTime updatedAt,
   });
 }
@@ -90,6 +93,7 @@ class _$NotificationPrefsModelCopyWithImpl<
     Object? friendActivity = null,
     Object? groupActivity = null,
     Object? groupWineShared = null,
+    Object? badges = null,
     Object? updatedAt = null,
   }) {
     return _then(
@@ -118,6 +122,10 @@ class _$NotificationPrefsModelCopyWithImpl<
                 ? _value.groupWineShared
                 : groupWineShared // ignore: cast_nullable_to_non_nullable
                       as bool,
+            badges: null == badges
+                ? _value.badges
+                : badges // ignore: cast_nullable_to_non_nullable
+                      as bool,
             updatedAt: null == updatedAt
                 ? _value.updatedAt
                 : updatedAt // ignore: cast_nullable_to_non_nullable
@@ -144,6 +152,7 @@ abstract class _$$NotificationPrefsModelImplCopyWith<$Res>
     @JsonKey(name: 'friend_activity') bool friendActivity,
     @JsonKey(name: 'group_activity') bool groupActivity,
     @JsonKey(name: 'group_wine_shared') bool groupWineShared,
+    @JsonKey(name: 'badges') bool badges,
     @JsonKey(name: 'updated_at') DateTime updatedAt,
   });
 }
@@ -169,6 +178,7 @@ class __$$NotificationPrefsModelImplCopyWithImpl<$Res>
     Object? friendActivity = null,
     Object? groupActivity = null,
     Object? groupWineShared = null,
+    Object? badges = null,
     Object? updatedAt = null,
   }) {
     return _then(
@@ -197,6 +207,10 @@ class __$$NotificationPrefsModelImplCopyWithImpl<$Res>
             ? _value.groupWineShared
             : groupWineShared // ignore: cast_nullable_to_non_nullable
                   as bool,
+        badges: null == badges
+            ? _value.badges
+            : badges // ignore: cast_nullable_to_non_nullable
+                  as bool,
         updatedAt: null == updatedAt
             ? _value.updatedAt
             : updatedAt // ignore: cast_nullable_to_non_nullable
@@ -216,6 +230,7 @@ class _$NotificationPrefsModelImpl implements _NotificationPrefsModel {
     @JsonKey(name: 'friend_activity') required this.friendActivity,
     @JsonKey(name: 'group_activity') required this.groupActivity,
     @JsonKey(name: 'group_wine_shared') required this.groupWineShared,
+    @JsonKey(name: 'badges') this.badges = true,
     @JsonKey(name: 'updated_at') required this.updatedAt,
   });
 
@@ -241,12 +256,15 @@ class _$NotificationPrefsModelImpl implements _NotificationPrefsModel {
   @JsonKey(name: 'group_wine_shared')
   final bool groupWineShared;
   @override
+  @JsonKey(name: 'badges')
+  final bool badges;
+  @override
   @JsonKey(name: 'updated_at')
   final DateTime updatedAt;
 
   @override
   String toString() {
-    return 'NotificationPrefsModel(userId: $userId, tastingReminders: $tastingReminders, tastingReminderHours: $tastingReminderHours, friendActivity: $friendActivity, groupActivity: $groupActivity, groupWineShared: $groupWineShared, updatedAt: $updatedAt)';
+    return 'NotificationPrefsModel(userId: $userId, tastingReminders: $tastingReminders, tastingReminderHours: $tastingReminderHours, friendActivity: $friendActivity, groupActivity: $groupActivity, groupWineShared: $groupWineShared, badges: $badges, updatedAt: $updatedAt)';
   }
 
   @override
@@ -265,6 +283,7 @@ class _$NotificationPrefsModelImpl implements _NotificationPrefsModel {
                 other.groupActivity == groupActivity) &&
             (identical(other.groupWineShared, groupWineShared) ||
                 other.groupWineShared == groupWineShared) &&
+            (identical(other.badges, badges) || other.badges == badges) &&
             (identical(other.updatedAt, updatedAt) ||
                 other.updatedAt == updatedAt));
   }
@@ -279,6 +298,7 @@ class _$NotificationPrefsModelImpl implements _NotificationPrefsModel {
     friendActivity,
     groupActivity,
     groupWineShared,
+    badges,
     updatedAt,
   );
 
@@ -309,6 +329,7 @@ abstract class _NotificationPrefsModel implements NotificationPrefsModel {
     @JsonKey(name: 'friend_activity') required final bool friendActivity,
     @JsonKey(name: 'group_activity') required final bool groupActivity,
     @JsonKey(name: 'group_wine_shared') required final bool groupWineShared,
+    @JsonKey(name: 'badges') final bool badges,
     @JsonKey(name: 'updated_at') required final DateTime updatedAt,
   }) = _$NotificationPrefsModelImpl;
 
@@ -333,6 +354,9 @@ abstract class _NotificationPrefsModel implements NotificationPrefsModel {
   @override
   @JsonKey(name: 'group_wine_shared')
   bool get groupWineShared;
+  @override
+  @JsonKey(name: 'badges')
+  bool get badges;
   @override
   @JsonKey(name: 'updated_at')
   DateTime get updatedAt;

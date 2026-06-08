@@ -10,6 +10,7 @@ import 'tables/canonical_grape.table.dart';
 import 'tables/profiles.table.dart';
 import 'tables/pending_image_uploads.table.dart';
 import 'tables/rating_summary_cache.table.dart';
+import 'tables/badge_progress_cache.table.dart';
 import 'daos/wines.dao.dart';
 import 'daos/wine_memories.dao.dart';
 import 'daos/wine_memory_photos.dao.dart';
@@ -19,6 +20,7 @@ import 'daos/canonical_grape.dao.dart';
 import 'daos/profiles.dao.dart';
 import 'daos/pending_image_uploads.dao.dart';
 import 'daos/rating_summary_cache.dao.dart';
+import 'daos/badge_progress_cache.dao.dart';
 
 part 'database.g.dart';
 
@@ -33,6 +35,7 @@ part 'database.g.dart';
     ProfilesTable,
     PendingImageUploadsTable,
     RatingSummaryCacheTable,
+    BadgeProgressCacheTable,
   ],
   daos: [
     WinesDao,
@@ -44,6 +47,7 @@ part 'database.g.dart';
     ProfilesDao,
     PendingImageUploadsDao,
     RatingSummaryCacheDao,
+    BadgeProgressCacheDao,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -54,7 +58,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -77,10 +81,18 @@ class AppDatabase extends _$AppDatabase {
       if (from < 4) {
         await _migrateToV4();
       }
-      // v5 — scanner-recognized wine attributes. All nullable, so plain
-      // idempotent addColumn (no constant-default trap like v3).
+      // v5 — scanner-recognized wine attributes (already on main).
       if (from < 5) {
         await _migrateToV5();
+      }
+      // v6 — badge progress cache. v7 — badges notification opt-out.
+      // (Renumbered from badges' original v5/v6 because scanner's v5
+      // shipped first.)
+      if (from < 6) {
+        await _migrateToV6();
+      }
+      if (from < 7) {
+        await _migrateToV7();
       }
     },
   );
@@ -89,6 +101,29 @@ class AppDatabase extends _$AppDatabase {
     await _addColumnSafe('wines', 'serving_temp_c', 'INTEGER');
     await _addColumnSafe('wines', 'decant_minutes', 'INTEGER');
     await _addColumnSafe('wines', 'abv', 'REAL');
+  }
+
+  /// v6 adds the badge progress cache (JSON payload per user). Idempotent —
+  /// PRAGMA-checked so a re-run on a partially-migrated DB no-ops.
+  Future<void> _migrateToV6() async {
+    if (!await _tableExists('badge_progress_cache')) {
+      await customStatement(
+        'CREATE TABLE badge_progress_cache ('
+        'user_id TEXT NOT NULL PRIMARY KEY, '
+        'payload TEXT NOT NULL, '
+        'fetched_at INTEGER NOT NULL)',
+      );
+    }
+  }
+
+  /// v7 adds the `badges` notification opt-out (constant default → safe ADD
+  /// COLUMN). Idempotent via PRAGMA check.
+  Future<void> _migrateToV7() async {
+    await _addColumnSafe(
+      'notification_prefs',
+      'badges',
+      'INTEGER NOT NULL DEFAULT 1',
+    );
   }
 
   Future<void> _migrateToV4() async {
