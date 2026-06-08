@@ -69,7 +69,7 @@ dependencies:
   purchases_flutter: ^9.4.0
 
   # Charts + animation
-  fl_chart: ^0.69.0
+  fl_chart: ^1.2.0
   flutter_animate: ^4.5.0
 
   # Share-card image rendering
