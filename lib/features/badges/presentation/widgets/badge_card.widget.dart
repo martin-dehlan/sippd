@@ -17,13 +17,14 @@ class BadgeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final accent = badgeAccent(badge.category, cs);
+    // Gold seal treatment — matches the unlock medallion, not category colour.
+    final gold = cs.secondary;
     final earned = badge.earned;
     final iconColor = earned
-        ? accent
+        ? gold
         : cs.onSurfaceVariant.withValues(alpha: 0.55);
     final ringColor = earned
-        ? accent.withValues(alpha: 0.16)
+        ? gold.withValues(alpha: 0.1)
         : cs.surfaceContainer;
 
     return GestureDetector(
@@ -43,7 +44,7 @@ class BadgeCard extends StatelessWidget {
                   shape: BoxShape.circle,
                   border: Border.all(
                     color: earned
-                        ? accent.withValues(alpha: 0.5)
+                        ? gold.withValues(alpha: 0.5)
                         : cs.outlineVariant,
                     width: 0.5,
                   ),
@@ -102,13 +103,13 @@ class BadgeCard extends StatelessWidget {
                       width: context.w * 0.16,
                       child: _ProgressBar(
                         fraction: badge.progress,
-                        accent: accent,
+                        accent: gold,
                       ),
                     )
                   : Icon(
                       PhosphorIconsFill.checkCircle,
                       size: context.captionFont,
-                      color: accent,
+                      color: gold,
                     ),
             ),
           ),

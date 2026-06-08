@@ -30,7 +30,7 @@ class _BadgeDetailSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context);
-    final accent = badgeAccent(badge.category, cs);
+    final accent = cs.secondary; // gold seal tone (was category)
 
     return SafeArea(
       child: Padding(
