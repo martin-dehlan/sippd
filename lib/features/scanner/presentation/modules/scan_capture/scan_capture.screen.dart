@@ -181,6 +181,7 @@ class _ScanCaptureScreenState extends ConsumerState<ScanCaptureScreen> {
           ref.read(analyticsProvider).capture('scan_quota_exceeded');
           return _OverlayCard(
             child: ScanQuotaBlock(
+              isPro: quota?.isPro ?? false,
               onUpgrade: _openPaywall,
               onAddManually: _addManually,
             ),
