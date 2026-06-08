@@ -70,27 +70,48 @@ class BadgeCard extends StatelessWidget {
             ],
           ),
           SizedBox(height: context.xs),
-          Text(
-            badge.title,
-            maxLines: 2,
-            textAlign: TextAlign.center,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: context.captionFont * 0.92,
-              fontWeight: FontWeight.w700,
-              height: 1.1,
-              color: earned ? cs.onSurface : cs.onSurfaceVariant,
+          // Reserve a fixed two-line height so 1- and 2-line titles occupy
+          // the same vertical space — keeps the line/check below aligned on
+          // a consistent baseline across every cell of the grid.
+          SizedBox(
+            height: context.captionFont * 0.92 * 1.1 * 2,
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: Text(
+                badge.title,
+                maxLines: 2,
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: context.captionFont * 0.92,
+                  fontWeight: FontWeight.w700,
+                  height: 1.1,
+                  color: earned ? cs.onSurface : cs.onSurfaceVariant,
+                ),
+              ),
             ),
           ),
-          SizedBox(height: context.xs * 0.6),
-          if (!earned)
-            _ProgressBar(fraction: badge.progress, accent: accent)
-          else
-            Icon(
-              PhosphorIconsFill.checkCircle,
-              size: context.captionFont,
-              color: accent,
+          SizedBox(height: context.xs * 0.8),
+          // Fixed-height slot, centered: the locked progress bar and the
+          // earned check sit at the same vertical position across cards.
+          SizedBox(
+            height: context.captionFont,
+            child: Center(
+              child: !earned
+                  ? SizedBox(
+                      width: context.w * 0.16,
+                      child: _ProgressBar(
+                        fraction: badge.progress,
+                        accent: accent,
+                      ),
+                    )
+                  : Icon(
+                      PhosphorIconsFill.checkCircle,
+                      size: context.captionFont,
+                      color: accent,
+                    ),
             ),
+          ),
         ],
       ),
     );
