@@ -190,6 +190,28 @@ class _UnlockCardState extends State<_UnlockCard> {
                     height: 1.35,
                   ),
                 ),
+                SizedBox(height: context.l),
+                // The count you just completed, ticking up — "1 / 1".
+                TweenAnimationBuilder<double>(
+                  duration: const Duration(milliseconds: 900),
+                  curve: Curves.easeOutCubic,
+                  tween: Tween<double>(begin: 0, end: 1),
+                  builder: (context, value, _) {
+                    final shown = (badge.target * value).round().clamp(
+                      0,
+                      badge.target,
+                    );
+                    return Text(
+                      '$shown / ${badge.target}',
+                      style: TextStyle(
+                        fontSize: context.titleFont * 0.72,
+                        fontWeight: FontWeight.w800,
+                        color: cs.onSurface,
+                        letterSpacing: 0.5,
+                      ),
+                    );
+                  },
+                ),
                 SizedBox(height: context.xl),
                 // Clean neutral button — not a loud accent block.
                 SizedBox(
