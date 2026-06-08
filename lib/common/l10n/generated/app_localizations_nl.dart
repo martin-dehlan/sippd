@@ -2722,6 +2722,13 @@ class AppLocalizationsNl extends AppLocalizations {
   String get paywallBenefitNotesSubtitle => 'Neus · body · tannines · afdronk.';
 
   @override
+  String get paywallBenefitScanTitle => 'More label scans';
+
+  @override
+  String get paywallBenefitScanSubtitle =>
+      'Scan far more labels a day to add wines fast.';
+
+  @override
   String get paywallPlanMonthly => 'Maandelijks';
 
   @override
