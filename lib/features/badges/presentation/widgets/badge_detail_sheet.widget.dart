@@ -151,27 +151,38 @@ class _ProgressRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    return Column(
-      children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(context.w * 0.02),
-          child: LinearProgressIndicator(
-            value: badge.progress,
-            minHeight: context.h * 0.01,
-            backgroundColor: cs.surfaceContainerHighest,
-            valueColor: AlwaysStoppedAnimation<Color>(accent),
-          ),
-        ),
-        SizedBox(height: context.s),
-        Text(
-          '${badge.current} / ${badge.target}',
-          style: TextStyle(
-            fontSize: context.captionFont,
-            fontWeight: FontWeight.w700,
-            color: cs.onSurfaceVariant,
-          ),
-        ),
-      ],
+    final fraction = badge.progress.clamp(0.0, 1.0);
+    // Fine fill: the bar eases up while the count ticks to current/target,
+    // so an earned badge reads as "1 / 1 done" and progress as "3 / 5".
+    return TweenAnimationBuilder<double>(
+      duration: const Duration(milliseconds: 750),
+      curve: Curves.easeOutCubic,
+      tween: Tween<double>(begin: 0, end: fraction),
+      builder: (context, value, _) {
+        final shown = (badge.target * value).round().clamp(0, badge.current);
+        return Column(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(context.w * 0.02),
+              child: LinearProgressIndicator(
+                value: value,
+                minHeight: context.h * 0.01,
+                backgroundColor: cs.surfaceContainerHighest,
+                valueColor: AlwaysStoppedAnimation<Color>(accent),
+              ),
+            ),
+            SizedBox(height: context.s),
+            Text(
+              '$shown / ${badge.target}',
+              style: TextStyle(
+                fontSize: context.captionFont,
+                fontWeight: FontWeight.w700,
+                color: cs.onSurfaceVariant,
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
