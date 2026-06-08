@@ -851,6 +851,24 @@ class AppLocalizationsPt extends AppLocalizations {
   String get winesDetailSectionPlace => 'LOCAIS';
 
   @override
+  String get winesDetailSectionAttributes => 'ATTRIBUTES';
+
+  @override
+  String winesAttrServe(int temp) {
+    return 'Serve $temp°C';
+  }
+
+  @override
+  String winesAttrDecant(int minutes) {
+    return 'Decant ${minutes}min';
+  }
+
+  @override
+  String winesAttrAbv(String abv) {
+    return '$abv% vol';
+  }
+
+  @override
   String get winesDetailPlaceEmpty => 'Sem local definido';
 
   @override

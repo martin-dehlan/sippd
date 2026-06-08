@@ -54,7 +54,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -77,8 +77,19 @@ class AppDatabase extends _$AppDatabase {
       if (from < 4) {
         await _migrateToV4();
       }
+      // v5 — scanner-recognized wine attributes. All nullable, so plain
+      // idempotent addColumn (no constant-default trap like v3).
+      if (from < 5) {
+        await _migrateToV5();
+      }
     },
   );
+
+  Future<void> _migrateToV5() async {
+    await _addColumnSafe('wines', 'serving_temp_c', 'INTEGER');
+    await _addColumnSafe('wines', 'decant_minutes', 'INTEGER');
+    await _addColumnSafe('wines', 'abv', 'REAL');
+  }
 
   Future<void> _migrateToV4() async {
     // From v1 — defensive in case the broken v3 upgrade created it already.

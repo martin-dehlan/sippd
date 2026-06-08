@@ -13,9 +13,11 @@ import '../../../../common/data/wine_regions.dart';
 import '../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../common/utils/price_format.dart';
 import '../../../../common/utils/responsive.dart';
+import '../../../../common/widgets/number_picker_sheet.dart';
 import '../../../../common/widgets/price_input_sheet.dart';
 import '../../../../common/widgets/text_input_sheet.dart';
 import '../../../../common/widgets/year_picker_sheet.dart';
+import '../../../locations/controller/location.provider.dart';
 import '../../../locations/domain/entities/location.entity.dart';
 import '../../../locations/presentation/widgets/location_search_sheet.dart';
 import '../../controller/wine.provider.dart';
@@ -26,6 +28,11 @@ import 'wine_rating_sheet.dart';
 import 'wine_country_picker.widget.dart';
 import 'wine_photo_picker.widget.dart';
 import 'wine_region_picker.widget.dart';
+
+/// Whether we've already shown the location-permission prompt this app
+/// session, so the add form asks at most once per run (and never again
+/// once permission is granted — the silent path takes over).
+bool _askedLocationThisSession = false;
 
 class WineFormData {
   final String name;
@@ -50,6 +57,15 @@ class WineFormData {
   final String? imageUrl;
   final String? localImagePath;
 
+  /// True when [localImagePath] is the photo captured during a label scan,
+  /// so the form can nudge the user to swap in a nicer shot.
+  final bool photoFromScan;
+
+  // Scanner-recognized attributes (FastCork). Carried through to the wine.
+  final int? servingTempC;
+  final int? decantMinutes;
+  final double? abv;
+
   /// Pro expert tasting dimensions the user typed inside the rating
   /// sheet during *initial* wine creation. Null for edits and for
   /// add-flows where the user never opened the tasting-notes panel.
@@ -73,6 +89,10 @@ class WineFormData {
     this.notes,
     this.imageUrl,
     this.localImagePath,
+    this.photoFromScan = false,
+    this.servingTempC,
+    this.decantMinutes,
+    this.abv,
     this.pendingExpertTasting,
   });
 }
@@ -138,10 +158,16 @@ class WineFormState extends ConsumerState<WineForm>
   String? _country;
   String? _region;
   LocationEntity? _location;
+  bool _resolvingLocation = false;
   String? _notes;
+
+  int? _servingTempC;
+  int? _decantMinutes;
+  double? _abv;
 
   String? _imageUrl;
   String? _localImagePath;
+  bool _photoFromScan = false;
   // Expert tasting typed during initial wine creation, persisted by the
   // host screen after canonical id resolves. Survives sheet re-opens.
   ExpertTastingEntity? _pendingExpertTasting;
@@ -155,13 +181,10 @@ class WineFormState extends ConsumerState<WineForm>
       vsync: this,
       duration: const Duration(milliseconds: 400),
     );
-    _nameController.addListener(() {
-      if (_nameError && _nameController.text.trim().isNotEmpty) {
-        setState(() => _nameError = false);
-      }
-      _scheduleAutoSave();
-    });
-
+    // Prefill BEFORE wiring the listener — setting `_nameController.text`
+    // notifies listeners, and `_scheduleAutoSave` calls `widget.onChanged`
+    // which `setState`s the host screen. Doing that during initState throws
+    // "setState() called during build". Seed state first, then listen.
     final init = widget.initial;
     if (init != null) {
       _nameController.text = init.name;
@@ -177,8 +200,48 @@ class WineFormState extends ConsumerState<WineForm>
       _region = init.region;
       _location = init.location;
       _notes = init.notes;
+      _servingTempC = init.servingTempC;
+      _decantMinutes = init.decantMinutes;
+      _abv = init.abv;
+      _pendingExpertTasting = init.pendingExpertTasting;
       _imageUrl = init.imageUrl;
       _localImagePath = init.localImagePath;
+      _photoFromScan = init.photoFromScan && init.localImagePath != null;
+    }
+
+    _nameController.addListener(() {
+      if (_nameError && _nameController.text.trim().isNotEmpty) {
+        setState(() => _nameError = false);
+      }
+      _scheduleAutoSave();
+    });
+
+    // New wine with no place yet → silently drop in the current location
+    // when location permission is already granted (never prompts).
+    if (widget.wine == null && _location == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _autofillLocation());
+    }
+  }
+
+  Future<void> _autofillLocation() async {
+    final service = ref.read(locationSearchServiceProvider);
+    if (mounted) setState(() => _resolvingLocation = true);
+    try {
+      // Already granted → fill silently.
+      var loc = await service.resolveCurrentLocationIfPermitted();
+      // Not granted yet and we haven't asked this session → prompt once, so
+      // the prefill activates on the user's first add instead of requiring
+      // them to discover the place picker's GPS button.
+      if (loc == null && !_askedLocationThisSession) {
+        _askedLocationThisSession = true;
+        loc = await service.resolveCurrentLocationOrAsk();
+      }
+      // Bail if the user already picked a place while we were resolving.
+      if (!mounted || loc == null || _location != null) return;
+      setState(() => _location = loc);
+      widget.onChanged?.call(_collect());
+    } finally {
+      if (mounted) setState(() => _resolvingLocation = false);
     }
   }
 
@@ -223,6 +286,9 @@ class WineFormState extends ConsumerState<WineForm>
     region: _region,
     location: _location,
     notes: _notes,
+    servingTempC: _servingTempC,
+    decantMinutes: _decantMinutes,
+    abv: _abv,
     imageUrl: _imageUrl,
     localImagePath: _localImagePath,
     pendingExpertTasting: _pendingExpertTasting,
@@ -358,6 +424,57 @@ class WineFormState extends ConsumerState<WineForm>
     _scheduleAutoSave();
   }
 
+  // Scanner attribute editors. English-only copy for now — i18n batched
+  // into #185/#186.
+  Future<void> _editServingTemp() async {
+    FocusScope.of(context).unfocus();
+    final result = await showNumberPickerSheet(
+      context: context,
+      title: 'Serving temperature',
+      min: 4,
+      max: 22,
+      step: 1,
+      initial: _servingTempC?.toDouble(),
+      unit: '°C',
+    );
+    if (!mounted || result == null) return;
+    setState(() => _servingTempC = result.value?.round());
+    _scheduleAutoSave();
+  }
+
+  Future<void> _editDecant() async {
+    FocusScope.of(context).unfocus();
+    final result = await showNumberPickerSheet(
+      context: context,
+      title: 'Decant time',
+      min: 0,
+      max: 180,
+      step: 5,
+      initial: _decantMinutes?.toDouble(),
+      unit: ' min',
+    );
+    if (!mounted || result == null) return;
+    setState(() => _decantMinutes = result.value?.round());
+    _scheduleAutoSave();
+  }
+
+  Future<void> _editAbv() async {
+    FocusScope.of(context).unfocus();
+    final result = await showNumberPickerSheet(
+      context: context,
+      title: 'Alcohol',
+      min: 0,
+      max: 20,
+      step: 0.5,
+      initial: _abv,
+      unit: '%',
+      fractionDigits: 1,
+    );
+    if (!mounted || result == null) return;
+    setState(() => _abv = result.value);
+    _scheduleAutoSave();
+  }
+
   Future<void> _editNotes() async {
     FocusScope.of(context).unfocus();
     final l10n = AppLocalizations.of(context);
@@ -461,6 +578,8 @@ class WineFormState extends ConsumerState<WineForm>
                       setState(() {
                         _imageUrl = v.imageUrl;
                         _localImagePath = v.localPath;
+                        // User swapped the photo → the scan nudge is done.
+                        _photoFromScan = false;
                       });
                       _scheduleAutoSave();
                     },
@@ -491,16 +610,26 @@ class WineFormState extends ConsumerState<WineForm>
             ],
           ),
         ),
+        if (_photoFromScan && _localImagePath != null) ...[
+          SizedBox(height: context.s),
+          const _ScanPhotoHint(),
+        ],
         SizedBox(height: context.l),
         WineFormChipsRow(
           grape: _resolvedGrapeLabel(),
           vintage: _vintage,
           notes: _notes,
           winery: _winery,
+          servingTempC: _servingTempC,
+          decantMinutes: _decantMinutes,
+          abv: _abv,
           onGrapeTap: _editGrape,
           onVintageTap: _editVintage,
           onNotesTap: _editNotes,
           onWineryTap: _editWinery,
+          onServingTempTap: _editServingTemp,
+          onDecantTap: _editDecant,
+          onAbvTap: _editAbv,
         ),
         if (widget.momentsHook != null) ...[
           SizedBox(height: context.l),
@@ -524,7 +653,11 @@ class WineFormState extends ConsumerState<WineForm>
         SizedBox(height: context.m),
         SizedBox(
           height: context.h * 0.24,
-          child: WineFormPlaceMap(location: _location, onTap: _editPlace),
+          child: WineFormPlaceMap(
+            location: _location,
+            onTap: _editPlace,
+            loading: _resolvingLocation,
+          ),
         ),
         if (!widget.autoSave && widget.showInlineSubmit) ...[
           SizedBox(height: context.l),
@@ -897,15 +1030,52 @@ class WineFormCountryStat extends StatelessWidget {
   }
 }
 
+class _ScanPhotoHint extends StatelessWidget {
+  const _ScanPhotoHint();
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: context.paddingH),
+      child: Row(
+        children: [
+          Icon(
+            PhosphorIconsRegular.sparkle,
+            size: context.bodyFont,
+            color: cs.primary,
+          ),
+          SizedBox(width: context.w * 0.02),
+          Expanded(
+            child: Text(
+              'Scanned photo — tap it to swap in a nicer one',
+              style: TextStyle(
+                fontSize: context.captionFont,
+                color: cs.onSurfaceVariant,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class WineFormChipsRow extends StatelessWidget {
   final String? grape;
   final int? vintage;
   final String? notes;
   final String? winery;
+  final int? servingTempC;
+  final int? decantMinutes;
+  final double? abv;
   final VoidCallback onGrapeTap;
   final VoidCallback onVintageTap;
   final VoidCallback onNotesTap;
   final VoidCallback onWineryTap;
+  final VoidCallback onServingTempTap;
+  final VoidCallback onDecantTap;
+  final VoidCallback onAbvTap;
 
   const WineFormChipsRow({
     super.key,
@@ -913,11 +1083,20 @@ class WineFormChipsRow extends StatelessWidget {
     required this.vintage,
     required this.notes,
     required this.winery,
+    required this.servingTempC,
+    required this.decantMinutes,
+    required this.abv,
     required this.onGrapeTap,
     required this.onVintageTap,
     required this.onNotesTap,
     required this.onWineryTap,
+    required this.onServingTempTap,
+    required this.onDecantTap,
+    required this.onAbvTap,
   });
+
+  static String _fmtAbv(double v) =>
+      v == v.roundToDouble() ? v.toStringAsFixed(0) : v.toStringAsFixed(1);
 
   @override
   Widget build(BuildContext context) {
@@ -953,6 +1132,27 @@ class WineFormChipsRow extends StatelessWidget {
                 : l10n.winesFormChipNotes,
             isEmpty: notes == null || notes!.isEmpty,
             onTap: onNotesTap,
+          ),
+          // Scanner attributes — English labels for now (i18n in #185/#186).
+          WineFormFieldChip(
+            icon: PhosphorIconsRegular.thermometer,
+            label: servingTempC != null ? '$servingTempC°C' : 'Serve temp',
+            isEmpty: servingTempC == null,
+            onTap: onServingTempTap,
+          ),
+          WineFormFieldChip(
+            icon: PhosphorIconsRegular.timer,
+            label: (decantMinutes != null && decantMinutes! > 0)
+                ? '${decantMinutes}min'
+                : 'Decant',
+            isEmpty: decantMinutes == null || decantMinutes! == 0,
+            onTap: onDecantTap,
+          ),
+          WineFormFieldChip(
+            icon: PhosphorIconsRegular.drop,
+            label: abv != null ? '${_fmtAbv(abv!)}%' : 'ABV',
+            isEmpty: abv == null,
+            onTap: onAbvTap,
           ),
         ],
       ),
@@ -1016,22 +1216,26 @@ class WineFormFieldChip extends StatelessWidget {
 class WineFormPlaceMap extends StatelessWidget {
   final LocationEntity? location;
   final VoidCallback onTap;
+  final bool loading;
 
   const WineFormPlaceMap({
     super.key,
     required this.location,
     required this.onTap,
+    this.loading = false,
   });
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final hasCoords = location?.lat != null && location?.lng != null;
+    // Show the loading state only while resolving with no place yet.
+    final showLoading = loading && !hasCoords;
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: context.paddingH),
       child: GestureDetector(
-        onTap: onTap,
+        onTap: showLoading ? null : onTap,
         child: Container(
           clipBehavior: Clip.antiAlias,
           decoration: BoxDecoration(
@@ -1043,6 +1247,8 @@ class WineFormPlaceMap extends StatelessWidget {
                   point: LatLng(location!.lat!, location!.lng!),
                   label: location!.shortDisplay,
                 )
+              : showLoading
+              ? _PlaceLoading()
               : Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -1064,6 +1270,33 @@ class WineFormPlaceMap extends StatelessWidget {
                   ),
                 ),
         ),
+      ),
+    );
+  }
+}
+
+class _PlaceLoading extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(
+            width: context.w * 0.07,
+            height: context.w * 0.07,
+            child: CircularProgressIndicator(strokeWidth: 2, color: cs.primary),
+          ),
+          SizedBox(height: context.m),
+          Text(
+            'Finding your location…',
+            style: TextStyle(
+              fontSize: context.captionFont,
+              color: cs.onSurfaceVariant,
+            ),
+          ),
+        ],
       ),
     );
   }

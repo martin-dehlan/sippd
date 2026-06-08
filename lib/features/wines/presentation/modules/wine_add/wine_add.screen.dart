@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../../common/l10n/generated/app_localizations.dart';
+import '../../../../../common/services/analytics/analytics.provider.dart';
 import '../../../../../common/services/review/review.provider.dart';
 import '../../../../../common/utils/name_normalizer.dart';
 import '../../../../../common/utils/responsive.dart';
@@ -26,7 +27,11 @@ import '../../widgets/wine_form.widget.dart';
 import '../moment_capture/moment_capture.screen.dart';
 
 class WineAddScreen extends ConsumerStatefulWidget {
-  const WineAddScreen({super.key});
+  /// Optional prefill — set when the user arrives via the label scanner
+  /// (`/wines/scan`). Seeds the form so the user only reviews/edits.
+  final WineFormData? initialData;
+
+  const WineAddScreen({super.key, this.initialData});
 
   @override
   ConsumerState<WineAddScreen> createState() => _WineAddScreenState();
@@ -35,6 +40,15 @@ class WineAddScreen extends ConsumerStatefulWidget {
 class _WineAddScreenState extends ConsumerState<WineAddScreen> {
   final GlobalKey<WineFormState> _formKey = GlobalKey<WineFormState>();
   WineFormData? _current;
+
+  @override
+  void initState() {
+    super.initState();
+    // Seed so the save FAB works even if the user accepts the scanned
+    // values without touching a field (onChanged only fires on edits).
+    _current = widget.initialData;
+  }
+
   bool _allowPop = false;
   // Drafted moments captured before the wine is saved. Persisted in
   // `_save` after the wine row + canonical resolution land. Photos are
@@ -236,12 +250,21 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
       canonicalWineId: linkedCanonicalId,
       winery: data.winery,
       vintage: data.vintage,
+      servingTempC: data.servingTempC,
+      decantMinutes: data.decantMinutes,
+      abv: data.abv,
       imageUrl: data.imageUrl,
       localImagePath: data.localImagePath,
       userId: userId,
       createdAt: DateTime.now(),
     );
     await ref.read(wineControllerProvider.notifier).addWine(wine);
+
+    // Funnel close for scan-to-add: this wine originated from a label
+    // scan (issue #181 analytics).
+    if (widget.initialData != null) {
+      ref.read(analyticsProvider).capture('scan_result_saved');
+    }
 
     // If the user typed expert tasting dimensions in the rating sheet
     // before the wine was ever saved, the canonical_wine_id wasn't yet
@@ -396,6 +419,7 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
             children: [
               WineForm(
                 key: _formKey,
+                initial: widget.initialData,
                 submitLabel: l10n.winesAddSaveLabel,
                 showInlineSubmit: false,
                 onChanged: (data) => setState(() => _current = data),

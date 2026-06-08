@@ -50,6 +50,57 @@ class LocationSearchService {
       );
     }
 
+    return _resolveCurrentEntity(language: language);
+  }
+
+  /// Best-effort current location that NEVER prompts: returns it only when
+  /// permission is already granted and services are on, else null. Used to
+  /// silently prefill a new wine's place without nagging the user.
+  Future<LocationEntity?> resolveCurrentLocationIfPermitted({
+    String language = 'en-US,en;q=0.5',
+  }) async {
+    try {
+      if (!await Geolocator.isLocationServiceEnabled()) return null;
+      final permission = await Geolocator.checkPermission();
+      if (permission != LocationPermission.whileInUse &&
+          permission != LocationPermission.always) {
+        return null;
+      }
+      return _resolveCurrentEntity(language: language);
+    } catch (_) {
+      // Prefill is best-effort — a GPS/network hiccup must never break the
+      // form. The user can still set the place by hand.
+      return null;
+    }
+  }
+
+  /// Like [resolveCurrentLocationIfPermitted] but requests permission once
+  /// when it hasn't been decided yet (the OS shows its own prompt). Returns
+  /// null on denial / services-off / failure — never throws, so a refused
+  /// prompt silently leaves the place empty. Used for the first-time
+  /// prefill prompt in the add form.
+  Future<LocationEntity?> resolveCurrentLocationOrAsk({
+    String language = 'en-US,en;q=0.5',
+  }) async {
+    try {
+      if (!await Geolocator.isLocationServiceEnabled()) return null;
+      var permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+      if (permission != LocationPermission.whileInUse &&
+          permission != LocationPermission.always) {
+        return null;
+      }
+      return _resolveCurrentEntity(language: language);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<LocationEntity> _resolveCurrentEntity({
+    required String language,
+  }) async {
     final pos = await Geolocator.getCurrentPosition(
       locationSettings: const LocationSettings(
         accuracy: LocationAccuracy.high,

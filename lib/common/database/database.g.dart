@@ -212,6 +212,37 @@ class $WinesTableTable extends WinesTable
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _servingTempCMeta = const VerificationMeta(
+    'servingTempC',
+  );
+  @override
+  late final GeneratedColumn<int> servingTempC = GeneratedColumn<int>(
+    'serving_temp_c',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _decantMinutesMeta = const VerificationMeta(
+    'decantMinutes',
+  );
+  @override
+  late final GeneratedColumn<int> decantMinutes = GeneratedColumn<int>(
+    'decant_minutes',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _abvMeta = const VerificationMeta('abv');
+  @override
+  late final GeneratedColumn<double> abv = GeneratedColumn<double>(
+    'abv',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _nameNormMeta = const VerificationMeta(
     'nameNorm',
   );
@@ -289,6 +320,9 @@ class $WinesTableTable extends WinesTable
     grapeFreetext,
     canonicalWineId,
     winery,
+    servingTempC,
+    decantMinutes,
+    abv,
     nameNorm,
     userId,
     visibility,
@@ -444,6 +478,30 @@ class $WinesTableTable extends WinesTable
         winery.isAcceptableOrUnknown(data['winery']!, _wineryMeta),
       );
     }
+    if (data.containsKey('serving_temp_c')) {
+      context.handle(
+        _servingTempCMeta,
+        servingTempC.isAcceptableOrUnknown(
+          data['serving_temp_c']!,
+          _servingTempCMeta,
+        ),
+      );
+    }
+    if (data.containsKey('decant_minutes')) {
+      context.handle(
+        _decantMinutesMeta,
+        decantMinutes.isAcceptableOrUnknown(
+          data['decant_minutes']!,
+          _decantMinutesMeta,
+        ),
+      );
+    }
+    if (data.containsKey('abv')) {
+      context.handle(
+        _abvMeta,
+        abv.isAcceptableOrUnknown(data['abv']!, _abvMeta),
+      );
+    }
     if (data.containsKey('name_norm')) {
       context.handle(
         _nameNormMeta,
@@ -565,6 +623,18 @@ class $WinesTableTable extends WinesTable
         DriftSqlType.string,
         data['${effectivePrefix}winery'],
       ),
+      servingTempC: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}serving_temp_c'],
+      ),
+      decantMinutes: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}decant_minutes'],
+      ),
+      abv: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}abv'],
+      ),
       nameNorm: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}name_norm'],
@@ -615,6 +685,9 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
   final String? grapeFreetext;
   final String? canonicalWineId;
   final String? winery;
+  final int? servingTempC;
+  final int? decantMinutes;
+  final double? abv;
   final String? nameNorm;
   final String userId;
   final String visibility;
@@ -641,6 +714,9 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
     this.grapeFreetext,
     this.canonicalWineId,
     this.winery,
+    this.servingTempC,
+    this.decantMinutes,
+    this.abv,
     this.nameNorm,
     required this.userId,
     required this.visibility,
@@ -699,6 +775,15 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
     }
     if (!nullToAbsent || winery != null) {
       map['winery'] = Variable<String>(winery);
+    }
+    if (!nullToAbsent || servingTempC != null) {
+      map['serving_temp_c'] = Variable<int>(servingTempC);
+    }
+    if (!nullToAbsent || decantMinutes != null) {
+      map['decant_minutes'] = Variable<int>(decantMinutes);
+    }
+    if (!nullToAbsent || abv != null) {
+      map['abv'] = Variable<double>(abv);
     }
     if (!nullToAbsent || nameNorm != null) {
       map['name_norm'] = Variable<String>(nameNorm);
@@ -764,6 +849,13 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
       winery: winery == null && nullToAbsent
           ? const Value.absent()
           : Value(winery),
+      servingTempC: servingTempC == null && nullToAbsent
+          ? const Value.absent()
+          : Value(servingTempC),
+      decantMinutes: decantMinutes == null && nullToAbsent
+          ? const Value.absent()
+          : Value(decantMinutes),
+      abv: abv == null && nullToAbsent ? const Value.absent() : Value(abv),
       nameNorm: nameNorm == null && nullToAbsent
           ? const Value.absent()
           : Value(nameNorm),
@@ -802,6 +894,9 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
       grapeFreetext: serializer.fromJson<String?>(json['grapeFreetext']),
       canonicalWineId: serializer.fromJson<String?>(json['canonicalWineId']),
       winery: serializer.fromJson<String?>(json['winery']),
+      servingTempC: serializer.fromJson<int?>(json['servingTempC']),
+      decantMinutes: serializer.fromJson<int?>(json['decantMinutes']),
+      abv: serializer.fromJson<double?>(json['abv']),
       nameNorm: serializer.fromJson<String?>(json['nameNorm']),
       userId: serializer.fromJson<String>(json['userId']),
       visibility: serializer.fromJson<String>(json['visibility']),
@@ -833,6 +928,9 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
       'grapeFreetext': serializer.toJson<String?>(grapeFreetext),
       'canonicalWineId': serializer.toJson<String?>(canonicalWineId),
       'winery': serializer.toJson<String?>(winery),
+      'servingTempC': serializer.toJson<int?>(servingTempC),
+      'decantMinutes': serializer.toJson<int?>(decantMinutes),
+      'abv': serializer.toJson<double?>(abv),
       'nameNorm': serializer.toJson<String?>(nameNorm),
       'userId': serializer.toJson<String>(userId),
       'visibility': serializer.toJson<String>(visibility),
@@ -862,6 +960,9 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
     Value<String?> grapeFreetext = const Value.absent(),
     Value<String?> canonicalWineId = const Value.absent(),
     Value<String?> winery = const Value.absent(),
+    Value<int?> servingTempC = const Value.absent(),
+    Value<int?> decantMinutes = const Value.absent(),
+    Value<double?> abv = const Value.absent(),
     Value<String?> nameNorm = const Value.absent(),
     String? userId,
     String? visibility,
@@ -896,6 +997,11 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
         ? canonicalWineId.value
         : this.canonicalWineId,
     winery: winery.present ? winery.value : this.winery,
+    servingTempC: servingTempC.present ? servingTempC.value : this.servingTempC,
+    decantMinutes: decantMinutes.present
+        ? decantMinutes.value
+        : this.decantMinutes,
+    abv: abv.present ? abv.value : this.abv,
     nameNorm: nameNorm.present ? nameNorm.value : this.nameNorm,
     userId: userId ?? this.userId,
     visibility: visibility ?? this.visibility,
@@ -932,6 +1038,13 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
           ? data.canonicalWineId.value
           : this.canonicalWineId,
       winery: data.winery.present ? data.winery.value : this.winery,
+      servingTempC: data.servingTempC.present
+          ? data.servingTempC.value
+          : this.servingTempC,
+      decantMinutes: data.decantMinutes.present
+          ? data.decantMinutes.value
+          : this.decantMinutes,
+      abv: data.abv.present ? data.abv.value : this.abv,
       nameNorm: data.nameNorm.present ? data.nameNorm.value : this.nameNorm,
       userId: data.userId.present ? data.userId.value : this.userId,
       visibility: data.visibility.present
@@ -965,6 +1078,9 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
           ..write('grapeFreetext: $grapeFreetext, ')
           ..write('canonicalWineId: $canonicalWineId, ')
           ..write('winery: $winery, ')
+          ..write('servingTempC: $servingTempC, ')
+          ..write('decantMinutes: $decantMinutes, ')
+          ..write('abv: $abv, ')
           ..write('nameNorm: $nameNorm, ')
           ..write('userId: $userId, ')
           ..write('visibility: $visibility, ')
@@ -996,6 +1112,9 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
     grapeFreetext,
     canonicalWineId,
     winery,
+    servingTempC,
+    decantMinutes,
+    abv,
     nameNorm,
     userId,
     visibility,
@@ -1026,6 +1145,9 @@ class WineTableData extends DataClass implements Insertable<WineTableData> {
           other.grapeFreetext == this.grapeFreetext &&
           other.canonicalWineId == this.canonicalWineId &&
           other.winery == this.winery &&
+          other.servingTempC == this.servingTempC &&
+          other.decantMinutes == this.decantMinutes &&
+          other.abv == this.abv &&
           other.nameNorm == this.nameNorm &&
           other.userId == this.userId &&
           other.visibility == this.visibility &&
@@ -1054,6 +1176,9 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
   final Value<String?> grapeFreetext;
   final Value<String?> canonicalWineId;
   final Value<String?> winery;
+  final Value<int?> servingTempC;
+  final Value<int?> decantMinutes;
+  final Value<double?> abv;
   final Value<String?> nameNorm;
   final Value<String> userId;
   final Value<String> visibility;
@@ -1081,6 +1206,9 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
     this.grapeFreetext = const Value.absent(),
     this.canonicalWineId = const Value.absent(),
     this.winery = const Value.absent(),
+    this.servingTempC = const Value.absent(),
+    this.decantMinutes = const Value.absent(),
+    this.abv = const Value.absent(),
     this.nameNorm = const Value.absent(),
     this.userId = const Value.absent(),
     this.visibility = const Value.absent(),
@@ -1109,6 +1237,9 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
     this.grapeFreetext = const Value.absent(),
     this.canonicalWineId = const Value.absent(),
     this.winery = const Value.absent(),
+    this.servingTempC = const Value.absent(),
+    this.decantMinutes = const Value.absent(),
+    this.abv = const Value.absent(),
     this.nameNorm = const Value.absent(),
     required String userId,
     this.visibility = const Value.absent(),
@@ -1141,6 +1272,9 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
     Expression<String>? grapeFreetext,
     Expression<String>? canonicalWineId,
     Expression<String>? winery,
+    Expression<int>? servingTempC,
+    Expression<int>? decantMinutes,
+    Expression<double>? abv,
     Expression<String>? nameNorm,
     Expression<String>? userId,
     Expression<String>? visibility,
@@ -1169,6 +1303,9 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
       if (grapeFreetext != null) 'grape_freetext': grapeFreetext,
       if (canonicalWineId != null) 'canonical_wine_id': canonicalWineId,
       if (winery != null) 'winery': winery,
+      if (servingTempC != null) 'serving_temp_c': servingTempC,
+      if (decantMinutes != null) 'decant_minutes': decantMinutes,
+      if (abv != null) 'abv': abv,
       if (nameNorm != null) 'name_norm': nameNorm,
       if (userId != null) 'user_id': userId,
       if (visibility != null) 'visibility': visibility,
@@ -1199,6 +1336,9 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
     Value<String?>? grapeFreetext,
     Value<String?>? canonicalWineId,
     Value<String?>? winery,
+    Value<int?>? servingTempC,
+    Value<int?>? decantMinutes,
+    Value<double?>? abv,
     Value<String?>? nameNorm,
     Value<String>? userId,
     Value<String>? visibility,
@@ -1227,6 +1367,9 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
       grapeFreetext: grapeFreetext ?? this.grapeFreetext,
       canonicalWineId: canonicalWineId ?? this.canonicalWineId,
       winery: winery ?? this.winery,
+      servingTempC: servingTempC ?? this.servingTempC,
+      decantMinutes: decantMinutes ?? this.decantMinutes,
+      abv: abv ?? this.abv,
       nameNorm: nameNorm ?? this.nameNorm,
       userId: userId ?? this.userId,
       visibility: visibility ?? this.visibility,
@@ -1299,6 +1442,15 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
     if (winery.present) {
       map['winery'] = Variable<String>(winery.value);
     }
+    if (servingTempC.present) {
+      map['serving_temp_c'] = Variable<int>(servingTempC.value);
+    }
+    if (decantMinutes.present) {
+      map['decant_minutes'] = Variable<int>(decantMinutes.value);
+    }
+    if (abv.present) {
+      map['abv'] = Variable<double>(abv.value);
+    }
     if (nameNorm.present) {
       map['name_norm'] = Variable<String>(nameNorm.value);
     }
@@ -1343,6 +1495,9 @@ class WinesTableCompanion extends UpdateCompanion<WineTableData> {
           ..write('grapeFreetext: $grapeFreetext, ')
           ..write('canonicalWineId: $canonicalWineId, ')
           ..write('winery: $winery, ')
+          ..write('servingTempC: $servingTempC, ')
+          ..write('decantMinutes: $decantMinutes, ')
+          ..write('abv: $abv, ')
           ..write('nameNorm: $nameNorm, ')
           ..write('userId: $userId, ')
           ..write('visibility: $visibility, ')
@@ -5273,6 +5428,9 @@ typedef $$WinesTableTableCreateCompanionBuilder =
       Value<String?> grapeFreetext,
       Value<String?> canonicalWineId,
       Value<String?> winery,
+      Value<int?> servingTempC,
+      Value<int?> decantMinutes,
+      Value<double?> abv,
       Value<String?> nameNorm,
       required String userId,
       Value<String> visibility,
@@ -5302,6 +5460,9 @@ typedef $$WinesTableTableUpdateCompanionBuilder =
       Value<String?> grapeFreetext,
       Value<String?> canonicalWineId,
       Value<String?> winery,
+      Value<int?> servingTempC,
+      Value<int?> decantMinutes,
+      Value<double?> abv,
       Value<String?> nameNorm,
       Value<String> userId,
       Value<String> visibility,
@@ -5416,6 +5577,21 @@ class $$WinesTableTableFilterComposer
 
   ColumnFilters<String> get winery => $composableBuilder(
     column: $table.winery,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get servingTempC => $composableBuilder(
+    column: $table.servingTempC,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get decantMinutes => $composableBuilder(
+    column: $table.decantMinutes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get abv => $composableBuilder(
+    column: $table.abv,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -5554,6 +5730,21 @@ class $$WinesTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get servingTempC => $composableBuilder(
+    column: $table.servingTempC,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get decantMinutes => $composableBuilder(
+    column: $table.decantMinutes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get abv => $composableBuilder(
+    column: $table.abv,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get nameNorm => $composableBuilder(
     column: $table.nameNorm,
     builder: (column) => ColumnOrderings(column),
@@ -5657,6 +5848,19 @@ class $$WinesTableTableAnnotationComposer
   GeneratedColumn<String> get winery =>
       $composableBuilder(column: $table.winery, builder: (column) => column);
 
+  GeneratedColumn<int> get servingTempC => $composableBuilder(
+    column: $table.servingTempC,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get decantMinutes => $composableBuilder(
+    column: $table.decantMinutes,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get abv =>
+      $composableBuilder(column: $table.abv, builder: (column) => column);
+
   GeneratedColumn<String> get nameNorm =>
       $composableBuilder(column: $table.nameNorm, builder: (column) => column);
 
@@ -5726,6 +5930,9 @@ class $$WinesTableTableTableManager
                 Value<String?> grapeFreetext = const Value.absent(),
                 Value<String?> canonicalWineId = const Value.absent(),
                 Value<String?> winery = const Value.absent(),
+                Value<int?> servingTempC = const Value.absent(),
+                Value<int?> decantMinutes = const Value.absent(),
+                Value<double?> abv = const Value.absent(),
                 Value<String?> nameNorm = const Value.absent(),
                 Value<String> userId = const Value.absent(),
                 Value<String> visibility = const Value.absent(),
@@ -5753,6 +5960,9 @@ class $$WinesTableTableTableManager
                 grapeFreetext: grapeFreetext,
                 canonicalWineId: canonicalWineId,
                 winery: winery,
+                servingTempC: servingTempC,
+                decantMinutes: decantMinutes,
+                abv: abv,
                 nameNorm: nameNorm,
                 userId: userId,
                 visibility: visibility,
@@ -5782,6 +5992,9 @@ class $$WinesTableTableTableManager
                 Value<String?> grapeFreetext = const Value.absent(),
                 Value<String?> canonicalWineId = const Value.absent(),
                 Value<String?> winery = const Value.absent(),
+                Value<int?> servingTempC = const Value.absent(),
+                Value<int?> decantMinutes = const Value.absent(),
+                Value<double?> abv = const Value.absent(),
                 Value<String?> nameNorm = const Value.absent(),
                 required String userId,
                 Value<String> visibility = const Value.absent(),
@@ -5809,6 +6022,9 @@ class $$WinesTableTableTableManager
                 grapeFreetext: grapeFreetext,
                 canonicalWineId: canonicalWineId,
                 winery: winery,
+                servingTempC: servingTempC,
+                decantMinutes: decantMinutes,
+                abv: abv,
                 nameNorm: nameNorm,
                 userId: userId,
                 visibility: visibility,

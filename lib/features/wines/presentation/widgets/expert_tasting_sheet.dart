@@ -9,6 +9,7 @@ import '../../../../common/widgets/inline_error.widget.dart';
 import '../../../auth/controller/auth.provider.dart';
 import '../../controller/expert_tasting.provider.dart';
 import '../../data/data_sources/expert_tasting.api.dart';
+import '../../domain/aroma_vocabulary.dart';
 import '../../domain/entities/expert_tasting.entity.dart';
 import '../../domain/entities/wine.entity.dart';
 
@@ -38,42 +39,6 @@ Future<void> showExpertTastingSheet({
     builder: (_) => _ExpertSheet(wine: wine),
   );
 }
-
-const _aromaTags = [
-  'cherry',
-  'raspberry',
-  'strawberry',
-  'plum',
-  'blackcurrant',
-  'blackberry',
-  'blueberry',
-  'lemon',
-  'lime',
-  'grapefruit',
-  'pineapple',
-  'mango',
-  'passion fruit',
-  'peach',
-  'apricot',
-  'rose',
-  'violet',
-  'honeysuckle',
-  'bell pepper',
-  'mint',
-  'eucalyptus',
-  'leather',
-  'tobacco',
-  'mushroom',
-  'black pepper',
-  'vanilla',
-  'clove',
-  'toast',
-  'smoke',
-  'cedar',
-  'honey',
-  'butter',
-  'mineral',
-];
 
 class _ExpertSheet extends ConsumerStatefulWidget {
   const _ExpertSheet({required this.wine});
@@ -476,7 +441,7 @@ class TastingFinishRow extends StatelessWidget {
   }
 }
 
-class TastingAromaSection extends StatelessWidget {
+class TastingAromaSection extends StatefulWidget {
   const TastingAromaSection({
     super.key,
     required this.expanded,
@@ -491,13 +456,39 @@ class TastingAromaSection extends StatelessWidget {
   final ValueChanged<String> onToggleTag;
 
   @override
+  State<TastingAromaSection> createState() => _TastingAromaSectionState();
+}
+
+class _TastingAromaSectionState extends State<TastingAromaSection> {
+  final _searchController = TextEditingController();
+  String _query = '';
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _toggle(String tag) {
+    HapticFeedback.selectionClick();
+    widget.onToggleTag(tag);
+    // After picking from a search, clear the query and close the keyboard
+    // so the full list — with the Selected group on top — is visible again.
+    if (_query.isNotEmpty) {
+      _searchController.clear();
+      setState(() => _query = '');
+      FocusScope.of(context).unfocus();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         GestureDetector(
-          onTap: onToggleExpand,
+          onTap: widget.onToggleExpand,
           behavior: HitTestBehavior.opaque,
           child: Row(
             children: [
@@ -509,16 +500,19 @@ class TastingAromaSection extends StatelessWidget {
                   color: cs.onSurface,
                 ),
               ),
-              if (selected.isNotEmpty) ...[
+              if (widget.selected.isNotEmpty) ...[
                 SizedBox(width: context.xs),
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 1,
+                  ),
                   decoration: BoxDecoration(
                     color: cs.primary.withValues(alpha: 0.18),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
-                    '${selected.length}',
+                    '${widget.selected.length}',
                     style: TextStyle(
                       fontSize: context.captionFont * 0.8,
                       fontWeight: FontWeight.w700,
@@ -529,7 +523,7 @@ class TastingAromaSection extends StatelessWidget {
               ],
               const Spacer(),
               Icon(
-                expanded
+                widget.expanded
                     ? PhosphorIconsRegular.caretUp
                     : PhosphorIconsRegular.caretDown,
                 color: cs.outline,
@@ -541,55 +535,145 @@ class TastingAromaSection extends StatelessWidget {
         AnimatedCrossFade(
           firstChild: const SizedBox(width: double.infinity),
           secondChild: Padding(
-            padding: EdgeInsets.only(top: context.xs),
-            child: Wrap(
-              spacing: context.xs * 1.1,
-              runSpacing: context.xs * 1.1,
-              children: [
-                for (final tag in _aromaTags)
-                  GestureDetector(
-                    onTap: () {
-                      HapticFeedback.selectionClick();
-                      onToggleTag(tag);
-                    },
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: context.w * 0.025,
-                        vertical: 5,
-                      ),
-                      decoration: BoxDecoration(
-                        color: selected.contains(tag)
-                            ? cs.primary.withValues(alpha: 0.18)
-                            : cs.surfaceContainer,
-                        borderRadius: BorderRadius.circular(context.w * 0.04),
-                        border: Border.all(
-                          color: selected.contains(tag)
-                              ? cs.primary
-                              : Colors.transparent,
-                          width: 1,
-                        ),
-                      ),
-                      child: Text(
-                        tag,
-                        style: TextStyle(
-                          fontSize: context.captionFont * 0.9,
-                          color: selected.contains(tag)
-                              ? cs.primary
-                              : cs.onSurface,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
-            ),
+            padding: EdgeInsets.only(top: context.s),
+            child: _body(context, cs),
           ),
-          crossFadeState: expanded
+          crossFadeState: widget.expanded
               ? CrossFadeState.showSecond
               : CrossFadeState.showFirst,
           duration: const Duration(milliseconds: 220),
         ),
       ],
+    );
+  }
+
+  Widget _body(BuildContext context, ColorScheme cs) {
+    final q = _query.trim().toLowerCase();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Search field.
+        TextField(
+          controller: _searchController,
+          onChanged: (v) => setState(() => _query = v),
+          style: TextStyle(fontSize: context.captionFont),
+          decoration: InputDecoration(
+            isDense: true,
+            hintText: 'Search aromas',
+            prefixIcon: Icon(
+              PhosphorIconsRegular.magnifyingGlass,
+              size: context.bodyFont,
+              color: cs.outline,
+            ),
+            suffixIcon: q.isEmpty
+                ? null
+                : GestureDetector(
+                    onTap: () => setState(() {
+                      _searchController.clear();
+                      _query = '';
+                    }),
+                    child: Icon(
+                      PhosphorIconsRegular.x,
+                      size: context.bodyFont,
+                      color: cs.outline,
+                    ),
+                  ),
+            filled: true,
+            fillColor: cs.surfaceContainer,
+            contentPadding: EdgeInsets.symmetric(vertical: context.s),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(context.w * 0.03),
+              borderSide: BorderSide.none,
+            ),
+          ),
+        ),
+        SizedBox(height: context.m),
+        if (q.isEmpty)
+          ..._browseGrouped(context, cs)
+        else
+          _filtered(context, cs, q),
+      ],
+    );
+  }
+
+  // Grouped browse with a "Selected" group floated to the top.
+  List<Widget> _browseGrouped(BuildContext context, ColorScheme cs) {
+    final selected = widget.selected;
+    return [
+      if (selected.isNotEmpty) ...[
+        _groupLabel(context, cs, 'Selected'),
+        SizedBox(height: context.s),
+        _wrap([
+          for (final t in kAromaTags.where(selected.contains))
+            _chip(context, cs, t),
+        ]),
+        SizedBox(height: context.m),
+      ],
+      for (final entry in kAromaGroups.entries) ...[
+        _groupLabel(context, cs, entry.key),
+        SizedBox(height: context.s),
+        _wrap([for (final t in entry.value) _chip(context, cs, t)]),
+        SizedBox(height: context.m),
+      ],
+    ];
+  }
+
+  Widget _filtered(BuildContext context, ColorScheme cs, String q) {
+    final hits = kAromaTags.where((t) => t.contains(q)).toList();
+    if (hits.isEmpty) {
+      return Padding(
+        padding: EdgeInsets.symmetric(vertical: context.s),
+        child: Text(
+          'No aromas match "$q"',
+          style: TextStyle(fontSize: context.captionFont, color: cs.outline),
+        ),
+      );
+    }
+    return _wrap([for (final t in hits) _chip(context, cs, t)]);
+  }
+
+  Widget _wrap(List<Widget> children) =>
+      Wrap(spacing: context.s, runSpacing: context.s, children: children);
+
+  Widget _groupLabel(BuildContext context, ColorScheme cs, String label) =>
+      Text(
+        label.toUpperCase(),
+        style: TextStyle(
+          fontSize: context.captionFont * 0.78,
+          fontWeight: FontWeight.w700,
+          color: cs.onSurfaceVariant,
+          letterSpacing: 0.6,
+        ),
+      );
+
+  Widget _chip(BuildContext context, ColorScheme cs, String tag) {
+    final isOn = widget.selected.contains(tag);
+    return GestureDetector(
+      onTap: () => _toggle(tag),
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: context.w * 0.03,
+          vertical: 7,
+        ),
+        decoration: BoxDecoration(
+          color: isOn
+              ? cs.primary.withValues(alpha: 0.18)
+              : cs.surfaceContainer,
+          borderRadius: BorderRadius.circular(context.w * 0.04),
+          border: Border.all(
+            color: isOn ? cs.primary : Colors.transparent,
+            width: 1,
+          ),
+        ),
+        child: Text(
+          tag,
+          style: TextStyle(
+            fontSize: context.captionFont * 0.95,
+            color: isOn ? cs.primary : cs.onSurface,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
     );
   }
 }

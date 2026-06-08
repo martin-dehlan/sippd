@@ -351,6 +351,19 @@
   "winesDetailStatCountry": "Country",
   "winesDetailSectionNotes": "NOTES",
   "winesDetailSectionPlace": "PLACES",
+  "winesDetailSectionAttributes": "ATTRIBUTES",
+  "winesAttrServe": "Serve {temp}°C",
+  "@winesAttrServe": {
+    "placeholders": { "temp": { "type": "int" } }
+  },
+  "winesAttrDecant": "Decant {minutes}min",
+  "@winesAttrDecant": {
+    "placeholders": { "minutes": { "type": "int" } }
+  },
+  "winesAttrAbv": "{abv}% vol",
+  "@winesAttrAbv": {
+    "placeholders": { "abv": { "type": "String" } }
+  },
   "winesDetailPlaceEmpty": "No place set",
   "winesDetailDeleteTitle": "Delete wine?",
   "winesDetailDeleteBody": "This cannot be undone.",

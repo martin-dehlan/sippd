@@ -176,9 +176,9 @@ class _WineListScreenState extends ConsumerState<WineListScreen>
                       ),
                       SizedBox(width: context.w * 0.01),
                       _HeaderIconButton(
-                        icon: PhosphorIconsRegular.plus,
-                        onTap: () => context.push(AppRoutes.wineAdd),
-                        tooltip: l10n.winesListTooltipAddWine,
+                        icon: PhosphorIconsRegular.scan,
+                        onTap: () => context.push(AppRoutes.wineScan),
+                        tooltip: 'Scan label',
                       ),
                     ],
                   ),
