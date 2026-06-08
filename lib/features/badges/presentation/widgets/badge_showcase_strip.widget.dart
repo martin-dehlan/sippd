@@ -57,7 +57,7 @@ class BadgeShowcaseStrip extends ConsumerWidget {
                 separatorBuilder: (_, _) => SizedBox(width: context.w * 0.03),
                 itemBuilder: (context, i) {
                   final b = badges[i];
-                  final accent = badgeAccent(b.category, cs);
+                  final accent = cs.secondary; // gold seal tone (was category)
                   return GestureDetector(
                     onTap: () => showBadgeDetailSheet(context, b),
                     child: Container(
