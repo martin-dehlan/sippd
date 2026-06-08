@@ -114,7 +114,8 @@ class StatsEmptyHero extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               child: FilledButton.icon(
-                onPressed: () => context.push(AppRoutes.wineAdd),
+                // Scanner is the single add entry (manual is inside it).
+                onPressed: () => context.push(AppRoutes.wineScan),
                 style: FilledButton.styleFrom(
                   backgroundColor: cs.primary,
                   foregroundColor: cs.onPrimary,
@@ -123,7 +124,7 @@ class StatsEmptyHero extends StatelessWidget {
                     borderRadius: BorderRadius.circular(context.w * 0.035),
                   ),
                 ),
-                icon: const Icon(PhosphorIconsRegular.plus),
+                icon: const Icon(PhosphorIconsRegular.scan),
                 label: Text(
                   l10n.winesStatsEmptyCta,
                   style: TextStyle(
