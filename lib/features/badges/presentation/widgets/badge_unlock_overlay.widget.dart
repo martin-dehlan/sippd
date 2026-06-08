@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../common/services/analytics/analytics.provider.dart';
@@ -67,14 +66,15 @@ Future<void> _showBadgeUnlockDialog(BuildContext context, BadgeEntity badge) {
     barrierDismissible: true,
     barrierLabel: badge.title,
     barrierColor: Colors.black.withValues(alpha: 0.6),
-    transitionDuration: const Duration(milliseconds: 280),
+    transitionDuration: const Duration(milliseconds: 240),
     pageBuilder: (_, _, _) => const SizedBox.shrink(),
     transitionBuilder: (ctx, anim, _, _) {
-      final curved = CurvedAnimation(parent: anim, curve: Curves.easeOutBack);
-      return Transform.scale(
-        scale: 0.85 + 0.15 * curved.value,
-        child: Opacity(
-          opacity: anim.value.clamp(0, 1),
+      // Lean: a quiet fade + subtle settle — no bounce/overshoot.
+      final curved = CurvedAnimation(parent: anim, curve: Curves.easeOutCubic);
+      return Opacity(
+        opacity: anim.value.clamp(0, 1),
+        child: Transform.scale(
+          scale: 0.96 + 0.04 * curved.value,
           child: _UnlockCard(badge: badge),
         ),
       );
@@ -98,49 +98,48 @@ class _UnlockCard extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: context.paddingH),
         child: Material(
           color: cs.surface,
-          borderRadius: BorderRadius.circular(context.w * 0.06),
+          borderRadius: BorderRadius.circular(context.w * 0.07),
           child: Padding(
-            padding: EdgeInsets.all(context.l),
+            padding: EdgeInsets.symmetric(
+              horizontal: context.l,
+              vertical: context.xl,
+            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
-                  PhosphorIconsRegular.confetti,
-                  size: context.w * 0.08,
-                  color: accent,
-                ),
-                SizedBox(height: context.s),
-                Text(
-                  l10n.badgesUnlockedHeadline,
-                  style: TextStyle(
-                    fontSize: context.captionFont,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 1.2,
-                    color: accent,
-                  ),
-                ),
-                SizedBox(height: context.m),
+                // The badge is the single accent moment — restrained tint.
                 Container(
-                  width: context.w * 0.26,
-                  height: context.w * 0.26,
+                  width: context.w * 0.22,
+                  height: context.w * 0.22,
                   decoration: BoxDecoration(
-                    color: accent.withValues(alpha: 0.16),
+                    color: accent.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
-                    border: Border.all(color: accent.withValues(alpha: 0.5)),
                   ),
                   child: Icon(
                     badgeIcon(badge.icon),
-                    size: context.w * 0.12,
+                    size: context.w * 0.1,
                     color: accent,
                   ),
                 ),
-                SizedBox(height: context.m),
+                SizedBox(height: context.l),
+                // Neutral eyebrow — no coloured/red headline.
+                Text(
+                  l10n.badgesUnlockedHeadline.toUpperCase(),
+                  style: TextStyle(
+                    fontSize: context.captionFont * 0.82,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 1.6,
+                    color: cs.onSurfaceVariant,
+                  ),
+                ),
+                SizedBox(height: context.s),
                 Text(
                   badge.title,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: context.titleFont * 0.72,
-                    fontWeight: FontWeight.w800,
+                    fontSize: context.titleFont * 0.78,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: -0.3,
                     color: cs.onSurface,
                   ),
                 ),
@@ -151,16 +150,28 @@ class _UnlockCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: context.captionFont,
                     color: cs.onSurfaceVariant,
-                    height: 1.3,
+                    height: 1.35,
                   ),
                 ),
-                SizedBox(height: context.l),
+                SizedBox(height: context.xl),
+                // Clean neutral button — not a loud accent block.
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton(
                     onPressed: () => Navigator.of(context).pop(),
-                    style: FilledButton.styleFrom(backgroundColor: accent),
-                    child: Text(l10n.badgesNice),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: cs.onSurface,
+                      foregroundColor: cs.surface,
+                      elevation: 0,
+                      padding: EdgeInsets.symmetric(vertical: context.m),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(context.w * 0.035),
+                      ),
+                    ),
+                    child: Text(
+                      l10n.badgesNice,
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
                   ),
                 ),
               ],
