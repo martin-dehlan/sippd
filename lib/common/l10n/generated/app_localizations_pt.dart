@@ -2741,11 +2741,11 @@ class AppLocalizationsPt extends AppLocalizations {
   String get paywallBenefitNotesSubtitle => 'Nariz · corpo · taninos · final.';
 
   @override
-  String get paywallBenefitScanTitle => 'More label scans';
+  String get paywallBenefitScanTitle => 'Mais leituras de rótulos';
 
   @override
   String get paywallBenefitScanSubtitle =>
-      'Scan far more labels a day to add wines fast.';
+      'Leia muito mais rótulos por dia para adicionar vinhos rapidamente.';
 
   @override
   String get paywallPlanMonthly => 'Mensal';
@@ -3964,4 +3964,54 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get tileBadgesSubtitle => 'Get notified when you earn a new badge';
+
+  @override
+  String get scanQuotaFreeTitle => 'São as suas 5 leituras de hoje';
+
+  @override
+  String get scanQuotaProTitle => 'Atingiu o limite de leituras de hoje';
+
+  @override
+  String get scanQuotaFreeBody =>
+      'Renovam amanhã. Quer continuar a ler? Fique Pro para mais.';
+
+  @override
+  String get scanQuotaProBody =>
+      'As suas leituras renovam amanhã. Entretanto, adicione à mão.';
+
+  @override
+  String get scanGoPro => 'Ficar Pro';
+
+  @override
+  String get scanAddByHand => 'À mão';
+
+  @override
+  String get scanNotFoundTitle => 'Nenhum vinho encontrado no rótulo';
+
+  @override
+  String get scanNotFoundBody =>
+      'Tente uma foto mais nítida e de frente, ou adicione à mão.';
+
+  @override
+  String get scanErrorTitle => 'Não foi possível ler o rótulo';
+
+  @override
+  String get scanErrorBody =>
+      'Tente novamente com uma foto mais nítida e bem iluminada.';
+
+  @override
+  String get scanReadingLabel => 'A ler o rótulo…';
+
+  @override
+  String get scanSkipManual => 'Ignorar — inserir à mão';
+
+  @override
+  String get scanChooseGallery => 'Escolher da galeria';
+
+  @override
+  String get scanCameraUnavailable => 'Câmara indisponível';
+
+  @override
+  String get scanCameraDeniedBody =>
+      'Conceda acesso à câmara nas Definições, escolha uma foto da galeria ou adicione o vinho à mão.';
 }

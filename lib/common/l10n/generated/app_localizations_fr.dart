@@ -2741,11 +2741,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String get paywallBenefitNotesSubtitle => 'Nez · corps · tanins · finale.';
 
   @override
-  String get paywallBenefitScanTitle => 'More label scans';
+  String get paywallBenefitScanTitle => 'Plus de scans d\'étiquettes';
 
   @override
   String get paywallBenefitScanSubtitle =>
-      'Scan far more labels a day to add wines fast.';
+      'Scanne beaucoup plus d\'étiquettes par jour pour ajouter des vins rapidement.';
 
   @override
   String get paywallPlanMonthly => 'Mensuel';
@@ -3963,4 +3963,54 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get tileBadgesSubtitle => 'Get notified when you earn a new badge';
+
+  @override
+  String get scanQuotaFreeTitle => 'Tu as utilisé tes 5 scans du jour';
+
+  @override
+  String get scanQuotaProTitle => 'Tu as atteint ta limite de scans du jour';
+
+  @override
+  String get scanQuotaFreeBody =>
+      'Ils se renouvellent demain. Continuer à scanner ? Passe à Pro pour plus.';
+
+  @override
+  String get scanQuotaProBody =>
+      'Tes scans reviennent demain. En attendant, ajoute-le à la main.';
+
+  @override
+  String get scanGoPro => 'Passer à Pro';
+
+  @override
+  String get scanAddByHand => 'À la main';
+
+  @override
+  String get scanNotFoundTitle => 'Aucun vin trouvé sur l\'étiquette';
+
+  @override
+  String get scanNotFoundBody =>
+      'Essaie une photo plus nette et de face, ou ajoute-le à la main.';
+
+  @override
+  String get scanErrorTitle => 'Impossible de lire l\'étiquette';
+
+  @override
+  String get scanErrorBody =>
+      'Réessaie avec une photo plus nette et bien éclairée.';
+
+  @override
+  String get scanReadingLabel => 'Lecture de l\'étiquette…';
+
+  @override
+  String get scanSkipManual => 'Passer — saisir à la main';
+
+  @override
+  String get scanChooseGallery => 'Choisir dans la galerie';
+
+  @override
+  String get scanCameraUnavailable => 'Caméra indisponible';
+
+  @override
+  String get scanCameraDeniedBody =>
+      'Autorise l\'accès à la caméra dans les Réglages, choisis une photo dans ta galerie, ou ajoute le vin à la main.';
 }

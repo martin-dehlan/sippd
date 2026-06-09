@@ -2744,11 +2744,11 @@ class AppLocalizationsDe extends AppLocalizations {
   String get paywallBenefitNotesSubtitle => 'Nase · Körper · Tannine · Abgang.';
 
   @override
-  String get paywallBenefitScanTitle => 'More label scans';
+  String get paywallBenefitScanTitle => 'Mehr Etiketten-Scans';
 
   @override
   String get paywallBenefitScanSubtitle =>
-      'Scan far more labels a day to add wines fast.';
+      'Scanne deutlich mehr Etiketten pro Tag, um Weine schnell hinzuzufügen.';
 
   @override
   String get paywallPlanMonthly => 'Monatlich';
@@ -3966,4 +3966,54 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get tileBadgesSubtitle => 'Get notified when you earn a new badge';
+
+  @override
+  String get scanQuotaFreeTitle => 'Das waren deine 5 Scans für heute';
+
+  @override
+  String get scanQuotaProTitle => 'Du hast dein Scan-Limit für heute erreicht';
+
+  @override
+  String get scanQuotaFreeBody =>
+      'Morgen gibt\'s wieder neue. Jetzt weiterscannen? Mit Pro geht mehr.';
+
+  @override
+  String get scanQuotaProBody =>
+      'Deine Scans gibt\'s morgen wieder. Bis dahin von Hand hinzufügen.';
+
+  @override
+  String get scanGoPro => 'Pro holen';
+
+  @override
+  String get scanAddByHand => 'Von Hand';
+
+  @override
+  String get scanNotFoundTitle => 'Kein Wein auf dem Etikett erkannt';
+
+  @override
+  String get scanNotFoundBody =>
+      'Versuch ein schärferes, gerades Foto — oder füg ihn von Hand hinzu.';
+
+  @override
+  String get scanErrorTitle => 'Etikett nicht lesbar';
+
+  @override
+  String get scanErrorBody =>
+      'Versuch\'s nochmal mit einem schärferen, gut beleuchteten Foto.';
+
+  @override
+  String get scanReadingLabel => 'Etikett wird gelesen…';
+
+  @override
+  String get scanSkipManual => 'Überspringen — von Hand eingeben';
+
+  @override
+  String get scanChooseGallery => 'Aus Galerie wählen';
+
+  @override
+  String get scanCameraUnavailable => 'Kamera nicht verfügbar';
+
+  @override
+  String get scanCameraDeniedBody =>
+      'Gib in den Einstellungen Kamerazugriff frei, wähl ein Foto aus deiner Galerie, oder füg den Wein von Hand hinzu.';
 }

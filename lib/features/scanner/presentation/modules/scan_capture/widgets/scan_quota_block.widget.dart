@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../../common/utils/responsive.dart';
 
 /// Shown when the user has used today's scans. Free users get a (non-pushy)
@@ -21,12 +22,9 @@ class ScanQuotaBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final title = isPro
-        ? 'You\'ve hit today\'s scan limit'
-        : 'That\'s all 5 scans for today';
-    final body = isPro
-        ? 'Your scans reset tomorrow. Add one by hand in the meantime.'
-        : 'They reset tomorrow. Want to keep scanning now? Go Pro for more.';
+    final l10n = AppLocalizations.of(context);
+    final title = isPro ? l10n.scanQuotaProTitle : l10n.scanQuotaFreeTitle;
+    final body = isPro ? l10n.scanQuotaProBody : l10n.scanQuotaFreeBody;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -73,7 +71,7 @@ class ScanQuotaBlock extends StatelessWidget {
           FilledButton.icon(
             onPressed: onAddManually,
             icon: const Icon(PhosphorIconsRegular.pencilSimple),
-            label: const Text('Add by hand'),
+            label: Text(l10n.scanAddByHand),
             style: FilledButton.styleFrom(
               padding: EdgeInsets.symmetric(vertical: context.m),
             ),
@@ -82,7 +80,7 @@ class ScanQuotaBlock extends StatelessWidget {
           FilledButton.icon(
             onPressed: onUpgrade,
             icon: const Icon(PhosphorIconsRegular.sparkle),
-            label: const Text('Go Pro'),
+            label: Text(l10n.scanGoPro),
             style: FilledButton.styleFrom(
               padding: EdgeInsets.symmetric(vertical: context.m),
             ),
@@ -91,7 +89,7 @@ class ScanQuotaBlock extends StatelessWidget {
           TextButton(
             onPressed: onAddManually,
             child: Text(
-              'Add by hand',
+              l10n.scanAddByHand,
               style: TextStyle(color: cs.onSurfaceVariant),
             ),
           ),

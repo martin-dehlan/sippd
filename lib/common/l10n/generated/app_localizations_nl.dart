@@ -2722,11 +2722,11 @@ class AppLocalizationsNl extends AppLocalizations {
   String get paywallBenefitNotesSubtitle => 'Neus · body · tannines · afdronk.';
 
   @override
-  String get paywallBenefitScanTitle => 'More label scans';
+  String get paywallBenefitScanTitle => 'Meer etiketten scannen';
 
   @override
   String get paywallBenefitScanSubtitle =>
-      'Scan far more labels a day to add wines fast.';
+      'Scan veel meer etiketten per dag om snel wijnen toe te voegen.';
 
   @override
   String get paywallPlanMonthly => 'Maandelijks';
@@ -3945,4 +3945,54 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get tileBadgesSubtitle => 'Get notified when you earn a new badge';
+
+  @override
+  String get scanQuotaFreeTitle => 'Dat waren je 5 scans voor vandaag';
+
+  @override
+  String get scanQuotaProTitle => 'Je hebt je scanlimiet voor vandaag bereikt';
+
+  @override
+  String get scanQuotaFreeBody =>
+      'Morgen heb je er weer. Nu verder scannen? Word Pro voor meer.';
+
+  @override
+  String get scanQuotaProBody =>
+      'Je scans komen morgen terug. Voeg er ondertussen een met de hand toe.';
+
+  @override
+  String get scanGoPro => 'Word Pro';
+
+  @override
+  String get scanAddByHand => 'Met de hand';
+
+  @override
+  String get scanNotFoundTitle => 'Geen wijn op het etiket gevonden';
+
+  @override
+  String get scanNotFoundBody =>
+      'Probeer een scherpere, rechte foto — of voeg hem met de hand toe.';
+
+  @override
+  String get scanErrorTitle => 'Etiket niet leesbaar';
+
+  @override
+  String get scanErrorBody =>
+      'Probeer het opnieuw met een scherpere, goed belichte foto.';
+
+  @override
+  String get scanReadingLabel => 'Etiket wordt gelezen…';
+
+  @override
+  String get scanSkipManual => 'Overslaan — handmatig invoeren';
+
+  @override
+  String get scanChooseGallery => 'Kies uit galerij';
+
+  @override
+  String get scanCameraUnavailable => 'Camera niet beschikbaar';
+
+  @override
+  String get scanCameraDeniedBody =>
+      'Geef cameratoegang in Instellingen, kies een foto uit je galerij, of voeg de wijn met de hand toe.';
 }

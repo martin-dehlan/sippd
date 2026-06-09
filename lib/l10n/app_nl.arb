@@ -1217,5 +1217,22 @@
   "errServer": "Serverfout ({code}). Probeer het opnieuw.",
   "errServerNoCode": "Serverfout. Probeer het opnieuw.",
   "errUnknown": "Er ging iets mis. Probeer het opnieuw.",
-  "routeNotFound": "Pagina niet gevonden: {uri}"
+  "routeNotFound": "Pagina niet gevonden: {uri}",
+  "scanQuotaFreeTitle": "Dat waren je 5 scans voor vandaag",
+  "scanQuotaProTitle": "Je hebt je scanlimiet voor vandaag bereikt",
+  "scanQuotaFreeBody": "Morgen heb je er weer. Nu verder scannen? Word Pro voor meer.",
+  "scanQuotaProBody": "Je scans komen morgen terug. Voeg er ondertussen een met de hand toe.",
+  "scanGoPro": "Word Pro",
+  "scanAddByHand": "Met de hand",
+  "scanNotFoundTitle": "Geen wijn op het etiket gevonden",
+  "scanNotFoundBody": "Probeer een scherpere, rechte foto — of voeg hem met de hand toe.",
+  "scanErrorTitle": "Etiket niet leesbaar",
+  "scanErrorBody": "Probeer het opnieuw met een scherpere, goed belichte foto.",
+  "scanReadingLabel": "Etiket wordt gelezen…",
+  "scanSkipManual": "Overslaan — handmatig invoeren",
+  "scanChooseGallery": "Kies uit galerij",
+  "scanCameraUnavailable": "Camera niet beschikbaar",
+  "scanCameraDeniedBody": "Geef cameratoegang in Instellingen, kies een foto uit je galerij, of voeg de wijn met de hand toe.",
+  "paywallBenefitScanTitle": "Meer etiketten scannen",
+  "paywallBenefitScanSubtitle": "Scan veel meer etiketten per dag om snel wijnen toe te voegen."
 }

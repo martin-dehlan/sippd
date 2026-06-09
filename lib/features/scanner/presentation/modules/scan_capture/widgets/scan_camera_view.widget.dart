@@ -4,6 +4,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../../common/utils/responsive.dart';
 
 /// Live camera preview with a lean capture overlay. Camera-first: opens
@@ -269,7 +270,7 @@ class _BottomControls extends StatelessWidget {
         TextButton(
           onPressed: onManual,
           child: Text(
-            'Skip — enter by hand',
+            AppLocalizations.of(context).scanSkipManual,
             style: TextStyle(
               color: Colors.white.withValues(alpha: 0.9),
               fontSize: context.captionFont,
@@ -350,6 +351,7 @@ class _CameraUnavailable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Center(
       child: Padding(
         padding: EdgeInsets.all(context.paddingH * 1.4),
@@ -363,7 +365,7 @@ class _CameraUnavailable extends StatelessWidget {
             ),
             SizedBox(height: context.l),
             Text(
-              'Camera unavailable',
+              l10n.scanCameraUnavailable,
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: Colors.white,
@@ -373,8 +375,7 @@ class _CameraUnavailable extends StatelessWidget {
             ),
             SizedBox(height: context.xs),
             Text(
-              'Grant camera access in Settings, pick a photo from your '
-              'gallery, or add the wine by hand.',
+              l10n.scanCameraDeniedBody,
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: Colors.white70,
@@ -385,13 +386,13 @@ class _CameraUnavailable extends StatelessWidget {
             FilledButton.icon(
               onPressed: onGallery,
               icon: const Icon(PhosphorIconsRegular.image),
-              label: const Text('Choose from gallery'),
+              label: Text(l10n.scanChooseGallery),
             ),
             SizedBox(height: context.s),
             TextButton(
               onPressed: onManual,
               child: Text(
-                'Skip — enter by hand',
+                l10n.scanSkipManual,
                 style: TextStyle(color: Colors.white.withValues(alpha: 0.9)),
               ),
             ),

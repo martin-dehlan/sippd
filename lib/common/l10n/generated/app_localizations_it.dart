@@ -2725,11 +2725,11 @@ class AppLocalizationsIt extends AppLocalizations {
   String get paywallBenefitNotesSubtitle => 'Naso · corpo · tannini · finale.';
 
   @override
-  String get paywallBenefitScanTitle => 'More label scans';
+  String get paywallBenefitScanTitle => 'Più scansioni di etichette';
 
   @override
   String get paywallBenefitScanSubtitle =>
-      'Scan far more labels a day to add wines fast.';
+      'Scansiona molte più etichette al giorno per aggiungere vini in fretta.';
 
   @override
   String get paywallPlanMonthly => 'Mensile';
@@ -3941,4 +3941,55 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get tileBadgesSubtitle => 'Get notified when you earn a new badge';
+
+  @override
+  String get scanQuotaFreeTitle => 'Hai esaurito le 5 scansioni di oggi';
+
+  @override
+  String get scanQuotaProTitle =>
+      'Hai raggiunto il limite di scansioni di oggi';
+
+  @override
+  String get scanQuotaFreeBody =>
+      'Si rinnovano domani. Vuoi continuare a scansionare? Passa a Pro per di più.';
+
+  @override
+  String get scanQuotaProBody =>
+      'Le tue scansioni si rinnovano domani. Nel frattempo aggiungilo a mano.';
+
+  @override
+  String get scanGoPro => 'Passa a Pro';
+
+  @override
+  String get scanAddByHand => 'A mano';
+
+  @override
+  String get scanNotFoundTitle => 'Nessun vino trovato sull\'etichetta';
+
+  @override
+  String get scanNotFoundBody =>
+      'Prova una foto più nitida e frontale, oppure aggiungilo a mano.';
+
+  @override
+  String get scanErrorTitle => 'Impossibile leggere l\'etichetta';
+
+  @override
+  String get scanErrorBody =>
+      'Riprova con una foto più nitida e ben illuminata.';
+
+  @override
+  String get scanReadingLabel => 'Lettura dell\'etichetta…';
+
+  @override
+  String get scanSkipManual => 'Salta — inserisci a mano';
+
+  @override
+  String get scanChooseGallery => 'Scegli dalla galleria';
+
+  @override
+  String get scanCameraUnavailable => 'Fotocamera non disponibile';
+
+  @override
+  String get scanCameraDeniedBody =>
+      'Concedi l\'accesso alla fotocamera nelle Impostazioni, scegli una foto dalla galleria o aggiungi il vino a mano.';
 }

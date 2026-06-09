@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../../common/errors/app_error.dart';
+import '../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../common/services/analytics/analytics.provider.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/error_view.widget.dart';
@@ -143,6 +144,7 @@ class _ScanCaptureScreenState extends ConsumerState<ScanCaptureScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final state = ref.watch(scannerControllerProvider);
 
     // React once recognition lands: navigate only when FastCork actually
@@ -167,8 +169,8 @@ class _ScanCaptureScreenState extends ConsumerState<ScanCaptureScreen> {
         if (result != null && !result.hasContent) {
           return _OverlayCard(
             child: _ScanFailure(
-              title: 'No wine found on that label',
-              subtitle: 'Try a clearer, straight-on photo — or add it by hand.',
+              title: l10n.scanNotFoundTitle,
+              subtitle: l10n.scanNotFoundBody,
               onRetry: _reset,
               onManual: _addManually,
             ),
@@ -191,8 +193,8 @@ class _ScanCaptureScreenState extends ConsumerState<ScanCaptureScreen> {
         return _OverlayCard(
           child: _ScanFailure(
             error: e,
-            title: 'Could not read the label',
-            subtitle: 'Try again with a clearer, well-lit shot.',
+            title: l10n.scanErrorTitle,
+            subtitle: l10n.scanErrorBody,
             onRetry: _reset,
             onManual: _addManually,
           ),
@@ -233,7 +235,7 @@ class _ScanningOverlay extends StatelessWidget {
             const CircularProgressIndicator(color: Colors.white),
             SizedBox(height: context.l),
             Text(
-              'Reading the label…',
+              AppLocalizations.of(context).scanReadingLabel,
               style: TextStyle(color: Colors.white, fontSize: context.bodyFont),
             ),
           ],
@@ -298,7 +300,7 @@ class _ScanFailure extends StatelessWidget {
         TextButton(
           onPressed: onManual,
           child: Text(
-            'Skip — enter by hand',
+            AppLocalizations.of(context).scanSkipManual,
             style: TextStyle(color: cs.onSurfaceVariant),
           ),
         ),

@@ -1327,5 +1327,22 @@
   "errServer": "Erreur serveur ({code}). Réessaie.",
   "errServerNoCode": "Erreur serveur. Réessaie.",
   "errUnknown": "Quelque chose s'est mal passé. Réessaie.",
-  "routeNotFound": "Page introuvable : {uri}"
+  "routeNotFound": "Page introuvable : {uri}",
+  "scanQuotaFreeTitle": "Tu as utilisé tes 5 scans du jour",
+  "scanQuotaProTitle": "Tu as atteint ta limite de scans du jour",
+  "scanQuotaFreeBody": "Ils se renouvellent demain. Continuer à scanner ? Passe à Pro pour plus.",
+  "scanQuotaProBody": "Tes scans reviennent demain. En attendant, ajoute-le à la main.",
+  "scanGoPro": "Passer à Pro",
+  "scanAddByHand": "À la main",
+  "scanNotFoundTitle": "Aucun vin trouvé sur l'étiquette",
+  "scanNotFoundBody": "Essaie une photo plus nette et de face, ou ajoute-le à la main.",
+  "scanErrorTitle": "Impossible de lire l'étiquette",
+  "scanErrorBody": "Réessaie avec une photo plus nette et bien éclairée.",
+  "scanReadingLabel": "Lecture de l'étiquette…",
+  "scanSkipManual": "Passer — saisir à la main",
+  "scanChooseGallery": "Choisir dans la galerie",
+  "scanCameraUnavailable": "Caméra indisponible",
+  "scanCameraDeniedBody": "Autorise l'accès à la caméra dans les Réglages, choisis une photo dans ta galerie, ou ajoute le vin à la main.",
+  "paywallBenefitScanTitle": "Plus de scans d'étiquettes",
+  "paywallBenefitScanSubtitle": "Scanne beaucoup plus d'étiquettes par jour pour ajouter des vins rapidement."
 }

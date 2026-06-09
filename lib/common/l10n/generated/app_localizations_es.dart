@@ -2731,11 +2731,11 @@ class AppLocalizationsEs extends AppLocalizations {
   String get paywallBenefitNotesSubtitle => 'Nariz · cuerpo · taninos · final.';
 
   @override
-  String get paywallBenefitScanTitle => 'More label scans';
+  String get paywallBenefitScanTitle => 'Más escaneos de etiquetas';
 
   @override
   String get paywallBenefitScanSubtitle =>
-      'Scan far more labels a day to add wines fast.';
+      'Escanea muchas más etiquetas al día para añadir vinos rápido.';
 
   @override
   String get paywallPlanMonthly => 'Mensual';
@@ -3952,4 +3952,54 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get tileBadgesSubtitle => 'Get notified when you earn a new badge';
+
+  @override
+  String get scanQuotaFreeTitle => 'Son los 5 escaneos de hoy';
+
+  @override
+  String get scanQuotaProTitle => 'Has alcanzado el límite de escaneos de hoy';
+
+  @override
+  String get scanQuotaFreeBody =>
+      'Se renuevan mañana. ¿Quieres seguir escaneando? Hazte Pro para más.';
+
+  @override
+  String get scanQuotaProBody =>
+      'Tus escaneos se renuevan mañana. Mientras, añádelo a mano.';
+
+  @override
+  String get scanGoPro => 'Hazte Pro';
+
+  @override
+  String get scanAddByHand => 'A mano';
+
+  @override
+  String get scanNotFoundTitle => 'No se encontró ningún vino en la etiqueta';
+
+  @override
+  String get scanNotFoundBody =>
+      'Prueba una foto más nítida y de frente, o añádelo a mano.';
+
+  @override
+  String get scanErrorTitle => 'No se pudo leer la etiqueta';
+
+  @override
+  String get scanErrorBody =>
+      'Inténtalo de nuevo con una foto más nítida y bien iluminada.';
+
+  @override
+  String get scanReadingLabel => 'Leyendo la etiqueta…';
+
+  @override
+  String get scanSkipManual => 'Omitir — introducir a mano';
+
+  @override
+  String get scanChooseGallery => 'Elegir de la galería';
+
+  @override
+  String get scanCameraUnavailable => 'Cámara no disponible';
+
+  @override
+  String get scanCameraDeniedBody =>
+      'Concede acceso a la cámara en Ajustes, elige una foto de tu galería o añade el vino a mano.';
 }

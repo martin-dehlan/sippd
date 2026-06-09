@@ -1327,5 +1327,22 @@
   "errServer": "Errore del server ({code}). Riprova.",
   "errServerNoCode": "Errore del server. Riprova.",
   "errUnknown": "Qualcosa è andato storto. Riprova.",
-  "routeNotFound": "Pagina non trovata: {uri}"
+  "routeNotFound": "Pagina non trovata: {uri}",
+  "scanQuotaFreeTitle": "Hai esaurito le 5 scansioni di oggi",
+  "scanQuotaProTitle": "Hai raggiunto il limite di scansioni di oggi",
+  "scanQuotaFreeBody": "Si rinnovano domani. Vuoi continuare a scansionare? Passa a Pro per di più.",
+  "scanQuotaProBody": "Le tue scansioni si rinnovano domani. Nel frattempo aggiungilo a mano.",
+  "scanGoPro": "Passa a Pro",
+  "scanAddByHand": "A mano",
+  "scanNotFoundTitle": "Nessun vino trovato sull'etichetta",
+  "scanNotFoundBody": "Prova una foto più nitida e frontale, oppure aggiungilo a mano.",
+  "scanErrorTitle": "Impossibile leggere l'etichetta",
+  "scanErrorBody": "Riprova con una foto più nitida e ben illuminata.",
+  "scanReadingLabel": "Lettura dell'etichetta…",
+  "scanSkipManual": "Salta — inserisci a mano",
+  "scanChooseGallery": "Scegli dalla galleria",
+  "scanCameraUnavailable": "Fotocamera non disponibile",
+  "scanCameraDeniedBody": "Concedi l'accesso alla fotocamera nelle Impostazioni, scegli una foto dalla galleria o aggiungi il vino a mano.",
+  "paywallBenefitScanTitle": "Più scansioni di etichette",
+  "paywallBenefitScanSubtitle": "Scansiona molte più etichette al giorno per aggiungere vini in fretta."
 }

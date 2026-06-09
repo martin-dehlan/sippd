@@ -7139,6 +7139,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Get notified when you earn a new badge'**
   String get tileBadgesSubtitle;
+
+  /// Scanner quota-exhausted title for free users.
+  ///
+  /// In en, this message translates to:
+  /// **'That\'s all 5 scans for today'**
+  String get scanQuotaFreeTitle;
+
+  /// Scanner quota-exhausted title for Pro users.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve hit today\'s scan limit'**
+  String get scanQuotaProTitle;
+
+  /// Scanner quota-exhausted body for free users (nudge to Pro).
+  ///
+  /// In en, this message translates to:
+  /// **'They reset tomorrow. Want to keep scanning now? Go Pro for more.'**
+  String get scanQuotaFreeBody;
+
+  /// Scanner quota-exhausted body for Pro users.
+  ///
+  /// In en, this message translates to:
+  /// **'Your scans reset tomorrow. Add one by hand in the meantime.'**
+  String get scanQuotaProBody;
+
+  /// Go Pro button on the scan quota block.
+  ///
+  /// In en, this message translates to:
+  /// **'Go Pro'**
+  String get scanGoPro;
+
+  /// Manual-entry button on scanner screens.
+  ///
+  /// In en, this message translates to:
+  /// **'Add by hand'**
+  String get scanAddByHand;
+
+  /// Scanner no-match title.
+  ///
+  /// In en, this message translates to:
+  /// **'No wine found on that label'**
+  String get scanNotFoundTitle;
+
+  /// Scanner no-match body.
+  ///
+  /// In en, this message translates to:
+  /// **'Try a clearer, straight-on photo — or add it by hand.'**
+  String get scanNotFoundBody;
+
+  /// Scanner error title.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not read the label'**
+  String get scanErrorTitle;
+
+  /// Scanner error body.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again with a clearer, well-lit shot.'**
+  String get scanErrorBody;
+
+  /// Scanner recognition loading text.
+  ///
+  /// In en, this message translates to:
+  /// **'Reading the label…'**
+  String get scanReadingLabel;
+
+  /// Skip-to-manual link on scanner failure cards.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip — enter by hand'**
+  String get scanSkipManual;
+
+  /// Gallery picker button in the scanner.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose from gallery'**
+  String get scanChooseGallery;
+
+  /// Camera permission-denied title.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera unavailable'**
+  String get scanCameraUnavailable;
+
+  /// Camera permission-denied body.
+  ///
+  /// In en, this message translates to:
+  /// **'Grant camera access in Settings, pick a photo from your gallery, or add the wine by hand.'**
+  String get scanCameraDeniedBody;
 }
 
 class _AppLocalizationsDelegate

@@ -1327,5 +1327,22 @@
   "errServer": "Error del servidor ({code}). Inténtalo otra vez.",
   "errServerNoCode": "Error del servidor. Inténtalo otra vez.",
   "errUnknown": "Algo salió mal. Inténtalo otra vez.",
-  "routeNotFound": "Página no encontrada: {uri}"
+  "routeNotFound": "Página no encontrada: {uri}",
+  "scanQuotaFreeTitle": "Son los 5 escaneos de hoy",
+  "scanQuotaProTitle": "Has alcanzado el límite de escaneos de hoy",
+  "scanQuotaFreeBody": "Se renuevan mañana. ¿Quieres seguir escaneando? Hazte Pro para más.",
+  "scanQuotaProBody": "Tus escaneos se renuevan mañana. Mientras, añádelo a mano.",
+  "scanGoPro": "Hazte Pro",
+  "scanAddByHand": "A mano",
+  "scanNotFoundTitle": "No se encontró ningún vino en la etiqueta",
+  "scanNotFoundBody": "Prueba una foto más nítida y de frente, o añádelo a mano.",
+  "scanErrorTitle": "No se pudo leer la etiqueta",
+  "scanErrorBody": "Inténtalo de nuevo con una foto más nítida y bien iluminada.",
+  "scanReadingLabel": "Leyendo la etiqueta…",
+  "scanSkipManual": "Omitir — introducir a mano",
+  "scanChooseGallery": "Elegir de la galería",
+  "scanCameraUnavailable": "Cámara no disponible",
+  "scanCameraDeniedBody": "Concede acceso a la cámara en Ajustes, elige una foto de tu galería o añade el vino a mano.",
+  "paywallBenefitScanTitle": "Más escaneos de etiquetas",
+  "paywallBenefitScanSubtitle": "Escanea muchas más etiquetas al día para añadir vinos rápido."
 }

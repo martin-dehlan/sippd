@@ -1217,5 +1217,22 @@
   "errServer": "Erro do servidor ({code}). Tenta novamente.",
   "errServerNoCode": "Erro do servidor. Tenta novamente.",
   "errUnknown": "Algo correu mal. Tenta novamente.",
-  "routeNotFound": "Página não encontrada: {uri}"
+  "routeNotFound": "Página não encontrada: {uri}",
+  "scanQuotaFreeTitle": "São as suas 5 leituras de hoje",
+  "scanQuotaProTitle": "Atingiu o limite de leituras de hoje",
+  "scanQuotaFreeBody": "Renovam amanhã. Quer continuar a ler? Fique Pro para mais.",
+  "scanQuotaProBody": "As suas leituras renovam amanhã. Entretanto, adicione à mão.",
+  "scanGoPro": "Ficar Pro",
+  "scanAddByHand": "À mão",
+  "scanNotFoundTitle": "Nenhum vinho encontrado no rótulo",
+  "scanNotFoundBody": "Tente uma foto mais nítida e de frente, ou adicione à mão.",
+  "scanErrorTitle": "Não foi possível ler o rótulo",
+  "scanErrorBody": "Tente novamente com uma foto mais nítida e bem iluminada.",
+  "scanReadingLabel": "A ler o rótulo…",
+  "scanSkipManual": "Ignorar — inserir à mão",
+  "scanChooseGallery": "Escolher da galeria",
+  "scanCameraUnavailable": "Câmara indisponível",
+  "scanCameraDeniedBody": "Conceda acesso à câmara nas Definições, escolha uma foto da galeria ou adicione o vinho à mão.",
+  "paywallBenefitScanTitle": "Mais leituras de rótulos",
+  "paywallBenefitScanSubtitle": "Leia muito mais rótulos por dia para adicionar vinhos rapidamente."
 }

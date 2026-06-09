@@ -3910,4 +3910,53 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tileBadgesSubtitle => 'Get notified when you earn a new badge';
+
+  @override
+  String get scanQuotaFreeTitle => 'That\'s all 5 scans for today';
+
+  @override
+  String get scanQuotaProTitle => 'You\'ve hit today\'s scan limit';
+
+  @override
+  String get scanQuotaFreeBody =>
+      'They reset tomorrow. Want to keep scanning now? Go Pro for more.';
+
+  @override
+  String get scanQuotaProBody =>
+      'Your scans reset tomorrow. Add one by hand in the meantime.';
+
+  @override
+  String get scanGoPro => 'Go Pro';
+
+  @override
+  String get scanAddByHand => 'Add by hand';
+
+  @override
+  String get scanNotFoundTitle => 'No wine found on that label';
+
+  @override
+  String get scanNotFoundBody =>
+      'Try a clearer, straight-on photo — or add it by hand.';
+
+  @override
+  String get scanErrorTitle => 'Could not read the label';
+
+  @override
+  String get scanErrorBody => 'Try again with a clearer, well-lit shot.';
+
+  @override
+  String get scanReadingLabel => 'Reading the label…';
+
+  @override
+  String get scanSkipManual => 'Skip — enter by hand';
+
+  @override
+  String get scanChooseGallery => 'Choose from gallery';
+
+  @override
+  String get scanCameraUnavailable => 'Camera unavailable';
+
+  @override
+  String get scanCameraDeniedBody =>
+      'Grant camera access in Settings, pick a photo from your gallery, or add the wine by hand.';
 }
