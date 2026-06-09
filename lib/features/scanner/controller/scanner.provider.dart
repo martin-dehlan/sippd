@@ -46,4 +46,34 @@ class ScannerController extends _$ScannerController {
   }
 
   void reset() => state = const AsyncData(null);
+
+  /// Demo only (`kIsDemo`): fake a recognition without touching the camera,
+  /// the Edge Function, or the scan quota. Plays the loading state for a
+  /// beat, then emits a fixed Hugel Riesling result so the tour lands on a
+  /// fully prefilled add-wine form.
+  Future<void> scanDemo() async {
+    state = const AsyncLoading();
+    await Future<void>.delayed(const Duration(milliseconds: 1600));
+    state = const AsyncData(_demoResult);
+  }
+
+  static const _demoResult = ScanResultEntity(
+    producer: 'Hugel',
+    wineName: 'Riesling Classic',
+    vintage: 2021,
+    appellation: 'Alsace AOC',
+    country: 'France',
+    region: 'Alsace',
+    grapes: ['Riesling'],
+    wineType: 'white',
+    tastingNotes:
+        'Dry and crisp, with green apple, citrus and a flinty minerality '
+        'through a long, clean finish.',
+    servingTempC: 9,
+    foodPairings: ['Seafood', 'Goat cheese', 'Thai curry'],
+    aroma: 'Green apple, lime, white flowers, flint',
+    abv: 12.5,
+    quota: ScanQuotaEntity(used: 1, limit: 5, remaining: 4),
+    isMock: true,
+  );
 }

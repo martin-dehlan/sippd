@@ -19,6 +19,11 @@ class ScanCameraView extends StatefulWidget {
   final VoidCallback onManual;
   final VoidCallback onClose;
 
+  /// Demo only: render a fixed sample-label still instead of the live camera
+  /// feed (no camera init / permission), so a recording shows a clean,
+  /// deterministic viewfinder.
+  final bool demoStill;
+
   const ScanCameraView({
     super.key,
     required this.remaining,
@@ -26,6 +31,7 @@ class ScanCameraView extends StatefulWidget {
     required this.onGallery,
     required this.onManual,
     required this.onClose,
+    this.demoStill = false,
   });
 
   @override
@@ -43,6 +49,11 @@ class _ScanCameraViewState extends State<ScanCameraView>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    // Demo: no live camera — show the bundled still and skip init entirely.
+    if (widget.demoStill) {
+      _initializing = false;
+      return;
+    }
     _setup();
   }
 
@@ -121,7 +132,11 @@ class _ScanCameraViewState extends State<ScanCameraView>
   Widget build(BuildContext context) {
     final controller = _controller;
     final Widget background;
-    if (_initializing) {
+    if (widget.demoStill) {
+      background = SizedBox.expand(
+        child: Image.asset('assets/promo/sample_label.jpg', fit: BoxFit.cover),
+      );
+    } else if (_initializing) {
       background = const Center(
         child: CircularProgressIndicator(color: Colors.white),
       );
@@ -143,7 +158,7 @@ class _ScanCameraViewState extends State<ScanCameraView>
       );
     }
 
-    final live = controller != null && !_unavailable;
+    final live = widget.demoStill || (controller != null && !_unavailable);
     return Stack(
       fit: StackFit.expand,
       children: [

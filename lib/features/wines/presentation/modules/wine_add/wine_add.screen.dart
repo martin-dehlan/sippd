@@ -13,6 +13,8 @@ import '../../../../../common/widgets/review_prompt.widget.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../../auth/controller/auth.provider.dart';
 import '../../../../locations/domain/entities/location.entity.dart';
+import '../../../../promo/presentation/demo_spotlight.widget.dart';
+import '../../../../promo/promo.config.dart';
 import '../../../../share_cards/presentation/widgets/wine_share_prompt_sheet.dart';
 import '../../../controller/expert_tasting.provider.dart';
 import '../../../controller/wine.provider.dart';
@@ -47,6 +49,16 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
     // Seed so the save FAB works even if the user accepts the scanned
     // values without touching a field (onChanged only fires on edits).
     _current = widget.initialData;
+    // Demo: arrived here from the scanner with prefilled fields. Hold the
+    // tour on the filled form (the payoff shot), then release it so the
+    // tour pops back home. Nothing is saved.
+    if (kIsDemo && widget.initialData != null) _runDemoHold();
+  }
+
+  Future<void> _runDemoHold() async {
+    demoScreenBusy.value = true;
+    await Future<void>.delayed(const Duration(milliseconds: 3200));
+    demoScreenBusy.value = false;
   }
 
   bool _allowPop = false;

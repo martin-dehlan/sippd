@@ -84,6 +84,16 @@ class _DemoTourState extends ConsumerState<DemoTour> {
     demoSpotlightId.value = null;
     await _wait(400);
 
+    // Scan-to-add (how wines get in) — open the scanner; its director holds
+    // on the still viewfinder, runs a mock recognition, and lands on the
+    // prefilled add-wine form. pushReplacement → one pop returns home.
+    if (!mounted) return _cleanup();
+    router.push(AppRoutes.wineScan);
+    await _waitUntilIdle(max: 14000);
+    if (!mounted) return _cleanup();
+    if (router.canPop()) router.pop(); // add-wine form → home
+    await _wait(1000);
+
     // Deep-dive the top wine — its detail spotlights each feature once
     // (image → rating → price → origin), so nothing is shown twice.
     demoSpotlightId.value = shown.first.id;

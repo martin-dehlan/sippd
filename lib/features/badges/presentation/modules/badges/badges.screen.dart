@@ -108,6 +108,24 @@ class _BadgesScreenState extends ConsumerState<BadgesScreen> {
     demoScreenBusy.value = false;
   }
 
+  /// Demo only: present a fuller, more accomplished wall on camera by marking
+  /// the first few badges in each category as earned. Purely visual — nothing
+  /// is awarded or persisted; the real `myBadgesProvider` data is untouched.
+  List<BadgeEntity> _demoBoost(List<BadgeEntity> badges) {
+    final perCategory = <String, int>{};
+    return [
+      for (final b in badges)
+        if (b.earned)
+          b
+        else if ((perCategory[b.category] =
+                (perCategory[b.category] ?? 0) + 1) <=
+            3)
+          b.copyWith(earned: true, current: b.target)
+        else
+          b,
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
@@ -139,7 +157,10 @@ class _BadgesScreenState extends ConsumerState<BadgesScreen> {
         ),
         data: (badges) => badges.isEmpty
             ? _EmptyState(l10n: l10n)
-            : _BadgesBody(badges: badges, scrollController: _scroll),
+            : _BadgesBody(
+                badges: kIsDemo ? _demoBoost(badges) : badges,
+                scrollController: _scroll,
+              ),
       ),
     );
   }

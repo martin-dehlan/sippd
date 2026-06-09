@@ -11,6 +11,8 @@ import '../../../../../common/services/analytics/analytics.provider.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/error_view.widget.dart';
 import '../../../../../core/routes/app.routes.dart';
+import '../../../../promo/presentation/demo_spotlight.widget.dart';
+import '../../../../promo/promo.config.dart';
 import '../../../../wines/controller/wine.provider.dart';
 import '../../../../wines/domain/entities/canonical_grape.entity.dart';
 import '../../../../wines/domain/entities/wine.entity.dart';
@@ -36,6 +38,23 @@ class ScanCaptureScreen extends ConsumerStatefulWidget {
 class _ScanCaptureScreenState extends ConsumerState<ScanCaptureScreen> {
   bool _handledResult = false;
   String? _capturedImagePath;
+
+  @override
+  void initState() {
+    super.initState();
+    if (kIsDemo) _runDemoBeats();
+  }
+
+  /// Demo only: hold on the still viewfinder, then run a mock recognition.
+  /// The existing result listener picks it up and replaces this screen with
+  /// the prefilled add-wine form. Keeps `demoScreenBusy` set across that
+  /// handoff — the add-wine screen clears it once the filled form is shown.
+  Future<void> _runDemoBeats() async {
+    demoScreenBusy.value = true;
+    await Future<void>.delayed(const Duration(milliseconds: 1700));
+    if (!mounted) return;
+    await ref.read(scannerControllerProvider.notifier).scanDemo();
+  }
 
   Future<void> _scan(File image, String source) async {
     _capturedImagePath = image.path;
@@ -212,6 +231,7 @@ class _ScanCaptureScreenState extends ConsumerState<ScanCaptureScreen> {
             onGallery: _pickFromGallery,
             onManual: _addManually,
             onClose: () => context.pop(),
+            demoStill: kIsDemo,
           ),
           if (overlay != null) Positioned.fill(child: overlay),
         ],
