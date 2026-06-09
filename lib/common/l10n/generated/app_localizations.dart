@@ -7229,6 +7229,306 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Grant camera access in Settings, pick a photo from your gallery, or add the wine by hand.'**
   String get scanCameraDeniedBody;
+
+  /// No description provided for @badgeFirstSipTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'First Sip'**
+  String get badgeFirstSipTitle;
+
+  /// No description provided for @badgeFirstSipDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate your first wine'**
+  String get badgeFirstSipDesc;
+
+  /// No description provided for @badgeGettingStartedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Getting Started'**
+  String get badgeGettingStartedTitle;
+
+  /// No description provided for @badgeGettingStartedDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate 10 wines'**
+  String get badgeGettingStartedDesc;
+
+  /// No description provided for @badgeWineExplorerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Wine Explorer'**
+  String get badgeWineExplorerTitle;
+
+  /// No description provided for @badgeWineExplorerDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate 50 wines'**
+  String get badgeWineExplorerDesc;
+
+  /// No description provided for @badgeCellarMasterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cellar Master'**
+  String get badgeCellarMasterTitle;
+
+  /// No description provided for @badgeCellarMasterDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate 100 wines'**
+  String get badgeCellarMasterDesc;
+
+  /// No description provided for @badgeConnoisseurTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Connoisseur'**
+  String get badgeConnoisseurTitle;
+
+  /// No description provided for @badgeConnoisseurDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate 250 wines'**
+  String get badgeConnoisseurDesc;
+
+  /// No description provided for @badgeRedDevoteeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Red Devotee'**
+  String get badgeRedDevoteeTitle;
+
+  /// No description provided for @badgeRedDevoteeDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate 50 red wines'**
+  String get badgeRedDevoteeDesc;
+
+  /// No description provided for @badgeWhiteWineLoverTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'White Wine Lover'**
+  String get badgeWhiteWineLoverTitle;
+
+  /// No description provided for @badgeWhiteWineLoverDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate 50 white wines'**
+  String get badgeWhiteWineLoverDesc;
+
+  /// No description provided for @badgeBubblyEnthusiastTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Bubbly Enthusiast'**
+  String get badgeBubblyEnthusiastTitle;
+
+  /// No description provided for @badgeBubblyEnthusiastDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate 15 sparkling wines'**
+  String get badgeBubblyEnthusiastDesc;
+
+  /// No description provided for @badgeRoseAllDayTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Rosé All Day'**
+  String get badgeRoseAllDayTitle;
+
+  /// No description provided for @badgeRoseAllDayDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate 15 rosé wines'**
+  String get badgeRoseAllDayDesc;
+
+  /// No description provided for @badgeBalancedPalateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Balanced Palate'**
+  String get badgeBalancedPalateTitle;
+
+  /// No description provided for @badgeBalancedPalateDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate 10+ of each type: red, white, rosé, sparkling'**
+  String get badgeBalancedPalateDesc;
+
+  /// No description provided for @badgeGlobetrotterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Globetrotter'**
+  String get badgeGlobetrotterTitle;
+
+  /// No description provided for @badgeGlobetrotterDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate wines from 10 different countries'**
+  String get badgeGlobetrotterDesc;
+
+  /// No description provided for @badgeOldWorldScholarTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Old World Scholar'**
+  String get badgeOldWorldScholarTitle;
+
+  /// No description provided for @badgeOldWorldScholarDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate 25 wines from France, Italy, Spain, Germany or Portugal'**
+  String get badgeOldWorldScholarDesc;
+
+  /// No description provided for @badgeNewWorldPioneerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New World Pioneer'**
+  String get badgeNewWorldPioneerTitle;
+
+  /// No description provided for @badgeNewWorldPioneerDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate 25 wines from the US, Australia, NZ, Chile, Argentina or South Africa'**
+  String get badgeNewWorldPioneerDesc;
+
+  /// No description provided for @badgeRegionalSpecialistTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Regional Specialist'**
+  String get badgeRegionalSpecialistTitle;
+
+  /// No description provided for @badgeRegionalSpecialistDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate 15 wines from a single region'**
+  String get badgeRegionalSpecialistDesc;
+
+  /// No description provided for @badgeFranceAficionadoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'France Aficionado'**
+  String get badgeFranceAficionadoTitle;
+
+  /// No description provided for @badgeFranceAficionadoDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate 25 French wines'**
+  String get badgeFranceAficionadoDesc;
+
+  /// No description provided for @badgeGrapeCuriousTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Grape Curious'**
+  String get badgeGrapeCuriousTitle;
+
+  /// No description provided for @badgeGrapeCuriousDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate 10 different grape varieties'**
+  String get badgeGrapeCuriousDesc;
+
+  /// No description provided for @badgeGrapeConnoisseurTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Grape Connoisseur'**
+  String get badgeGrapeConnoisseurTitle;
+
+  /// No description provided for @badgeGrapeConnoisseurDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate 18 different grape varieties'**
+  String get badgeGrapeConnoisseurDesc;
+
+  /// No description provided for @badgeSingleVarietyDevoteeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Single-Variety Devotee'**
+  String get badgeSingleVarietyDevoteeTitle;
+
+  /// No description provided for @badgeSingleVarietyDevoteeDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate 20 wines of one grape variety'**
+  String get badgeSingleVarietyDevoteeDesc;
+
+  /// No description provided for @badgeJoinerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Joiner'**
+  String get badgeJoinerTitle;
+
+  /// No description provided for @badgeJoinerDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Join your first group'**
+  String get badgeJoinerDesc;
+
+  /// No description provided for @badgeTastingRegularTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tasting Regular'**
+  String get badgeTastingRegularTitle;
+
+  /// No description provided for @badgeTastingRegularDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Attend 5 concluded tastings'**
+  String get badgeTastingRegularDesc;
+
+  /// No description provided for @badgeHostTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The Host'**
+  String get badgeHostTitle;
+
+  /// No description provided for @badgeHostDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Host a tasting'**
+  String get badgeHostDesc;
+
+  /// No description provided for @badgeSocialSipperTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Social Sipper'**
+  String get badgeSocialSipperTitle;
+
+  /// No description provided for @badgeSocialSipperDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Have 5 friends'**
+  String get badgeSocialSipperDesc;
+
+  /// No description provided for @badgeDrinkingBuddiesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Drinking Buddies'**
+  String get badgeDrinkingBuddiesTitle;
+
+  /// No description provided for @badgeDrinkingBuddiesDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Share 10 wines with one tasting partner'**
+  String get badgeDrinkingBuddiesDesc;
+
+  /// No description provided for @badgeTheCriticTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The Critic'**
+  String get badgeTheCriticTitle;
+
+  /// No description provided for @badgeTheCriticDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate 25 wines with tasting notes'**
+  String get badgeTheCriticDesc;
+
+  /// No description provided for @badgeSeasonedTasterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Seasoned Taster'**
+  String get badgeSeasonedTasterTitle;
+
+  /// No description provided for @badgeSeasonedTasterDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep a 7.5+ average across 20+ wines'**
+  String get badgeSeasonedTasterDesc;
 }
 
 class _AppLocalizationsDelegate

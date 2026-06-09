@@ -3992,4 +3992,161 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get scanCameraDeniedBody =>
       'Concedi l\'accesso alla fotocamera nelle Impostazioni, scegli una foto dalla galleria o aggiungi il vino a mano.';
+
+  @override
+  String get badgeFirstSipTitle => 'Primo Sorso';
+
+  @override
+  String get badgeFirstSipDesc => 'Valuta il tuo primo vino';
+
+  @override
+  String get badgeGettingStartedTitle => 'Si Comincia';
+
+  @override
+  String get badgeGettingStartedDesc => 'Valuta 10 vini';
+
+  @override
+  String get badgeWineExplorerTitle => 'Esploratore di Vini';
+
+  @override
+  String get badgeWineExplorerDesc => 'Valuta 50 vini';
+
+  @override
+  String get badgeCellarMasterTitle => 'Maestro di Cantina';
+
+  @override
+  String get badgeCellarMasterDesc => 'Valuta 100 vini';
+
+  @override
+  String get badgeConnoisseurTitle => 'Intenditore';
+
+  @override
+  String get badgeConnoisseurDesc => 'Valuta 250 vini';
+
+  @override
+  String get badgeRedDevoteeTitle => 'Devoto del Rosso';
+
+  @override
+  String get badgeRedDevoteeDesc => 'Valuta 50 vini rossi';
+
+  @override
+  String get badgeWhiteWineLoverTitle => 'Amante del Bianco';
+
+  @override
+  String get badgeWhiteWineLoverDesc => 'Valuta 50 vini bianchi';
+
+  @override
+  String get badgeBubblyEnthusiastTitle => 'Appassionato di Bollicine';
+
+  @override
+  String get badgeBubblyEnthusiastDesc => 'Valuta 15 spumanti';
+
+  @override
+  String get badgeRoseAllDayTitle => 'Sempre Rosé';
+
+  @override
+  String get badgeRoseAllDayDesc => 'Valuta 15 vini rosati';
+
+  @override
+  String get badgeBalancedPalateTitle => 'Palato Equilibrato';
+
+  @override
+  String get badgeBalancedPalateDesc =>
+      'Valuta 10+ di ogni tipo: rosso, bianco, rosato, spumante';
+
+  @override
+  String get badgeGlobetrotterTitle => 'Giramondo';
+
+  @override
+  String get badgeGlobetrotterDesc => 'Valuta vini di 10 Paesi diversi';
+
+  @override
+  String get badgeOldWorldScholarTitle => 'Studioso del Vecchio Mondo';
+
+  @override
+  String get badgeOldWorldScholarDesc =>
+      'Valuta 25 vini da Francia, Italia, Spagna, Germania o Portogallo';
+
+  @override
+  String get badgeNewWorldPioneerTitle => 'Pioniere del Nuovo Mondo';
+
+  @override
+  String get badgeNewWorldPioneerDesc =>
+      'Valuta 25 vini da USA, Australia, Nuova Zelanda, Cile, Argentina o Sudafrica';
+
+  @override
+  String get badgeRegionalSpecialistTitle => 'Specialista Regionale';
+
+  @override
+  String get badgeRegionalSpecialistDesc =>
+      'Valuta 15 vini di una stessa regione';
+
+  @override
+  String get badgeFranceAficionadoTitle => 'Cultore della Francia';
+
+  @override
+  String get badgeFranceAficionadoDesc => 'Valuta 25 vini francesi';
+
+  @override
+  String get badgeGrapeCuriousTitle => 'Curioso dei Vitigni';
+
+  @override
+  String get badgeGrapeCuriousDesc => 'Valuta 10 vitigni diversi';
+
+  @override
+  String get badgeGrapeConnoisseurTitle => 'Esperto di Vitigni';
+
+  @override
+  String get badgeGrapeConnoisseurDesc => 'Valuta 18 vitigni diversi';
+
+  @override
+  String get badgeSingleVarietyDevoteeTitle => 'Fedele a un Vitigno';
+
+  @override
+  String get badgeSingleVarietyDevoteeDesc =>
+      'Valuta 20 vini dello stesso vitigno';
+
+  @override
+  String get badgeJoinerTitle => 'Nuovo Membro';
+
+  @override
+  String get badgeJoinerDesc => 'Unisciti al tuo primo gruppo';
+
+  @override
+  String get badgeTastingRegularTitle => 'Habitué delle Degustazioni';
+
+  @override
+  String get badgeTastingRegularDesc => 'Partecipa a 5 degustazioni concluse';
+
+  @override
+  String get badgeHostTitle => 'Il Padrone di Casa';
+
+  @override
+  String get badgeHostDesc => 'Organizza una degustazione';
+
+  @override
+  String get badgeSocialSipperTitle => 'Bevitore Sociale';
+
+  @override
+  String get badgeSocialSipperDesc => 'Aggiungi 5 amici';
+
+  @override
+  String get badgeDrinkingBuddiesTitle => 'Compagni di Bevute';
+
+  @override
+  String get badgeDrinkingBuddiesDesc =>
+      'Condividi 10 vini con uno stesso compagno di degustazione';
+
+  @override
+  String get badgeTheCriticTitle => 'Il Critico';
+
+  @override
+  String get badgeTheCriticDesc => 'Valuta 25 vini con note di degustazione';
+
+  @override
+  String get badgeSeasonedTasterTitle => 'Degustatore Esperto';
+
+  @override
+  String get badgeSeasonedTasterDesc =>
+      'Mantieni una media di 7,5+ su 20+ vini';
 }

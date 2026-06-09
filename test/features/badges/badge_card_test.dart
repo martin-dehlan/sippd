@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:sippd/common/l10n/generated/app_localizations.dart';
 import 'package:sippd/features/badges/domain/entities/badge.entity.dart';
 import 'package:sippd/features/badges/presentation/widgets/badge_card.widget.dart';
 
@@ -17,6 +18,8 @@ BadgeEntity _badge({required bool earned, int current = 0}) => BadgeEntity(
 );
 
 Widget _host(BadgeEntity badge) => MaterialApp(
+  localizationsDelegates: AppLocalizations.localizationsDelegates,
+  supportedLocales: AppLocalizations.supportedLocales,
   home: Scaffold(
     body: Center(
       child: SizedBox(
@@ -50,6 +53,8 @@ void main() {
     var tapped = false;
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
           body: SizedBox(
             width: 100,

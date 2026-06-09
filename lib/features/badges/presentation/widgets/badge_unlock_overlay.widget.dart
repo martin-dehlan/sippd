@@ -7,6 +7,7 @@ import '../../../../common/services/analytics/analytics.provider.dart';
 import '../../../../common/utils/responsive.dart';
 import '../../controller/badges.provider.dart';
 import '../../domain/entities/badge.entity.dart';
+import '../badge_l10n.dart';
 import '../badge_visuals.dart';
 
 /// Wraps the shell body and pops a celebration the moment a newly-earned badge
@@ -65,7 +66,11 @@ Future<void> _showBadgeUnlockDialog(BuildContext context, BadgeEntity badge) {
   return showGeneralDialog<void>(
     context: context,
     barrierDismissible: true,
-    barrierLabel: badge.title,
+    barrierLabel: localizedBadgeTitle(
+      AppLocalizations.of(context),
+      badge.id,
+      badge.title,
+    ),
     barrierColor: Colors.black.withValues(alpha: 0.6),
     transitionDuration: const Duration(milliseconds: 240),
     pageBuilder: (_, _, _) => const SizedBox.shrink(),
@@ -135,7 +140,7 @@ class _UnlockCardState extends State<_UnlockCard> {
                 ),
                 SizedBox(height: context.s),
                 Text(
-                  badge.title,
+                  localizedBadgeTitle(l10n, badge.id, badge.title),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: context.titleFont * 0.78,
@@ -146,7 +151,7 @@ class _UnlockCardState extends State<_UnlockCard> {
                 ),
                 SizedBox(height: context.xs),
                 Text(
-                  badge.description,
+                  localizedBadgeDesc(l10n, badge.id, badge.description),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: context.captionFont,

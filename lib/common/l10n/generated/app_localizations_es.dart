@@ -4002,4 +4002,161 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get scanCameraDeniedBody =>
       'Concede acceso a la cámara en Ajustes, elige una foto de tu galería o añade el vino a mano.';
+
+  @override
+  String get badgeFirstSipTitle => 'Primer sorbo';
+
+  @override
+  String get badgeFirstSipDesc => 'Puntúa tu primer vino';
+
+  @override
+  String get badgeGettingStartedTitle => 'Primeros pasos';
+
+  @override
+  String get badgeGettingStartedDesc => 'Puntúa 10 vinos';
+
+  @override
+  String get badgeWineExplorerTitle => 'Explorador de vinos';
+
+  @override
+  String get badgeWineExplorerDesc => 'Puntúa 50 vinos';
+
+  @override
+  String get badgeCellarMasterTitle => 'Maestro de bodega';
+
+  @override
+  String get badgeCellarMasterDesc => 'Puntúa 100 vinos';
+
+  @override
+  String get badgeConnoisseurTitle => 'Conocedor';
+
+  @override
+  String get badgeConnoisseurDesc => 'Puntúa 250 vinos';
+
+  @override
+  String get badgeRedDevoteeTitle => 'Devoto del tinto';
+
+  @override
+  String get badgeRedDevoteeDesc => 'Puntúa 50 vinos tintos';
+
+  @override
+  String get badgeWhiteWineLoverTitle => 'Amante del blanco';
+
+  @override
+  String get badgeWhiteWineLoverDesc => 'Puntúa 50 vinos blancos';
+
+  @override
+  String get badgeBubblyEnthusiastTitle => 'Fan de las burbujas';
+
+  @override
+  String get badgeBubblyEnthusiastDesc => 'Puntúa 15 vinos espumosos';
+
+  @override
+  String get badgeRoseAllDayTitle => 'Rosado a todas horas';
+
+  @override
+  String get badgeRoseAllDayDesc => 'Puntúa 15 vinos rosados';
+
+  @override
+  String get badgeBalancedPalateTitle => 'Paladar equilibrado';
+
+  @override
+  String get badgeBalancedPalateDesc =>
+      'Puntúa 10+ de cada tipo: tinto, blanco, rosado y espumoso';
+
+  @override
+  String get badgeGlobetrotterTitle => 'Trotamundos';
+
+  @override
+  String get badgeGlobetrotterDesc => 'Puntúa vinos de 10 países distintos';
+
+  @override
+  String get badgeOldWorldScholarTitle => 'Experto del Viejo Mundo';
+
+  @override
+  String get badgeOldWorldScholarDesc =>
+      'Puntúa 25 vinos de Francia, Italia, España, Alemania o Portugal';
+
+  @override
+  String get badgeNewWorldPioneerTitle => 'Pionero del Nuevo Mundo';
+
+  @override
+  String get badgeNewWorldPioneerDesc =>
+      'Puntúa 25 vinos de EE. UU., Australia, Nueva Zelanda, Chile, Argentina o Sudáfrica';
+
+  @override
+  String get badgeRegionalSpecialistTitle => 'Especialista regional';
+
+  @override
+  String get badgeRegionalSpecialistDesc =>
+      'Puntúa 15 vinos de una misma región';
+
+  @override
+  String get badgeFranceAficionadoTitle => 'Aficionado a Francia';
+
+  @override
+  String get badgeFranceAficionadoDesc => 'Puntúa 25 vinos franceses';
+
+  @override
+  String get badgeGrapeCuriousTitle => 'Curioso de las uvas';
+
+  @override
+  String get badgeGrapeCuriousDesc => 'Puntúa 10 variedades de uva distintas';
+
+  @override
+  String get badgeGrapeConnoisseurTitle => 'Conocedor de uvas';
+
+  @override
+  String get badgeGrapeConnoisseurDesc =>
+      'Puntúa 18 variedades de uva distintas';
+
+  @override
+  String get badgeSingleVarietyDevoteeTitle => 'Devoto monovarietal';
+
+  @override
+  String get badgeSingleVarietyDevoteeDesc =>
+      'Puntúa 20 vinos de una misma variedad de uva';
+
+  @override
+  String get badgeJoinerTitle => 'Recién llegado';
+
+  @override
+  String get badgeJoinerDesc => 'Únete a tu primer grupo';
+
+  @override
+  String get badgeTastingRegularTitle => 'Catador habitual';
+
+  @override
+  String get badgeTastingRegularDesc => 'Asiste a 5 catas concluidas';
+
+  @override
+  String get badgeHostTitle => 'El anfitrión';
+
+  @override
+  String get badgeHostDesc => 'Organiza una cata';
+
+  @override
+  String get badgeSocialSipperTitle => 'Catador social';
+
+  @override
+  String get badgeSocialSipperDesc => 'Ten 5 amigos';
+
+  @override
+  String get badgeDrinkingBuddiesTitle => 'Compañeros de copas';
+
+  @override
+  String get badgeDrinkingBuddiesDesc =>
+      'Comparte 10 vinos con un mismo compañero de cata';
+
+  @override
+  String get badgeTheCriticTitle => 'El crítico';
+
+  @override
+  String get badgeTheCriticDesc => 'Puntúa 25 vinos con notas de cata';
+
+  @override
+  String get badgeSeasonedTasterTitle => 'Catador experimentado';
+
+  @override
+  String get badgeSeasonedTasterDesc => 'Mantén una media de 7,5+ en 20+ vinos';
 }

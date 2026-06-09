@@ -3995,4 +3995,162 @@ class AppLocalizationsNl extends AppLocalizations {
   @override
   String get scanCameraDeniedBody =>
       'Geef cameratoegang in Instellingen, kies een foto uit je galerij, of voeg de wijn met de hand toe.';
+
+  @override
+  String get badgeFirstSipTitle => 'Eerste Slok';
+
+  @override
+  String get badgeFirstSipDesc => 'Beoordeel je eerste wijn';
+
+  @override
+  String get badgeGettingStartedTitle => 'Op Gang';
+
+  @override
+  String get badgeGettingStartedDesc => 'Beoordeel 10 wijnen';
+
+  @override
+  String get badgeWineExplorerTitle => 'Wijnontdekker';
+
+  @override
+  String get badgeWineExplorerDesc => 'Beoordeel 50 wijnen';
+
+  @override
+  String get badgeCellarMasterTitle => 'Keldermeester';
+
+  @override
+  String get badgeCellarMasterDesc => 'Beoordeel 100 wijnen';
+
+  @override
+  String get badgeConnoisseurTitle => 'Kenner';
+
+  @override
+  String get badgeConnoisseurDesc => 'Beoordeel 250 wijnen';
+
+  @override
+  String get badgeRedDevoteeTitle => 'Roodliefhebber';
+
+  @override
+  String get badgeRedDevoteeDesc => 'Beoordeel 50 rode wijnen';
+
+  @override
+  String get badgeWhiteWineLoverTitle => 'Witliefhebber';
+
+  @override
+  String get badgeWhiteWineLoverDesc => 'Beoordeel 50 witte wijnen';
+
+  @override
+  String get badgeBubblyEnthusiastTitle => 'Bubbelfan';
+
+  @override
+  String get badgeBubblyEnthusiastDesc => 'Beoordeel 15 mousserende wijnen';
+
+  @override
+  String get badgeRoseAllDayTitle => 'Altijd Rosé';
+
+  @override
+  String get badgeRoseAllDayDesc => 'Beoordeel 15 roséwijnen';
+
+  @override
+  String get badgeBalancedPalateTitle => 'Veelzijdig Palet';
+
+  @override
+  String get badgeBalancedPalateDesc =>
+      'Beoordeel 10+ van elk type: rood, wit, rosé, mousserend';
+
+  @override
+  String get badgeGlobetrotterTitle => 'Wereldreiziger';
+
+  @override
+  String get badgeGlobetrotterDesc =>
+      'Beoordeel wijnen uit 10 verschillende landen';
+
+  @override
+  String get badgeOldWorldScholarTitle => 'Oude Wereld Kenner';
+
+  @override
+  String get badgeOldWorldScholarDesc =>
+      'Beoordeel 25 wijnen uit Frankrijk, Italië, Spanje, Duitsland of Portugal';
+
+  @override
+  String get badgeNewWorldPioneerTitle => 'Nieuwe Wereld Pionier';
+
+  @override
+  String get badgeNewWorldPioneerDesc =>
+      'Beoordeel 25 wijnen uit de VS, Australië, Nieuw-Zeeland, Chili, Argentinië of Zuid-Afrika';
+
+  @override
+  String get badgeRegionalSpecialistTitle => 'Streekspecialist';
+
+  @override
+  String get badgeRegionalSpecialistDesc => 'Beoordeel 15 wijnen uit één regio';
+
+  @override
+  String get badgeFranceAficionadoTitle => 'Frankrijkfanaat';
+
+  @override
+  String get badgeFranceAficionadoDesc => 'Beoordeel 25 Franse wijnen';
+
+  @override
+  String get badgeGrapeCuriousTitle => 'Druifnieuwsgierig';
+
+  @override
+  String get badgeGrapeCuriousDesc =>
+      'Beoordeel 10 verschillende druivenrassen';
+
+  @override
+  String get badgeGrapeConnoisseurTitle => 'Druivenkenner';
+
+  @override
+  String get badgeGrapeConnoisseurDesc =>
+      'Beoordeel 18 verschillende druivenrassen';
+
+  @override
+  String get badgeSingleVarietyDevoteeTitle => 'Eén-Ras Liefhebber';
+
+  @override
+  String get badgeSingleVarietyDevoteeDesc =>
+      'Beoordeel 20 wijnen van één druivenras';
+
+  @override
+  String get badgeJoinerTitle => 'Aansluiter';
+
+  @override
+  String get badgeJoinerDesc => 'Word lid van je eerste groep';
+
+  @override
+  String get badgeTastingRegularTitle => 'Vaste Proever';
+
+  @override
+  String get badgeTastingRegularDesc => 'Woon 5 afgeronde proeverijen bij';
+
+  @override
+  String get badgeHostTitle => 'De Gastheer';
+
+  @override
+  String get badgeHostDesc => 'Organiseer een proeverij';
+
+  @override
+  String get badgeSocialSipperTitle => 'Sociale Slokker';
+
+  @override
+  String get badgeSocialSipperDesc => 'Heb 5 vrienden';
+
+  @override
+  String get badgeDrinkingBuddiesTitle => 'Drinkmaatjes';
+
+  @override
+  String get badgeDrinkingBuddiesDesc => 'Deel 10 wijnen met één proefpartner';
+
+  @override
+  String get badgeTheCriticTitle => 'De Criticus';
+
+  @override
+  String get badgeTheCriticDesc => 'Beoordeel 25 wijnen met proefnotities';
+
+  @override
+  String get badgeSeasonedTasterTitle => 'Ervaren Proever';
+
+  @override
+  String get badgeSeasonedTasterDesc =>
+      'Houd een gemiddelde van 7,5+ over 20+ wijnen';
 }

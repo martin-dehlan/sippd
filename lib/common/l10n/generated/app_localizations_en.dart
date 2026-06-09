@@ -3959,4 +3959,160 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get scanCameraDeniedBody =>
       'Grant camera access in Settings, pick a photo from your gallery, or add the wine by hand.';
+
+  @override
+  String get badgeFirstSipTitle => 'First Sip';
+
+  @override
+  String get badgeFirstSipDesc => 'Rate your first wine';
+
+  @override
+  String get badgeGettingStartedTitle => 'Getting Started';
+
+  @override
+  String get badgeGettingStartedDesc => 'Rate 10 wines';
+
+  @override
+  String get badgeWineExplorerTitle => 'Wine Explorer';
+
+  @override
+  String get badgeWineExplorerDesc => 'Rate 50 wines';
+
+  @override
+  String get badgeCellarMasterTitle => 'Cellar Master';
+
+  @override
+  String get badgeCellarMasterDesc => 'Rate 100 wines';
+
+  @override
+  String get badgeConnoisseurTitle => 'Connoisseur';
+
+  @override
+  String get badgeConnoisseurDesc => 'Rate 250 wines';
+
+  @override
+  String get badgeRedDevoteeTitle => 'Red Devotee';
+
+  @override
+  String get badgeRedDevoteeDesc => 'Rate 50 red wines';
+
+  @override
+  String get badgeWhiteWineLoverTitle => 'White Wine Lover';
+
+  @override
+  String get badgeWhiteWineLoverDesc => 'Rate 50 white wines';
+
+  @override
+  String get badgeBubblyEnthusiastTitle => 'Bubbly Enthusiast';
+
+  @override
+  String get badgeBubblyEnthusiastDesc => 'Rate 15 sparkling wines';
+
+  @override
+  String get badgeRoseAllDayTitle => 'Rosé All Day';
+
+  @override
+  String get badgeRoseAllDayDesc => 'Rate 15 rosé wines';
+
+  @override
+  String get badgeBalancedPalateTitle => 'Balanced Palate';
+
+  @override
+  String get badgeBalancedPalateDesc =>
+      'Rate 10+ of each type: red, white, rosé, sparkling';
+
+  @override
+  String get badgeGlobetrotterTitle => 'Globetrotter';
+
+  @override
+  String get badgeGlobetrotterDesc => 'Rate wines from 10 different countries';
+
+  @override
+  String get badgeOldWorldScholarTitle => 'Old World Scholar';
+
+  @override
+  String get badgeOldWorldScholarDesc =>
+      'Rate 25 wines from France, Italy, Spain, Germany or Portugal';
+
+  @override
+  String get badgeNewWorldPioneerTitle => 'New World Pioneer';
+
+  @override
+  String get badgeNewWorldPioneerDesc =>
+      'Rate 25 wines from the US, Australia, NZ, Chile, Argentina or South Africa';
+
+  @override
+  String get badgeRegionalSpecialistTitle => 'Regional Specialist';
+
+  @override
+  String get badgeRegionalSpecialistDesc =>
+      'Rate 15 wines from a single region';
+
+  @override
+  String get badgeFranceAficionadoTitle => 'France Aficionado';
+
+  @override
+  String get badgeFranceAficionadoDesc => 'Rate 25 French wines';
+
+  @override
+  String get badgeGrapeCuriousTitle => 'Grape Curious';
+
+  @override
+  String get badgeGrapeCuriousDesc => 'Rate 10 different grape varieties';
+
+  @override
+  String get badgeGrapeConnoisseurTitle => 'Grape Connoisseur';
+
+  @override
+  String get badgeGrapeConnoisseurDesc => 'Rate 18 different grape varieties';
+
+  @override
+  String get badgeSingleVarietyDevoteeTitle => 'Single-Variety Devotee';
+
+  @override
+  String get badgeSingleVarietyDevoteeDesc =>
+      'Rate 20 wines of one grape variety';
+
+  @override
+  String get badgeJoinerTitle => 'Joiner';
+
+  @override
+  String get badgeJoinerDesc => 'Join your first group';
+
+  @override
+  String get badgeTastingRegularTitle => 'Tasting Regular';
+
+  @override
+  String get badgeTastingRegularDesc => 'Attend 5 concluded tastings';
+
+  @override
+  String get badgeHostTitle => 'The Host';
+
+  @override
+  String get badgeHostDesc => 'Host a tasting';
+
+  @override
+  String get badgeSocialSipperTitle => 'Social Sipper';
+
+  @override
+  String get badgeSocialSipperDesc => 'Have 5 friends';
+
+  @override
+  String get badgeDrinkingBuddiesTitle => 'Drinking Buddies';
+
+  @override
+  String get badgeDrinkingBuddiesDesc =>
+      'Share 10 wines with one tasting partner';
+
+  @override
+  String get badgeTheCriticTitle => 'The Critic';
+
+  @override
+  String get badgeTheCriticDesc => 'Rate 25 wines with tasting notes';
+
+  @override
+  String get badgeSeasonedTasterTitle => 'Seasoned Taster';
+
+  @override
+  String get badgeSeasonedTasterDesc => 'Keep a 7.5+ average across 20+ wines';
 }

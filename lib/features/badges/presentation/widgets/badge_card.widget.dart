@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../common/utils/responsive.dart';
 import '../../domain/entities/badge.entity.dart';
+import '../badge_l10n.dart';
 import '../badge_visuals.dart';
 
 /// One grid cell. Earned = accent icon, full color. Locked = desaturated icon
@@ -17,6 +19,7 @@ class BadgeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     // Gold seal treatment — matches the unlock medallion, not category colour.
     final gold = cs.secondary;
     final earned = badge.earned;
@@ -79,7 +82,7 @@ class BadgeCard extends StatelessWidget {
             child: Align(
               alignment: Alignment.topCenter,
               child: Text(
-                badge.title,
+                localizedBadgeTitle(l10n, badge.id, badge.title),
                 maxLines: 2,
                 textAlign: TextAlign.center,
                 overflow: TextOverflow.ellipsis,

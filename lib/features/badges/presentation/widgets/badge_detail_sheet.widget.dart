@@ -5,6 +5,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../common/utils/responsive.dart';
 import '../../domain/entities/badge.entity.dart';
+import '../badge_l10n.dart';
 import '../badge_visuals.dart';
 
 Future<void> showBadgeDetailSheet(BuildContext context, BadgeEntity badge) {
@@ -67,7 +68,7 @@ class _BadgeDetailSheet extends StatelessWidget {
             ),
             SizedBox(height: context.m),
             Text(
-              badge.title,
+              localizedBadgeTitle(l10n, badge.id, badge.title),
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: context.titleFont * 0.8,
@@ -77,7 +78,7 @@ class _BadgeDetailSheet extends StatelessWidget {
             ),
             SizedBox(height: context.xs),
             Text(
-              badge.description,
+              localizedBadgeDesc(l10n, badge.id, badge.description),
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: context.bodyFont,
