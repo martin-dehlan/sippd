@@ -6,10 +6,13 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../common/services/analytics/analytics.provider.dart';
 import '../../../../../common/utils/responsive.dart';
+import '../../../../promo/presentation/demo_spotlight.widget.dart';
+import '../../../../promo/promo.config.dart';
 import '../../../controller/badges.provider.dart';
 import '../../../domain/entities/badge.entity.dart';
 import '../../widgets/badge_card.widget.dart';
 import '../../widgets/badge_detail_sheet.widget.dart';
+import '../../widgets/badge_unlock_overlay.widget.dart';
 
 const _categoryOrder = [
   'volume',
@@ -28,10 +31,81 @@ class BadgesScreen extends ConsumerStatefulWidget {
 }
 
 class _BadgesScreenState extends ConsumerState<BadgesScreen> {
+  final ScrollController _scroll = ScrollController();
+
   @override
   void initState() {
     super.initState();
     ref.read(analyticsProvider).capture('badge_grid_viewed');
+    if (kIsDemo) _runDemoBeats();
+  }
+
+  @override
+  void dispose() {
+    demoScreenBusy.value = false;
+    _scroll.dispose();
+    super.dispose();
+  }
+
+  Future<void> _wait(int ms) =>
+      Future<void>.delayed(Duration(milliseconds: ms));
+
+  /// Demo only: showcase the badge wall hands-free — settle, browse the grid,
+  /// fire the unlock medallion on a freshly-earned badge, then open one badge's
+  /// detail. Purely visual; no badges are awarded or marked seen here. The busy
+  /// flag holds the auto-tour on this screen until the sequence finishes.
+  Future<void> _runDemoBeats() async {
+    demoScreenBusy.value = true;
+    List<BadgeEntity> badges;
+    try {
+      badges = await ref.read(myBadgesProvider.future);
+    } catch (_) {
+      return _endDemoBeats();
+    }
+    if (!mounted || badges.isEmpty) return _endDemoBeats();
+
+    // Let the grid lay out + entrance settle.
+    await _wait(900);
+
+    // Browse: ease down through the categories, then back to the top.
+    await _scrollFraction(0.6, 1400);
+    await _wait(700);
+    await _scrollFraction(0, 1100);
+    await _wait(500);
+
+    final earned = badges.where((b) => b.earned).toList();
+
+    // Celebrate: the gold-medallion unlock on the first earned badge.
+    if (earned.isNotEmpty && mounted) {
+      await showBadgeUnlockDialog(context, earned.first);
+      await _wait(500);
+    }
+
+    // Detail: open one badge's detail sheet, hold, then close.
+    if (mounted) {
+      final detail = earned.length > 1 ? earned[1] : badges.first;
+      final sheet = showBadgeDetailSheet(context, detail);
+      await _wait(2600);
+      if (mounted && Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      }
+      await sheet;
+    }
+
+    _endDemoBeats();
+  }
+
+  Future<void> _scrollFraction(double f, int ms) async {
+    if (!mounted || !_scroll.hasClients) return;
+    await _scroll.animateTo(
+      _scroll.position.maxScrollExtent * f,
+      duration: Duration(milliseconds: ms),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  void _endDemoBeats() {
+    demoScreenBusy.value = false;
   }
 
   @override
@@ -65,16 +139,17 @@ class _BadgesScreenState extends ConsumerState<BadgesScreen> {
         ),
         data: (badges) => badges.isEmpty
             ? _EmptyState(l10n: l10n)
-            : _BadgesBody(badges: badges),
+            : _BadgesBody(badges: badges, scrollController: _scroll),
       ),
     );
   }
 }
 
 class _BadgesBody extends StatelessWidget {
-  const _BadgesBody({required this.badges});
+  const _BadgesBody({required this.badges, this.scrollController});
 
   final List<BadgeEntity> badges;
+  final ScrollController? scrollController;
 
   @override
   Widget build(BuildContext context) {
@@ -88,6 +163,7 @@ class _BadgesBody extends StatelessWidget {
     final cats = _categoryOrder.where(grouped.containsKey).toList();
 
     return ListView(
+      controller: scrollController,
       padding: EdgeInsets.fromLTRB(
         context.paddingH,
         context.m,

@@ -40,7 +40,7 @@ class _BadgeUnlockGateState extends ConsumerState<BadgeUnlockGate> {
           'tier': badge.tier,
         },
       );
-      await _showBadgeUnlockDialog(context, badge);
+      await showBadgeUnlockDialog(context, badge);
     }
     if (mounted) {
       await ref
@@ -62,7 +62,11 @@ class _BadgeUnlockGateState extends ConsumerState<BadgeUnlockGate> {
   }
 }
 
-Future<void> _showBadgeUnlockDialog(BuildContext context, BadgeEntity badge) {
+/// Shows the gold-medallion unlock celebration for a single [badge].
+///
+/// Driven by [BadgeUnlockGate] for real awards; also called directly by the
+/// demo tour (`kIsDemo`) to script the celebration on a chosen badge.
+Future<void> showBadgeUnlockDialog(BuildContext context, BadgeEntity badge) {
   return showGeneralDialog<void>(
     context: context,
     barrierDismissible: true,

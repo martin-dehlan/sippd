@@ -193,6 +193,15 @@ class _DemoTourState extends ConsumerState<DemoTour> {
     demoDetailBeat.value = null;
     await _wait(500);
 
+    // Badges (achievements) — open the badge wall; its director browses the
+    // grid, fires an unlock celebration, then opens one badge's detail.
+    if (!mounted) return _cleanup();
+    router.push(AppRoutes.badges);
+    await _waitUntilIdle(max: 16000);
+    if (!mounted) return _cleanup();
+    if (router.canPop()) router.pop();
+    await _wait(800);
+
     // Back home.
     if (!mounted) return _cleanup();
     router.go(AppRoutes.wines);
