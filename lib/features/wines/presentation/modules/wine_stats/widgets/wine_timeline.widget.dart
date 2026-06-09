@@ -20,8 +20,9 @@ const _maxThumbsPerMonth = 6;
 /// months doesn't deserve a wall of voids).
 class WineTimeline extends StatelessWidget {
   final List<TimelineMonth> months;
+  final bool animate;
 
-  const WineTimeline({super.key, required this.months});
+  const WineTimeline({super.key, required this.months, this.animate = true});
 
   @override
   Widget build(BuildContext context) {
@@ -52,6 +53,7 @@ class WineTimeline extends StatelessWidget {
               month: visible[i],
               isLast: i == visible.length - 1 && hidden == 0,
               delay: i * 90,
+              animate: animate,
             ),
           if (hidden > 0) ...[
             SizedBox(height: context.s),
@@ -97,11 +99,13 @@ class _Chapter extends StatelessWidget {
   final TimelineMonth month;
   final bool isLast;
   final int delay;
+  final bool animate;
 
   const _Chapter({
     required this.month,
     required this.isLast,
     required this.delay,
+    required this.animate,
   });
 
   @override
@@ -168,7 +172,7 @@ class _Chapter extends StatelessWidget {
                   children: [
                     _Header(month: month),
                     SizedBox(height: context.s),
-                    _IntensityRow(month: month),
+                    _IntensityRow(month: month, animate: animate),
                     SizedBox(height: context.m),
                     _ThumbStrip(wines: month.wines),
                   ],
@@ -272,7 +276,8 @@ class _RatingChip extends StatelessWidget {
 /// readable stat, not just decoration.
 class _IntensityRow extends StatelessWidget {
   final TimelineMonth month;
-  const _IntensityRow({required this.month});
+  final bool animate;
+  const _IntensityRow({required this.month, required this.animate});
 
   @override
   Widget build(BuildContext context) {
@@ -293,7 +298,9 @@ class _IntensityRow extends StatelessWidget {
                 ),
                 TweenAnimationBuilder<double>(
                   tween: Tween(begin: 0, end: ratio),
-                  duration: const Duration(milliseconds: 800),
+                  duration: animate
+                      ? const Duration(milliseconds: 800)
+                      : Duration.zero,
                   curve: Curves.easeOutCubic,
                   builder: (_, v, _) => FractionallySizedBox(
                     widthFactor: v,

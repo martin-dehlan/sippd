@@ -1,7 +1,7 @@
 name: sippd
 description: "Wine ranking & sharing app"
 publish_to: 'none'
-version: 0.1.21+25
+version: 0.2.0+33
 
 environment:
   sdk: ^3.11.4
@@ -75,7 +75,7 @@ dependencies:
   # Share-card image rendering
   screenshot: ^3.0.0
 
-  # Promo video assets (PromoShowcaseScreen — kIsPromo builds only).
+  # Promo video recording (promo branch only)
   # NOTE: this is a native plugin, so it links into prod binaries too;
   # only the Dart promo UI is excluded via kIsPromo tree-shaking.
   widget_recorder_plus: ^1.0.4
@@ -92,6 +92,12 @@ dependencies:
   app_links: ^6.3.0
   shared_preferences: ^2.3.3
   connectivity_plus: ^7.1.1
+  android_intent_plus: ^6.0.0
+  sign_in_with_apple: ^8.1.0
+  google_sign_in: ^7.2.0
+  crypto: ^3.0.7
+  camera: ^0.12.0+1
+  auto_size_text: ^3.0.0
 
 dev_dependencies:
   flutter_test:

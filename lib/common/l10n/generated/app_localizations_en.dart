@@ -484,6 +484,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Sign-in failed. Check your details.';
 
   @override
+  String get authLoginEmailAlreadyRegistered =>
+      'This email is already registered. Log in instead.';
+
+  @override
   String get authLoginCreateAccountButton => 'Create Account';
 
   @override
@@ -505,6 +509,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authGoogleFailed => 'Google sign-in failed. Please try again.';
 
   @override
+  String get authAppleContinue => 'Continue with Apple';
+
+  @override
+  String get authAppleFailed => 'Apple sign-in failed. Please try again.';
+
+  @override
   String get authConfTitleReset => 'Reset link sent';
 
   @override
@@ -524,6 +534,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get authConfOpenMailApp => 'Open mail app';
+
+  @override
+  String get authConfNoMailApps => 'No mail app found on this device';
 
   @override
   String get authConfResendEmail => 'Resend email';
@@ -593,6 +606,49 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get authProfileNotifications => 'Notifications';
+
+  @override
+  String get authProfileAnimations => 'Animations';
+
+  @override
+  String get animationsTitle => 'Animations';
+
+  @override
+  String get animationsMasterLabel => 'Animations';
+
+  @override
+  String get animationsMasterSubtitle => 'Subtle motion throughout the app';
+
+  @override
+  String get animationsScreenTransitionsLabel => 'Screen transitions';
+
+  @override
+  String get animationsScreenTransitionsSubtitle =>
+      'Pages fade and slide in when opened';
+
+  @override
+  String get animationsListEntrancesLabel => 'List & card entrances';
+
+  @override
+  String get animationsListEntrancesSubtitle =>
+      'Cards gently stagger into view';
+
+  @override
+  String get animationsTabCrossfadeLabel => 'Tab crossfade';
+
+  @override
+  String get animationsTabCrossfadeSubtitle => 'Soft fade when switching tabs';
+
+  @override
+  String get animationsValueAnimationsLabel => 'Counting numbers & bars';
+
+  @override
+  String get animationsValueAnimationsSubtitle =>
+      'Stats and ratings animate to their value';
+
+  @override
+  String get animationsReducedBySystemNote =>
+      'Your device\'s Reduce Motion setting is on, so in-app animations stay off.';
 
   @override
   String get authProfileCleanupDuplicates => 'Clean up duplicates';
@@ -784,6 +840,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get winesDetailSectionPlace => 'PLACES';
+
+  @override
+  String get winesDetailSectionAttributes => 'ATTRIBUTES';
+
+  @override
+  String winesAttrServe(int temp) {
+    return 'Serve $temp°C';
+  }
+
+  @override
+  String winesAttrDecant(int minutes) {
+    return 'Decant ${minutes}min';
+  }
+
+  @override
+  String winesAttrAbv(String abv) {
+    return '$abv% vol';
+  }
 
   @override
   String get winesDetailPlaceEmpty => 'No place set';
@@ -2627,6 +2701,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get paywallBenefitNotesSubtitle => 'Nose · body · tannins · finish.';
 
   @override
+  String get paywallBenefitScanTitle => 'More label scans';
+
+  @override
+  String get paywallBenefitScanSubtitle =>
+      'Scan far more labels a day to add wines fast.';
+
+  @override
   String get paywallPlanMonthly => 'Monthly';
 
   @override
@@ -3774,4 +3855,264 @@ class AppLocalizationsEn extends AppLocalizations {
   String routeNotFound(String uri) {
     return 'Page not found: $uri';
   }
+
+  @override
+  String get badgesTitle => 'Badges';
+
+  @override
+  String badgesEarnedCount(int earned, int total) {
+    return '$earned of $total earned';
+  }
+
+  @override
+  String get badgesCategoryVolume => 'Milestones';
+
+  @override
+  String get badgesCategoryType => 'Wine Styles';
+
+  @override
+  String get badgesCategoryGeo => 'Around the World';
+
+  @override
+  String get badgesCategoryGrape => 'Grapes';
+
+  @override
+  String get badgesCategorySocial => 'Social';
+
+  @override
+  String get badgesCategoryEngagement => 'Connoisseurship';
+
+  @override
+  String get badgesEmptyTitle => 'No badges yet';
+
+  @override
+  String get badgesEmptyBody => 'Start rating wines to earn your first badge.';
+
+  @override
+  String get badgesRetry => 'Retry';
+
+  @override
+  String get badgesEarnedLabel => 'Earned';
+
+  @override
+  String badgesEarnedOn(String date) {
+    return 'Earned $date';
+  }
+
+  @override
+  String get badgesUnlockedHeadline => 'BADGE UNLOCKED';
+
+  @override
+  String get badgesNice => 'Nice';
+
+  @override
+  String get tileBadgesLabel => 'Badge unlocks';
+
+  @override
+  String get tileBadgesSubtitle => 'Get notified when you earn a new badge';
+
+  @override
+  String get scanQuotaFreeTitle => 'That\'s all 5 scans for today';
+
+  @override
+  String get scanQuotaProTitle => 'You\'ve hit today\'s scan limit';
+
+  @override
+  String get scanQuotaFreeBody =>
+      'They reset tomorrow. Want to keep scanning now? Go Pro for more.';
+
+  @override
+  String get scanQuotaProBody =>
+      'Your scans reset tomorrow. Add one by hand in the meantime.';
+
+  @override
+  String get scanGoPro => 'Go Pro';
+
+  @override
+  String get scanAddByHand => 'Add by hand';
+
+  @override
+  String get scanNotFoundTitle => 'No wine found on that label';
+
+  @override
+  String get scanNotFoundBody =>
+      'Try a clearer, straight-on photo — or add it by hand.';
+
+  @override
+  String get scanErrorTitle => 'Could not read the label';
+
+  @override
+  String get scanErrorBody => 'Try again with a clearer, well-lit shot.';
+
+  @override
+  String get scanReadingLabel => 'Reading the label…';
+
+  @override
+  String get scanSkipManual => 'Skip — enter by hand';
+
+  @override
+  String get scanChooseGallery => 'Choose from gallery';
+
+  @override
+  String get scanCameraUnavailable => 'Camera unavailable';
+
+  @override
+  String get scanCameraDeniedBody =>
+      'Grant camera access in Settings, pick a photo from your gallery, or add the wine by hand.';
+
+  @override
+  String get badgeFirstSipTitle => 'First Sip';
+
+  @override
+  String get badgeFirstSipDesc => 'Rate your first wine';
+
+  @override
+  String get badgeGettingStartedTitle => 'Getting Started';
+
+  @override
+  String get badgeGettingStartedDesc => 'Rate 10 wines';
+
+  @override
+  String get badgeWineExplorerTitle => 'Wine Explorer';
+
+  @override
+  String get badgeWineExplorerDesc => 'Rate 50 wines';
+
+  @override
+  String get badgeCellarMasterTitle => 'Cellar Master';
+
+  @override
+  String get badgeCellarMasterDesc => 'Rate 100 wines';
+
+  @override
+  String get badgeConnoisseurTitle => 'Connoisseur';
+
+  @override
+  String get badgeConnoisseurDesc => 'Rate 250 wines';
+
+  @override
+  String get badgeRedDevoteeTitle => 'Red Devotee';
+
+  @override
+  String get badgeRedDevoteeDesc => 'Rate 50 red wines';
+
+  @override
+  String get badgeWhiteWineLoverTitle => 'White Wine Lover';
+
+  @override
+  String get badgeWhiteWineLoverDesc => 'Rate 50 white wines';
+
+  @override
+  String get badgeBubblyEnthusiastTitle => 'Bubbly Enthusiast';
+
+  @override
+  String get badgeBubblyEnthusiastDesc => 'Rate 15 sparkling wines';
+
+  @override
+  String get badgeRoseAllDayTitle => 'Rosé All Day';
+
+  @override
+  String get badgeRoseAllDayDesc => 'Rate 15 rosé wines';
+
+  @override
+  String get badgeBalancedPalateTitle => 'Balanced Palate';
+
+  @override
+  String get badgeBalancedPalateDesc =>
+      'Rate 10+ of each type: red, white, rosé, sparkling';
+
+  @override
+  String get badgeGlobetrotterTitle => 'Globetrotter';
+
+  @override
+  String get badgeGlobetrotterDesc => 'Rate wines from 10 different countries';
+
+  @override
+  String get badgeOldWorldScholarTitle => 'Old World Scholar';
+
+  @override
+  String get badgeOldWorldScholarDesc =>
+      'Rate 25 wines from France, Italy, Spain, Germany or Portugal';
+
+  @override
+  String get badgeNewWorldPioneerTitle => 'New World Pioneer';
+
+  @override
+  String get badgeNewWorldPioneerDesc =>
+      'Rate 25 wines from the US, Australia, NZ, Chile, Argentina or South Africa';
+
+  @override
+  String get badgeRegionalSpecialistTitle => 'Regional Specialist';
+
+  @override
+  String get badgeRegionalSpecialistDesc =>
+      'Rate 15 wines from a single region';
+
+  @override
+  String get badgeFranceAficionadoTitle => 'France Aficionado';
+
+  @override
+  String get badgeFranceAficionadoDesc => 'Rate 25 French wines';
+
+  @override
+  String get badgeGrapeCuriousTitle => 'Grape Curious';
+
+  @override
+  String get badgeGrapeCuriousDesc => 'Rate 10 different grape varieties';
+
+  @override
+  String get badgeGrapeConnoisseurTitle => 'Grape Connoisseur';
+
+  @override
+  String get badgeGrapeConnoisseurDesc => 'Rate 18 different grape varieties';
+
+  @override
+  String get badgeSingleVarietyDevoteeTitle => 'Single-Variety Devotee';
+
+  @override
+  String get badgeSingleVarietyDevoteeDesc =>
+      'Rate 20 wines of one grape variety';
+
+  @override
+  String get badgeJoinerTitle => 'Joiner';
+
+  @override
+  String get badgeJoinerDesc => 'Join your first group';
+
+  @override
+  String get badgeTastingRegularTitle => 'Tasting Regular';
+
+  @override
+  String get badgeTastingRegularDesc => 'Attend 5 concluded tastings';
+
+  @override
+  String get badgeHostTitle => 'The Host';
+
+  @override
+  String get badgeHostDesc => 'Host a tasting';
+
+  @override
+  String get badgeSocialSipperTitle => 'Social Sipper';
+
+  @override
+  String get badgeSocialSipperDesc => 'Have 5 friends';
+
+  @override
+  String get badgeDrinkingBuddiesTitle => 'Drinking Buddies';
+
+  @override
+  String get badgeDrinkingBuddiesDesc =>
+      'Share 10 wines with one tasting partner';
+
+  @override
+  String get badgeTheCriticTitle => 'The Critic';
+
+  @override
+  String get badgeTheCriticDesc => 'Rate 25 wines with tasting notes';
+
+  @override
+  String get badgeSeasonedTasterTitle => 'Seasoned Taster';
+
+  @override
+  String get badgeSeasonedTasterDesc => 'Keep a 7.5+ average across 20+ wines';
 }

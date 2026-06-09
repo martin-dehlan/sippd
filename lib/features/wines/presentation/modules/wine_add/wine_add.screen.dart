@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../../common/l10n/generated/app_localizations.dart';
+import '../../../../../common/services/analytics/analytics.provider.dart';
 import '../../../../../common/services/review/review.provider.dart';
 import '../../../../../common/utils/name_normalizer.dart';
 import '../../../../../common/utils/responsive.dart';
@@ -12,8 +13,6 @@ import '../../../../../common/widgets/review_prompt.widget.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../../auth/controller/auth.provider.dart';
 import '../../../../locations/domain/entities/location.entity.dart';
-import '../../../../promo/presentation/demo_spotlight.widget.dart';
-import '../../../../promo/promo.config.dart';
 import '../../../../share_cards/presentation/widgets/wine_share_prompt_sheet.dart';
 import '../../../controller/expert_tasting.provider.dart';
 import '../../../controller/wine.provider.dart';
@@ -28,7 +27,11 @@ import '../../widgets/wine_form.widget.dart';
 import '../moment_capture/moment_capture.screen.dart';
 
 class WineAddScreen extends ConsumerStatefulWidget {
-  const WineAddScreen({super.key});
+  /// Optional prefill — set when the user arrives via the label scanner
+  /// (`/wines/scan`). Seeds the form so the user only reviews/edits.
+  final WineFormData? initialData;
+
+  const WineAddScreen({super.key, this.initialData});
 
   @override
   ConsumerState<WineAddScreen> createState() => _WineAddScreenState();
@@ -37,90 +40,21 @@ class WineAddScreen extends ConsumerStatefulWidget {
 class _WineAddScreenState extends ConsumerState<WineAddScreen> {
   final GlobalKey<WineFormState> _formKey = GlobalKey<WineFormState>();
   WineFormData? _current;
+
+  @override
+  void initState() {
+    super.initState();
+    // Seed so the save FAB works even if the user accepts the scanned
+    // values without touching a field (onChanged only fires on edits).
+    _current = widget.initialData;
+  }
+
   bool _allowPop = false;
   // Drafted moments captured before the wine is saved. Persisted in
   // `_save` after the wine row + canonical resolution land. Photos are
   // uploaded to storage immediately on pick (orphaned on full cancel
   // — covered by the post-launch storage sweep).
   final List<MemoryDraft> _drafts = [];
-
-  @override
-  void initState() {
-    super.initState();
-    if (kIsDemo) _runDemoBeats();
-  }
-
-  @override
-  void dispose() {
-    demoDetailBeat.value = null;
-    demoScreenBusy.value = false;
-    super.dispose();
-  }
-
-  /// Demo only: walk the add-wine form for a hands-free promo recording.
-  /// Fills the headline fields one at a time (name → type → winery), then
-  /// spotlights the rating stat and opens the rating sheet so it can
-  /// animate, then closes and highlights origin. Purely visual: only
-  /// local form state is touched and the rating sheet is opened — the
-  /// save action is never called, so no wine is created. The busy flag
-  /// keeps the central auto-tour from navigating away mid-sequence.
-  Future<void> _runDemoBeats() async {
-    demoScreenBusy.value = true;
-    // Let the screen's first frame settle so the form key is attached.
-    await Future<void>.delayed(const Duration(milliseconds: 1200));
-
-    final form = _formKey.currentState;
-    if (!mounted || form == null) return _endDemoBeats();
-
-    // Name: spotlight, then type it in.
-    demoDetailBeat.value = 0;
-    await Future<void>.delayed(const Duration(milliseconds: 700));
-    form.demoSetName('Château Margaux');
-    await Future<void>.delayed(const Duration(milliseconds: 1300));
-
-    // Type: spotlight, then pick "red".
-    if (!mounted) return _endDemoBeats();
-    demoDetailBeat.value = 1;
-    await Future<void>.delayed(const Duration(milliseconds: 700));
-    _formKey.currentState?.demoSetType(WineType.red);
-    await Future<void>.delayed(const Duration(milliseconds: 1100));
-
-    // Winery (lead chip in the chips row): spotlight, then fill.
-    if (!mounted) return _endDemoBeats();
-    demoDetailBeat.value = 4;
-    await Future<void>.delayed(const Duration(milliseconds: 700));
-    _formKey.currentState?.demoSetWinery('Bordeaux Estate');
-    await Future<void>.delayed(const Duration(milliseconds: 1300));
-
-    // Origin: spotlight the country/region stat (no sheet — keep it brief).
-    if (!mounted) return _endDemoBeats();
-    demoDetailBeat.value = 3;
-    await Future<void>.delayed(const Duration(milliseconds: 1300));
-
-    // Rating: spotlight, open the sheet, let it auto-animate, then close.
-    if (!mounted) return _endDemoBeats();
-    demoDetailBeat.value = 2;
-    await Future<void>.delayed(const Duration(milliseconds: 900));
-    final ratingState = _formKey.currentState;
-    if (!mounted || ratingState == null) return _endDemoBeats();
-    final ratingFuture = ratingState.demoOpenRatingSheet();
-    await Future<void>.delayed(const Duration(milliseconds: 3900));
-    _closeSheet();
-    await ratingFuture;
-    if (!mounted) return _endDemoBeats();
-    await Future<void>.delayed(const Duration(milliseconds: 500));
-
-    _endDemoBeats();
-  }
-
-  void _closeSheet() {
-    if (mounted && Navigator.of(context).canPop()) Navigator.of(context).pop();
-  }
-
-  void _endDemoBeats() {
-    if (mounted) demoDetailBeat.value = null;
-    demoScreenBusy.value = false;
-  }
 
   bool get _isDirty {
     final d = _current;
@@ -316,12 +250,21 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
       canonicalWineId: linkedCanonicalId,
       winery: data.winery,
       vintage: data.vintage,
+      servingTempC: data.servingTempC,
+      decantMinutes: data.decantMinutes,
+      abv: data.abv,
       imageUrl: data.imageUrl,
       localImagePath: data.localImagePath,
       userId: userId,
       createdAt: DateTime.now(),
     );
     await ref.read(wineControllerProvider.notifier).addWine(wine);
+
+    // Funnel close for scan-to-add: this wine originated from a label
+    // scan (issue #181 analytics).
+    if (widget.initialData != null) {
+      ref.read(analyticsProvider).capture('scan_result_saved');
+    }
 
     // If the user typed expert tasting dimensions in the rating sheet
     // before the wine was ever saved, the canonical_wine_id wasn't yet
@@ -476,6 +419,7 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
             children: [
               WineForm(
                 key: _formKey,
+                initial: widget.initialData,
                 submitLabel: l10n.winesAddSaveLabel,
                 showInlineSubmit: false,
                 onChanged: (data) => setState(() => _current = data),

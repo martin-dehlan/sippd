@@ -12,6 +12,7 @@ class NotificationPrefsTable extends Table {
   BoolColumn get groupActivity => boolean().withDefault(const Constant(true))();
   BoolColumn get groupWineShared =>
       boolean().withDefault(const Constant(true))();
+  BoolColumn get badges => boolean().withDefault(const Constant(true))();
   DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
 
   @override

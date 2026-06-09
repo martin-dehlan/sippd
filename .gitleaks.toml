@@ -28,6 +28,11 @@ paths = [
   '''lib/firebase_options\.template\.dart''',
   '''\.example$''',
   '''README\.md$''',
+  # CocoaPods lockfile holds public SPEC CHECKSUMS (40-char SHA-1 of each
+  # pod's podspec) — these trip the generic-api-key rule but are never
+  # secrets. New pods (e.g. AppAuth/GTMAppAuth for Google/Apple sign-in)
+  # add fresh checksums on every `pod install`.
+  '''ios/Podfile\.lock$''',
 ]
 regexes = [
   '''PLACEHOLDER_FOR_CI_ONLY''',

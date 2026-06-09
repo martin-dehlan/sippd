@@ -36,7 +36,11 @@ mixin _$WineEntity {
   String? get canonicalGrapeId => throw _privateConstructorUsedError;
   String? get grapeFreetext => throw _privateConstructorUsedError;
   String? get canonicalWineId => throw _privateConstructorUsedError;
-  String? get winery => throw _privateConstructorUsedError;
+  String? get winery =>
+      throw _privateConstructorUsedError; // Scanner-recognized attributes (FastCork). All optional.
+  int? get servingTempC => throw _privateConstructorUsedError;
+  int? get decantMinutes => throw _privateConstructorUsedError;
+  double? get abv => throw _privateConstructorUsedError;
   String? get nameNorm => throw _privateConstructorUsedError;
   String get userId => throw _privateConstructorUsedError;
   String get visibility => throw _privateConstructorUsedError;
@@ -78,6 +82,9 @@ abstract class $WineEntityCopyWith<$Res> {
     String? grapeFreetext,
     String? canonicalWineId,
     String? winery,
+    int? servingTempC,
+    int? decantMinutes,
+    double? abv,
     String? nameNorm,
     String userId,
     String visibility,
@@ -121,6 +128,9 @@ class _$WineEntityCopyWithImpl<$Res, $Val extends WineEntity>
     Object? grapeFreetext = freezed,
     Object? canonicalWineId = freezed,
     Object? winery = freezed,
+    Object? servingTempC = freezed,
+    Object? decantMinutes = freezed,
+    Object? abv = freezed,
     Object? nameNorm = freezed,
     Object? userId = null,
     Object? visibility = null,
@@ -209,6 +219,18 @@ class _$WineEntityCopyWithImpl<$Res, $Val extends WineEntity>
                 ? _value.winery
                 : winery // ignore: cast_nullable_to_non_nullable
                       as String?,
+            servingTempC: freezed == servingTempC
+                ? _value.servingTempC
+                : servingTempC // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            decantMinutes: freezed == decantMinutes
+                ? _value.decantMinutes
+                : decantMinutes // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            abv: freezed == abv
+                ? _value.abv
+                : abv // ignore: cast_nullable_to_non_nullable
+                      as double?,
             nameNorm: freezed == nameNorm
                 ? _value.nameNorm
                 : nameNorm // ignore: cast_nullable_to_non_nullable
@@ -265,6 +287,9 @@ abstract class _$$WineEntityImplCopyWith<$Res>
     String? grapeFreetext,
     String? canonicalWineId,
     String? winery,
+    int? servingTempC,
+    int? decantMinutes,
+    double? abv,
     String? nameNorm,
     String userId,
     String visibility,
@@ -307,6 +332,9 @@ class __$$WineEntityImplCopyWithImpl<$Res>
     Object? grapeFreetext = freezed,
     Object? canonicalWineId = freezed,
     Object? winery = freezed,
+    Object? servingTempC = freezed,
+    Object? decantMinutes = freezed,
+    Object? abv = freezed,
     Object? nameNorm = freezed,
     Object? userId = null,
     Object? visibility = null,
@@ -395,6 +423,18 @@ class __$$WineEntityImplCopyWithImpl<$Res>
             ? _value.winery
             : winery // ignore: cast_nullable_to_non_nullable
                   as String?,
+        servingTempC: freezed == servingTempC
+            ? _value.servingTempC
+            : servingTempC // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        decantMinutes: freezed == decantMinutes
+            ? _value.decantMinutes
+            : decantMinutes // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        abv: freezed == abv
+            ? _value.abv
+            : abv // ignore: cast_nullable_to_non_nullable
+                  as double?,
         nameNorm: freezed == nameNorm
             ? _value.nameNorm
             : nameNorm // ignore: cast_nullable_to_non_nullable
@@ -444,6 +484,9 @@ class _$WineEntityImpl implements _WineEntity {
     this.grapeFreetext,
     this.canonicalWineId,
     this.winery,
+    this.servingTempC,
+    this.decantMinutes,
+    this.abv,
     this.nameNorm,
     required this.userId,
     this.visibility = 'friends',
@@ -492,6 +535,13 @@ class _$WineEntityImpl implements _WineEntity {
   final String? canonicalWineId;
   @override
   final String? winery;
+  // Scanner-recognized attributes (FastCork). All optional.
+  @override
+  final int? servingTempC;
+  @override
+  final int? decantMinutes;
+  @override
+  final double? abv;
   @override
   final String? nameNorm;
   @override
@@ -506,7 +556,7 @@ class _$WineEntityImpl implements _WineEntity {
 
   @override
   String toString() {
-    return 'WineEntity(id: $id, name: $name, rating: $rating, type: $type, price: $price, currency: $currency, country: $country, region: $region, location: $location, latitude: $latitude, longitude: $longitude, notes: $notes, imageUrl: $imageUrl, localImagePath: $localImagePath, vintage: $vintage, grape: $grape, canonicalGrapeId: $canonicalGrapeId, grapeFreetext: $grapeFreetext, canonicalWineId: $canonicalWineId, winery: $winery, nameNorm: $nameNorm, userId: $userId, visibility: $visibility, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'WineEntity(id: $id, name: $name, rating: $rating, type: $type, price: $price, currency: $currency, country: $country, region: $region, location: $location, latitude: $latitude, longitude: $longitude, notes: $notes, imageUrl: $imageUrl, localImagePath: $localImagePath, vintage: $vintage, grape: $grape, canonicalGrapeId: $canonicalGrapeId, grapeFreetext: $grapeFreetext, canonicalWineId: $canonicalWineId, winery: $winery, servingTempC: $servingTempC, decantMinutes: $decantMinutes, abv: $abv, nameNorm: $nameNorm, userId: $userId, visibility: $visibility, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -543,6 +593,11 @@ class _$WineEntityImpl implements _WineEntity {
             (identical(other.canonicalWineId, canonicalWineId) ||
                 other.canonicalWineId == canonicalWineId) &&
             (identical(other.winery, winery) || other.winery == winery) &&
+            (identical(other.servingTempC, servingTempC) ||
+                other.servingTempC == servingTempC) &&
+            (identical(other.decantMinutes, decantMinutes) ||
+                other.decantMinutes == decantMinutes) &&
+            (identical(other.abv, abv) || other.abv == abv) &&
             (identical(other.nameNorm, nameNorm) ||
                 other.nameNorm == nameNorm) &&
             (identical(other.userId, userId) || other.userId == userId) &&
@@ -577,6 +632,9 @@ class _$WineEntityImpl implements _WineEntity {
     grapeFreetext,
     canonicalWineId,
     winery,
+    servingTempC,
+    decantMinutes,
+    abv,
     nameNorm,
     userId,
     visibility,
@@ -615,6 +673,9 @@ abstract class _WineEntity implements WineEntity {
     final String? grapeFreetext,
     final String? canonicalWineId,
     final String? winery,
+    final int? servingTempC,
+    final int? decantMinutes,
+    final double? abv,
     final String? nameNorm,
     required final String userId,
     final String visibility,
@@ -661,7 +722,13 @@ abstract class _WineEntity implements WineEntity {
   @override
   String? get canonicalWineId;
   @override
-  String? get winery;
+  String? get winery; // Scanner-recognized attributes (FastCork). All optional.
+  @override
+  int? get servingTempC;
+  @override
+  int? get decantMinutes;
+  @override
+  double? get abv;
   @override
   String? get nameNorm;
   @override

@@ -104,4 +104,7 @@ class NotificationPrefsController extends _$NotificationPrefsController {
 
   Future<void> setGroupWineShared(bool value) =>
       _update((p) => p.copyWith(groupWineShared: value));
+
+  Future<void> setBadges(bool value) =>
+      _update((p) => p.copyWith(badges: value));
 }

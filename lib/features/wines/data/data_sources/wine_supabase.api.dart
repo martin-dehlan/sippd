@@ -13,7 +13,9 @@ class WineSupabaseApi {
         .eq('user_id', userId)
         .order('created_at', ascending: false);
 
-    return (data as List).map((row) => WineModel.fromJson(row)).toList();
+    return (data as List<dynamic>)
+        .map((row) => WineModel.fromJson(row as Map<String, dynamic>))
+        .toList();
   }
 
   Future<void> upsertWine(WineModel wine) async {

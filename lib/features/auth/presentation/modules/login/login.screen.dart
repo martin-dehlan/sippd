@@ -1,3 +1,5 @@
+import 'dart:io' show Platform;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -10,6 +12,7 @@ import '../../../../../common/widgets/inline_error.widget.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../../onboarding/controller/onboarding.provider.dart';
 import '../../../controller/auth.provider.dart';
+import '../../widgets/apple_sign_in_button.widget.dart';
 import '../../widgets/google_sign_in_button.widget.dart';
 import '../../widgets/or_divider.widget.dart';
 import '../email_confirmation/email_confirmation.screen.dart';
@@ -38,6 +41,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _displayNameController = TextEditingController();
   Object? _submitError;
 
+  // Shown when a signup hits an email that's already registered. Supabase
+  // hides this server-side (anti-enumeration), so we surface it ourselves
+  // and flip the form to Sign In. If the user then edits the email we flip
+  // back to Sign Up — see [_onEmailChanged].
+  String? _emailTakenMessage;
+  bool _flippedToSignInForTakenEmail = false;
+
   // Prefill the signup display name from the onboarding answer so users
   // who already typed their name during onboarding don't have to re-enter
   // it on the "Create your account" screen. Hydrated once on first build,
@@ -53,7 +63,26 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   );
 
   @override
+  void initState() {
+    super.initState();
+    _emailController.addListener(_onEmailChanged);
+  }
+
+  // After an "email already registered" flip to Sign In, the moment the user
+  // changes the email they're likely trying a different address — flip back
+  // to Sign Up and clear the notice.
+  void _onEmailChanged() {
+    if (!_flippedToSignInForTakenEmail) return;
+    setState(() {
+      _isSignUp = true;
+      _flippedToSignInForTakenEmail = false;
+      _emailTakenMessage = null;
+    });
+  }
+
+  @override
   void dispose() {
+    _emailController.removeListener(_onEmailChanged);
     _emailController.dispose();
     _passwordController.dispose();
     _passwordConfirmController.dispose();
@@ -63,7 +92,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
-    setState(() => _submitError = null);
+    setState(() {
+      _submitError = null;
+      _emailTakenMessage = null;
+    });
 
     final auth = ref.read(authControllerProvider.notifier);
 
@@ -84,6 +116,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
 
     if (!mounted) return;
+
+    if (signUpOutcome == SignUpOutcome.emailAlreadyRegistered) {
+      setState(() {
+        _isSignUp = false;
+        _flippedToSignInForTakenEmail = true;
+        _emailTakenMessage = AppLocalizations.of(
+          context,
+        ).authLoginEmailAlreadyRegistered;
+        _passwordConfirmController.clear();
+      });
+      return;
+    }
 
     if (signUpOutcome == SignUpOutcome.confirmationRequired) {
       context.go(
@@ -300,7 +344,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                   SizedBox(height: _isSignUp ? context.xl : context.s),
 
-                  if (_submitError != null) ...[
+                  if (_emailTakenMessage != null) ...[
+                    InlineFieldError(message: _emailTakenMessage),
+                    SizedBox(height: context.s),
+                  ] else if (_submitError != null) ...[
                     InlineFieldError(
                       error: _submitError,
                       fallback: _isSignUp
@@ -309,18 +356,27 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                     SizedBox(height: context.s),
                   ],
+                  // No `error:` here on purpose: the failure is already
+                  // shown by [InlineFieldError] above. Keeping the button
+                  // in its normal state (not the red "Couldn't save · Retry"
+                  // morph) lets the user just tap again to retry.
                   RetryActionButton(
                     idleLabel: _isSignUp
                         ? l10n.authLoginCreateAccountButton
                         : l10n.authLoginSignInButton,
                     loading: isLoading,
-                    error: _submitError,
                     onPressed: _submit,
                   ),
                   SizedBox(height: context.m),
 
                   const OrDivider(),
                   SizedBox(height: context.m),
+                  // Sign in with Apple first (iOS only) — App Store guideline
+                  // 4.8 requires it to be offered as prominently as Google.
+                  if (Platform.isIOS) ...[
+                    const AppleSignInButton(),
+                    SizedBox(height: context.m),
+                  ],
                   const GoogleSignInButton(),
                   SizedBox(height: context.m),
 
@@ -330,6 +386,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       _isSignUp = !_isSignUp;
                       _passwordConfirmController.clear();
                       _submitError = null;
+                      _emailTakenMessage = null;
+                      _flippedToSignInForTakenEmail = false;
                     }),
                     child: Text(
                       _isSignUp

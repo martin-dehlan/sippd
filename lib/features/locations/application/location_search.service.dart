@@ -50,6 +50,57 @@ class LocationSearchService {
       );
     }
 
+    return _resolveCurrentEntity(language: language);
+  }
+
+  /// Best-effort current location that NEVER prompts: returns it only when
+  /// permission is already granted and services are on, else null. Used to
+  /// silently prefill a new wine's place without nagging the user.
+  Future<LocationEntity?> resolveCurrentLocationIfPermitted({
+    String language = 'en-US,en;q=0.5',
+  }) async {
+    try {
+      if (!await Geolocator.isLocationServiceEnabled()) return null;
+      final permission = await Geolocator.checkPermission();
+      if (permission != LocationPermission.whileInUse &&
+          permission != LocationPermission.always) {
+        return null;
+      }
+      return _resolveCurrentEntity(language: language);
+    } catch (_) {
+      // Prefill is best-effort — a GPS/network hiccup must never break the
+      // form. The user can still set the place by hand.
+      return null;
+    }
+  }
+
+  /// Like [resolveCurrentLocationIfPermitted] but requests permission once
+  /// when it hasn't been decided yet (the OS shows its own prompt). Returns
+  /// null on denial / services-off / failure — never throws, so a refused
+  /// prompt silently leaves the place empty. Used for the first-time
+  /// prefill prompt in the add form.
+  Future<LocationEntity?> resolveCurrentLocationOrAsk({
+    String language = 'en-US,en;q=0.5',
+  }) async {
+    try {
+      if (!await Geolocator.isLocationServiceEnabled()) return null;
+      var permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+      if (permission != LocationPermission.whileInUse &&
+          permission != LocationPermission.always) {
+        return null;
+      }
+      return _resolveCurrentEntity(language: language);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<LocationEntity> _resolveCurrentEntity({
+    required String language,
+  }) async {
     final pos = await Geolocator.getCurrentPosition(
       locationSettings: const LocationSettings(
         accuracy: LocationAccuracy.high,
@@ -77,22 +128,28 @@ class LocationSearchService {
   }
 
   LocationEntity _toEntity(NominatimResponse result) {
+    final address = result.address;
     return LocationEntity(
       lat: double.tryParse(result.lat ?? '0'),
       lng: double.tryParse(result.lon ?? '0'),
       locationName: _extractName(result),
-      road: result.address?['road'] ?? '',
-      houseNumber: result.address?['house_number'] ?? '',
-      postcode: result.address?['postcode'] ?? '',
-      borough: result.address?['borough'] ?? result.address?['suburb'] ?? '',
-      city:
-          result.address?['city'] ??
-          result.address?['town'] ??
-          result.address?['village'] ??
-          '',
-      country: result.address?['country'] ?? '',
+      road: _str(address?['road']),
+      houseNumber: _str(address?['house_number']),
+      postcode: _str(address?['postcode']),
+      borough: _str(address?['borough']).isNotEmpty
+          ? _str(address?['borough'])
+          : _str(address?['suburb']),
+      city: [
+        _str(address?['city']),
+        _str(address?['town']),
+        _str(address?['village']),
+      ].firstWhere((v) => v.isNotEmpty, orElse: () => ''),
+      country: _str(address?['country']),
     );
   }
+
+  // Nominatim's `address` map carries dynamic values; coerce to a String.
+  String _str(Object? value) => value is String ? value : '';
 
   String _extractName(NominatimResponse result) {
     const nameKeys = [
@@ -104,9 +161,10 @@ class LocationSearchService {
       'historic',
     ];
 
+    final address = result.address;
     for (final key in nameKeys) {
-      final name = result.address?[key];
-      if (name != null && name.isNotEmpty) return name;
+      final name = address?[key];
+      if (name is String && name.isNotEmpty) return name;
     }
 
     return result.name ?? result.displayName ?? '';

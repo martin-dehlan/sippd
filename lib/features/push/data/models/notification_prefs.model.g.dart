@@ -15,6 +15,7 @@ _$NotificationPrefsModelImpl _$$NotificationPrefsModelImplFromJson(
   friendActivity: json['friend_activity'] as bool,
   groupActivity: json['group_activity'] as bool,
   groupWineShared: json['group_wine_shared'] as bool,
+  badges: json['badges'] as bool? ?? true,
   updatedAt: DateTime.parse(json['updated_at'] as String),
 );
 
@@ -27,5 +28,6 @@ Map<String, dynamic> _$$NotificationPrefsModelImplToJson(
   'friend_activity': instance.friendActivity,
   'group_activity': instance.groupActivity,
   'group_wine_shared': instance.groupWineShared,
+  'badges': instance.badges,
   'updated_at': instance.updatedAt.toIso8601String(),
 };

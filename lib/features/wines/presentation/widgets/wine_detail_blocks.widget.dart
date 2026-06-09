@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -19,10 +20,13 @@ class WineDetailTitle extends StatelessWidget {
         left: context.paddingH * 1.3,
         right: context.paddingH * 1.3,
       ),
-      child: Text(
+      child: AutoSizeText(
         name.toUpperCase(),
         textAlign: TextAlign.left,
         maxLines: 2,
+        // Shrink to fit whole words rather than breaking mid-word.
+        minFontSize: 16,
+        wrapWords: false,
         overflow: TextOverflow.ellipsis,
         style: GoogleFonts.playfairDisplay(
           fontSize: context.titleFont * 1.2,

@@ -23,6 +23,7 @@ mixin _$NotificationPrefsEntity {
   bool get friendActivity => throw _privateConstructorUsedError;
   bool get groupActivity => throw _privateConstructorUsedError;
   bool get groupWineShared => throw _privateConstructorUsedError;
+  bool get badges => throw _privateConstructorUsedError;
   DateTime get updatedAt => throw _privateConstructorUsedError;
 
   /// Create a copy of NotificationPrefsEntity
@@ -46,6 +47,7 @@ abstract class $NotificationPrefsEntityCopyWith<$Res> {
     bool friendActivity,
     bool groupActivity,
     bool groupWineShared,
+    bool badges,
     DateTime updatedAt,
   });
 }
@@ -74,6 +76,7 @@ class _$NotificationPrefsEntityCopyWithImpl<
     Object? friendActivity = null,
     Object? groupActivity = null,
     Object? groupWineShared = null,
+    Object? badges = null,
     Object? updatedAt = null,
   }) {
     return _then(
@@ -102,6 +105,10 @@ class _$NotificationPrefsEntityCopyWithImpl<
                 ? _value.groupWineShared
                 : groupWineShared // ignore: cast_nullable_to_non_nullable
                       as bool,
+            badges: null == badges
+                ? _value.badges
+                : badges // ignore: cast_nullable_to_non_nullable
+                      as bool,
             updatedAt: null == updatedAt
                 ? _value.updatedAt
                 : updatedAt // ignore: cast_nullable_to_non_nullable
@@ -128,6 +135,7 @@ abstract class _$$NotificationPrefsEntityImplCopyWith<$Res>
     bool friendActivity,
     bool groupActivity,
     bool groupWineShared,
+    bool badges,
     DateTime updatedAt,
   });
 }
@@ -156,6 +164,7 @@ class __$$NotificationPrefsEntityImplCopyWithImpl<$Res>
     Object? friendActivity = null,
     Object? groupActivity = null,
     Object? groupWineShared = null,
+    Object? badges = null,
     Object? updatedAt = null,
   }) {
     return _then(
@@ -184,6 +193,10 @@ class __$$NotificationPrefsEntityImplCopyWithImpl<$Res>
             ? _value.groupWineShared
             : groupWineShared // ignore: cast_nullable_to_non_nullable
                   as bool,
+        badges: null == badges
+            ? _value.badges
+            : badges // ignore: cast_nullable_to_non_nullable
+                  as bool,
         updatedAt: null == updatedAt
             ? _value.updatedAt
             : updatedAt // ignore: cast_nullable_to_non_nullable
@@ -203,6 +216,7 @@ class _$NotificationPrefsEntityImpl implements _NotificationPrefsEntity {
     required this.friendActivity,
     required this.groupActivity,
     required this.groupWineShared,
+    this.badges = true,
     required this.updatedAt,
   });
 
@@ -219,11 +233,14 @@ class _$NotificationPrefsEntityImpl implements _NotificationPrefsEntity {
   @override
   final bool groupWineShared;
   @override
+  @JsonKey()
+  final bool badges;
+  @override
   final DateTime updatedAt;
 
   @override
   String toString() {
-    return 'NotificationPrefsEntity(userId: $userId, tastingReminders: $tastingReminders, tastingReminderHours: $tastingReminderHours, friendActivity: $friendActivity, groupActivity: $groupActivity, groupWineShared: $groupWineShared, updatedAt: $updatedAt)';
+    return 'NotificationPrefsEntity(userId: $userId, tastingReminders: $tastingReminders, tastingReminderHours: $tastingReminderHours, friendActivity: $friendActivity, groupActivity: $groupActivity, groupWineShared: $groupWineShared, badges: $badges, updatedAt: $updatedAt)';
   }
 
   @override
@@ -242,6 +259,7 @@ class _$NotificationPrefsEntityImpl implements _NotificationPrefsEntity {
                 other.groupActivity == groupActivity) &&
             (identical(other.groupWineShared, groupWineShared) ||
                 other.groupWineShared == groupWineShared) &&
+            (identical(other.badges, badges) || other.badges == badges) &&
             (identical(other.updatedAt, updatedAt) ||
                 other.updatedAt == updatedAt));
   }
@@ -255,6 +273,7 @@ class _$NotificationPrefsEntityImpl implements _NotificationPrefsEntity {
     friendActivity,
     groupActivity,
     groupWineShared,
+    badges,
     updatedAt,
   );
 
@@ -278,6 +297,7 @@ abstract class _NotificationPrefsEntity implements NotificationPrefsEntity {
     required final bool friendActivity,
     required final bool groupActivity,
     required final bool groupWineShared,
+    final bool badges,
     required final DateTime updatedAt,
   }) = _$NotificationPrefsEntityImpl;
 
@@ -293,6 +313,8 @@ abstract class _NotificationPrefsEntity implements NotificationPrefsEntity {
   bool get groupActivity;
   @override
   bool get groupWineShared;
+  @override
+  bool get badges;
   @override
   DateTime get updatedAt;
 

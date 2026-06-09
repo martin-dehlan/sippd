@@ -83,13 +83,18 @@ class ShareCardFooter extends StatelessWidget {
                 ),
               ],
             ),
-            Text(
-              resolvedTagline,
-              style: TextStyle(
-                fontSize: 28,
-                color: textColor,
-                fontWeight: FontWeight.w500,
-                letterSpacing: 0.4,
+            Flexible(
+              child: Text(
+                resolvedTagline,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.right,
+                style: TextStyle(
+                  fontSize: 28,
+                  color: textColor,
+                  fontWeight: FontWeight.w500,
+                  letterSpacing: 0.4,
+                ),
               ),
             ),
           ],

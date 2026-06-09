@@ -61,18 +61,21 @@ class RegionSkyline extends StatelessWidget {
             children: [
               for (var i = 0; i < cells.length; i++)
                 Container(
-                  width: cellSize,
-                  height: cellSize,
-                  decoration: BoxDecoration(
-                    color: cells[i],
-                    borderRadius: BorderRadius.circular(context.w * 0.018),
-                  ),
-                ).animate(delay: (i * 24).ms).fadeIn(duration: 240.ms).scale(
-                  begin: const Offset(0.5, 0.5),
-                  end: const Offset(1, 1),
-                  duration: 280.ms,
-                  curve: Curves.easeOutBack,
-                ),
+                      width: cellSize,
+                      height: cellSize,
+                      decoration: BoxDecoration(
+                        color: cells[i],
+                        borderRadius: BorderRadius.circular(context.w * 0.018),
+                      ),
+                    )
+                    .animate(delay: (i * 24).ms)
+                    .fadeIn(duration: 240.ms)
+                    .scale(
+                      begin: const Offset(0.5, 0.5),
+                      end: const Offset(1, 1),
+                      duration: 280.ms,
+                      curve: Curves.easeOutBack,
+                    ),
             ],
           ),
           SizedBox(height: context.m),

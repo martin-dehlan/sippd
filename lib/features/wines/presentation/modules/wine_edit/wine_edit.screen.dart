@@ -78,6 +78,9 @@ class _WineEditScreenState extends ConsumerState<WineEditScreen> {
                   grapeFreetext: data.grapeFreetext,
                   winery: data.winery,
                   vintage: data.vintage,
+                  servingTempC: data.servingTempC,
+                  decantMinutes: data.decantMinutes,
+                  abv: data.abv,
                   imageUrl: data.imageUrl,
                   localImagePath: data.localImagePath,
                   updatedAt: DateTime.now(),
@@ -127,6 +130,9 @@ class _WineEditScreenState extends ConsumerState<WineEditScreen> {
             )
           : null,
       notes: wine.notes,
+      servingTempC: wine.servingTempC,
+      decantMinutes: wine.decantMinutes,
+      abv: wine.abv,
       imageUrl: wine.imageUrl,
       localImagePath: wine.localImagePath,
     );

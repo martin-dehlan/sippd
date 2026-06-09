@@ -113,7 +113,7 @@ class ProfileApi {
       // a non-deleted account than orphan files on the public bucket.
       await _wipeUserStorage();
     }
-    await _client.rpc('delete_my_account');
+    await _client.rpc<dynamic>('delete_my_account');
   }
 
   Future<void> _wipeUserStorage() async {

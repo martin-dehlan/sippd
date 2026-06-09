@@ -44,7 +44,11 @@ class WineRepositoryImpl implements WineRepository {
   Future<List<WineEntity>> getWines() async {
     // Background sync from Supabase (fire and forget)
     _syncFromRemote();
-    final localData = await _dao.getAllWines();
+    // Filter by current uid so account switches on the same device
+    // don't leak the previous user's rows from local Drift. RLS already
+    // protects the server; this guards the local cache.
+    if (_userId == null) return const [];
+    final localData = await _dao.getWinesByUser(_userId);
     return localData.map((td) => td.toEntity()).toList();
   }
 
@@ -102,9 +106,12 @@ class WineRepositoryImpl implements WineRepository {
   Stream<List<WineEntity>> watchWines() {
     // Trigger sync, return local stream
     _syncFromRemote();
-    return _dao.watchAllWines().map(
-      (list) => list.map((td) => td.toEntity()).toList(),
-    );
+    // Filter by current uid so a previous account's leftover rows in
+    // Drift (e.g. after a device-side account switch) never surface.
+    if (_userId == null) return Stream.value(const []);
+    return _dao
+        .watchWinesByUser(_userId)
+        .map((list) => list.map((td) => td.toEntity()).toList());
   }
 
   @override

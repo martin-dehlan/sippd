@@ -8,12 +8,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../common/services/analytics/analytics.provider.dart';
+import '../../../../../common/services/motion/motion.provider.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/error_view.widget.dart';
 import '../../../../../common/widgets/inline_error.widget.dart';
+import '../../../../../common/widgets/staggered_list_entrance.widget.dart';
 import '../../../../../core/routes/app.routes.dart';
 import '../../../../paywall/controller/paywall.provider.dart';
-import '../../../../promo/presentation/demo_spotlight.widget.dart';
 import '../../../controller/group.provider.dart';
 import '../../../domain/entities/group.entity.dart';
 import '../../widgets/group_invitations_inbox.widget.dart';
@@ -32,6 +33,7 @@ class GroupListScreen extends ConsumerWidget {
     final sortMode = ref.watch(groupSortProvider);
     final cs = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context);
+    final animateEntrances = ref.motionOn(MotionFeature.listEntrances, context);
 
     return Scaffold(
       body: SafeArea(
@@ -128,8 +130,9 @@ class GroupListScreen extends ConsumerWidget {
                     ),
                     itemCount: sorted.length,
                     separatorBuilder: (_, _) => SizedBox(height: context.s),
-                    itemBuilder: (_, index) => DemoBeatHighlight(
-                      beat: index,
+                    itemBuilder: (_, index) => StaggeredListEntrance(
+                      index: index,
+                      enabled: animateEntrances,
                       child: _GroupCard(group: sorted[index]),
                     ),
                   );
@@ -172,7 +175,7 @@ class GroupListScreen extends ConsumerWidget {
   }
 
   void _showCreateSheet(BuildContext context, WidgetRef ref) {
-    showModalBottomSheet(
+    showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       useRootNavigator: true,
@@ -198,7 +201,7 @@ class GroupListScreen extends ConsumerWidget {
 
   void _showJoinSheet(BuildContext context, WidgetRef ref) {
     final controller = TextEditingController();
-    showModalBottomSheet(
+    showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       useRootNavigator: true,

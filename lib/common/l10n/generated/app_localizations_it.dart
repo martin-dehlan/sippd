@@ -487,6 +487,10 @@ class AppLocalizationsIt extends AppLocalizations {
       'Accesso fallito. Controlla i dati.';
 
   @override
+  String get authLoginEmailAlreadyRegistered =>
+      'Questa email è già registrata. Accedi invece.';
+
+  @override
   String get authLoginCreateAccountButton => 'Crea account';
 
   @override
@@ -508,6 +512,12 @@ class AppLocalizationsIt extends AppLocalizations {
   String get authGoogleFailed => 'Accesso con Google fallito. Riprova.';
 
   @override
+  String get authAppleContinue => 'Continua con Apple';
+
+  @override
+  String get authAppleFailed => 'Accesso con Apple fallito. Riprova.';
+
+  @override
   String get authConfTitleReset => 'Link di reset inviato';
 
   @override
@@ -527,6 +537,9 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get authConfOpenMailApp => 'Apri app mail';
+
+  @override
+  String get authConfNoMailApps => 'No mail app found on this device';
 
   @override
   String get authConfResendEmail => 'Rinvia e-mail';
@@ -596,6 +609,50 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get authProfileNotifications => 'Notifiche';
+
+  @override
+  String get authProfileAnimations => 'Animazioni';
+
+  @override
+  String get animationsTitle => 'Animazioni';
+
+  @override
+  String get animationsMasterLabel => 'Animazioni';
+
+  @override
+  String get animationsMasterSubtitle => 'Movimento discreto in tutta l\'app';
+
+  @override
+  String get animationsScreenTransitionsLabel => 'Transizioni schermo';
+
+  @override
+  String get animationsScreenTransitionsSubtitle =>
+      'Le pagine compaiono in dissolvenza e scorrimento';
+
+  @override
+  String get animationsListEntrancesLabel => 'Ingresso liste e schede';
+
+  @override
+  String get animationsListEntrancesSubtitle =>
+      'Le schede compaiono sfalsate con delicatezza';
+
+  @override
+  String get animationsTabCrossfadeLabel => 'Dissolvenza tra schede';
+
+  @override
+  String get animationsTabCrossfadeSubtitle =>
+      'Dissolvenza morbida al cambio scheda';
+
+  @override
+  String get animationsValueAnimationsLabel => 'Numeri e barre';
+
+  @override
+  String get animationsValueAnimationsSubtitle =>
+      'Statistiche e valutazioni si animano fino al valore';
+
+  @override
+  String get animationsReducedBySystemNote =>
+      'La riduzione del movimento del dispositivo è attiva, quindi le animazioni restano disattivate.';
 
   @override
   String get authProfileCleanupDuplicates => 'Pulisci duplicati';
@@ -787,6 +844,24 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get winesDetailSectionPlace => 'LUOGHI';
+
+  @override
+  String get winesDetailSectionAttributes => 'ATTRIBUTES';
+
+  @override
+  String winesAttrServe(int temp) {
+    return 'Serve $temp°C';
+  }
+
+  @override
+  String winesAttrDecant(int minutes) {
+    return 'Decant ${minutes}min';
+  }
+
+  @override
+  String winesAttrAbv(String abv) {
+    return '$abv% vol';
+  }
 
   @override
   String get winesDetailPlaceEmpty => 'Nessun luogo';
@@ -2650,6 +2725,13 @@ class AppLocalizationsIt extends AppLocalizations {
   String get paywallBenefitNotesSubtitle => 'Naso · corpo · tannini · finale.';
 
   @override
+  String get paywallBenefitScanTitle => 'Più scansioni di etichette';
+
+  @override
+  String get paywallBenefitScanSubtitle =>
+      'Scansiona molte più etichette al giorno per aggiungere vini in fretta.';
+
+  @override
   String get paywallPlanMonthly => 'Mensile';
 
   @override
@@ -3804,4 +3886,267 @@ class AppLocalizationsIt extends AppLocalizations {
   String routeNotFound(String uri) {
     return 'Pagina non trovata: $uri';
   }
+
+  @override
+  String get badgesTitle => 'Badges';
+
+  @override
+  String badgesEarnedCount(int earned, int total) {
+    return '$earned of $total earned';
+  }
+
+  @override
+  String get badgesCategoryVolume => 'Milestones';
+
+  @override
+  String get badgesCategoryType => 'Wine Styles';
+
+  @override
+  String get badgesCategoryGeo => 'Around the World';
+
+  @override
+  String get badgesCategoryGrape => 'Grapes';
+
+  @override
+  String get badgesCategorySocial => 'Social';
+
+  @override
+  String get badgesCategoryEngagement => 'Connoisseurship';
+
+  @override
+  String get badgesEmptyTitle => 'No badges yet';
+
+  @override
+  String get badgesEmptyBody => 'Start rating wines to earn your first badge.';
+
+  @override
+  String get badgesRetry => 'Retry';
+
+  @override
+  String get badgesEarnedLabel => 'Earned';
+
+  @override
+  String badgesEarnedOn(String date) {
+    return 'Earned $date';
+  }
+
+  @override
+  String get badgesUnlockedHeadline => 'BADGE UNLOCKED';
+
+  @override
+  String get badgesNice => 'Nice';
+
+  @override
+  String get tileBadgesLabel => 'Badge unlocks';
+
+  @override
+  String get tileBadgesSubtitle => 'Get notified when you earn a new badge';
+
+  @override
+  String get scanQuotaFreeTitle => 'Hai esaurito le 5 scansioni di oggi';
+
+  @override
+  String get scanQuotaProTitle =>
+      'Hai raggiunto il limite di scansioni di oggi';
+
+  @override
+  String get scanQuotaFreeBody =>
+      'Si rinnovano domani. Vuoi continuare a scansionare? Passa a Pro per di più.';
+
+  @override
+  String get scanQuotaProBody =>
+      'Le tue scansioni si rinnovano domani. Nel frattempo aggiungilo a mano.';
+
+  @override
+  String get scanGoPro => 'Passa a Pro';
+
+  @override
+  String get scanAddByHand => 'A mano';
+
+  @override
+  String get scanNotFoundTitle => 'Nessun vino trovato sull\'etichetta';
+
+  @override
+  String get scanNotFoundBody =>
+      'Prova una foto più nitida e frontale, oppure aggiungilo a mano.';
+
+  @override
+  String get scanErrorTitle => 'Impossibile leggere l\'etichetta';
+
+  @override
+  String get scanErrorBody =>
+      'Riprova con una foto più nitida e ben illuminata.';
+
+  @override
+  String get scanReadingLabel => 'Lettura dell\'etichetta…';
+
+  @override
+  String get scanSkipManual => 'Salta — inserisci a mano';
+
+  @override
+  String get scanChooseGallery => 'Scegli dalla galleria';
+
+  @override
+  String get scanCameraUnavailable => 'Fotocamera non disponibile';
+
+  @override
+  String get scanCameraDeniedBody =>
+      'Concedi l\'accesso alla fotocamera nelle Impostazioni, scegli una foto dalla galleria o aggiungi il vino a mano.';
+
+  @override
+  String get badgeFirstSipTitle => 'Primo Sorso';
+
+  @override
+  String get badgeFirstSipDesc => 'Valuta il tuo primo vino';
+
+  @override
+  String get badgeGettingStartedTitle => 'Si Comincia';
+
+  @override
+  String get badgeGettingStartedDesc => 'Valuta 10 vini';
+
+  @override
+  String get badgeWineExplorerTitle => 'Esploratore di Vini';
+
+  @override
+  String get badgeWineExplorerDesc => 'Valuta 50 vini';
+
+  @override
+  String get badgeCellarMasterTitle => 'Maestro di Cantina';
+
+  @override
+  String get badgeCellarMasterDesc => 'Valuta 100 vini';
+
+  @override
+  String get badgeConnoisseurTitle => 'Intenditore';
+
+  @override
+  String get badgeConnoisseurDesc => 'Valuta 250 vini';
+
+  @override
+  String get badgeRedDevoteeTitle => 'Devoto del Rosso';
+
+  @override
+  String get badgeRedDevoteeDesc => 'Valuta 50 vini rossi';
+
+  @override
+  String get badgeWhiteWineLoverTitle => 'Amante del Bianco';
+
+  @override
+  String get badgeWhiteWineLoverDesc => 'Valuta 50 vini bianchi';
+
+  @override
+  String get badgeBubblyEnthusiastTitle => 'Appassionato di Bollicine';
+
+  @override
+  String get badgeBubblyEnthusiastDesc => 'Valuta 15 spumanti';
+
+  @override
+  String get badgeRoseAllDayTitle => 'Sempre Rosé';
+
+  @override
+  String get badgeRoseAllDayDesc => 'Valuta 15 vini rosati';
+
+  @override
+  String get badgeBalancedPalateTitle => 'Palato Equilibrato';
+
+  @override
+  String get badgeBalancedPalateDesc =>
+      'Valuta 10+ di ogni tipo: rosso, bianco, rosato, spumante';
+
+  @override
+  String get badgeGlobetrotterTitle => 'Giramondo';
+
+  @override
+  String get badgeGlobetrotterDesc => 'Valuta vini di 10 Paesi diversi';
+
+  @override
+  String get badgeOldWorldScholarTitle => 'Studioso del Vecchio Mondo';
+
+  @override
+  String get badgeOldWorldScholarDesc =>
+      'Valuta 25 vini da Francia, Italia, Spagna, Germania o Portogallo';
+
+  @override
+  String get badgeNewWorldPioneerTitle => 'Pioniere del Nuovo Mondo';
+
+  @override
+  String get badgeNewWorldPioneerDesc =>
+      'Valuta 25 vini da USA, Australia, Nuova Zelanda, Cile, Argentina o Sudafrica';
+
+  @override
+  String get badgeRegionalSpecialistTitle => 'Specialista Regionale';
+
+  @override
+  String get badgeRegionalSpecialistDesc =>
+      'Valuta 15 vini di una stessa regione';
+
+  @override
+  String get badgeFranceAficionadoTitle => 'Cultore della Francia';
+
+  @override
+  String get badgeFranceAficionadoDesc => 'Valuta 25 vini francesi';
+
+  @override
+  String get badgeGrapeCuriousTitle => 'Curioso dei Vitigni';
+
+  @override
+  String get badgeGrapeCuriousDesc => 'Valuta 10 vitigni diversi';
+
+  @override
+  String get badgeGrapeConnoisseurTitle => 'Esperto di Vitigni';
+
+  @override
+  String get badgeGrapeConnoisseurDesc => 'Valuta 18 vitigni diversi';
+
+  @override
+  String get badgeSingleVarietyDevoteeTitle => 'Fedele a un Vitigno';
+
+  @override
+  String get badgeSingleVarietyDevoteeDesc =>
+      'Valuta 20 vini dello stesso vitigno';
+
+  @override
+  String get badgeJoinerTitle => 'Nuovo Membro';
+
+  @override
+  String get badgeJoinerDesc => 'Unisciti al tuo primo gruppo';
+
+  @override
+  String get badgeTastingRegularTitle => 'Habitué delle Degustazioni';
+
+  @override
+  String get badgeTastingRegularDesc => 'Partecipa a 5 degustazioni concluse';
+
+  @override
+  String get badgeHostTitle => 'Il Padrone di Casa';
+
+  @override
+  String get badgeHostDesc => 'Organizza una degustazione';
+
+  @override
+  String get badgeSocialSipperTitle => 'Bevitore Sociale';
+
+  @override
+  String get badgeSocialSipperDesc => 'Aggiungi 5 amici';
+
+  @override
+  String get badgeDrinkingBuddiesTitle => 'Compagni di Bevute';
+
+  @override
+  String get badgeDrinkingBuddiesDesc =>
+      'Condividi 10 vini con uno stesso compagno di degustazione';
+
+  @override
+  String get badgeTheCriticTitle => 'Il Critico';
+
+  @override
+  String get badgeTheCriticDesc => 'Valuta 25 vini con note di degustazione';
+
+  @override
+  String get badgeSeasonedTasterTitle => 'Degustatore Esperto';
+
+  @override
+  String get badgeSeasonedTasterDesc =>
+      'Mantieni una media di 7,5+ su 20+ vini';
 }

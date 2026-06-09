@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:intl/intl.dart';
@@ -77,7 +78,7 @@ class WineCardWidget extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text(
+                              AutoSizeText(
                                 wine.name,
                                 style: TextStyle(
                                   fontSize: context.bodyFont,
@@ -85,6 +86,10 @@ class WineCardWidget extends StatelessWidget {
                                   height: 1.2,
                                 ),
                                 maxLines: 2,
+                                // Shrink to fit whole words instead of
+                                // breaking mid-word (e.g. "Weissburgunder").
+                                minFontSize: 10,
+                                wrapWords: false,
                                 overflow: TextOverflow.ellipsis,
                               ),
                               if (!compact) ...[

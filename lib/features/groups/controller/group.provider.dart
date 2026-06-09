@@ -77,9 +77,11 @@ class GroupController extends _$GroupController {
                 .select()
                 .inFilter('id', groupIds)
                 .withNetTimeout())
-            as List;
+            as List<dynamic>;
 
-    return groupsData.map((g) => GroupModel.fromJson(g).toEntity()).toList();
+    return groupsData
+        .map((g) => GroupModel.fromJson(g as Map<String, dynamic>).toEntity())
+        .toList();
   }
 
   /// Creates a group and returns the inserted row so the caller can chain
@@ -121,7 +123,7 @@ class GroupController extends _$GroupController {
 
     final client = ref.read(supabaseClientProvider);
 
-    await client.rpc(
+    await client.rpc<dynamic>(
       'join_group_by_invite_code',
       params: {'p_code': inviteCode},
     );

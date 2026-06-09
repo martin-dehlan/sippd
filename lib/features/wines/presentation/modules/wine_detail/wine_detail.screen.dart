@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 import '../../../../../common/l10n/generated/app_localizations.dart';
 import '../../../../../common/utils/price_format.dart';
+import '../../../../../common/services/motion/motion.provider.dart';
 import '../../../../../common/utils/responsive.dart';
 import '../../../../../common/widgets/error_view.widget.dart';
 import '../../../../../common/widgets/overflow_menu.widget.dart';
@@ -142,7 +143,12 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
         .animate(
           CurvedAnimation(parent: _animController, curve: Curves.easeOutCubic),
         );
-    _animController.forward();
+    if (ref.motionOnNow(MotionFeature.screenTransitions)) {
+      _animController.forward();
+    } else {
+      // Motion off — jump straight to the final state, no animation.
+      _animController.value = 1;
+    }
     if (kIsDemo) _runDemoBeats();
   }
 
@@ -382,6 +388,9 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
                   ),
                 ),
               ],
+              // Scanner-recognized attributes (serving temp, decant, ABV).
+              // Self-hides for hand-added wines that have none.
+              _WineAttributesSection(wine: widget.wine),
               if (widget.wine.canonicalWineId != null) ...[
                 SizedBox(height: context.xl),
                 // Read-only display of the user's own expert tasting
@@ -512,6 +521,95 @@ class _WineDetailBodyState extends ConsumerState<WineDetailBody>
       ),
     );
     if (confirmed == true) widget.onDelete?.call();
+  }
+}
+
+/// Scanner-recognized wine attributes (serving temp, decant, ABV, aroma,
+/// food pairings). Renders nothing when the wine has none, so hand-added
+/// wines stay clean.
+class _WineAttributesSection extends StatelessWidget {
+  final WineEntity wine;
+  const _WineAttributesSection({required this.wine});
+
+  static String _fmtAbv(double v) =>
+      v == v.roundToDouble() ? v.toStringAsFixed(0) : v.toStringAsFixed(1);
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
+    final chips = <Widget>[
+      if (wine.servingTempC != null)
+        _AttrChip(
+          icon: PhosphorIconsRegular.thermometer,
+          label: l10n.winesAttrServe(wine.servingTempC!),
+        ),
+      if (wine.decantMinutes != null && wine.decantMinutes! > 0)
+        _AttrChip(
+          icon: PhosphorIconsRegular.timer,
+          label: l10n.winesAttrDecant(wine.decantMinutes!),
+        ),
+      if (wine.abv != null)
+        _AttrChip(
+          icon: PhosphorIconsRegular.drop,
+          label: l10n.winesAttrAbv(_fmtAbv(wine.abv!)),
+        ),
+    ];
+
+    if (chips.isEmpty) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(height: context.xl),
+        WineDetailSectionHeader(label: l10n.winesDetailSectionAttributes),
+        SizedBox(height: context.m),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
+          child: Wrap(
+            spacing: context.s,
+            runSpacing: context.s,
+            children: chips,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _AttrChip extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  const _AttrChip({required this.icon, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: context.w * 0.03,
+        vertical: context.xs * 1.4,
+      ),
+      decoration: BoxDecoration(
+        color: cs.surfaceContainer,
+        borderRadius: BorderRadius.circular(context.w * 0.025),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: context.bodyFont * 1.1, color: cs.onSurfaceVariant),
+          SizedBox(width: context.w * 0.015),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: context.captionFont,
+              color: cs.onSurface,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 

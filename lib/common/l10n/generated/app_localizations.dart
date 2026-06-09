@@ -10,6 +10,8 @@ import 'app_localizations_en.dart';
 import 'app_localizations_es.dart';
 import 'app_localizations_fr.dart';
 import 'app_localizations_it.dart';
+import 'app_localizations_nl.dart';
+import 'app_localizations_pt.dart';
 
 // ignore_for_file: type=lint
 
@@ -102,6 +104,8 @@ abstract class AppLocalizations {
     Locale('es'),
     Locale('fr'),
     Locale('it'),
+    Locale('nl'),
+    Locale('pt'),
   ];
 
   /// AppBar title for the notification settings screen
@@ -998,6 +1002,12 @@ abstract class AppLocalizations {
   /// **'Sign-in failed. Check your details.'**
   String get authLoginSignInFailedFallback;
 
+  /// No description provided for @authLoginEmailAlreadyRegistered.
+  ///
+  /// In en, this message translates to:
+  /// **'This email is already registered. Log in instead.'**
+  String get authLoginEmailAlreadyRegistered;
+
   /// No description provided for @authLoginCreateAccountButton.
   ///
   /// In en, this message translates to:
@@ -1040,6 +1050,18 @@ abstract class AppLocalizations {
   /// **'Google sign-in failed. Please try again.'**
   String get authGoogleFailed;
 
+  /// No description provided for @authAppleContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue with Apple'**
+  String get authAppleContinue;
+
+  /// No description provided for @authAppleFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Apple sign-in failed. Please try again.'**
+  String get authAppleFailed;
+
   /// No description provided for @authConfTitleReset.
   ///
   /// In en, this message translates to:
@@ -1081,6 +1103,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open mail app'**
   String get authConfOpenMailApp;
+
+  /// No description provided for @authConfNoMailApps.
+  ///
+  /// In en, this message translates to:
+  /// **'No mail app found on this device'**
+  String get authConfNoMailApps;
 
   /// No description provided for @authConfResendEmail.
   ///
@@ -1213,6 +1241,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Notifications'**
   String get authProfileNotifications;
+
+  /// No description provided for @authProfileAnimations.
+  ///
+  /// In en, this message translates to:
+  /// **'Animations'**
+  String get authProfileAnimations;
+
+  /// No description provided for @animationsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Animations'**
+  String get animationsTitle;
+
+  /// No description provided for @animationsMasterLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Animations'**
+  String get animationsMasterLabel;
+
+  /// No description provided for @animationsMasterSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Subtle motion throughout the app'**
+  String get animationsMasterSubtitle;
+
+  /// No description provided for @animationsScreenTransitionsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Screen transitions'**
+  String get animationsScreenTransitionsLabel;
+
+  /// No description provided for @animationsScreenTransitionsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pages fade and slide in when opened'**
+  String get animationsScreenTransitionsSubtitle;
+
+  /// No description provided for @animationsListEntrancesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'List & card entrances'**
+  String get animationsListEntrancesLabel;
+
+  /// No description provided for @animationsListEntrancesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cards gently stagger into view'**
+  String get animationsListEntrancesSubtitle;
+
+  /// No description provided for @animationsTabCrossfadeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Tab crossfade'**
+  String get animationsTabCrossfadeLabel;
+
+  /// No description provided for @animationsTabCrossfadeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Soft fade when switching tabs'**
+  String get animationsTabCrossfadeSubtitle;
+
+  /// No description provided for @animationsValueAnimationsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Counting numbers & bars'**
+  String get animationsValueAnimationsLabel;
+
+  /// No description provided for @animationsValueAnimationsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Stats and ratings animate to their value'**
+  String get animationsValueAnimationsSubtitle;
+
+  /// No description provided for @animationsReducedBySystemNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Your device\'s Reduce Motion setting is on, so in-app animations stay off.'**
+  String get animationsReducedBySystemNote;
 
   /// No description provided for @authProfileCleanupDuplicates.
   ///
@@ -1579,6 +1685,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'PLACES'**
   String get winesDetailSectionPlace;
+
+  /// No description provided for @winesDetailSectionAttributes.
+  ///
+  /// In en, this message translates to:
+  /// **'ATTRIBUTES'**
+  String get winesDetailSectionAttributes;
+
+  /// No description provided for @winesAttrServe.
+  ///
+  /// In en, this message translates to:
+  /// **'Serve {temp}°C'**
+  String winesAttrServe(int temp);
+
+  /// No description provided for @winesAttrDecant.
+  ///
+  /// In en, this message translates to:
+  /// **'Decant {minutes}min'**
+  String winesAttrDecant(int minutes);
+
+  /// No description provided for @winesAttrAbv.
+  ///
+  /// In en, this message translates to:
+  /// **'{abv}% vol'**
+  String winesAttrAbv(String abv);
 
   /// No description provided for @winesDetailPlaceEmpty.
   ///
@@ -4946,6 +5076,18 @@ abstract class AppLocalizations {
   /// **'Nose · body · tannins · finish.'**
   String get paywallBenefitNotesSubtitle;
 
+  /// No description provided for @paywallBenefitScanTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'More label scans'**
+  String get paywallBenefitScanTitle;
+
+  /// No description provided for @paywallBenefitScanSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan far more labels a day to add wines fast.'**
+  String get paywallBenefitScanSubtitle;
+
   /// No description provided for @paywallPlanMonthly.
   ///
   /// In en, this message translates to:
@@ -6895,6 +7037,498 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Page not found: {uri}'**
   String routeNotFound(String uri);
+
+  /// Badges screen / section title.
+  ///
+  /// In en, this message translates to:
+  /// **'Badges'**
+  String get badgesTitle;
+
+  /// Header showing how many badges are unlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'{earned} of {total} earned'**
+  String badgesEarnedCount(int earned, int total);
+
+  /// Badge category: volume of wines rated.
+  ///
+  /// In en, this message translates to:
+  /// **'Milestones'**
+  String get badgesCategoryVolume;
+
+  /// Badge category: wine type.
+  ///
+  /// In en, this message translates to:
+  /// **'Wine Styles'**
+  String get badgesCategoryType;
+
+  /// Badge category: geography.
+  ///
+  /// In en, this message translates to:
+  /// **'Around the World'**
+  String get badgesCategoryGeo;
+
+  /// Badge category: grape varieties.
+  ///
+  /// In en, this message translates to:
+  /// **'Grapes'**
+  String get badgesCategoryGrape;
+
+  /// Badge category: social activity.
+  ///
+  /// In en, this message translates to:
+  /// **'Social'**
+  String get badgesCategorySocial;
+
+  /// Badge category: engagement / quality.
+  ///
+  /// In en, this message translates to:
+  /// **'Connoisseurship'**
+  String get badgesCategoryEngagement;
+
+  /// Empty-state title on the badges screen.
+  ///
+  /// In en, this message translates to:
+  /// **'No badges yet'**
+  String get badgesEmptyTitle;
+
+  /// Empty-state body on the badges screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Start rating wines to earn your first badge.'**
+  String get badgesEmptyBody;
+
+  /// Retry button on the badges error state.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get badgesRetry;
+
+  /// Label shown on an earned badge with no date.
+  ///
+  /// In en, this message translates to:
+  /// **'Earned'**
+  String get badgesEarnedLabel;
+
+  /// Label showing when a badge was earned.
+  ///
+  /// In en, this message translates to:
+  /// **'Earned {date}'**
+  String badgesEarnedOn(String date);
+
+  /// Celebration overlay headline.
+  ///
+  /// In en, this message translates to:
+  /// **'BADGE UNLOCKED'**
+  String get badgesUnlockedHeadline;
+
+  /// Dismiss button on the badge unlock celebration.
+  ///
+  /// In en, this message translates to:
+  /// **'Nice'**
+  String get badgesNice;
+
+  /// Notification settings toggle label for badge unlock pushes.
+  ///
+  /// In en, this message translates to:
+  /// **'Badge unlocks'**
+  String get tileBadgesLabel;
+
+  /// Notification settings toggle subtitle for badge unlock pushes.
+  ///
+  /// In en, this message translates to:
+  /// **'Get notified when you earn a new badge'**
+  String get tileBadgesSubtitle;
+
+  /// Scanner quota-exhausted title for free users.
+  ///
+  /// In en, this message translates to:
+  /// **'That\'s all 5 scans for today'**
+  String get scanQuotaFreeTitle;
+
+  /// Scanner quota-exhausted title for Pro users.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve hit today\'s scan limit'**
+  String get scanQuotaProTitle;
+
+  /// Scanner quota-exhausted body for free users (nudge to Pro).
+  ///
+  /// In en, this message translates to:
+  /// **'They reset tomorrow. Want to keep scanning now? Go Pro for more.'**
+  String get scanQuotaFreeBody;
+
+  /// Scanner quota-exhausted body for Pro users.
+  ///
+  /// In en, this message translates to:
+  /// **'Your scans reset tomorrow. Add one by hand in the meantime.'**
+  String get scanQuotaProBody;
+
+  /// Go Pro button on the scan quota block.
+  ///
+  /// In en, this message translates to:
+  /// **'Go Pro'**
+  String get scanGoPro;
+
+  /// Manual-entry button on scanner screens.
+  ///
+  /// In en, this message translates to:
+  /// **'Add by hand'**
+  String get scanAddByHand;
+
+  /// Scanner no-match title.
+  ///
+  /// In en, this message translates to:
+  /// **'No wine found on that label'**
+  String get scanNotFoundTitle;
+
+  /// Scanner no-match body.
+  ///
+  /// In en, this message translates to:
+  /// **'Try a clearer, straight-on photo — or add it by hand.'**
+  String get scanNotFoundBody;
+
+  /// Scanner error title.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not read the label'**
+  String get scanErrorTitle;
+
+  /// Scanner error body.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again with a clearer, well-lit shot.'**
+  String get scanErrorBody;
+
+  /// Scanner recognition loading text.
+  ///
+  /// In en, this message translates to:
+  /// **'Reading the label…'**
+  String get scanReadingLabel;
+
+  /// Skip-to-manual link on scanner failure cards.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip — enter by hand'**
+  String get scanSkipManual;
+
+  /// Gallery picker button in the scanner.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose from gallery'**
+  String get scanChooseGallery;
+
+  /// Camera permission-denied title.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera unavailable'**
+  String get scanCameraUnavailable;
+
+  /// Camera permission-denied body.
+  ///
+  /// In en, this message translates to:
+  /// **'Grant camera access in Settings, pick a photo from your gallery, or add the wine by hand.'**
+  String get scanCameraDeniedBody;
+
+  /// No description provided for @badgeFirstSipTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'First Sip'**
+  String get badgeFirstSipTitle;
+
+  /// No description provided for @badgeFirstSipDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate your first wine'**
+  String get badgeFirstSipDesc;
+
+  /// No description provided for @badgeGettingStartedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Getting Started'**
+  String get badgeGettingStartedTitle;
+
+  /// No description provided for @badgeGettingStartedDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate 10 wines'**
+  String get badgeGettingStartedDesc;
+
+  /// No description provided for @badgeWineExplorerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Wine Explorer'**
+  String get badgeWineExplorerTitle;
+
+  /// No description provided for @badgeWineExplorerDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate 50 wines'**
+  String get badgeWineExplorerDesc;
+
+  /// No description provided for @badgeCellarMasterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cellar Master'**
+  String get badgeCellarMasterTitle;
+
+  /// No description provided for @badgeCellarMasterDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate 100 wines'**
+  String get badgeCellarMasterDesc;
+
+  /// No description provided for @badgeConnoisseurTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Connoisseur'**
+  String get badgeConnoisseurTitle;
+
+  /// No description provided for @badgeConnoisseurDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate 250 wines'**
+  String get badgeConnoisseurDesc;
+
+  /// No description provided for @badgeRedDevoteeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Red Devotee'**
+  String get badgeRedDevoteeTitle;
+
+  /// No description provided for @badgeRedDevoteeDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate 50 red wines'**
+  String get badgeRedDevoteeDesc;
+
+  /// No description provided for @badgeWhiteWineLoverTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'White Wine Lover'**
+  String get badgeWhiteWineLoverTitle;
+
+  /// No description provided for @badgeWhiteWineLoverDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate 50 white wines'**
+  String get badgeWhiteWineLoverDesc;
+
+  /// No description provided for @badgeBubblyEnthusiastTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Bubbly Enthusiast'**
+  String get badgeBubblyEnthusiastTitle;
+
+  /// No description provided for @badgeBubblyEnthusiastDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate 15 sparkling wines'**
+  String get badgeBubblyEnthusiastDesc;
+
+  /// No description provided for @badgeRoseAllDayTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Rosé All Day'**
+  String get badgeRoseAllDayTitle;
+
+  /// No description provided for @badgeRoseAllDayDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate 15 rosé wines'**
+  String get badgeRoseAllDayDesc;
+
+  /// No description provided for @badgeBalancedPalateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Balanced Palate'**
+  String get badgeBalancedPalateTitle;
+
+  /// No description provided for @badgeBalancedPalateDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate 10+ of each type: red, white, rosé, sparkling'**
+  String get badgeBalancedPalateDesc;
+
+  /// No description provided for @badgeGlobetrotterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Globetrotter'**
+  String get badgeGlobetrotterTitle;
+
+  /// No description provided for @badgeGlobetrotterDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate wines from 10 different countries'**
+  String get badgeGlobetrotterDesc;
+
+  /// No description provided for @badgeOldWorldScholarTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Old World Scholar'**
+  String get badgeOldWorldScholarTitle;
+
+  /// No description provided for @badgeOldWorldScholarDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate 25 wines from France, Italy, Spain, Germany or Portugal'**
+  String get badgeOldWorldScholarDesc;
+
+  /// No description provided for @badgeNewWorldPioneerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New World Pioneer'**
+  String get badgeNewWorldPioneerTitle;
+
+  /// No description provided for @badgeNewWorldPioneerDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate 25 wines from the US, Australia, NZ, Chile, Argentina or South Africa'**
+  String get badgeNewWorldPioneerDesc;
+
+  /// No description provided for @badgeRegionalSpecialistTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Regional Specialist'**
+  String get badgeRegionalSpecialistTitle;
+
+  /// No description provided for @badgeRegionalSpecialistDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate 15 wines from a single region'**
+  String get badgeRegionalSpecialistDesc;
+
+  /// No description provided for @badgeFranceAficionadoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'France Aficionado'**
+  String get badgeFranceAficionadoTitle;
+
+  /// No description provided for @badgeFranceAficionadoDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate 25 French wines'**
+  String get badgeFranceAficionadoDesc;
+
+  /// No description provided for @badgeGrapeCuriousTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Grape Curious'**
+  String get badgeGrapeCuriousTitle;
+
+  /// No description provided for @badgeGrapeCuriousDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate 10 different grape varieties'**
+  String get badgeGrapeCuriousDesc;
+
+  /// No description provided for @badgeGrapeConnoisseurTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Grape Connoisseur'**
+  String get badgeGrapeConnoisseurTitle;
+
+  /// No description provided for @badgeGrapeConnoisseurDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate 18 different grape varieties'**
+  String get badgeGrapeConnoisseurDesc;
+
+  /// No description provided for @badgeSingleVarietyDevoteeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Single-Variety Devotee'**
+  String get badgeSingleVarietyDevoteeTitle;
+
+  /// No description provided for @badgeSingleVarietyDevoteeDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate 20 wines of one grape variety'**
+  String get badgeSingleVarietyDevoteeDesc;
+
+  /// No description provided for @badgeJoinerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Joiner'**
+  String get badgeJoinerTitle;
+
+  /// No description provided for @badgeJoinerDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Join your first group'**
+  String get badgeJoinerDesc;
+
+  /// No description provided for @badgeTastingRegularTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tasting Regular'**
+  String get badgeTastingRegularTitle;
+
+  /// No description provided for @badgeTastingRegularDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Attend 5 concluded tastings'**
+  String get badgeTastingRegularDesc;
+
+  /// No description provided for @badgeHostTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The Host'**
+  String get badgeHostTitle;
+
+  /// No description provided for @badgeHostDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Host a tasting'**
+  String get badgeHostDesc;
+
+  /// No description provided for @badgeSocialSipperTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Social Sipper'**
+  String get badgeSocialSipperTitle;
+
+  /// No description provided for @badgeSocialSipperDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Have 5 friends'**
+  String get badgeSocialSipperDesc;
+
+  /// No description provided for @badgeDrinkingBuddiesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Drinking Buddies'**
+  String get badgeDrinkingBuddiesTitle;
+
+  /// No description provided for @badgeDrinkingBuddiesDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Share 10 wines with one tasting partner'**
+  String get badgeDrinkingBuddiesDesc;
+
+  /// No description provided for @badgeTheCriticTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The Critic'**
+  String get badgeTheCriticTitle;
+
+  /// No description provided for @badgeTheCriticDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate 25 wines with tasting notes'**
+  String get badgeTheCriticDesc;
+
+  /// No description provided for @badgeSeasonedTasterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Seasoned Taster'**
+  String get badgeSeasonedTasterTitle;
+
+  /// No description provided for @badgeSeasonedTasterDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep a 7.5+ average across 20+ wines'**
+  String get badgeSeasonedTasterDesc;
 }
 
 class _AppLocalizationsDelegate
@@ -6907,8 +7541,15 @@ class _AppLocalizationsDelegate
   }
 
   @override
-  bool isSupported(Locale locale) =>
-      <String>['de', 'en', 'es', 'fr', 'it'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>[
+    'de',
+    'en',
+    'es',
+    'fr',
+    'it',
+    'nl',
+    'pt',
+  ].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
@@ -6927,6 +7568,10 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
       return AppLocalizationsFr();
     case 'it':
       return AppLocalizationsIt();
+    case 'nl':
+      return AppLocalizationsNl();
+    case 'pt':
+      return AppLocalizationsPt();
   }
 
   throw FlutterError(

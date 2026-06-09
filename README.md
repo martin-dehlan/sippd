@@ -17,7 +17,9 @@ Built after a trip through South African wine country, after one too many ad-stu
 ![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?logo=flutter)
 ![Dart](https://img.shields.io/badge/Dart-3.x-0175C2?logo=dart)
 ![Riverpod](https://img.shields.io/badge/State-Riverpod-7c4dff)
-![License](https://img.shields.io/badge/license-Private-lightgrey)
+![License](https://img.shields.io/badge/license-Apache--2.0-blue)
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/13065/badge)](https://www.bestpractices.dev/projects/13065)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/martin-dehlan/sippd/badge)](https://scorecard.dev/viewer/?uri=github.com/martin-dehlan/sippd)
 
 ---
 
@@ -291,5 +293,10 @@ the production schema (RLS policies, functions, realtime publications).
 
 ## License
 
-See [LICENSE](./LICENSE) — source-available for review and study, not
-licensed for production / commercial reuse without permission.
+Licensed under the [Apache License 2.0](./LICENSE) — free to use, modify, and
+redistribute, with an explicit patent grant and attribution requirements.
+
+The **code** is Apache-2.0. The **Sippd brand** (name, wordmark, logo, app
+icon, brand colour) is a trademark and is **not** covered by that license —
+see [TRADEMARKS.md](./TRADEMARKS.md). If you fork and redistribute, give it a
+different name and drop the Sippd brand assets.

@@ -257,9 +257,13 @@ class _WineRatingSheetState extends ConsumerState<_WineRatingSheet> {
     final wine = widget.wine;
 
     return Padding(
-      padding: EdgeInsets.symmetric(
-        horizontal: context.paddingH,
-        vertical: context.m,
+      // Lift content above the keyboard so the aroma search field + chips
+      // aren't covered when typing.
+      padding: EdgeInsets.only(
+        left: context.paddingH,
+        right: context.paddingH,
+        top: context.m,
+        bottom: context.m + MediaQuery.of(context).viewInsets.bottom,
       ),
       child: SingleChildScrollView(
         physics: const ClampingScrollPhysics(),

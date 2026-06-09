@@ -14,8 +14,10 @@ class WineMemoryPhotoSupabaseApi {
         .eq('memory_id', memoryId)
         .order('position', ascending: true);
 
-    return (data as List)
-        .map((row) => WineMemoryPhotoModel.fromJson(row))
+    return (data as List<dynamic>)
+        .map(
+          (row) => WineMemoryPhotoModel.fromJson(row as Map<String, dynamic>),
+        )
         .toList();
   }
 

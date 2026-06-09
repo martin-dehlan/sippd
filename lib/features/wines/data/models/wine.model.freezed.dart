@@ -47,6 +47,11 @@ mixin _$WineModel {
   @JsonKey(name: 'canonical_wine_id')
   String? get canonicalWineId => throw _privateConstructorUsedError;
   String? get winery => throw _privateConstructorUsedError;
+  @JsonKey(name: 'serving_temp_c')
+  int? get servingTempC => throw _privateConstructorUsedError;
+  @JsonKey(name: 'decant_minutes')
+  int? get decantMinutes => throw _privateConstructorUsedError;
+  double? get abv => throw _privateConstructorUsedError;
   @JsonKey(name: 'name_norm')
   String? get nameNorm => throw _privateConstructorUsedError;
   @JsonKey(name: 'user_id')
@@ -94,6 +99,9 @@ abstract class $WineModelCopyWith<$Res> {
     @JsonKey(name: 'grape_freetext') String? grapeFreetext,
     @JsonKey(name: 'canonical_wine_id') String? canonicalWineId,
     String? winery,
+    @JsonKey(name: 'serving_temp_c') int? servingTempC,
+    @JsonKey(name: 'decant_minutes') int? decantMinutes,
+    double? abv,
     @JsonKey(name: 'name_norm') String? nameNorm,
     @JsonKey(name: 'user_id') String userId,
     String visibility,
@@ -137,6 +145,9 @@ class _$WineModelCopyWithImpl<$Res, $Val extends WineModel>
     Object? grapeFreetext = freezed,
     Object? canonicalWineId = freezed,
     Object? winery = freezed,
+    Object? servingTempC = freezed,
+    Object? decantMinutes = freezed,
+    Object? abv = freezed,
     Object? nameNorm = freezed,
     Object? userId = null,
     Object? visibility = null,
@@ -225,6 +236,18 @@ class _$WineModelCopyWithImpl<$Res, $Val extends WineModel>
                 ? _value.winery
                 : winery // ignore: cast_nullable_to_non_nullable
                       as String?,
+            servingTempC: freezed == servingTempC
+                ? _value.servingTempC
+                : servingTempC // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            decantMinutes: freezed == decantMinutes
+                ? _value.decantMinutes
+                : decantMinutes // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            abv: freezed == abv
+                ? _value.abv
+                : abv // ignore: cast_nullable_to_non_nullable
+                      as double?,
             nameNorm: freezed == nameNorm
                 ? _value.nameNorm
                 : nameNorm // ignore: cast_nullable_to_non_nullable
@@ -282,6 +305,9 @@ abstract class _$$WineModelImplCopyWith<$Res>
     @JsonKey(name: 'grape_freetext') String? grapeFreetext,
     @JsonKey(name: 'canonical_wine_id') String? canonicalWineId,
     String? winery,
+    @JsonKey(name: 'serving_temp_c') int? servingTempC,
+    @JsonKey(name: 'decant_minutes') int? decantMinutes,
+    double? abv,
     @JsonKey(name: 'name_norm') String? nameNorm,
     @JsonKey(name: 'user_id') String userId,
     String visibility,
@@ -324,6 +350,9 @@ class __$$WineModelImplCopyWithImpl<$Res>
     Object? grapeFreetext = freezed,
     Object? canonicalWineId = freezed,
     Object? winery = freezed,
+    Object? servingTempC = freezed,
+    Object? decantMinutes = freezed,
+    Object? abv = freezed,
     Object? nameNorm = freezed,
     Object? userId = null,
     Object? visibility = null,
@@ -412,6 +441,18 @@ class __$$WineModelImplCopyWithImpl<$Res>
             ? _value.winery
             : winery // ignore: cast_nullable_to_non_nullable
                   as String?,
+        servingTempC: freezed == servingTempC
+            ? _value.servingTempC
+            : servingTempC // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        decantMinutes: freezed == decantMinutes
+            ? _value.decantMinutes
+            : decantMinutes // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        abv: freezed == abv
+            ? _value.abv
+            : abv // ignore: cast_nullable_to_non_nullable
+                  as double?,
         nameNorm: freezed == nameNorm
             ? _value.nameNorm
             : nameNorm // ignore: cast_nullable_to_non_nullable
@@ -462,6 +503,9 @@ class _$WineModelImpl implements _WineModel {
     @JsonKey(name: 'grape_freetext') this.grapeFreetext,
     @JsonKey(name: 'canonical_wine_id') this.canonicalWineId,
     this.winery,
+    @JsonKey(name: 'serving_temp_c') this.servingTempC,
+    @JsonKey(name: 'decant_minutes') this.decantMinutes,
+    this.abv,
     @JsonKey(name: 'name_norm') this.nameNorm,
     @JsonKey(name: 'user_id') required this.userId,
     this.visibility = 'friends',
@@ -521,6 +565,14 @@ class _$WineModelImpl implements _WineModel {
   @override
   final String? winery;
   @override
+  @JsonKey(name: 'serving_temp_c')
+  final int? servingTempC;
+  @override
+  @JsonKey(name: 'decant_minutes')
+  final int? decantMinutes;
+  @override
+  final double? abv;
+  @override
   @JsonKey(name: 'name_norm')
   final String? nameNorm;
   @override
@@ -538,7 +590,7 @@ class _$WineModelImpl implements _WineModel {
 
   @override
   String toString() {
-    return 'WineModel(id: $id, name: $name, rating: $rating, type: $type, price: $price, currency: $currency, country: $country, region: $region, location: $location, latitude: $latitude, longitude: $longitude, notes: $notes, imageUrl: $imageUrl, localImagePath: $localImagePath, vintage: $vintage, grape: $grape, canonicalGrapeId: $canonicalGrapeId, grapeFreetext: $grapeFreetext, canonicalWineId: $canonicalWineId, winery: $winery, nameNorm: $nameNorm, userId: $userId, visibility: $visibility, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'WineModel(id: $id, name: $name, rating: $rating, type: $type, price: $price, currency: $currency, country: $country, region: $region, location: $location, latitude: $latitude, longitude: $longitude, notes: $notes, imageUrl: $imageUrl, localImagePath: $localImagePath, vintage: $vintage, grape: $grape, canonicalGrapeId: $canonicalGrapeId, grapeFreetext: $grapeFreetext, canonicalWineId: $canonicalWineId, winery: $winery, servingTempC: $servingTempC, decantMinutes: $decantMinutes, abv: $abv, nameNorm: $nameNorm, userId: $userId, visibility: $visibility, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -575,6 +627,11 @@ class _$WineModelImpl implements _WineModel {
             (identical(other.canonicalWineId, canonicalWineId) ||
                 other.canonicalWineId == canonicalWineId) &&
             (identical(other.winery, winery) || other.winery == winery) &&
+            (identical(other.servingTempC, servingTempC) ||
+                other.servingTempC == servingTempC) &&
+            (identical(other.decantMinutes, decantMinutes) ||
+                other.decantMinutes == decantMinutes) &&
+            (identical(other.abv, abv) || other.abv == abv) &&
             (identical(other.nameNorm, nameNorm) ||
                 other.nameNorm == nameNorm) &&
             (identical(other.userId, userId) || other.userId == userId) &&
@@ -610,6 +667,9 @@ class _$WineModelImpl implements _WineModel {
     grapeFreetext,
     canonicalWineId,
     winery,
+    servingTempC,
+    decantMinutes,
+    abv,
     nameNorm,
     userId,
     visibility,
@@ -654,6 +714,9 @@ abstract class _WineModel implements WineModel {
     @JsonKey(name: 'grape_freetext') final String? grapeFreetext,
     @JsonKey(name: 'canonical_wine_id') final String? canonicalWineId,
     final String? winery,
+    @JsonKey(name: 'serving_temp_c') final int? servingTempC,
+    @JsonKey(name: 'decant_minutes') final int? decantMinutes,
+    final double? abv,
     @JsonKey(name: 'name_norm') final String? nameNorm,
     @JsonKey(name: 'user_id') required final String userId,
     final String visibility,
@@ -710,6 +773,14 @@ abstract class _WineModel implements WineModel {
   String? get canonicalWineId;
   @override
   String? get winery;
+  @override
+  @JsonKey(name: 'serving_temp_c')
+  int? get servingTempC;
+  @override
+  @JsonKey(name: 'decant_minutes')
+  int? get decantMinutes;
+  @override
+  double? get abv;
   @override
   @JsonKey(name: 'name_norm')
   String? get nameNorm;

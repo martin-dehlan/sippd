@@ -1,3 +1,5 @@
+import 'dart:io' show Platform;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -627,6 +629,13 @@ String? _periodSuffix(PackageType type, AppLocalizations l10n) =>
 
 String? _billedViaFor(EntitlementInfo? e, AppLocalizations l10n) {
   if (e == null) return null;
+  // App Store guideline 2.3.10: never surface competing app stores (Google
+  // Play, Amazon Appstore) to iOS users. A subscription can originate on
+  // Android and still be seen on iOS via cross-platform RevenueCat.
+  if (Platform.isIOS &&
+      (e.store == Store.playStore || e.store == Store.amazon)) {
+    return null;
+  }
   return switch (e.store) {
     Store.appStore => l10n.paywallSubscriptionStoreAppStore,
     Store.playStore => l10n.paywallSubscriptionStorePlayStore,
@@ -694,10 +703,16 @@ String _fmtDate(DateTime d, AppLocalizations l10n) {
 
 Future<void> _openManagement(BuildContext context, CustomerInfo? info) async {
   final url = info?.managementURL;
-  final fallback = Theme.of(context).platform == TargetPlatform.iOS
-      ? 'https://apps.apple.com/account/subscriptions'
-      : 'https://play.google.com/store/account/subscriptions';
-  final target = url ?? fallback;
+  const appStoreUrl = 'https://apps.apple.com/account/subscriptions';
+  final String target;
+  if (Theme.of(context).platform == TargetPlatform.iOS) {
+    // Guideline 2.3.10: never send iOS users to Google Play. For a
+    // Play-Store-originated subscription RevenueCat's managementURL points at
+    // play.google.com, so fall back to the App Store subscriptions page.
+    target = (url == null || url.contains('play.google')) ? appStoreUrl : url;
+  } else {
+    target = url ?? 'https://play.google.com/store/account/subscriptions';
+  }
   final uri = Uri.parse(target);
   final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
   if (!ok && context.mounted) {
