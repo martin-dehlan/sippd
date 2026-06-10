@@ -37,18 +37,27 @@
       "toolArgs": ["--dart-define=FORCE_PRO=false"]
     },
     {
-      "name": "sippd DEMO (real app, debug)",
-      "request": "launch",
-      "type": "dart",
-      "program": "lib/main.dart",
-      "toolArgs": ["--dart-define=DEMO=true"]
-    },
-    {
-      "name": "sippd DEMO (real app, release)",
+      "name": "sippd DEMO ▶ recording (Pro, release — iPhone/Wi-Fi)",
       "request": "launch",
       "type": "dart",
       "program": "lib/main.dart",
       "flutterMode": "release",
+      "deviceId": "00008030-001C68280E46402E",
+      "toolArgs": ["--dart-define=DEMO=true"]
+    },
+    {
+      "name": "sippd DEMO (Pro, release — pick device)",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "flutterMode": "release",
+      "toolArgs": ["--dart-define=DEMO=true"]
+    },
+    {
+      "name": "sippd DEMO (Pro, debug — simulator/wired)",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
       "toolArgs": ["--dart-define=DEMO=true"]
     },
     {
