@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -58,6 +60,15 @@ class _DemoTourState extends ConsumerState<DemoTour> {
 
   void _cleanup() {
     demoSpotlightId.value = null;
+    // Delete the wine the scan demo created so each run starts clean (the
+    // scan flow re-creates it next time). Fire-and-forget — the tour is done.
+    final createdId = demoCreatedWineId.value;
+    if (createdId != null) {
+      demoCreatedWineId.value = null;
+      unawaited(
+        ref.read(wineControllerProvider.notifier).deleteWine(createdId),
+      );
+    }
     if (mounted) setState(() => _running = false);
   }
 
@@ -89,7 +100,7 @@ class _DemoTourState extends ConsumerState<DemoTour> {
     // prefilled add-wine form. pushReplacement → one pop returns home.
     if (!mounted) return _cleanup();
     router.push(AppRoutes.wineScan);
-    await _waitUntilIdle(max: 14000);
+    await _waitUntilIdle(max: 22000);
     if (!mounted) return _cleanup();
     if (router.canPop()) router.pop(); // add-wine form → home
     await _wait(1000);

@@ -117,6 +117,10 @@ class WineForm extends ConsumerStatefulWidget {
   /// freshly-created wineId).
   final Widget? momentsHook;
 
+  /// Optional external controller for the form's scroll view — lets a host
+  /// (e.g. the demo director) drive it to showcase the prefilled fields.
+  final ScrollController? scrollController;
+
   const WineForm({
     super.key,
     this.initial,
@@ -127,6 +131,7 @@ class WineForm extends ConsumerStatefulWidget {
     this.showInlineSubmit = true,
     this.wine,
     this.momentsHook,
+    this.scrollController,
   });
 
   @override
@@ -541,6 +546,7 @@ class WineFormState extends ConsumerState<WineForm>
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return ListView(
+      controller: widget.scrollController,
       padding: EdgeInsets.zero,
       children: [
         SizedBox(height: context.xl * 1.5),

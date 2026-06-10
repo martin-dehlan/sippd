@@ -23,6 +23,11 @@ final ValueNotifier<bool> demoScreenBusy = ValueNotifier<bool>(false);
 /// hands-free before opening one. No-op in prod.
 final ValueNotifier<int?> demoCarouselPage = ValueNotifier<int?>(null);
 
+/// Id of the wine the scan demo just created. The tour deletes it in its
+/// cleanup so each run starts fresh (the scan flow re-creates it). `null` =
+/// nothing to clean up. No-op in prod.
+final ValueNotifier<String?> demoCreatedWineId = ValueNotifier<String?>(null);
+
 /// Wraps a detail-screen feature so it pops forward when it's the active
 /// [beat] and dims when a *different* feature is active. No-op in prod.
 class DemoBeatHighlight extends StatelessWidget {

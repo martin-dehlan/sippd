@@ -12,11 +12,7 @@ import '../../../../domain/entities/wine.entity.dart';
 class WineTypeBreakdown extends StatelessWidget {
   final List<TypeBreakdown> data;
   final bool animate;
-  const WineTypeBreakdown({
-    super.key,
-    required this.data,
-    this.animate = true,
-  });
+  const WineTypeBreakdown({super.key, required this.data, this.animate = true});
 
   @override
   Widget build(BuildContext context) {
@@ -53,8 +49,7 @@ class WineTypeBreakdown extends StatelessWidget {
     // donut + dual highlights row is just noise — show only the rows.
     // Demo always shows the donut so the circular diagram is guaranteed in
     // the promo recording regardless of the data.
-    final showHero =
-        total >= 3 && (kIsDemo || mostDrunk.type != topRated.type);
+    final showHero = total >= 3 && (kIsDemo || mostDrunk.type != topRated.type);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

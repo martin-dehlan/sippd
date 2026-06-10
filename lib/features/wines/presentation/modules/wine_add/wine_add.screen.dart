@@ -42,6 +42,8 @@ class WineAddScreen extends ConsumerStatefulWidget {
 class _WineAddScreenState extends ConsumerState<WineAddScreen> {
   final GlobalKey<WineFormState> _formKey = GlobalKey<WineFormState>();
   WineFormData? _current;
+  // Demo only: drives the form's scroll view to showcase the scanned fields.
+  final ScrollController _demoScroll = ScrollController();
 
   @override
   void initState() {
@@ -49,16 +51,91 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
     // Seed so the save FAB works even if the user accepts the scanned
     // values without touching a field (onChanged only fires on edits).
     _current = widget.initialData;
-    // Demo: arrived here from the scanner with prefilled fields. Hold the
-    // tour on the filled form (the payoff shot), then release it so the
-    // tour pops back home. Nothing is saved.
-    if (kIsDemo && widget.initialData != null) _runDemoHold();
+    // Demo: arrived here from the scanner with prefilled fields. Showcase
+    // what the scan auto-filled, then actually save the wine (clean path —
+    // no dupe/canonical/share/review sheets). The tour deletes it again in
+    // its cleanup so the next run can re-create it.
+    if (kIsDemo && widget.initialData != null) _runDemoCreate();
   }
 
-  Future<void> _runDemoHold() async {
-    demoScreenBusy.value = true;
-    await Future<void>.delayed(const Duration(milliseconds: 3200));
+  @override
+  void dispose() {
     demoScreenBusy.value = false;
+    _demoScroll.dispose();
+    super.dispose();
+  }
+
+  Future<void> _demoWait(int ms) =>
+      Future<void>.delayed(Duration(milliseconds: ms));
+
+  Future<void> _demoScrollTo(double f, int ms) async {
+    if (!mounted || !_demoScroll.hasClients) return;
+    await _demoScroll.animateTo(
+      _demoScroll.position.maxScrollExtent * f,
+      duration: Duration(milliseconds: ms),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  Future<void> _runDemoCreate() async {
+    demoScreenBusy.value = true;
+
+    // Walk the prefilled form so the viewer sees everything the scan filled
+    // in — producer/vintage/grape up top, then serving temp / aroma /
+    // pairings further down — then settle back at the top.
+    await _demoWait(1100);
+    await _demoScrollTo(0.55, 1500);
+    await _demoWait(900);
+    await _demoScrollTo(1, 1300);
+    await _demoWait(1100);
+    await _demoScrollTo(0, 1100);
+    await _demoWait(700);
+
+    await _demoSave();
+    // Let the tour's pop through PopScope (the form is "dirty" with the
+    // scanned values, which would otherwise trigger the discard guard).
+    if (mounted) setState(() => _allowPop = true);
+    if (mounted) demoScreenBusy.value = false;
+  }
+
+  /// Demo only: persist the scanned wine directly, skipping the interactive
+  /// post-save sheets `_save` would surface. Records the new id in
+  /// [demoCreatedWineId] so the tour can delete it after the run.
+  Future<void> _demoSave() async {
+    final data = _current;
+    final userId = ref.read(currentUserIdProvider);
+    if (data == null || userId == null) return;
+    final wineId = const Uuid().v4();
+    await ref
+        .read(wineControllerProvider.notifier)
+        .addWine(
+          WineEntity(
+            id: wineId,
+            name: data.name,
+            rating: data.rating,
+            type: data.type,
+            price: data.price,
+            country: data.country,
+            region: data.region,
+            location: data.location?.shortDisplay,
+            latitude: data.location?.lat,
+            longitude: data.location?.lng,
+            notes: data.notes,
+            grape: data.grape,
+            canonicalGrapeId: data.canonicalGrapeId,
+            grapeFreetext: data.grapeFreetext,
+            winery: data.winery,
+            vintage: data.vintage,
+            servingTempC: data.servingTempC,
+            decantMinutes: data.decantMinutes,
+            abv: data.abv,
+            imageUrl: data.imageUrl,
+            localImagePath: data.localImagePath,
+            userId: userId,
+            createdAt: DateTime.now(),
+          ),
+        );
+    demoCreatedWineId.value = wineId;
   }
 
   bool _allowPop = false;
@@ -434,6 +511,7 @@ class _WineAddScreenState extends ConsumerState<WineAddScreen> {
                 initial: widget.initialData,
                 submitLabel: l10n.winesAddSaveLabel,
                 showInlineSubmit: false,
+                scrollController: kIsDemo ? _demoScroll : null,
                 onChanged: (data) => setState(() => _current = data),
                 onSubmit: (_) => _save(),
                 momentsHook: _MomentsAddHook(
