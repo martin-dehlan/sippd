@@ -1,9 +1,11 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../../../../../common/errors/app_error.dart';
 import '../../../../../common/l10n/generated/app_localizations.dart';
@@ -51,9 +53,26 @@ class _ScanCaptureScreenState extends ConsumerState<ScanCaptureScreen> {
   /// handoff — the add-wine screen clears it once the filled form is shown.
   Future<void> _runDemoBeats() async {
     demoScreenBusy.value = true;
+    // Set the "captured" photo to the bundled label so it flows through the
+    // normal localImagePath path and shows up on the prefilled form.
+    _capturedImagePath = await _materializeDemoLabel();
     await Future<void>.delayed(const Duration(milliseconds: 1700));
     if (!mounted) return;
     await ref.read(scannerControllerProvider.notifier).scanDemo();
+  }
+
+  /// Demo only: copy the bundled sample label out of assets into a temp file
+  /// so the form's photo widget (which uses `Image.file`) can render it.
+  Future<String?> _materializeDemoLabel() async {
+    try {
+      final data = await rootBundle.load('assets/promo/sample_label.jpg');
+      final dir = await getTemporaryDirectory();
+      final file = File('${dir.path}/demo_scan_label.jpg');
+      await file.writeAsBytes(data.buffer.asUint8List(), flush: true);
+      return file.path;
+    } catch (_) {
+      return null; // fall back to the photo placeholder
+    }
   }
 
   Future<void> _scan(File image, String source) async {
