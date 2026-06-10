@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../promo/promo.config.dart';
 import '../data/services/paywall.service.dart';
 
 part 'paywall.provider.g.dart';
@@ -19,6 +20,10 @@ Stream<CustomerInfo> customerInfoStream(CustomerInfoStreamRef ref) {
 
 @riverpod
 bool isPro(IsProRef ref) {
+  // Demo recordings showcase every feature, so a demo build is always Pro.
+  // Safe in release: kIsDemo is a compile-time const false in prod (the whole
+  // branch is tree-shaken), so a normal build can never reach this.
+  if (kIsDemo) return true;
   // Debug-only override. --dart-define=FORCE_PRO=true|false bypasses
   // RevenueCat for pro/free UI smoke-testing. NEVER honored in release —
   // a re-signed build with --dart-define would otherwise unlock Pro for free.
