@@ -46,6 +46,15 @@
       "toolArgs": ["--dart-define=DEMO=true"]
     },
     {
+      "name": "sippd DEMO (Pro, release — Pixel emulator)",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "flutterMode": "release",
+      "deviceId": "emulator-5554",
+      "toolArgs": ["--dart-define=DEMO=true"]
+    },
+    {
       "name": "sippd DEMO (Pro, release — pick device)",
       "request": "launch",
       "type": "dart",
