@@ -28,6 +28,8 @@ import '../../widgets/calendar_export_sheet.dart';
 import '../../widgets/tasting_rate_sheet.dart';
 import '../../widgets/tasting_recap_section.widget.dart';
 import '../../widgets/wine_picker_sheet.dart';
+import '../../../../promo/promo.config.dart';
+import '../../../../promo/presentation/demo_spotlight.widget.dart';
 
 class TastingDetailScreen extends ConsumerWidget {
   final String tastingId;
@@ -36,6 +38,17 @@ class TastingDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
+    // Demo builds bypass the live provider entirely and play a curated,
+    // self-driving walk through the whole lifecycle (upcoming → live →
+    // concluded) so a recording always shows the full flow with full data,
+    // regardless of what the signed-in account's tasting actually holds.
+    if (kIsDemo) {
+      return const Scaffold(
+        body: SafeArea(child: _DemoTastingBody()),
+        floatingActionButton: _BackFab(),
+        floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
+      );
+    }
     final tastingAsync = ref.watch(tastingDetailProvider(tastingId));
     return Scaffold(
       body: SafeArea(
@@ -1357,6 +1370,1014 @@ class _WinesEmptyState extends StatelessWidget {
     return isOwner
         ? l10n.tastingEmptyPlannedHost
         : l10n.tastingEmptyPlannedGuest;
+  }
+}
+
+// ═════════════════════════════════════════════════════════════════════
+// DEMO ONLY — curated, self-driving lifecycle walkthrough.
+//
+// Renders the real detail chrome (title, when-row, phase banner, place
+// strip, wine cards) but fed deterministic fixtures and driven through
+// upcoming → live → concluded by a local director. Sets [demoScreenBusy]
+// so the auto-tour holds here until the full flow has played. Tree-shaken
+// from production via the `kIsDemo` guard at the call site.
+// ═════════════════════════════════════════════════════════════════════
+
+class _DemoTastingBody extends StatefulWidget {
+  const _DemoTastingBody();
+
+  @override
+  State<_DemoTastingBody> createState() => _DemoTastingBodyState();
+}
+
+class _DemoTastingBodyState extends State<_DemoTastingBody>
+    with TickerProviderStateMixin {
+  TastingState _phase = TastingState.upcoming;
+
+  // The night's lineup — names, wineries, regions and types all matched to
+  // the bundled bottle photos. Recap ranks it high→low.
+  static final List<WineEntity> _wines = [
+    WineEntity(
+      id: 'dw-cabernet',
+      name: 'Cabernet Sauvignon',
+      winery: "Stag's Leap Wine Cellars",
+      vintage: 2019,
+      type: WineType.red,
+      grape: 'Cabernet Sauvignon',
+      region: 'Napa Valley',
+      country: 'United States',
+      price: 120,
+      rating: 9.3,
+      imageUrl: 'assets/promo/wines/cabernet.png',
+      userId: 'demo',
+      createdAt: DateTime(2026, 5, 9),
+    ),
+    WineEntity(
+      id: 'dw-riesling-mosel',
+      name: 'Scharzhofberger Riesling',
+      winery: 'Egon Müller',
+      vintage: 2018,
+      type: WineType.white,
+      grape: 'Riesling',
+      region: 'Mosel',
+      country: 'Germany',
+      price: 95,
+      rating: 9.1,
+      imageUrl: 'assets/promo/wines/riesling_mosel.png',
+      userId: 'demo',
+      createdAt: DateTime(2026, 5, 9),
+    ),
+    WineEntity(
+      id: 'dw-malbec',
+      name: 'Malbec',
+      winery: 'Catena Zapata',
+      vintage: 2020,
+      type: WineType.red,
+      grape: 'Malbec',
+      region: 'Mendoza',
+      country: 'Argentina',
+      price: 45,
+      rating: 8.8,
+      imageUrl: 'assets/promo/wines/malbec.png',
+      userId: 'demo',
+      createdAt: DateTime(2026, 5, 9),
+    ),
+    WineEntity(
+      id: 'dw-chardonnay',
+      name: 'Chardonnay',
+      winery: 'Bourgogne',
+      vintage: 2019,
+      type: WineType.white,
+      grape: 'Chardonnay',
+      region: 'Burgundy',
+      country: 'France',
+      price: 55,
+      rating: 8.5,
+      imageUrl: 'assets/promo/wines/chardonnay.png',
+      userId: 'demo',
+      createdAt: DateTime(2026, 5, 9),
+    ),
+    WineEntity(
+      id: 'dw-riesling-pfalz',
+      name: 'Riesling',
+      winery: 'Müller-Catoir',
+      vintage: 2018,
+      type: WineType.white,
+      grape: 'Riesling',
+      region: 'Pfalz',
+      country: 'Germany',
+      price: 38,
+      rating: 8.3,
+      imageUrl: 'assets/promo/wines/riesling_pfalz.png',
+      userId: 'demo',
+      createdAt: DateTime(2026, 5, 9),
+    ),
+    WineEntity(
+      id: 'dw-sauternes',
+      name: 'Sauternes',
+      winery: 'Bordeaux',
+      vintage: 2016,
+      type: WineType.white,
+      grape: 'Sémillon',
+      region: 'Sauternes',
+      country: 'France',
+      price: 75,
+      rating: 8.0,
+      imageUrl: 'assets/promo/wines/sauternes.png',
+      userId: 'demo',
+      createdAt: DateTime(2026, 5, 9),
+    ),
+  ];
+  late final List<WineEntity> _ranked = [..._wines]
+    ..sort((a, b) => b.rating.compareTo(a.rating));
+
+  // Lineup cards pop in on mount; ratings count up when live; recap reveals
+  // when concluded — each its own controller so beats can overlap cleanly.
+  late final AnimationController _pop = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1500),
+  )..forward();
+  late final AnimationController _rate = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1900),
+  );
+  late final AnimationController _recap = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 2000),
+  );
+
+  late final TastingEntity _tasting = _buildTasting();
+
+  TastingEntity _buildTasting() {
+    final now = DateTime.now();
+    return TastingEntity(
+      id: 'demo-tasting',
+      groupId: 'demo-group',
+      title: 'Cellar Night',
+      description: 'Six bottles, served blind, scored as a group.',
+      location: 'Weinbar Mitte · Berlin',
+      // Inside the ±6h Start window so the host's "Start tasting" CTA shows.
+      scheduledAt: now.add(const Duration(hours: 1)),
+      createdBy: 'demo-user',
+      createdAt: now.subtract(const Duration(days: 3)),
+      state: TastingState.upcoming,
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    if (kIsDemo) _run();
+  }
+
+  Future<void> _wait(int ms) =>
+      Future<void>.delayed(Duration(milliseconds: ms));
+
+  /// Director: hold on each phase long enough for its entrance to read,
+  /// flipping the banner + sections in turn. Busy flag gates the tour.
+  Future<void> _run() async {
+    demoScreenBusy.value = true;
+
+    // Upcoming — title, guests, place and the lineup populate (planning).
+    await _wait(3000);
+    if (!mounted) return _end();
+
+    // Live — host "starts" it; every bottle's score counts up.
+    setState(() => _phase = TastingState.active);
+    _rate.forward(from: 0);
+    await _wait(3400);
+    if (!mounted) return _end();
+
+    // Concluded — host "ends" it; the recap + leaderboard reveal.
+    setState(() => _phase = TastingState.concluded);
+    _recap.forward(from: 0);
+    await _wait(4200);
+
+    _end();
+  }
+
+  void _end() {
+    if (mounted) demoScreenBusy.value = false;
+  }
+
+  @override
+  void dispose() {
+    demoScreenBusy.value = false;
+    _pop.dispose();
+    _rate.dispose();
+    _recap.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tasting = _tasting.copyWith(state: _phase);
+    final local = tasting.scheduledAt.toLocal();
+
+    return ListView(
+      padding: EdgeInsets.zero,
+      children: [
+        SizedBox(height: context.xl * 1.5),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
+          child: Text(
+            tasting.title.toUpperCase(),
+            style: GoogleFonts.playfairDisplay(
+              fontSize: context.titleFont * 1.2,
+              fontWeight: FontWeight.w800,
+              letterSpacing: -0.5,
+              height: 1.05,
+            ),
+          ),
+        ),
+        SizedBox(height: context.s),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
+          child: _WhenRow(when: local),
+        ),
+        SizedBox(height: context.s),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
+          child: Text(
+            tasting.description!,
+            style: TextStyle(
+              fontSize: context.bodyFont,
+              color: cs.onSurface,
+              height: 1.5,
+            ),
+          ),
+        ),
+        SizedBox(height: context.l),
+        // Lifecycle stepper — lean status rail that highlights which phase
+        // we're in and slides a progress fill forward as the night advances,
+        // so the viewer clearly reads "oh — it's changing".
+        _PhaseStepper(phase: _phase),
+        SizedBox(height: context.l),
+        // Phase banner — cross-fades as the night moves through its states.
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 460),
+            transitionBuilder: (child, anim) => FadeTransition(
+              opacity: anim,
+              child: ScaleTransition(
+                scale: Tween(begin: 0.96, end: 1.0).animate(anim),
+                child: child,
+              ),
+            ),
+            child: KeyedSubtree(
+              key: ValueKey(_phase),
+              child: _PhaseBanner(tasting: tasting, isOwner: true),
+            ),
+          ),
+        ),
+        SizedBox(height: context.l),
+        _Section(label: 'Guests', child: const _DemoGuests()),
+        SizedBox(height: context.l),
+        _PlaceStrip(location: tasting.location!),
+        SizedBox(height: context.l),
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 540),
+          switchInCurve: Curves.easeOutCubic,
+          switchOutCurve: Curves.easeInCubic,
+          transitionBuilder: (child, anim) => FadeTransition(
+            opacity: anim,
+            child: SlideTransition(
+              position: Tween(
+                begin: const Offset(0, 0.04),
+                end: Offset.zero,
+              ).animate(anim),
+              child: child,
+            ),
+          ),
+          child: _phase == TastingState.concluded
+              ? _DemoRecap(
+                  key: const ValueKey('recap'),
+                  ranked: _ranked,
+                  reveal: _recap,
+                )
+              : _DemoLineup(
+                  key: const ValueKey('lineup'),
+                  wines: _wines,
+                  live: _phase == TastingState.active,
+                  pop: _pop,
+                  rate: _rate,
+                ),
+        ),
+        SizedBox(height: context.xl * 2),
+      ],
+    );
+  }
+}
+
+/// Lean lifecycle stepper. Three status pills (Upcoming · Live · Concluded):
+/// the active one lifts with a primary fill + soft glow, completed ones stay
+/// filled-subtle, future ones sit muted. A thin track underneath fills toward
+/// the active pill's centre. Everything animates implicitly, so the phase flip
+/// reads as one smooth, professional beat.
+enum _StepState { todo, active, done }
+
+class _PhaseStepper extends StatelessWidget {
+  const _PhaseStepper({required this.phase});
+  final TastingState phase;
+
+  static const _steps = <(TastingState, String, IconData)>[
+    (TastingState.upcoming, 'Upcoming', PhosphorIconsRegular.calendarBlank),
+    (TastingState.active, 'Live', PhosphorIconsFill.circle),
+    (TastingState.concluded, 'Concluded', PhosphorIconsRegular.checkCircle),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final activeIndex = phase.index;
+    // Fill head lands on the active pill's centre (each pill = a third).
+    final fill = (activeIndex + 0.5) / _steps.length;
+
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              for (final (i, step) in _steps.indexed) ...[
+                if (i > 0) SizedBox(width: context.w * 0.02),
+                Expanded(
+                  child: _StepPill(
+                    label: step.$2,
+                    icon: step.$3,
+                    state: i < activeIndex
+                        ? _StepState.done
+                        : i == activeIndex
+                            ? _StepState.active
+                            : _StepState.todo,
+                  ),
+                ),
+              ],
+            ],
+          ),
+          SizedBox(height: context.s),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(99),
+            child: SizedBox(
+              height: context.w * 0.012,
+              child: Stack(
+                children: [
+                  Positioned.fill(
+                    child: ColoredBox(
+                      color: cs.onSurface.withValues(alpha: 0.08),
+                    ),
+                  ),
+                  AnimatedFractionallySizedBox(
+                    duration: const Duration(milliseconds: 620),
+                    curve: Curves.easeOutCubic,
+                    widthFactor: fill,
+                    alignment: Alignment.centerLeft,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(color: cs.primary),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _StepPill extends StatelessWidget {
+  const _StepPill({
+    required this.label,
+    required this.icon,
+    required this.state,
+  });
+  final String label;
+  final IconData icon;
+  final _StepState state;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final active = state == _StepState.active;
+    final done = state == _StepState.done;
+
+    final bg = active
+        ? cs.primary
+        : done
+            ? cs.primaryContainer
+            : cs.surfaceContainer;
+    final fg = active
+        ? cs.onPrimary
+        : done
+            ? cs.onPrimaryContainer
+            : cs.onSurfaceVariant;
+
+    return AnimatedScale(
+      duration: const Duration(milliseconds: 440),
+      curve: Curves.easeOutBack,
+      scale: active ? 1.0 : 0.93,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 420),
+        curve: Curves.easeOutCubic,
+        padding: EdgeInsets.symmetric(
+          horizontal: context.w * 0.02,
+          vertical: context.s * 1.05,
+        ),
+        decoration: BoxDecoration(
+          color: bg,
+          borderRadius: BorderRadius.circular(context.w * 0.03),
+          boxShadow: active
+              ? [
+                  BoxShadow(
+                    color: cs.primary.withValues(alpha: 0.45),
+                    blurRadius: 16,
+                    offset: const Offset(0, 4),
+                  ),
+                ]
+              : null,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: context.bodyFont * 0.9, color: fg),
+            SizedBox(width: context.w * 0.012),
+            Flexible(
+              child: AnimatedDefaultTextStyle(
+                duration: const Duration(milliseconds: 320),
+                style: TextStyle(
+                  fontSize: context.captionFont * 0.9,
+                  fontWeight: active ? FontWeight.w800 : FontWeight.w600,
+                  color: fg,
+                  letterSpacing: 0.3,
+                ),
+                child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Demo guests — overlapping avatar cluster with RSVP status dots, matching
+/// the real attendees card silhouette without touching the friends provider.
+class _DemoGuests extends StatelessWidget {
+  const _DemoGuests();
+
+  // (avatar asset, rsvp colour) — going green, maybe amber (real _rsvpColor
+  // tones). Curated profile photos so the cluster reads like a real group.
+  static const _people = [
+    ('assets/promo/avatars/girl1.png', Color(0xFF6DC383)),
+    ('assets/promo/avatars/men2.png', Color(0xFF6DC383)),
+    ('assets/promo/avatars/girl2.png', Color(0xFF6DC383)),
+    ('assets/promo/avatars/men3.png', Color(0xFFE0A860)),
+    ('assets/promo/avatars/girl3.png', Color(0xFF6DC383)),
+    ('assets/promo/avatars/men4.png', Color(0xFFE0A860)),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final size = context.w * 0.11;
+    final step = size * 0.72;
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: step * (_people.length - 1) + size,
+            height: size,
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                for (final (i, p) in _people.indexed)
+                  Positioned(
+                    left: i * step,
+                    child: _DemoAvatar(
+                      asset: p.$1,
+                      dot: p.$2,
+                      size: size,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          SizedBox(height: context.s),
+          Text(
+            '4 going · 2 maybe',
+            style: TextStyle(
+              fontSize: context.captionFont,
+              color: cs.onSurfaceVariant,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DemoAvatar extends StatelessWidget {
+  const _DemoAvatar({
+    required this.asset,
+    required this.dot,
+    required this.size,
+  });
+  final String asset;
+  final Color dot;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final dotSize = size * 0.32;
+    return SizedBox(
+      width: size,
+      height: size,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Container(
+            width: size,
+            height: size,
+            padding: const EdgeInsets.all(2),
+            decoration: BoxDecoration(
+              color: cs.surface,
+              shape: BoxShape.circle,
+            ),
+            child: ClipOval(
+              child: Image.asset(
+                asset,
+                width: size - 4,
+                height: size - 4,
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          Positioned(
+            right: 0,
+            bottom: 0,
+            child: Container(
+              width: dotSize,
+              height: dotSize,
+              decoration: BoxDecoration(
+                color: dot,
+                shape: BoxShape.circle,
+                border: Border.all(color: cs.surface, width: 1.5),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Demo lineup — wine cards pop in (upcoming), then their ratings count up
+/// once the night is live. Reuses the real [WineCardWidget].
+class _DemoLineup extends StatelessWidget {
+  const _DemoLineup({
+    super.key,
+    required this.wines,
+    required this.live,
+    required this.pop,
+    required this.rate,
+  });
+
+  final List<WineEntity> wines;
+  final bool live;
+  final Animation<double> pop;
+  final Animation<double> rate;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'WINES',
+                  style: TextStyle(
+                    fontSize: context.captionFont * 0.95,
+                    fontWeight: FontWeight.w700,
+                    color: cs.onSurface.withValues(alpha: 0.72),
+                    letterSpacing: 1.2,
+                  ),
+                ),
+              ),
+              if (!live)
+                Row(
+                  children: [
+                    Icon(PhosphorIconsRegular.plus,
+                        size: context.w * 0.04, color: cs.primary),
+                    SizedBox(width: context.w * 0.01),
+                    Text(
+                      'Add wines',
+                      style: TextStyle(
+                        fontSize: context.captionFont,
+                        fontWeight: FontWeight.w600,
+                        color: cs.primary,
+                      ),
+                    ),
+                  ],
+                ),
+            ],
+          ),
+        ),
+        SizedBox(height: context.s),
+        AnimatedBuilder(
+          animation: Listenable.merge([pop, rate]),
+          builder: (context, _) => ListView.separated(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
+            itemCount: wines.length,
+            separatorBuilder: (_, _) => SizedBox(height: context.s),
+            itemBuilder: (_, i) {
+              // Staggered pop-in across the lineup.
+              final slot = i / wines.length;
+              final p = ((pop.value - slot * 0.6) / 0.4).clamp(0.0, 1.0);
+              final ease = Curves.easeOutBack.transform(p);
+
+              // Live: each score counts up, staggered after the prior card.
+              final rp = ((rate.value - i * 0.16) / 0.5).clamp(0.0, 1.0);
+              final rating = live
+                  ? wines[i].rating * Curves.easeOutCubic.transform(rp)
+                  : 0.0;
+
+              return Opacity(
+                opacity: p,
+                child: Transform.translate(
+                  offset: Offset(0, (1 - ease) * context.m),
+                  child: WineCardWidget(
+                    wine: wines[i],
+                    rank: i + 1,
+                    ratingOverride: rating,
+                    hideRatingIfEmpty: true,
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Demo recap — concluded results: trophy top-wine card rises in, then the
+/// ranked leaderboard cascades with avg pills and filling score bars.
+class _DemoRecap extends StatelessWidget {
+  const _DemoRecap({
+    super.key,
+    required this.ranked,
+    required this.reveal,
+  });
+
+  final List<WineEntity> ranked;
+  final Animation<double> reveal;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final top = ranked.first;
+
+    return AnimatedBuilder(
+      animation: reveal,
+      builder: (context, _) {
+        final r = reveal.value;
+        final headerT = (r / 0.12).clamp(0.0, 1.0);
+        final topT =
+            Curves.easeOutCubic.transform(((r - 0.06) / 0.24).clamp(0.0, 1.0));
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Opacity(
+              opacity: headerT,
+              child: Padding(
+                padding:
+                    EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'RESULTS',
+                        style: TextStyle(
+                          fontSize: context.captionFont * 0.95,
+                          fontWeight: FontWeight.w700,
+                          color: cs.onSurface.withValues(alpha: 0.72),
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                    ),
+                    Icon(PhosphorIconsRegular.shareNetwork,
+                        size: context.w * 0.04, color: cs.primary),
+                    SizedBox(width: context.w * 0.012),
+                    Text(
+                      'Share recap',
+                      style: TextStyle(
+                        fontSize: context.captionFont,
+                        fontWeight: FontWeight.w600,
+                        color: cs.primary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(height: context.m),
+            Opacity(
+              opacity: topT,
+              child: Transform.translate(
+                offset: Offset(0, (1 - topT) * context.l),
+                child: Padding(
+                  padding:
+                      EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
+                  child: _DemoTopWine(wine: top),
+                ),
+              ),
+            ),
+            SizedBox(height: context.l),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
+              child: Column(
+                children: [
+                  for (final (i, w) in ranked.indexed) ...[
+                    if (i > 0)
+                      Divider(
+                        color: cs.outlineVariant.withValues(alpha: 0.6),
+                        height: context.m,
+                      ),
+                    _DemoRecapRow(
+                      rank: i + 1,
+                      wine: w,
+                      reveal:
+                          ((r - (0.30 + i * 0.12)) / 0.28).clamp(0.0, 1.0),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _DemoTopWine extends StatelessWidget {
+  const _DemoTopWine({required this.wine});
+  final WineEntity wine;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final imageSize = context.w * 0.18;
+    final subtitle = [
+      if (wine.winery != null) wine.winery!,
+      if (wine.vintage != null) wine.vintage.toString(),
+    ].join(' · ');
+
+    return Container(
+      padding: EdgeInsets.all(context.w * 0.045),
+      decoration: BoxDecoration(
+        color: cs.primaryContainer,
+        borderRadius: BorderRadius.circular(context.w * 0.045),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: imageSize,
+            height: imageSize,
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Container(
+                  width: imageSize,
+                  height: imageSize,
+                  clipBehavior: Clip.antiAlias,
+                  decoration: BoxDecoration(
+                    color: cs.surface.withValues(alpha: 0.55),
+                    borderRadius: BorderRadius.circular(context.w * 0.03),
+                  ),
+                  alignment: Alignment.center,
+                  child: wine.imageUrl != null
+                      ? Image.asset(
+                          wine.imageUrl!,
+                          width: imageSize,
+                          height: imageSize,
+                          fit: BoxFit.cover,
+                        )
+                      : Icon(
+                          PhosphorIconsFill.wine,
+                          size: imageSize * 0.5,
+                          color: cs.onPrimaryContainer.withValues(alpha: 0.55),
+                        ),
+                ),
+                Positioned(
+                  top: -context.xs * 0.8,
+                  left: -context.xs * 0.8,
+                  child: Container(
+                    padding: EdgeInsets.all(context.xs * 0.7),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: cs.onPrimaryContainer,
+                    ),
+                    child: Icon(PhosphorIconsFill.trophy,
+                        size: context.captionFont, color: Colors.black),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(width: context.w * 0.04),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'TOP WINE OF THE NIGHT',
+                  style: TextStyle(
+                    fontSize: context.captionFont * 0.85,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 1.4,
+                    color: cs.onPrimaryContainer.withValues(alpha: 0.8),
+                  ),
+                ),
+                SizedBox(height: context.xs),
+                Text(
+                  wine.name,
+                  style: GoogleFonts.playfairDisplay(
+                    fontSize: context.titleFont * 0.85,
+                    fontWeight: FontWeight.w800,
+                    height: 1.1,
+                    color: cs.onPrimaryContainer,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                if (subtitle.isNotEmpty) ...[
+                  SizedBox(height: context.xs * 0.6),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: context.captionFont,
+                      color: cs.onPrimaryContainer.withValues(alpha: 0.7),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          SizedBox(width: context.w * 0.02),
+          _DemoAvgPill(value: wine.rating, onPrimary: true),
+        ],
+      ),
+    );
+  }
+}
+
+class _DemoRecapRow extends StatelessWidget {
+  const _DemoRecapRow({
+    required this.rank,
+    required this.wine,
+    required this.reveal,
+  });
+  final int rank;
+  final WineEntity wine;
+  final double reveal;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final ease = Curves.easeOutCubic.transform(reveal);
+    final barH = context.w * 0.02;
+    final barPct = (wine.rating / 10).clamp(0.0, 1.0) * ease;
+
+    return Opacity(
+      opacity: ease,
+      child: Transform.translate(
+        offset: Offset((1 - ease) * context.w * 0.06, 0),
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: context.xs * 0.6),
+          child: Row(
+            children: [
+              SizedBox(
+                width: context.w * 0.06,
+                child: Text(
+                  '$rank.',
+                  style: TextStyle(
+                    fontSize: context.bodyFont,
+                    fontWeight: FontWeight.w700,
+                    color: cs.onSurfaceVariant,
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      wine.name,
+                      style: TextStyle(
+                        fontSize: context.bodyFont,
+                        fontWeight: FontWeight.w600,
+                        color: cs.onSurface,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    SizedBox(height: context.xs * 0.8),
+                    LayoutBuilder(
+                      builder: (_, c) => SizedBox(
+                        width: c.maxWidth,
+                        height: barH,
+                        child: Stack(
+                          children: [
+                            Positioned.fill(
+                              child: DecoratedBox(
+                                decoration: BoxDecoration(
+                                  color: cs.surfaceContainer,
+                                  borderRadius:
+                                      BorderRadius.circular(barH / 2),
+                                ),
+                              ),
+                            ),
+                            FractionallySizedBox(
+                              widthFactor: barPct,
+                              child: DecoratedBox(
+                                decoration: BoxDecoration(
+                                  color: rank == 1
+                                      ? cs.primary
+                                      : cs.primary.withValues(alpha: 0.55),
+                                  borderRadius:
+                                      BorderRadius.circular(barH / 2),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(width: context.w * 0.03),
+              _DemoAvgPill(value: wine.rating, onPrimary: false),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _DemoAvgPill extends StatelessWidget {
+  const _DemoAvgPill({required this.value, required this.onPrimary});
+  final double value;
+  final bool onPrimary;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final fg = onPrimary ? cs.onPrimaryContainer : cs.onSurface;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.baseline,
+      textBaseline: TextBaseline.alphabetic,
+      children: [
+        Text(
+          value.toStringAsFixed(1),
+          style: TextStyle(
+            fontSize: context.bodyFont * 1.1,
+            fontWeight: FontWeight.bold,
+            color: fg,
+            fontFeatures: tabularFigures,
+          ),
+        ),
+        SizedBox(width: context.w * 0.008),
+        Text(
+          '/ 10',
+          style: TextStyle(
+            fontSize: context.captionFont * 0.85,
+            color: fg.withValues(alpha: 0.7),
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    );
   }
 }
 

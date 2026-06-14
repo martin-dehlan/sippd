@@ -210,43 +210,35 @@ class WineCardImage extends StatelessWidget {
                 child: hasImage
                     ? ClipRRect(
                         borderRadius: BorderRadius.circular(radius),
-                        child: Image.network(
-                          wine.imageUrl!,
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                          height: double.infinity,
-                          errorBuilder: (_, _, _) => Center(
-                            child: Icon(
-                              PhosphorIconsThin.wine,
-                              size: size * 0.42,
-                              color: cs.onSurfaceVariant.withValues(
-                                alpha: 0.45,
+                        // Bundled asset paths (used by the demo/promo lineup)
+                        // load via Image.asset; everything else is a remote
+                        // URL. Production wines only ever carry URLs, so this
+                        // branch is inert outside demo builds.
+                        child: wine.imageUrl!.startsWith('assets/')
+                            ? Image.asset(
+                                wine.imageUrl!,
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                                height: double.infinity,
+                                errorBuilder: (_, _, _) =>
+                                    _winePlaceholder(cs, size),
+                              )
+                            : Image.network(
+                                wine.imageUrl!,
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                                height: double.infinity,
+                                errorBuilder: (_, _, _) =>
+                                    _winePlaceholder(cs, size),
+                                frameBuilder: (_, child, frame, wasSync) {
+                                  if (frame == null && !wasSync) {
+                                    return _winePlaceholder(cs, size);
+                                  }
+                                  return child;
+                                },
                               ),
-                            ),
-                          ),
-                          frameBuilder: (_, child, frame, wasSync) {
-                            if (frame == null && !wasSync) {
-                              return Center(
-                                child: Icon(
-                                  PhosphorIconsThin.wine,
-                                  size: size * 0.42,
-                                  color: cs.onSurfaceVariant.withValues(
-                                    alpha: 0.45,
-                                  ),
-                                ),
-                              );
-                            }
-                            return child;
-                          },
-                        ),
                       )
-                    : Center(
-                        child: Icon(
-                          PhosphorIconsThin.wine,
-                          size: size * 0.42,
-                          color: cs.onSurfaceVariant.withValues(alpha: 0.45),
-                        ),
-                      ),
+                    : _winePlaceholder(cs, size),
               ),
             ),
             if (rank != null)
@@ -279,6 +271,16 @@ class WineCardImage extends StatelessWidget {
     );
   }
 }
+
+/// Shared fallback glyph for a wine image that's missing, still loading, or
+/// failed to resolve.
+Widget _winePlaceholder(ColorScheme cs, double size) => Center(
+  child: Icon(
+    PhosphorIconsThin.wine,
+    size: size * 0.42,
+    color: cs.onSurfaceVariant.withValues(alpha: 0.45),
+  ),
+);
 
 class WineTypeDot extends StatelessWidget {
   final WineType type;

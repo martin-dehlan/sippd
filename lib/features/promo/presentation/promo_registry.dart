@@ -26,6 +26,7 @@ import '../../wines/presentation/modules/wine_stats/widgets/wine_timeline.widget
 import '../../wines/presentation/modules/wine_stats/widgets/wine_type_breakdown.widget.dart';
 import '../../wines/presentation/widgets/wine_card.widget.dart';
 import 'widgets/promo_callouts.widget.dart';
+import 'widgets/promo_tasting_flow.widget.dart';
 import '../../wines/presentation/widgets/wine_detail_blocks.widget.dart';
 import '../../wines/presentation/widgets/wine_rating_input.widget.dart';
 import '../../wines/presentation/widgets/wine_thumb.widget.dart';
@@ -80,6 +81,15 @@ const Size _storyCanvas = Size(1080, 1920);
 /// The curated promo set. Add entries here — the showcase screen and the
 /// debug menu pick them up automatically.
 final List<PromoEntry> promoEntries = [
+  // ── Tasting lifecycle (self-animating, looping: upcoming→live→recap) ──
+  PromoEntry(
+    name: 'Tasting Flow',
+    builder: (context) => SizedBox(
+      width: context.w * 0.92,
+      child: const PromoTastingFlow(),
+    ),
+  ),
+
   // ── Share cards (fixed 1080×1920, self-rendering dark canvas) ──
   PromoEntry(
     name: 'Wine Rating Card',

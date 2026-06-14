@@ -172,10 +172,14 @@ class _DemoTourState extends ConsumerState<DemoTour> {
         max: 24000,
       ); // sections + carousel browse + rate sheet
 
-      // Tasting (HOST / SHARE) — drill into the group's first tasting.
+      // Tasting (HOST / SHARE) — drill into the group's first tasting. In
+      // demo the detail screen renders a curated, self-driving walk through
+      // the whole lifecycle regardless of the id, so always enter it (using
+      // a sentinel when the group happens to have no tasting) to guarantee
+      // the upcoming→live→concluded segment plays.
       final tastingId = await _firstTastingId(groupId);
-      if (mounted && tastingId != null) {
-        router.push(AppRoutes.tastingDetailPath(tastingId));
+      if (mounted) {
+        router.push(AppRoutes.tastingDetailPath(tastingId ?? 'demo-tasting'));
         await _waitUntilIdle(max: 20000);
         if (!mounted) return _cleanup();
         if (router.canPop()) router.pop(); // tasting → group detail

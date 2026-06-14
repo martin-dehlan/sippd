@@ -126,6 +126,8 @@ flutter:
     - assets/branding/logo.png
     - assets/branding/logo_icon.png
     - assets/promo/sample_label.jpg
+    - assets/promo/avatars/
+    - assets/promo/wines/
   fonts:
     - family: Sippd
       fonts:
