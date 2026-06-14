@@ -25,6 +25,7 @@ import 'package:share_plus/share_plus.dart';
 import '../../../../../common/services/deep_link/deep_link.service.dart';
 import '../../../../../common/utils/share_origin.dart';
 import '../../widgets/calendar_export_sheet.dart';
+import '../../widgets/tasting_phase_stepper.widget.dart';
 import '../../widgets/tasting_rate_sheet.dart';
 import '../../widgets/tasting_recap_section.widget.dart';
 import '../../widgets/wine_picker_sheet.dart';
@@ -223,6 +224,13 @@ class _Body extends ConsumerWidget {
           ),
         ],
         SizedBox(height: context.l),
+        // Lifecycle rail — at-a-glance status of where the night stands,
+        // sitting just above the banner that carries the host's CTA.
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
+          child: TastingPhaseStepper(state: tasting.state),
+        ),
+        SizedBox(height: context.m),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: context.paddingH * 1.3),
           child: _PhaseBanner(tasting: tasting, isOwner: isOwner),
