@@ -91,3 +91,6 @@ supabase/.temp/
 pre_wipe_backup*
 *_backup_*.sql
 .claude-flow/
+
+# FVM Version Cache
+.fvm/
